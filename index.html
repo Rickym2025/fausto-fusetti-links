@@ -3,12 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Fausto Fusetti - FF Musica</title>
-  <!-- Google Fonts: Montserrat per i testi, Arvo per i titoli -->
-  <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@700&family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
-  <!-- Icone Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
+  <title>Fausto Fusetti - Musicista, Compositore, Autore</title>
+
+  <!-- Google Fonts: Montserrat per un look moderno e professionale -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" />
+
   <style>
+    :root {
+      --primary-color: #0693e3; /* Blu vivace per il brand */
+      --secondary-color: #f9f7f3; /* Sfondo chiaro per il testo */
+      --dark-bg: #1a1a1a; /* Sfondo scuro principale */
+      --text-color-light: #f0f0f0;
+      --text-color-dark: #333;
+      --button-hover-bg: #fff;
+      --button-hover-text: var(--primary-color);
+      --border-radius-lg: 18px;
+      --border-radius-sm: 8px;
+      --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
     * {
       margin: 0;
       padding: 0;
@@ -17,154 +31,439 @@
 
     body {
       font-family: 'Montserrat', sans-serif;
-      /* Sfondo scuro e professionale */
-      background-color: #121212;
-      background-image: linear-gradient(rgba(18, 18, 18, 0.95), rgba(18, 18, 18, 0.85)), url('https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=2070&auto=format&fit=crop');
-      background-repeat: no-repeat;
-      background-position: center center;
+      background: url('https://images.unsplash.com/photo-1510915362829-d9a260f85ce2?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center fixed;
       background-size: cover;
-      background-attachment: fixed;
-      color: #f0f0f0;
+      color: var(--text-color-light);
       text-align: center;
       min-height: 100vh;
       display: flex;
-      align-items: center;
+      flex-direction: column;
       justify-content: center;
+      align-items: center;
+      padding: 20px;
     }
 
-    .container {
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+    .overlay {
+      background: rgba(0, 0, 0, 0.88); /* Sfondo più scuro per maggiore contrasto */
       padding: 40px 30px;
-      max-width: 680px;
-      width: 90%;
-      margin: 20px auto;
-      border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      max-width: 700px;
+      width: 100%;
+      margin: 30px auto;
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--box-shadow);
+      position: relative;
+      z-index: 10;
     }
 
-    /* Logo/Intestazione */
-    .header-logo {
-        font-family: 'Arvo', serif;
-        font-size: 3em;
-        font-weight: 700;
-        margin-bottom: 10px;
-        letter-spacing: 2px;
-        color: #FFFFFF;
-        text-shadow: 0 0 10px rgba(6, 147, 227, 0.5), 0 0 20px rgba(6, 147, 227, 0.3);
+    .overlay img.logo {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 50%;
+      box-shadow: 0 0 15px 5px var(--primary-color);
+      margin-bottom: 25px;
+      border: 4px solid var(--primary-color);
     }
 
     h1 {
-      font-size: 1.8em;
-      margin-bottom: 15px;
-      font-weight: 500;
+      font-size: 3.8em;
+      margin-bottom: 10px;
+      color: var(--primary-color);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 700;
     }
 
-    p.bio {
+    p.sottotitolo {
+      font-size: 1.5em;
+      margin-bottom: 25px;
+      line-height: 1.4;
+      font-weight: 400;
+    }
+    
+    .collaborazioni {
+      background-color: rgba(6, 147, 227, 0.1); /* Sfondo leggermente colorato per risalto */
+      border: 1px solid var(--primary-color);
+      border-radius: var(--border-radius-sm);
+      padding: 15px;
+      margin-bottom: 30px;
       font-size: 1.1em;
-      margin-bottom: 35px;
-      line-height: 1.6;
-      color: #c7c7c7;
+      line-height: 1.5;
+    }
+    
+    .collaborazioni strong {
+        color: var(--primary-color);
+        font-weight: 700;
     }
 
-    /* Stile Pulsanti */
     .button {
       display: block;
       margin: 18px auto;
       padding: 16px 30px;
-      border: 2px solid #0693e3; /* Blu acceso */
-      border-radius: 30px;
+      background-color: var(--primary-color);
+      border: 2px solid var(--primary-color);
+      border-radius: var(--border-radius-sm);
       text-decoration: none;
-      color: #f0f0f0;
-      font-size: 1.2em;
-      font-weight: 500;
+      color: var(--text-color-light);
+      font-size: 1.4em;
+      font-weight: 600;
       transition: all 0.3s ease;
-      background-color: transparent;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     }
 
     .button:hover {
-      background: #0693e3;
-      color: white;
+      background: var(--button-hover-bg);
+      color: var(--button-hover-text);
       transform: translateY(-3px);
-      box-shadow: 0 4px 15px rgba(6, 147, 227, 0.4);
-    }
-    
-    /* Pulsante Speciale per Collaborazioni */
-    .button.collabora {
-        border-color: #e3a006;
-    }
-    .button.collabora:hover {
-        background: #e3a006;
-        box-shadow: 0 4px 15px rgba(227, 160, 6, 0.4);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
     }
 
-
-    /* Icone Social */
     .social-icons {
       display: flex;
       justify-content: center;
+      flex-wrap: wrap;
       gap: 25px;
-      margin: 40px 0 20px;
+      margin: 35px 0 25px;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
     }
 
     .social-icons a {
-      color: #c7c7c7;
-      font-size: 1.8em;
-      transition: all 0.3s ease;
+      color: var(--text-color-light);
+      font-size: 2.2em;
+      text-decoration: none;
+      transition: color 0.3s ease, transform 0.3s ease;
     }
 
     .social-icons a:hover {
-      color: #0693e3;
-      transform: scale(1.2);
-    }
-    
-    .footer-text {
-        margin-top: 30px;
-        font-size: 0.9em;
-        color: #888;
+      color: var(--primary-color);
+      transform: translateY(-3px) scale(1.1);
     }
 
     @media (max-width: 768px) {
-      .container { padding: 30px 20px; }
-      .header-logo { font-size: 2.5em; }
-      h1 { font-size: 1.5em; }
-      p.bio { font-size: 1em; }
-      .button { padding: 14px 25px; font-size: 1.1em; }
+      body {
+        padding: 15px;
+      }
+      .overlay {
+        padding: 30px 20px;
+        margin: 20px auto;
+      }
+
+      h1 {
+        font-size: 2.8em;
+      }
+
+      p.sottotitolo {
+        font-size: 1.2em;
+      }
+      
+      .collaborazioni {
+        font-size: 1em;
+      }
+
+      .button {
+        padding: 14px 25px;
+        font-size: 1.2em;
+        margin: 16px auto;
+      }
+
+      .social-icons {
+        gap: 20px;
+        margin: 30px 0 20px;
+      }
     }
+
+    /* --- Chatbot Styles - Assicurati che non ci siano conflitti con i tuoi stili esistenti --- */
+    /* Se stai usando questo su una pagina esistente, potresti dover prefissare
+       tutti gli ID e le classi del chatbot (es. `#ff-chatbot-bubble`)
+       per evitare conflitti con gli stili globali. */
+    #chatbot-bubble { position: fixed; bottom: 25px; right: 25px; width: 65px; height: 65px; border-radius: 50%; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; background-image: url('https://github.com/lamesolashop/la-mesola/blob/main/logo.png?raw=true'); /* Placeholder, useremo il logo FF */ background-size: cover; background-position: center; border: 3px solid var(--primary-color); z-index: 9999; animation: bounce 2.5s ease-in-out 3s infinite; }
+    @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-10px); } 60% { transform: translateY(-5px); } }
+    #chatbot-bubble:hover { transform: scale(1.1); animation-play-state: paused; }
+    #chatbot-bubble svg { width: 32px; height: 32px; color: white; transition: opacity 0.3s ease; opacity: 0; position: absolute; }
+    #chatbot-bubble.open { background-image: none; background-color: var(--primary-color); animation: none; }
+    #chatbot-bubble.open .icon-close { opacity: 1; }
+
+    /* --- Fumetto di Benvenuto --- */
+    #chatbot-welcome-bubble { background-color: var(--secondary-color); color: var(--text-color-dark); padding: 12px 18px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); font-family: 'Montserrat', sans-serif; font-size: 15px; line-height: 1.4; z-index: 9998; cursor: pointer; opacity: 0; transform: translateY(10px); transition: all 0.4s ease; animation: fadeInWelcome 1s ease 1s forwards; position: fixed; bottom: 25px; right: 105px; }
+    #chatbot-welcome-bubble::after { content: ''; position: absolute; bottom: 12px; right: -8px; width: 0; height: 0; border-top: 8px solid transparent; border-bottom: 8px solid transparent; border-left: 8px solid var(--secondary-color); }
+    @keyframes fadeInWelcome { to { opacity: 1; transform: translateY(0); } }
+
+    /* --- Bottone di chiusura "X" --- */
+    #welcome-close-btn { position: fixed; bottom: 75px; right: 95px; width: 24px; height: 24px; background-color: #94a3b8; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Montserrat', sans-serif; font-weight: bold; font-size: 14px; line-height: 24px; cursor: pointer; transition: all 0.2s ease; z-index: 9999; box-shadow: 0 2px 5px rgba(0,0,0,0.2); opacity: 0; animation: fadeInWelcome 0.5s ease 1.5s forwards; }
+    #welcome-close-btn:hover { background-color: #475569; transform: scale(1.1); }
+
+    /* --- Finestra Chat (LARGA IL DOPPIO SU DESKTOP) --- */
+    #chatbot-window { position: fixed; bottom: 100px; right: 25px; width: 880px; max-width: 95vw; height: 700px; max-height: 85vh; background-color: #f9f7f3; border-radius: 15px; box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2); z-index: 9998; display: flex; flex-direction: column; overflow: hidden; transform: translateY(20px) scale(0.95); opacity: 0; visibility: hidden; transition: all 0.3s ease; }
+    #chatbot-window.open { transform: translateY(0) scale(1); opacity: 1; visibility: visible; }
+
+    /* --- Adattamento per mobile/schermi stretti --- */
+    @media (max-width: 920px) { #chatbot-window { width: 100vw; height: 100vh; max-height: 100vh; bottom: 0; right: 0; top: 0; left: 0; border-radius: 0; } #chatbot-bubble { bottom: 10px; right: 10px; } #chatbot-welcome-bubble, #welcome-close-btn { display: none; } }
+
+    .chatbot-header { background-color: var(--primary-color); color: white; padding: 1rem; text-align: center; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .chatbot-header img { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; border: 2px solid white; }
+    .chatbot-header-text { display: flex; flex-direction: column; align-items: center; }
+    .chatbot-header h3 { margin: 0; font-size: 1.1rem; color: white; }
+    .chatbot-header small { opacity: 0.8; }
+    .chatbot-messages { flex-grow: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; background-color: var(--secondary-color); }
+    .message { display: flex; align-items: flex-end; margin-bottom: 10px; max-width: 85%; }
+    .message.user { align-self: flex-end; }
+    .message.bot { align-self: flex-start; }
+    .message-avatar { width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; flex-shrink: 0; }
+    .message-text { padding: 10px 15px; border-radius: 18px; line-height: 1.4; word-wrap: break-word; overflow-wrap: break-word; }
+    .message.user .message-text { background-color: #eef2f5; color: #333; border-bottom-right-radius: 4px; }
+    .message.bot .message-text { background-color: var(--primary-color); color: white; border-bottom-left-radius: 4px; }
+    .message.typing .message-text { font-style: italic; color: #999; background-color: #eef2f5; }
+    .message.bot .message-text img { max-width: 250px; height: auto; border-radius: 10px; margin-top: 8px; margin-bottom: 8px; display: block; }
+    .message.bot .message-text a { color: white; font-weight: bold; text-decoration: underline; }
+    .message-text p { margin: 0 0 10px; }
+    .message-text p:last-child { margin-bottom: 0; }
+    .chatbot-input { display: flex; border-top: 1px solid #ddd; background-color: white; padding: 10px; align-items: center; flex-shrink: 0; }
+    .chatbot-input input { flex-grow: 1; border: none; padding: 10px; font-size: 1rem; }
+    .chatbot-input input:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
+    .chatbot-input button { background: none; border: none; padding: 0 10px; cursor: pointer; color: var(--primary-color); transition: transform 0.2s ease; }
+    .chatbot-input button:hover { transform: scale(1.1); }
+    
+    /* Stili per il lettore audio nel chatbot */
+    .audio-player {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: rgba(255, 255, 255, 0.15);
+        border-radius: 8px;
+        padding: 10px;
+        margin: 10px 0;
+        width: 100%; /* Occupa tutta la larghezza disponibile nel messaggio */
+    }
+    .audio-player p {
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: white;
+    }
+    .audio-player audio {
+        width: 100%;
+        max-width: 280px; /* Limita la larghezza massima per estetica */
+        background-color: transparent; /* Permette al colore di sfondo del player di essere visibile */
+        border-radius: 5px;
+        outline: none;
+    }
+    .audio-player audio::-webkit-media-controls-panel {
+        background-color: var(--primary-color);
+        border-radius: 5px;
+        padding: 5px;
+    }
+    .audio-player audio::-webkit-media-controls-play-button,
+    .audio-player audio::-webkit-media-controls-current-time-display,
+    .audio-player audio::-webkit-media-controls-time-remaining-display {
+        color: white;
+    }
+    /* Firefox */
+    .audio-player audio::-moz-range-track {
+        background-color: var(--primary-color);
+    }
+    .audio-player audio::-moz-range-thumb {
+        background-color: white;
+    }
+
   </style>
 </head>
+
 <body>
-  <div class="container">
-    <div class="header-logo">FF Musica</div>
-    <h1>Fausto Fusetti</h1>
-    <p class="bio">
-      Da 40 anni musicista, compositore e autore. Dal liscio al jazz, dal pop alla pubblicità, la mia passione è trasformare idee in musica.
+
+  <div class="overlay">
+    <!-- Logo FF Musica. Puoi caricare un'immagine personalizzata su Cloudflare R2
+         e sostituire questo placeholder con l'URL pubblico. -->
+    <img class="logo" src="https://i.imgur.com/your-logo-image.png" alt="Logo FF Musica" />
+    <!-- Immagine di placeholder. Genero un'immagine per te: -->
+    
+    <h1>FF Musica</h1>
+    <p class="sottotitolo">
+      **Fausto Fusetti**: 40 anni di passione e maestria.<br>
+      Musicista, compositore e autore eclettico per ogni genere: liscio, moderno, jazz, pubblicità.
     </p>
 
-    <!-- Pulsanti Link -->
-    <a href="INSERISCI_QUI_LINK_SITO_WEB" class="button">Sito Web Ufficiale</a>
-    <a href="https://www.youtube.com/watch?v=7s3-7DV38IA" target="_blank" class="button">Guarda le mie Produzioni</a>
-    <a href="https://www.youtube.com/watch?v=Y8YqyCT7h5E" target="_blank" class="button">Ascolta "Noi"</a>
-    <a href="https://www.youtube.com/watch?v=igexCZ24Twg" target="_blank" class="button">Ascolta "Per Te"</a>
+    <div class="collaborazioni">
+        Disponibile per <strong>collaborazioni uniche</strong>:<br>
+        Creazione di brani personalizzati per orchestre, cantanti ed editori.<br>
+        Suono pianoforte, chitarra e canto.
+    </div>
 
-    <a href="mailto: modena.riccardo@gmail.com" class="button collabora">
-        <i class="fas fa-pencil-alt"></i> Collaborazioni e Canzoni su Misura
-    </a>
-    
-    <!-- Icone Social -->
     <div class="social-icons">
       <a href="https://www.instagram.com/faustofusetti/" target="_blank" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
       <a href="https://www.facebook.com/fausto.fusetti.9" target="_blank" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
-      <a href="https://www.youtube.com/@faustofusetti5859" target="_blank" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+      <a href="https://www.youtube.com/channel/your-youtube-channel-id" target="_blank" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+      <!-- Se hai un sito web, aggiungi qui il link -->
+      <!-- <a href="https://www.tuosito.it" target="_blank" aria-label="Sito Web"><i class="fa-solid fa-globe"></i></a> -->
     </div>
 
-    <p class="footer-text">Disponibile per orchestre, cantanti ed editori.</p>
-
+    <a href="https://www.youtube.com/watch?v=Y8YqyCT7h5E" target="_blank" class="button">Guarda: Video Produzioni Live 1</a>
+    <a href="https://www.youtube.com/watch?v=igexCZ24Twg" target="_blank" class="button">Guarda: Video Produzioni Live 2</a>
+    <a href="https://www.youtube.com/watch?v=7s3-7DV38IA" target="_blank" class="button">Guarda: Altre Produzioni</a>
+    <a href="#" class="button">Ascolta Brani Personalizzati (tramite Chatbot)</a>
+    <a href="mailto:tuaemail@esempio.com" class="button">Contattami per Collaborazioni</a>
   </div>
 
-  <!-- QUI SOTTO ANDRÀ INCOLLATO IL CODICE DEL CHATBOT -->
-  
-  
-</body>
-</html>
+  <!-- Inizio Codice Widget Chatbot Personalizzato -->
+  <!-- IL TUO CODICE CHATBOT QUI -->
+<div id="chatbot-container">
+    <div id="chatbot-bubble">
+        <svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
+    </div>
+    <div id="chatbot-welcome-bubble">Ciao, sono Sara, la tua assistente virtuale.<br>Come ti posso aiutare?</div>
+    <div id="welcome-close-btn">×</div>
+    <div id="chatbot-window">
+        <div class="chatbot-header">
+            <img src="https://i.imgur.com/your-logo-image.png" alt="Assistente Virtuale Sara">
+            <div class="chatbot-header-text"><h3>FF Musica</h3><small>Assistente Virtuale</small></div>
+        </div>
+        <div class="chatbot-messages" id="chatbot-messages">
+            <!-- La cronologia dei messaggi verrà inserita qui dallo script -->
+        </div>
+        <div class="chatbot-input">
+            <input type="text" id="chatbot-input-field" placeholder="Scrivi un messaggio...">
+            <button id="chatbot-send-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // QUI DOVRAI INSERIRE L'URL DEL TUO WEBHOOK N8N UNA VOLTA CONFIGURATO
+    const webhookUrl = 'https://n8n.automaita.it/webhook/La-Bottega-Del-Delta-chat'; // AGGIORNA QUESTO URL
+    const bubble = document.getElementById('chatbot-bubble');
+    const welcomeBubble = document.getElementById('chatbot-welcome-bubble');
+    const welcomeCloseBtn = document.getElementById('welcome-close-btn');
+    const windowEl = document.getElementById('chatbot-window');
+    const messagesEl = document.getElementById('chatbot-messages');
+    const inputField = document.getElementById('chatbot-input-field');
+    const sendBtn = document.getElementById('chatbot-send-btn');
+    if (!bubble) return;
+
+    let chatHistory = [];
+
+    const getOrCreateSessionId = () => { let sessionId = sessionStorage.getItem('chatbot_session_id'); if (!sessionId) { sessionId = crypto.randomUUID(); sessionStorage.setItem('chatbot_session_id', sessionId); } return sessionId; };
+    const hideWelcomeMessage = () => { if (welcomeBubble) welcomeBubble.style.display = 'none'; if (welcomeCloseBtn) welcomeCloseBtn.style.display = 'none'; };
+
+    const saveChatState = () => {
+        const state = {
+            isOpen: windowEl.classList.contains('open'),
+            history: chatHistory
+        };
+        sessionStorage.setItem('chatbot_state', JSON.stringify(state));
+    };
+
+    const restoreChatState = () => {
+        const savedState = sessionStorage.getItem('chatbot_state');
+        if (savedState) {
+            try {
+                const state = JSON.parse(savedState);
+                messagesEl.innerHTML = '';
+                if (state.history && Array.isArray(state.history)) {
+                    chatHistory = state.history;
+                    chatHistory.forEach(message => addMessage(message.text, message.type, false));
+                }
+                if (state.isOpen) {
+                    bubble.classList.add('open');
+                    windowEl.classList.add('open');
+                    hideWelcomeMessage();
+                    if (chatHistory.length > 0) {
+                        messagesEl.scrollTop = messagesEl.scrollHeight;
+                    }
+                }
+            } catch (e) {
+                console.error("Errore nel ripristino dello stato della chat:", e);
+                sessionStorage.removeItem('chatbot_state');
+                chatHistory = [];
+            }
+        }
+        if (chatHistory.length === 0) {
+            addMessage("Ciao! Sono Sara, l'assistente virtuale di Fausto Fusetti. Come posso aiutarti?", 'bot');
+        }
+    };
+    
+    const toggleChat = () => {
+        bubble.classList.toggle('open');
+        windowEl.classList.toggle('open');
+        hideWelcomeMessage();
+        if (windowEl.classList.contains('open')) {
+            inputField.focus();
+        }
+        saveChatState();
+    };
+    
+    bubble.addEventListener('click', toggleChat);
+    if (welcomeBubble) welcomeBubble.addEventListener('click', toggleChat);
+    if (welcomeCloseBtn) { welcomeCloseBtn.addEventListener('click', function(event) { event.stopPropagation(); hideWelcomeMessage(); }); }
+
+    const addMessage = (text, type, shouldSave = true) => {
+        if (shouldSave) {
+            chatHistory.push({ text, type });
+        }
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${type}`;
+        if (type === 'bot') { 
+            const avatar = document.createElement('img'); 
+            avatar.className = 'message-avatar'; 
+            // Aggiorna l'URL dell'avatar del bot con il logo FF Musica
+            avatar.src = 'https://i.imgur.com/your-logo-image.png'; // Sostituisci con il tuo logo
+            avatar.alt = 'Sara'; 
+            messageDiv.appendChild(avatar); 
+        }
+        const textDiv = document.createElement('div');
+        textDiv.className = 'message-text';
+        
+        // Verifica se il testo contiene un tag audio personalizzato
+        const audioRegex = /<audio-player src="([^"]+)" title="([^"]+)"><\/audio-player>/;
+        const match = text.match(audioRegex);
+
+        if (match) {
+            const audioUrl = match[1];
+            const audioTitle = match[2];
+            const audioHtml = `
+                <div class="audio-player">
+                    <p>${audioTitle}</p>
+                    <audio controls preload="none">
+                        <source src="${audioUrl}" type="audio/mpeg">
+                        Il tuo browser non supporta l'elemento audio.
+                    </audio>
+                </div>
+            `;
+            const sanitizedHtml = DOMPurify.sanitize(audioHtml);
+            textDiv.innerHTML = sanitizedHtml;
+        } else {
+            const rawHtml = marked.parse(text);
+            const sanitizedHtml = DOMPurify.sanitize(rawHtml);
+            textDiv.innerHTML = sanitizedHtml;
+        }
+        
+        messageDiv.appendChild(textDiv);
+        messagesEl.appendChild(messageDiv);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+
+        if (shouldSave) {
+            saveChatState();
+        }
+    };
+
+    messagesEl.addEventListener('click', function(event) {
+        const link = event.target.closest('a');
+        if (link && link.href) {
+            event.preventDefault();
+            saveChatState();
+            window.location.href = link.href;
+        }
+    });
+
+    const showTypingIndicator = () => {
+        if (document.querySelector('.message.typing')) return;
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'message bot typing';
+        const avatar = document.createElement('img');
+        avatar.className = 'message-avatar';
+        avatar.src = '
