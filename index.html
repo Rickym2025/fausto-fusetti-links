@@ -13,14 +13,12 @@
     body { font-family: 'Montserrat', sans-serif; color: #f0f0f0; text-align: center; min-height: 100vh; display: flex; align-items: center; justify-content: flex-start; flex-direction: column; padding-top: 100px; }
     #background-video { position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; width: auto; height: auto; z-index: -100; object-fit: cover; filter: brightness(0.5); }
     #mute-btn { position: fixed; top: 20px; right: 20px; z-index: 10001; background: rgba(0,0,0,0.5); color: white; border: 1px solid white; border-radius: 50%; width: 45px; height: 45px; font-size: 1.2em; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-    #mute-btn:hover { background: #0693e3; }
     .container { position: relative; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 90px 30px 40px 30px; max-width: 680px; width: 90%; margin-bottom: 40px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); }
     @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
     .profile-logo { width: 150px; height: 150px; border-radius: 50%; border: 4px solid rgba(255, 255, 255, 0.9); box-shadow: 0 0 20px rgba(6, 147, 227, 0.5); object-fit: cover; position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); animation: spin 15s linear infinite; }
     .header-logo { font-family: 'Arvo', serif; font-size: 3em; font-weight: 700; margin-bottom: 10px; }
     h1 { font-size: 1.8em; margin-bottom: 15px; font-weight: 500; }
     p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1; }
-    p.bio strong { color: #fff; font-weight: 600; }
     .button { display: block; margin: 18px auto; padding: 16px 30px; border: 2px solid #0693e3; border-radius: 30px; text-decoration: none; color: #f0f0f0; font-size: 1.2em; font-weight: 500; transition: all 0.3s ease; background-color: transparent; cursor: pointer; }
     .button:hover { background: #0693e3; color: white; transform: translateY(-3px); box-shadow: 0 4px 15px rgba(6, 147, 227, 0.4); }
     .button.collabora { border-color: #e3a006; } .button.collabora:hover { background: #e3a006; }
@@ -46,8 +44,8 @@
 </head>
 <body>
 
-  <video autoplay muted loop playsinline preload="auto" id="background-video" poster="INSERISCI_QUI_LINK_AL_POSTER.jpg">
-    <source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/video_sfondo.mp4" type="video/mp4">
+  <video autoplay muted loop playsinline preload="auto" id="background-video" poster="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/immagine%20sfondo.png">
+    <source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/video_sfondo_compressed.mp4" type="video/mp4">
   </video>
   <audio loop id="background-audio"><source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/7a%20Controtempo.mp3" type="audio/mpeg"></audio>
   <button id="mute-btn"><i class="fas fa-volume-up"></i></button>
@@ -63,46 +61,115 @@
   </div>
 
   <div id="video-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="video-modal">&times;</span><h2>Video Selezionati</h2><a href="https://www.youtube.com/watch?v=7s3-7DV38IA" target="_blank" class="button">Produzioni Varie</a><a href="https://www.youtube.com/watch?v=Y8YqyCT7h5E" target="_blank" class="button">Ascolta "Noi"</a><a href="https://www.youtube.com/watch?v=igexCZ24Twg" target="_blank" class="button">Ascolta "Per Te"</a></div></div>
-  <div id="music-modal" class="modal-overlay"><div class="modal-content music-catalog"><span class="modal-close" data-target="music-modal">&times;</span><h2>Catalogo Musicale</h2><div class="info-box"><i class="fas fa-comments"></i> Chiedi a <strong>Sara</strong> di trovare il brano perfetto per te tra oltre 200 composizioni.</div><div class="tab-navigation"><button class="tab-btn active" data-tab="moderno">Moderno</button><button class="tab-btn" data-tab="funky">Funky</button></div><div id="tab-moderno" class="tab-content active"><div class="song-item" data-src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/1%20Trent'anni%20in%20un%20Caff%C3%A8.mp3" data-title="Trent'anni in un Caffè"><span class="title">Trent'anni in un Caffè</span><button class="play-btn"><i class="fas fa-play"></i></button></div></div><div id="tab-funky" class="tab-content"><div class="song-item" data-src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/7a%20Controtempo.mp3" data-title="Controtempo"><span class="title">Controtempo</span><button class="play-btn"><i class="fas fa-play"></i></button></div></div><div id="catalog-player-display"><button id="catalog-player-button"><i class="fas fa-pause"></i></button><span id="catalog-song-title"></span><audio id="catalog-audio-player"></audio></div></div></div>
+  <div id="music-modal" class="modal-overlay"><div class="modal-content music-catalog"><span class="modal-close" data-target="music-modal">&times;</span><h2>Catalogo Musicale</h2><div class="info-box"><i class="fas fa-comments"></i> Chiedi a <strong>Sara</strong> di trovare il brano perfetto per te tra oltre 200 composizioni.</div>
+      <div id="tab-navigation-container" class="tab-navigation"></div>
+      <div id="tab-content-container"></div>
+      <div id="catalog-player-display"><button id="catalog-player-button"><i class="fas fa-pause"></i></button><span id="catalog-song-title"></span><audio id="catalog-audio-player"></audio></div>
+  </div></div>
 
-  <div id="chatbot-container">
-    <style>#chatbot-bubble{position:fixed;bottom:25px;right:25px;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/eva%20copia.jpg);background-size:cover;background-position:center;border:3px solid #0693e3;z-index:9999}#chatbot-bubble:hover{transform:scale(1.1)}#chatbot-bubble.open{background-image:none;background-color:#0693e3}#chatbot-bubble.open .icon-close{opacity:1}#chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}#chatbot-window{position:fixed;bottom:100px;right:25px;width:440px;max-width:95vw;height:70vh;max-height:600px;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);z-index:9998;display:flex;flex-direction:column;overflow:hidden;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease}#chatbot-window.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}@media (max-width:920px){#chatbot-window{width:100vw;height:100vh;max-height:100vh;bottom:0;right:0;top:0;left:0;border-radius:0}#chatbot-bubble{bottom:10px;right:10px}}.chatbot-header{background-color:#0693e3;color:#fff;padding:1rem;text-align:center;display:flex;align-items:center;justify-content:center;flex-shrink:0}.chatbot-header img{width:40px;height:40px;border-radius:50%;margin-right:10px;border:2px solid #fff}.chatbot-messages{flex-grow:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column}.message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}.message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0}.message-text{padding:10px 15px;border-radius:18px;line-height:1.4;word-wrap:break-word}.message.user .message-text{background-color:#eef2f5;color:#333;border-bottom-right-radius:4px}.message.bot .message-text{background-color:#0693e3;color:#fff;border-bottom-left-radius:4px}.chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}.chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid #0693e3}.chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:#0693e3}</style>
-    <div id="chatbot-bubble"><svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg></div>
-    <div id="chatbot-window"><div class="chatbot-header"><img src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/eva%20copia.jpg" alt="Sara"><div><h3>FF Musica</h3><small>Assistente Virtuale</small></div></div><div class="chatbot-messages" id="chatbot-messages"></div><div class="chatbot-input"><input type="text" id="chatbot-input-field" placeholder="Scrivi un messaggio..."><button id="chatbot-send-btn"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg></button></div></div>
-  </div>
-
+  <div id="chatbot-container"><!-- Il codice del chatbot (HTML e CSS) verrà inserito qui da Javascript --></div>
+  
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      const bgAudio = document.getElementById('background-audio');
-      const muteBtn = document.getElementById('mute-btn');
-      
-      function playBackgroundAudio() { if (bgAudio.paused) bgAudio.play().catch(e => console.log("Audio bloccato")); }
-      document.body.addEventListener('click', playBackgroundAudio, { once: true });
-      muteBtn.addEventListener('click', () => { bgAudio.muted = !bgAudio.muted; muteBtn.querySelector('i').className = bgAudio.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up'; });
+        const bgAudio = document.getElementById('background-audio');
+        const muteBtn = document.getElementById('mute-btn');
+        document.body.addEventListener('click', () => { if (bgAudio.paused) bgAudio.play().catch(e => {}); }, { once: true });
+        muteBtn.addEventListener('click', () => { bgAudio.muted = !bgAudio.muted; muteBtn.querySelector('i').className = bgAudio.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up'; });
 
-      document.getElementById('open-video-modal').addEventListener('click', () => document.getElementById('video-modal').style.display = 'flex');
-      document.getElementById('open-music-modal').addEventListener('click', () => document.getElementById('music-modal').style.display = 'flex');
-      document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', () => document.getElementById(btn.dataset.target).style.display = 'none'));
-      document.querySelectorAll('.modal-overlay').forEach(modal => modal.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; }));
+        document.getElementById('open-video-modal').addEventListener('click', () => document.getElementById('video-modal').style.display = 'flex');
+        document.getElementById('open-music-modal').addEventListener('click', () => document.getElementById('music-modal').style.display = 'flex');
+        document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', () => document.getElementById(btn.dataset.target).style.display = 'none'));
+        document.querySelectorAll('.modal-overlay').forEach(modal => modal.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; }));
 
-      const catalogPlayer = document.getElementById('catalog-audio-player');
-      const playerDisplay = document.getElementById('catalog-player-display');
-      const playerBtn = document.getElementById('catalog-player-button');
-      const playerTitle = document.getElementById('catalog-song-title');
+        const catalogPlayer = document.getElementById('catalog-audio-player');
+        const playerDisplay = document.getElementById('catalog-player-display');
+        const playerBtn = document.getElementById('catalog-player-button');
+        const playerTitle = document.getElementById('catalog-song-title');
 
-      document.querySelectorAll('.tab-btn').forEach(tab => tab.addEventListener('click', () => { document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active')); tab.classList.add('active'); document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active')); document.getElementById('tab-' + tab.dataset.tab).classList.add('active'); }));
-      document.querySelectorAll('.song-item').forEach(item => item.querySelector('.play-btn').addEventListener('click', () => { const songSrc = item.dataset.src; const songTitle = item.dataset.title; playerDisplay.classList.add('visible'); playerTitle.textContent = songTitle; if (catalogPlayer.src !== songSrc || catalogPlayer.paused) { catalogPlayer.src = songSrc; catalogPlayer.play(); } }));
-      playerBtn.addEventListener('click', () => { if (catalogPlayer.paused) catalogPlayer.play(); else catalogPlayer.pause(); });
-      catalogPlayer.onplay = () => playerBtn.innerHTML = '<i class="fas fa-pause"></i>';
-      catalogPlayer.onpause = () => playerBtn.innerHTML = '<i class="fas fa-play"></i>';
+        playerBtn.addEventListener('click', () => { if (catalogPlayer.paused) catalogPlayer.play(); else catalogPlayer.pause(); });
+        catalogPlayer.onplay = () => playerBtn.innerHTML = '<i class="fas fa-pause"></i>';
+        catalogPlayer.onpause = () => playerBtn.innerHTML = '<i class="fas fa-play"></i>';
+
+        // --- CARICAMENTO DINAMICO DA GOOGLE SHEET ---
+        async function loadMusicFromSheet() {
+            // !!! INCOLLA QUI IL TUO LINK CSV PUBBLICATO !!!
+            const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT5K_gYgC9Lg2m9m3Q5hF6n8k9r_d7c_f8gH9J_kL4pY5tT9r_gV7bN2w_xO7jU6iR9pC0/pub?gid=1445821517&single=true&output=csv';
+
+            try {
+                const response = await fetch(sheetUrl);
+                const data = await response.text();
+                const songs = parseCSV(data);
+                renderCatalog(songs);
+            } catch (error) {
+                console.error('Errore nel caricamento del catalogo:', error);
+                document.getElementById('tab-content-container').innerHTML = '<p>Errore nel caricamento del catalogo. Riprova più tardi.</p>';
+            }
+        }
+
+        function parseCSV(text) {
+            const rows = text.split(/\r\n|\n/).slice(1); // Dividi per righe e salta l'intestazione
+            return rows.map(row => {
+                const [genre, title, url] = row.split(',');
+                return { genre, title, url };
+            }).filter(song => song.genre && song.title && song.url); // Filtra righe vuote o malformate
+        }
+
+        function renderCatalog(songs) {
+            const tabsContainer = document.getElementById('tab-navigation-container');
+            const contentContainer = document.getElementById('tab-content-container');
+            
+            const genres = [...new Set(songs.map(song => song.genre))];
+            
+            tabsContainer.innerHTML = genres.map((genre, index) => `<button class="tab-btn ${index === 0 ? 'active' : ''}" data-tab="${genre}">${genre}</button>`).join('');
+            contentContainer.innerHTML = genres.map((genre, index) => `<div id="tab-${genre}" class="tab-content ${index === 0 ? 'active' : ''}"></div>`).join('');
+            
+            songs.forEach(song => {
+                const genreContent = document.getElementById(`tab-${song.genre}`);
+                if (genreContent) {
+                    genreContent.innerHTML += `
+                        <div class="song-item" data-src="${song.url}" data-title="${song.title}">
+                            <span class="title">${song.title}</span>
+                            <button class="play-btn"><i class="fas fa-play"></i></button>
+                        </div>`;
+                }
+            });
+            
+            addEventListenersToCatalog();
+        }
+
+        function addEventListenersToCatalog() {
+            document.querySelectorAll('.tab-btn').forEach(tab => tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+                document.getElementById(`tab-${tab.dataset.tab}`).classList.add('active');
+            }));
+
+            document.querySelectorAll('.song-item .play-btn').forEach(button => button.addEventListener('click', (e) => {
+                const item = e.currentTarget.closest('.song-item');
+                playerDisplay.classList.add('visible');
+                playerTitle.textContent = item.dataset.title;
+                if (catalogPlayer.src !== item.dataset.src || catalogPlayer.paused) {
+                    catalogPlayer.src = item.dataset.src;
+                    catalogPlayer.play();
+                }
+            }));
+        }
+
+        loadMusicFromSheet();
     });
 
     (function() {
-      const webhookUrl = 'INSERISCI_QUI_IL_TUO_WEBHOOK_N8N';
-      const bubble = document.getElementById('chatbot-bubble'); const windowEl = document.getElementById('chatbot-window'); const messagesEl = document.getElementById('chatbot-messages'); const inputField = document.getElementById('chatbot-input-field'); const sendBtn = document.getElementById('chatbot-send-btn');
-      if (!bubble) return;
-      let chatHistory = [];
-      const getOrCreateSessionId = () => { let id = sessionStorage.getItem('chatbot_session_id'); if (!id) { id = crypto.randomUUID(); sessionStorage.setItem('chatbot_session_id', id); } return id; };
-      const saveChatState = () =>
+        const container = document.getElementById('chatbot-container');
+        container.innerHTML = `<style>#chatbot-bubble{position:fixed;bottom:25px;right:25px;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/eva%20copia.jpg);background-size:cover;background-position:center;border:3px solid #0693e3;z-index:9999}#chatbot-bubble:hover{transform:scale(1.1)}#chatbot-bubble.open{background-image:none;background-color:#0693e3}#chatbot-bubble.open .icon-close{opacity:1}#chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}#chatbot-window{position:fixed;bottom:100px;right:25px;width:440px;max-width:95vw;height:70vh;max-height:600px;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);z-index:9998;display:flex;flex-direction:column;overflow:hidden;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease}#chatbot-window.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}@media (max-width:920px){#chatbot-window{width:100vw;height:100vh;max-height:100vh;bottom:0;right:0;top:0;left:0;border-radius:0}#chatbot-bubble{bottom:10px;right:10px}}.chatbot-header{background-color:#0693e3;color:#fff;padding:1rem;text-align:center;display:flex;align-items:center;justify-content:center;flex-shrink:0}.chatbot-header img{width:40px;height:40px;border-radius:50%;margin-right:10px;border:2px solid #fff}.chatbot-messages{flex-grow:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column}.message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}.message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0}.message-text{padding:10px 15px;border-radius:18px;line-height:1.4;word-wrap:break-word}.message.user .message-text{background-color:#eef2f5;color:#333;border-bottom-right-radius:4px}.message.bot .message-text{background-color:#0693e3;color:#fff;border-bottom-left-radius:4px}.chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}.chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid #0693e3}.chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:#0693e3}</style><div id="chatbot-bubble"><svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg></div><div id="chatbot-window"><div class="chatbot-header"><img src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/eva%20copia.jpg" alt="Sara"><div><h3>FF Musica</h3><small>Assistente Virtuale</small></div></div><div class="chatbot-messages" id="chatbot-messages"></div><div class="chatbot-input"><input type="text" id="chatbot-input-field" placeholder="Scrivi un messaggio..."><button id="chatbot-send-btn"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg></button></div></div>`;
+        
+        const webhookUrl = 'INSERISCI_QUI_IL_TUO_WEBHOOK_N8N';
+        const bubble = document.getElementById('chatbot-bubble'), windowEl = document.getElementById('chatbot-window'), messagesEl = document.getElementById('chatbot-messages'), inputField = document.getElementById('chatbot-input-field'), sendBtn = document.getElementById('chatbot-send-btn');
+        let chatHistory = [];
+        const getOrCreateSessionId = () => { let id = sessionStorage.getItem('chatbot_session_id'); if (!id) { id = crypto.randomUUID(); sessionStorage.setItem('chatbot_session_id', id); } return id; };
+        const saveChatState = () => sessionStorage.setItem('chatbot_state', JSON.stringify({ isOpen: windowEl.classList.contains('open'), history: chatHistory }));
+        const toggleChat = (forceOpen = false) => { if (forceOpen) { bubble.classList.add('open'); windowEl.classList.add('open'); } else { bubble.classList.toggle('open'); windowEl.classList.toggle('open'); } if (windowEl.classList.contains('open')) inputField.focus(); saveChatState(); };
+        const addMessage = (text, type, shouldSave = true) => { if (shouldSave) chatHistory.push({ text, type }); const msgDiv = document.createElement('div'); msgDiv.className = `message ${type}`; if (type === 'bot') { const avatar = document.createElement('img'); avatar.className = 'message-avatar'; avatar.src = 'https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/eva%20copia.jpg'; msgDiv.appendChild(avatar); } const textDiv = document.createElement('div'); textDiv.className = 'message-text'; textDiv.innerHTML = DOMPurify.sanitize(marked.parse(text)); msgDiv.appendChild(textDiv); messagesEl.appendChild(msgDiv); messagesEl.scrollTop = messagesEl.scrollHeight; if (shouldSave) saveChatState(); };
+        const restoreChatState = () => { const savedState = sessionStorage.getItem('chatbot_state'); if (savedState) { try { const state = JSON.parse(savedState); if (state.history) { chatHistory = state.history; chatHistory.forEach(msg => addMessage(msg.text, msg.type, false)); } if (state.isOpen) toggleChat(true); } catch (e) {} } else { setTimeout(() => toggleChat(true), 1
