@@ -62,7 +62,7 @@
       <div id="audio-cta"><span class="cta-text">Attiva la musica</span><div id="mute-btn-icon"><i class="fas fa-volume-mute"></i></div></div>
       <img src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/logo6.jpg" alt="Logo FF Musica" class="profile-logo">
       <div class="header-logo">FF Musica</div><h1>Fausto Fusetti</h1>
-      <p class="bio">Musicista, compositore e autore con <strong>40 anni di esperienza</strong>. Scrivo e produco musica di ogni genere, dal liscio al jazz, dal pop alla pubblicità.<br><br>Offro due servizi principali: <strong>creazione di canzoni su misura</strong> per artisti, orchestre ed editori, e <strong>intrattenimento musicale dal vivo</strong> per serate, matrimoni, feste e cerimonie.</p>
+      <p class="bio">Musicista, compositore e autore con <strong>40 anni di esperienza</strong>. Offro servizi di: <strong>creazione di canzoni su misura</strong> per artisti, orchestre ed editori, ma anche per privati, coppie e anniversari con testi personalizzati; e <strong>intrattenimento musicale dal vivo</strong> per serate, matrimoni, feste e cerimonie.</p>
       <a href="#" class="button" style="display: none;" title="In Costruzione"><i class="fas fa-globe"></i>Sito Web</a>
       <button id="open-music-modal" class="button"><i class="fas fa-music"></i>Catalogo Musicale</button>
       <button id="open-video-modal" class="button"><i class="fas fa-video"></i>Guarda i Video</button>
@@ -185,25 +185,27 @@
         });
 
         // Logica Post-it
-        const aphorisms = [ "La musica è la vera lingua universale.", "Dove le parole finiscono, inizia la musica.", "La vita è come un pianoforte, ciò che ne esce dipende da come la suoni.", "La musica esprime ciò che non può essere detto e su cui è impossibile rimanere in silenzio.", "Senza musica, la vita sarebbe un errore." ];
-        const aphorismContainer = document.getElementById('aphorism-container');
-        const mainContainer = document.querySelector('.container');
-        function showRandomAphorism() {
-            const rect = mainContainer.getBoundingClientRect();
-            const postit = document.createElement('div');
-            postit.className = 'aphorism-postit';
-            postit.textContent = aphorisms[Math.floor(Math.random() * aphorisms.length)];
-            let top, left;
-            do { top = Math.random() * window.innerHeight; left = Math.random() * window.innerWidth; } while ( top > rect.top - 50 && top < rect.bottom + 50 && left > rect.left - 50 && left < rect.right + 50 );
-            postit.style.top = `${top}px`;
-            postit.style.left = `${left}px`;
-            const rotation = `rotate(${Math.random() * 20 - 10}deg)`;
-            postit.style.setProperty('--transform-start', `${rotation} translateY(20px)`);
-            postit.style.setProperty('--transform-end', `${rotation} translateY(0)`);
-            aphorismContainer.appendChild(postit);
-            setTimeout(() => { postit.remove(); }, 10000);
-        }
-        setInterval(showRandomAphorism, 12000);
+        (function() {
+            const aphorisms = [ "La musica è la vera lingua universale.", "Dove le parole finiscono, inizia la musica.", "La vita è come un pianoforte, ciò che ne esce dipende da come la suoni.", "La musica esprime ciò che non può essere detto e su cui è impossibile rimanere in silenzio.", "Senza musica, la vita sarebbe un errore." ];
+            const aphorismContainer = document.getElementById('aphorism-container');
+            const mainContainer = document.querySelector('.container');
+            function showRandomAphorism() {
+                const rect = mainContainer.getBoundingClientRect();
+                const postit = document.createElement('div');
+                postit.className = 'aphorism-postit';
+                postit.textContent = aphorisms[Math.floor(Math.random() * aphorisms.length)];
+                let top, left;
+                do { top = Math.random() * window.innerHeight; left = Math.random() * window.innerWidth; } while ( top > rect.top - 50 && top < rect.bottom + 50 && left > rect.left - 50 && left < rect.right + 50 );
+                postit.style.top = `${top}px`;
+                postit.style.left = `${left}px`;
+                const rotation = `rotate(${Math.random() * 20 - 10}deg)`;
+                postit.style.setProperty('--transform-start', `${rotation} translateY(20px)`);
+                postit.style.setProperty('--transform-end', `${rotation} translateY(0)`);
+                aphorismContainer.appendChild(postit);
+                setTimeout(() => { postit.remove(); }, 10000);
+            }
+            setInterval(showRandomAphorism, 12000);
+        })();
     });
 
     // --- SCRIPT CHATBOT ---
