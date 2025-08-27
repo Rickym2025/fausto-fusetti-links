@@ -7,310 +7,177 @@
   <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
   <style>
-    /* --- IMPOSTAZIONI GENERALI --- */
+    /* CSS completo e corretto */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
-    body { font-family: 'Montserrat', sans-serif; color: #f0f0f0; text-align: center; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-
-    /* --- VIDEO E AUDIO DI SFONDO --- */
+    body { font-family: 'Montserrat', sans-serif; color: #f0f0f0; text-align: center; min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 20px; }
     #background-video { position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; width: auto; height: auto; z-index: -100; object-fit: cover; filter: brightness(0.5); }
     #mute-btn { position: fixed; top: 20px; right: 20px; z-index: 10001; background: rgba(0,0,0,0.5); color: white; border: 1px solid white; border-radius: 50%; width: 45px; height: 45px; font-size: 1.2em; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-    #mute-btn:hover { background: #0693e3; }
-    
-    /* --- CONTENITORE PRINCIPALE --- */
-    .container { position: relative; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 90px 30px 40px 30px; max-width: 680px; width: 90%; margin: 40px auto; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); }
-
-    /* --- LOGO GIRADISCHI --- */
-    @keyframes spin {
-        from { transform: translate(-50%, -50%) rotate(0deg); }
-        to { transform: translate(-50%, -50%) rotate(360deg); }
-    }
+    .container { position: relative; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 90px 30px 40px 30px; max-width: 680px; width: 100%; margin-top: 130px; margin-bottom: 40px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); }
+    @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
     .profile-logo { width: 150px; height: 150px; border-radius: 50%; border: 4px solid rgba(255, 255, 255, 0.9); box-shadow: 0 0 20px rgba(6, 147, 227, 0.5); object-fit: cover; position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); animation: spin 15s linear infinite; }
-
-    /* --- TESTI --- */
-    .header-logo { font-family: 'Arvo', serif; font-size: 3em; font-weight: 700; margin-bottom: 10px; letter-spacing: 2px; color: #FFFFFF; text-shadow: 0 0 10px rgba(6, 147, 227, 0.5), 0 0 20px rgba(6, 147, 227, 0.3); }
+    .header-logo { font-family: 'Arvo', serif; font-size: 3em; font-weight: 700; margin-bottom: 10px; }
     h1 { font-size: 1.8em; margin-bottom: 15px; font-weight: 500; }
     p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1; }
-    p.bio strong { color: #fff; font-weight: 600; }
-
-    /* --- PULSANTI --- */
     .button { display: block; margin: 18px auto; padding: 16px 30px; border: 2px solid #0693e3; border-radius: 30px; text-decoration: none; color: #f0f0f0; font-size: 1.2em; font-weight: 500; transition: all 0.3s ease; background-color: transparent; cursor: pointer; }
     .button:hover { background: #0693e3; color: white; transform: translateY(-3px); box-shadow: 0 4px 15px rgba(6, 147, 227, 0.4); }
-    .button.collabora { border-color: #e3a006; }
-    .button.collabora:hover { background: #e3a006; box-shadow: 0 4px 15px rgba(227, 160, 6, 0.4); }
+    .button.collabora { border-color: #e3a006; } .button.collabora:hover { background: #e3a006; }
+    .button.disabled { border-color: #555; color: #888; cursor: not-allowed; } .button.disabled:hover { background: none; transform: none; box-shadow: none; }
     .button i { margin-right: 10px; }
-
-    /* --- ICONE SOCIAL --- */
     .social-icons { display: flex; justify-content: center; gap: 30px; margin: 40px 0 20px; }
-    .social-icons a { color: #c7c7c7; font-size: 2.2em; transition: all 0.3s ease; }
-    .social-icons a:hover { color: #0693e3; transform: scale(1.2); }
-    
-    /* --- FINESTRE MODALI --- */
+    .social-icons a { color: #c7c7c7; font-size: 2.2em; transition: all 0.3s ease; } .social-icons a:hover { color: #0693e3; transform: scale(1.2); }
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
     .modal-content { background: #1e1e1e; padding: 30px; border-radius: 15px; width: 100%; max-width: 550px; position: relative; max-height: 90vh; overflow-y: auto; }
     .modal-close { position: absolute; top: 15px; right: 20px; font-size: 2em; color: white; cursor: pointer; line-height: 1; }
-    .modal-content h2 { margin-bottom: 20px; }
-
-    /* --- CATALOGO MUSICALE --- */
-    .music-catalog .info-box { background: rgba(6, 147, 227, 0.1); border: 1px solid #0693e3; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 1.1em; line-height: 1.5; }
+    .music-catalog .info-box { background: rgba(6, 147, 227, 0.1); border: 1px solid #0693e3; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 1.1em; }
     .tab-navigation { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
-    .tab-btn { padding: 10px 15px; border: 1px solid #555; border-radius: 20px; background: none; color: #f0f0f0; cursor: pointer; transition: all 0.3s; }
-    .tab-btn.active { background-color: #0693e3; border-color: #0693e3; font-weight: bold; }
+    .tab-btn { padding: 10px 15px; border: 1px solid #555; border-radius: 20px; background: none; color: #f0f0f0; cursor: pointer; }
+    .tab-btn.active { background-color: #0693e3; border-color: #0693e3; }
     .tab-content { display: none; } .tab-content.active { display: block; }
     .song-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #333; }
     .song-item .title { flex-grow: 1; text-align: left; }
-    .song-item .play-btn { background: none; border: 2px solid #0693e3; color: #0693e3; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
-    #current-song-player { margin-top: 20px; padding-top: 20px; border-top: 1px solid #444; }
-    #current-song-player.hidden { display: none; }
-
-    /* --- STILI RESPONSIVE --- */
-    @media (max-width: 768px) {
-      .container { padding: 90px 20px 30px 20px; } .header-logo { font-size: 2.5em; } h1 { font-size: 1.5em; } p.bio { font-size: 1em; }
-      .button { padding: 14px 25px; font-size: 1.1em; } .social-icons a { font-size: 2em; }
-    }
+    .song-item .play-btn { background: none; border: 2px solid #0693e3; color: #0693e3; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; flex-shrink: 0; }
+    #catalog-player-display { margin-top: 20px; padding-top: 20px; border-top: 1px solid #444; display: none; align-items: center; gap: 15px; }
+    #catalog-player-display.visible { display: flex; }
+    #catalog-player-button { background: none; border: 2px solid #0693e3; color: #0693e3; border-radius: 50%; width: 45px; height: 45px; font-size: 1.2em; cursor: pointer; flex-shrink: 0; }
+    #catalog-song-title { font-weight: bold; }
   </style>
 </head>
 <body>
 
-  <!-- ELEMENTI MULTIMEDIALI -->
-  <video autoplay muted loop id="background-video">
-    <source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/video_sfondo.mp4" type="video/mp4">
+  <video autoplay muted loop playsinline preload="auto" id="background-video" poster="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/immagine%20sfondo.png">
+    <source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/video_sfondo_compressed.mp4" type="video/mp4">
   </video>
-  <audio autoplay loop id="background-audio">
-    <source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/7a%20Controtempo.mp3" type="audio/mpeg">
-  </audio>
-  <button id="mute-btn" aria-label="Attiva/Disattiva audio">
-    <i class="fas fa-volume-up"></i>
-  </button>
+  <audio loop id="background-audio"><source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/7a%20Controtempo.mp3" type="audio/mpeg"></audio>
+  <button id="mute-btn"><i class="fas fa-volume-up"></i></button>
 
-  <!-- CONTENUTO PRINCIPALE -->
   <div class="container">
     <img src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/logo6.jpg" alt="Logo FF Musica" class="profile-logo">
-    <div class="header-logo">FF Musica</div>
-    <h1>Fausto Fusetti</h1>
-    <p class="bio">
-      Con <strong>40 anni di esperienza</strong> come musicista, compositore e autore, trasformo emozioni in musica. La mia versatilità mi permette di spaziare tra ogni genere: dal liscio al moderno, dal jazz alle colonne sonore per la pubblicità.
-      <br><br>
-      Come polistrumentista (pianoforte, chitarra e voce), offro un servizio completo per la <strong>creazione di canzoni personalizzate</strong>. Se sei un'orchestra, un cantante o un editore in cerca di un brano inedito e su misura, sei nel posto giusto.
-    </p>
-
+    <div class="header-logo">FF Musica</div><h1>Fausto Fusetti</h1>
+    <p class="bio">Musicista, compositore e autore con <strong>40 anni di esperienza</strong>. Scrivo e produco musica di ogni genere, dal liscio al jazz, dal pop alla pubblicità.<br><br>Offro due servizi principali: <strong>creazione di canzoni su misura</strong> per artisti, orchestre ed editori, e <strong>intrattenimento musicale dal vivo</strong> per serate, matrimoni, feste e cerimonie.</p>
+    <a href="#" class="button disabled" title="In Costruzione"><i class="fas fa-globe"></i>Sito Web</a>
     <button id="open-music-modal" class="button"><i class="fas fa-music"></i>Catalogo Musicale</button>
     <button id="open-video-modal" class="button"><i class="fas fa-video"></i>Guarda i Video</button>
-    <a href="mailto:modena.riccardo@gmail.com" class="button collabora"><i class="fas fa-pencil-alt"></i>Richiedi una Collaborazione</a>
-    
-    <div class="social-icons">
-      <a href="https://www.instagram.com/faustofusetti/" target="_blank" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-      <a href="https://www.facebook.com/fausto.fusetti.9" target="_blank" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
-      <a href="https://www.youtube.com/@faustofusetti5859" target="_blank" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
-    </div>
+    <a href="mailto:modena.riccardo@gmail.com" class="button collabora"><i class="fas fa-pencil-alt"></i>Contattami per un Progetto</a>
+    <div class="social-icons"><a href="https://www.instagram.com/faustofusetti/" target="_blank"><i class="fa-brands fa-instagram"></i></a><a href="https://www.facebook.com/fausto.fusetti.9" target="_blank"><i class="fa-brands fa-facebook"></i></a><a href="https://www.youtube.com/@faustofusetti5859" target="_blank"><i class="fa-brands fa-youtube"></i></a></div>
   </div>
 
-  <!-- FINESTRA MODALE VIDEO -->
-  <div id="video-modal" class="modal-overlay">
-    <div class="modal-content">
-        <span class="modal-close" data-target="video-modal">&times;</span>
-        <h2>Video Selezionati</h2>
-        <a href="https://www.youtube.com/watch?v=7s3-7DV38IA" target="_blank" class="button">Produzioni Varie</a>
-        <a href="https://www.youtube.com/watch?v=Y8YqyCT7h5E" target="_blank" class="button">Ascolta "Noi"</a>
-        <a href="https://www.youtube.com/watch?v=igexCZ24Twg" target="_blank" class="button">Ascolta "Per Te"</a>
-    </div>
-  </div>
+  <div id="video-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="video-modal">&times;</span><h2>Video Selezionati</h2><a href="https://www.youtube.com/watch?v=7s3-7DV38IA" target="_blank" class="button">Produzioni Varie</a><a href="https://www.youtube.com/watch?v=Y8YqyCT7h5E" target="_blank" class="button">Ascolta "Noi"</a><a href="https://www.youtube.com/watch?v=igexCZ24Twg" target="_blank" class="button">Ascolta "Per Te"</a></div></div>
+  <div id="music-modal" class="modal-overlay"><div class="modal-content music-catalog"><span class="modal-close" data-target="music-modal">&times;</span><h2>Catalogo Musicale</h2><div class="info-box"><i class="fas fa-comments"></i> Chiedi a <strong>Sara</strong> di trovare il brano perfetto per te tra oltre 200 composizioni.</div>
+      <div id="tab-navigation-container" class="tab-navigation"><p>Caricamento catalogo...</p></div>
+      <div id="tab-content-container"></div>
+      <div id="catalog-player-display"><button id="catalog-player-button"><i class="fas fa-pause"></i></button><span id="catalog-song-title"></span><audio id="catalog-audio-player"></audio></div>
+  </div></div>
+
+  <div id="chatbot-container"></div>
   
-  <!-- FINESTRA MODALE MUSICA -->
-  <div id="music-modal" class="modal-overlay">
-    <div class="modal-content music-catalog">
-        <span class="modal-close" data-target="music-modal">&times;</span>
-        <h2>Catalogo Musicale</h2>
-        <div class="info-box"><i class="fas fa-comments"></i> Questo è solo un assaggio! Chiedi a <strong>Sara</strong> di trovare il brano perfetto per te tra oltre 200 composizioni.</div>
-        <div class="tab-navigation">
-            <button class="tab-btn active" data-tab="moderno">Moderno</button>
-            <button class="tab-btn" data-tab="funky">Funky</button>
-        </div>
-        <div id="tab-moderno" class="tab-content active">
-            <div class="song-item" data-src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/1%20Trent'anni%20in%20un%20Caff%C3%A8.mp3">
-                <span class="title">Trent'anni in un Caffè</span><button class="play-btn"><i class="fas fa-play"></i></button>
-            </div>
-        </div>
-        <div id="tab-funky" class="tab-content">
-            <div class="song-item" data-src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/7a%20Controtempo.mp3">
-                <span class="title">Controtempo</span><button class="play-btn"><i class="fas fa-play"></i></button>
-            </div>
-        </div>
-        <div id="current-song-player" class="hidden"><audio id="catalog-audio-player" controls style="width: 100%;"></audio></div>
-    </div>
-  </div>
-
-  <!-- WIDGET CHATBOT (Codice completo) -->
-  <div id="chatbot-container">
-    <style>
-        #chatbot-bubble { position: fixed; bottom: 25px; right: 25px; width: 65px; height: 65px; border-radius: 50%; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; background-image: url('https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/eva%20copia.jpg'); background-size: cover; background-position: center; border: 3px solid #0693e3; z-index: 9999; }
-        #chatbot-bubble:hover { transform: scale(1.1); } #chatbot-bubble.open { background-image: none; background-color: #0693e3; }
-        #chatbot-bubble.open .icon-close { opacity: 1; } #chatbot-bubble svg { width: 32px; height: 32px; color: white; transition: opacity 0.3s ease; opacity: 0; position: absolute; }
-        #chatbot-window { position: fixed; bottom: 100px; right: 25px; width: 440px; max-width: 95vw; height: 70vh; max-height: 600px; background-color: #f9f7f3; border-radius: 15px; box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2); z-index: 9998; display: flex; flex-direction: column; overflow: hidden; transform: translateY(20px) scale(0.95); opacity: 0; visibility: hidden; transition: all 0.3s ease; }
-        #chatbot-window.open { transform: translateY(0) scale(1); opacity: 1; visibility: visible; }
-        @media (max-width: 920px) { #chatbot-window { width: 100vw; height: 100vh; max-height: 100vh; bottom: 0; right: 0; top: 0; left: 0; border-radius: 0; } #chatbot-bubble { bottom: 10px; right: 10px; } }
-        .chatbot-header { background-color: #0693e3; color: white; padding: 1rem; text-align: center; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .chatbot-header img { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; border: 2px solid white; }
-        .chatbot-messages { flex-grow: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; }
-        .message { display: flex; align-items: flex-end; margin-bottom: 10px; max-width: 85%; } .message.user { align-self: flex-end; } .message.bot { align-self: flex-start; }
-        .message-avatar { width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; flex-shrink: 0; }
-        .message-text { padding: 10px 15px; border-radius: 18px; line-height: 1.4; word-wrap: break-word; } .message.user .message-text { background-color: #eef2f5; color: #333; border-bottom-right-radius: 4px; }
-        .message.bot .message-text { background-color: #0693e3; color: white; border-bottom-left-radius: 4px; }
-        .chatbot-input { display: flex; border-top: 1px solid #ddd; background-color: white; padding: 10px; align-items: center; flex-shrink: 0; }
-        .chatbot-input input { flex-grow: 1; border: none; padding: 10px; font-size: 1rem; } .chatbot-input input:focus-visible { outline: 2px solid #0693e3; }
-        .chatbot-input button { background: none; border: none; padding: 0 10px; cursor: pointer; color: #0693e3; }
-    </style>
-    <div id="chatbot-bubble"><svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg></div>
-    <div id="chatbot-window">
-        <div class="chatbot-header"><img src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/eva%20copia.jpg" alt="Sara"><div><h3>FF Musica</h3><small>Assistente Virtuale</small></div></div>
-        <div class="chatbot-messages" id="chatbot-messages"></div>
-        <div class="chatbot-input"><input type="text" id="chatbot-input-field" placeholder="Scrivi un messaggio..."><button id="chatbot-send-btn"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg></button></div>
-    </div>
-  </div>
-
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
   <script>
-    // SCRIPT PRINCIPALE PER LE FUNZIONALITÀ DELLA PAGINA
+    // --- SCRIPT PAGINA PRINCIPALE ---
     document.addEventListener('DOMContentLoaded', function() {
-        
-        // --- GESTIONE AUDIO DI SOTTOFONDO E TASTO MUTE ---
+        // Gestione Audio Sottofondo
         const bgAudio = document.getElementById('background-audio');
         const muteBtn = document.getElementById('mute-btn');
-        const muteIcon = muteBtn.querySelector('i');
-        
-        // Prova a far partire l'audio (potrebbe essere bloccato dal browser)
-        bgAudio.play().catch(error => console.log("Autoplay bloccato dal browser. L'utente deve interagire prima."));
-        
-        muteBtn.addEventListener('click', () => {
-            bgAudio.muted = !bgAudio.muted;
-            if (bgAudio.muted) {
-                muteIcon.classList.remove('fa-volume-up');
-                muteIcon.classList.add('fa-volume-mute');
-            } else {
-                muteIcon.classList.remove('fa-volume-mute');
-                muteIcon.classList.add('fa-volume-up');
-            }
-        });
+        document.body.addEventListener('click', () => { if (bgAudio.paused) bgAudio.play().catch(e => console.log("Interazione richiesta per audio.")); }, { once: true });
+        muteBtn.addEventListener('click', () => { bgAudio.muted = !bgAudio.muted; muteBtn.querySelector('i').className = bgAudio.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up'; });
 
-        // --- GESTIONE FINESTRE MODALI ---
-        document.getElementById('open-video-modal').addEventListener('click', () => {
-            document.getElementById('video-modal').style.display = 'flex';
-        });
-        document.getElementById('open-music-modal').addEventListener('click', () => {
-            document.getElementById('music-modal').style.display = 'flex';
-        });
-        document.querySelectorAll('.modal-close').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.getElementById(btn.dataset.target).style.display = 'none';
-            });
-        });
-        document.querySelectorAll('.modal-overlay').forEach(modal => {
-            modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
-        });
+        // Gestione Modali
+        document.getElementById('open-video-modal').addEventListener('click', () => document.getElementById('video-modal').style.display = 'flex');
+        document.getElementById('open-music-modal').addEventListener('click', () => document.getElementById('music-modal').style.display = 'flex');
+        document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', (e) => document.getElementById(e.currentTarget.dataset.target).style.display = 'none'));
+        document.querySelectorAll('.modal-overlay').forEach(modal => modal.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; }));
 
-        // --- GESTIONE CATALOGO MUSICALE INTERNO ALLA MODALE ---
+        // Gestione Player Catalogo
         const catalogPlayer = document.getElementById('catalog-audio-player');
-        const catalogPlayerContainer = document.getElementById('current-song-player');
-        
-        document.querySelectorAll('.tab-btn').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-                document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
-            });
-        });
+        const playerDisplay = document.getElementById('catalog-player-display');
+        const playerBtn = document.getElementById('catalog-player-button');
+        const playerTitle = document.getElementById('catalog-song-title');
+        playerBtn.addEventListener('click', () => { if (catalogPlayer.paused) catalogPlayer.play(); else catalogPlayer.pause(); });
+        catalogPlayer.onplay = () => playerBtn.innerHTML = '<i class="fas fa-pause"></i>';
+        catalogPlayer.onpause = () => playerBtn.innerHTML = '<i class="fas fa-play"></i>';
 
-        document.querySelectorAll('.song-item .play-btn').forEach(playBtn => {
-            playBtn.addEventListener('click', (e) => {
-                const songItem = e.currentTarget.closest('.song-item');
-                const songSrc = songItem.dataset.src;
-                
-                document.querySelectorAll('.song-item .play-btn').forEach(btn => {
-                    if(btn !== playBtn) btn.innerHTML = '<i class="fas fa-play"></i>';
-                });
+        // Caricamento Catalogo da Google Sheet
+        async function loadMusicFromSheet() {
+            const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT5K_gYgC9Lg2m9m3Q5hF6n8k9r_d7c_f8gH9J_kL4pY5tT9r_gV7bN2w_xO7jU6iR9pC0/pub?gid=1445821517&single=true&output=csv';
 
-                if (catalogPlayer.src === songSrc && !catalogPlayer.paused) {
-                    catalogPlayer.pause();
-                    playBtn.innerHTML = '<i class="fas fa-play"></i>';
-                } else {
-                    catalogPlayer.src = songSrc;
-                    catalogPlayer.play();
-                    playBtn.innerHTML = '<i class="fas fa-pause"></i>';
-                    catalogPlayerContainer.classList.remove('hidden');
+            try {
+                const response = await fetch(sheetUrl);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const data = await response.text();
+                const songs = data.trim().split(/\r\n|\n/).slice(1).map(row => { const [genre, title, url] = row.split(',').map(s => s ? s.trim() : ''); return { genre, title, url }; }).filter(s => s.genre && s.title && s.url);
+                renderCatalog(songs);
+            } catch (error) {
+                console.error("Errore caricamento catalogo:", error);
+                document.getElementById('tab-navigation-container').innerHTML = `<p>Errore nel caricamento del catalogo.</p>`;
+            }
+        }
+
+        function renderCatalog(songs) {
+            const tabsContainer = document.getElementById('tab-navigation-container');
+            const contentContainer = document.getElementById('tab-content-container');
+            const genres = [...new Set(songs.map(song => song.genre))];
+            
+            tabsContainer.innerHTML = genres.map((genre, index) => `<button class="tab-btn ${index === 0 ? 'active' : ''}" data-tab="${genre}">${genre}</button>`).join('');
+            contentContainer.innerHTML = genres.map((genre, index) => `<div id="tab-${genre}" class="tab-content ${index === 0 ? 'active' : ''}"></div>`).join('');
+            
+            songs.forEach(song => {
+                const genreContent = document.getElementById(`tab-${song.genre}`);
+                if (genreContent) {
+                    const songElement = document.createElement('div');
+                    songElement.className = 'song-item';
+                    songElement.dataset.src = song.url;
+                    songElement.dataset.title = song.title;
+                    songElement.innerHTML = `<span class="title">${song.title}</span><button class="play-btn"><i class="fas fa-play"></i></button>`;
+                    genreContent.appendChild(songElement);
                 }
             });
-        });
-        catalogPlayer.addEventListener('ended', () => {
-            document.querySelectorAll('.song-item .play-btn').forEach(btn => btn.innerHTML = '<i class="fas fa-play"></i>');
-        });
+            addEventListenersToCatalog();
+        }
+
+        function addEventListenersToCatalog() {
+            document.querySelectorAll('.tab-btn').forEach(tab => tab.addEventListener('click', (e) => {
+                document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+                e.currentTarget.classList.add('active');
+                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+                document.getElementById(`tab-${e.currentTarget.dataset.tab}`).classList.add('active');
+            }));
+
+            document.querySelectorAll('.song-item .play-btn').forEach(button => button.addEventListener('click', (e) => {
+                const item = e.currentTarget.closest('.song-item');
+                playerDisplay.classList.add('visible');
+                playerTitle.textContent = item.dataset.title;
+                if (catalogPlayer.src !== item.dataset.src || catalogPlayer.paused) {
+                    catalogPlayer.src = item.dataset.src;
+                    catalogPlayer.play();
+                } else {
+                    catalogPlayer.pause();
+                }
+            }));
+        }
+
+        loadMusicFromSheet();
     });
 
-    // SCRIPT DEL CHATBOT (SEPARATO PER CHIAREZZA)
+    // --- SCRIPT CHATBOT ---
     (function() {
-        const webhookUrl = 'INSERISCI_QUI_IL_TUO_WEBHOOK_N8N'; // CAMBIA QUESTO
-        const bubble = document.getElementById('chatbot-bubble');
-        const windowEl = document.getElementById('chatbot-window');
-        const messagesEl = document.getElementById('chatbot-messages');
-        const inputField = document.getElementById('chatbot-input-field');
-        const sendBtn = document.getElementById('chatbot-send-btn');
-        if (!bubble) return;
-
+        const chatbotHTML = `<style>#chatbot-bubble{position:fixed;bottom:25px;right:25px;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/eva%20copia.jpg);background-size:cover;background-position:center;border:3px solid #0693e3;z-index:9999}#chatbot-bubble:hover{transform:scale(1.1)}#chatbot-bubble.open{background-image:none;background-color:#0693e3}#chatbot-bubble.open .icon-close{opacity:1}#chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}#chatbot-welcome-bubble{background-color:#eef2f5;color:#1e293b;padding:12px 18px;border-radius:15px;box-shadow:0 4px 12px rgba(0,0,0,.15);font-size:15px;z-index:9998;cursor:pointer;opacity:0;animation:fadeInWelcome 1s ease 1s forwards;position:fixed;bottom:25px;right:105px;visibility:hidden}#chatbot-welcome-bubble.visible{visibility:visible}@keyframes fadeInWelcome{to{opacity:1}}#chatbot-window{position:fixed;bottom:100px;right:25px;width:440px;max-width:95vw;height:70vh;max-height:600px;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);z-index:9998;display:flex;flex-direction:column;overflow:hidden;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease}#chatbot-window.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}@media (max-width:920px){#chatbot-window{width:100vw;height:100vh;max-height:100vh;bottom:0;right:0;top:0;left:0;border-radius:0}#chatbot-bubble{bottom:10px;right:10px}#chatbot-welcome-bubble{display:none}}.chatbot-header{background-color:#0693e3;color:#fff;padding:1rem;text-align:center;display:flex;align-items:center;justify-content:center;flex-shrink:0}.chatbot-header img{width:40px;height:40px;border-radius:50%;margin-right:10px;border:2px solid #fff}.chatbot-messages{flex-grow:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column}.message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}.message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0}.message-text{padding:10px 15px;border-radius:18px;line-height:1.4;word-wrap:break-word}.message.user .message-text{background-color:#eef2f5;color:#333;border-bottom-right-radius:4px}.message.bot .message-text{background-color:#0693e3;color:#fff;border-bottom-left-radius:4px}.chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}.chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid #0693e3}.chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:#0693e3}</style><div id="chatbot-bubble"><svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg></div><div id="chatbot-welcome-bubble">Ciao! Sono Sara. Chiedimi qualcosa!</div><div id="chatbot-window"><div class="chatbot-header"><img src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/eva%20copia.jpg" alt="Sara"><div><h3>FF Musica</h3><small>Assistente Virtuale</small></div></div><div class="chatbot-messages" id="chatbot-messages"></div><div class="chatbot-input"><input type="text" id="chatbot-input-field" placeholder="Scrivi un messaggio..."><button id="chatbot-send-btn"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg></button></div></div>`;
+        document.getElementById('chatbot-container').innerHTML = chatbotHTML;
+        
+        const webhookUrl = 'INCOLLA_QUI_IL_TUO_WEBHOOK_N8N'; // CAMBIA QUESTO
+        const bubble = document.getElementById('chatbot-bubble'), windowEl = document.getElementById('chatbot-window'), welcomeBubble = document.getElementById('chatbot-welcome-bubble'), messagesEl = document.getElementById('chatbot-messages'), inputField = document.getElementById('chatbot-input-field'), sendBtn = document.getElementById('chatbot-send-btn');
         let chatHistory = [];
         const getOrCreateSessionId = () => { let id = sessionStorage.getItem('chatbot_session_id'); if (!id) { id = crypto.randomUUID(); sessionStorage.setItem('chatbot_session_id', id); } return id; };
         const saveChatState = () => sessionStorage.setItem('chatbot_state', JSON.stringify({ isOpen: windowEl.classList.contains('open'), history: chatHistory }));
-        const restoreChatState = () => {
-            const savedState = sessionStorage.getItem('chatbot_state');
-            if (savedState) {
-                try {
-                    const state = JSON.parse(savedState);
-                    if (state.history && Array.isArray(state.history)) { chatHistory = state.history; chatHistory.forEach(msg => addMessage(msg.text, msg.type, false)); }
-                    if (state.isOpen) { bubble.classList.add('open'); windowEl.classList.add('open'); }
-                } catch (e) { sessionStorage.removeItem('chatbot_state'); chatHistory = []; }
-            } else {
-                setTimeout(() => toggleChat(true), 1000); 
-            }
-            if (chatHistory.length === 0) { addMessage("Ciao! Sono Sara. Chiedimi di ascoltare un brano o come collaborare con Fausto!", 'bot'); }
-        };
-        const toggleChat = (forceOpen = false) => {
-            if (forceOpen) { bubble.classList.add('open'); windowEl.classList.add('open'); }
-            else { bubble.classList.toggle('open'); windowEl.classList.toggle('open'); }
-            if (windowEl.classList.contains('open')) { inputField.focus(); }
-            saveChatState();
-        };
-        bubble.addEventListener('click', () => toggleChat());
-        const addMessage = (text, type, shouldSave = true) => {
-            if (shouldSave) { chatHistory.push({ text, type }); }
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${type}`;
-            if (type === 'bot') { const avatar = document.createElement('img'); avatar.className = 'message-avatar'; avatar.src = 'https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/eva%20copia.jpg'; messageDiv.appendChild(avatar); }
-            const textDiv = document.createElement('div');
-            textDiv.className = 'message-text';
-            textDiv.innerHTML = DOMPurify.sanitize(marked.parse(text));
-            messageDiv.appendChild(textDiv);
-            messagesEl.appendChild(messageDiv);
-            messagesEl.scrollTop = messagesEl.scrollHeight;
-            if (shouldSave) { saveChatState(); }
-        };
-        const sendMessage = async () => {
-            const userMessage = inputField.value.trim();
-            if (userMessage === '') return;
-            addMessage(userMessage, 'user');
-            inputField.value = '';
-            
-            const sessionId = getOrCreateSessionId();
-            try {
-                const response = await fetch(`${webhookUrl}?user_message=${encodeURIComponent(userMessage)}&conversation_id=${sessionId}`, { method: 'POST' });
-                const data = await response.json();
-                addMessage(data.response || "C'è stato un problema.", 'bot');
-            } catch (error) {
-                addMessage('Spiacente, si è verificato un errore.', 'bot');
-            }
-        };
-        sendBtn.addEventListener('click', sendMessage);
-        inputField.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
+        const toggleChat = (forceOpen = false) => { const isOpen = windowEl.classList.contains('open'); if (forceOpen && !isOpen) { bubble.classList.add('open'); windowEl.classList.add('open'); welcomeBubble.classList.remove('visible'); } else if (!forceOpen) { bubble.classList.toggle('open'); windowEl.classList.toggle('open'); } if (windowEl.classList.contains('open')) { welcomeBubble.classList.remove('visible'); inputField.focus(); } else { welcomeBubble.classList.add('visible'); } saveChatState(); };
+        const addMessage = (text, type, shouldSave = true) => { if (shouldSave) chatHistory.push({ text, type }); const msgDiv = document.createElement('div'); msgDiv.className = `message ${type}`; if (type === 'bot') { const avatar = document.createElement('img'); avatar.className = 'message-avatar'; avatar.src = 'https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/eva%20copia.jpg'; msgDiv.appendChild(avatar); } const textDiv = document.createElement('div'); textDiv.className = 'message-text'; textDiv.innerHTML = DOMPurify.sanitize(marked.parse(text)); msgDiv.appendChild(textDiv); messagesEl.appendChild(msgDiv); messagesEl.scrollTop = messagesEl.scrollHeight; if (shouldSave) saveChatState(); };
+        const restoreChatState = () => { const savedState = sessionStorage.getItem('chatbot_state'); let wasOpenedBefore = false; if (savedState) { try { const state = JSON.parse(savedState); if (state.history) { chatHistory = state.history; chatHistory.forEach(msg => addMessage(msg.text, msg.type, false)); } if (state.isOpen) { toggleChat(true); wasOpenedBefore = true; } } catch (e) {} } if (!wasOpenedBefore) { setTimeout(() => toggleChat(true), 1500); } else if (!windowEl.classList.contains('open')) { welcomeBubble.classList.add('visible'); } if (chatHistory.length === 0) addMessage("Ciao! Sono Sara. Chiedimi di ascoltare un brano o come collaborare con Fausto!", 'bot'); };
+        const sendMessage = async () => { const userMessage = inputField.value.trim(); if (userMessage === '') return; addMessage(userMessage, 'user'); inputField.value = ''; try { const response = await fetch(`${webhookUrl}?user_message=${encodeURIComponent(userMessage)}&conversation_id=${getOrCreateSessionId()}`, { method: 'POST' }); if (!response.ok) throw new Error("Network response"); const data = await response.json(); addMessage(data.response || "C'è stato un problema.", 'bot'); } catch (error) { addMessage('Spiacente, si è verificato un errore.', 'bot'); } };
         
+        bubble.addEventListener('click', () => toggleChat());
+        welcomeBubble.addEventListener('click', () => toggleChat(true));
+        sendBtn.addEventListener('click', sendMessage);
+        inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
         document.addEventListener('DOMContentLoaded', restoreChatState);
     })();
   </script>
