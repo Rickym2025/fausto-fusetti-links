@@ -26,8 +26,8 @@
     .button:hover { background: var(--primary-color); color: white; transform: translateY(-3px); box-shadow: 0 4px 15px rgba(6, 147, 227, 0.4); }
     .button.collabora { border-color: var(--secondary-color); } .button.collabora:hover { background: var(--secondary-color); box-shadow: 0 4px 15px rgba(227, 160, 6, 0.4); }
     .button i { margin-right: 10px; }
-    .social-icons { display: flex; justify-content: center; gap: 30px; margin: 40px 0 20px; }
-    .social-icons a { color: #c7c7c7; font-size: 2.2em; transition: all 0.3s ease; }
+    .social-icons { display: flex; justify-content: center; gap: 22px; margin: 40px 0 20px; }
+    .social-icons a { color: #c7c7c7; font-size: 2em; transition: all 0.3s ease; }
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
     .modal-content { background: #1e1e1e; padding: 30px; border-radius: 15px; width: 100%; max-width: 550px; position: relative; max-height: 90vh; overflow-y: auto; }
     .modal-close { position: absolute; top: 15px; right: 20px; font-size: 2em; color: white; cursor: pointer; line-height: 1; }
@@ -84,9 +84,8 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
   <script>
-    // --- SCRIPT PAGINA PRINCIPALE ---
     document.addEventListener('DOMContentLoaded', function() {
-        // Gestione Audio Sottofondo
+        // --- GESTIONE AUDIO SOTTOFONDO ---
         const bgAudio = document.getElementById('background-audio');
         const audioCta = document.getElementById('audio-cta');
         const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i');
@@ -100,7 +99,7 @@
             ctaText.textContent = bgAudio.muted ? 'Attiva la musica' : 'Disattiva musica';
         });
 
-        // Gestione Modali
+        // --- GESTIONE MODALI ---
         document.getElementById('open-video-modal').addEventListener('click', () => document.getElementById('video-modal').style.display = 'flex');
         document.getElementById('open-music-modal').addEventListener('click', () => document.getElementById('music-modal').style.display = 'flex');
         document.getElementById('open-services-modal').addEventListener('click', () => document.getElementById('services-modal').style.display = 'flex');
@@ -113,7 +112,7 @@
         document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', e => document.getElementById(e.currentTarget.dataset.target).style.display = 'none'));
         document.querySelectorAll('.modal-overlay').forEach(modal => modal.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; }));
 
-        // Gestione Player Catalogo
+        // --- GESTIONE PLAYER CATALOGO ---
         const catalogPlayer = document.getElementById('catalog-audio-player');
         const playerDisplay = document.getElementById('catalog-player-display');
         const playerBtn = document.getElementById('catalog-player-button');
@@ -123,7 +122,7 @@
         catalogPlayer.addEventListener('pause', () => playerBtn.innerHTML = '<i class="fas fa-play"></i>');
         
         async function loadMusicFromSheet() {
-            const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6z-1_l_b_g_E8g_R_k_T9_g_V_b_N2w_xO7jU6iR9pC0_g_YgC9Lg2m9m3Q5hF6n8k9r_d7c/pub?output=csv&gid=1445821517';
+            const sheetUrl = 'https://docs.google.com/spreadsheets/d/1oKwAszQPcpBndaN5xCv5Ua917o8vEtkNAFfpNztCclY/export?format=csv&gid=1445821517';
             try {
                 const response = await fetch(sheetUrl);
                 if (!response.ok) throw new Error('Network response was not ok');
@@ -182,11 +181,13 @@
         form.addEventListener('submit', function(e) { e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio in corso..."; fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).then(response => response.json()).then(data => { if (data.success) { formResult.innerHTML = "Messaggio inviato con successo!"; form.reset(); } else { formResult.innerHTML = `Errore: ${data.message}`; } }).catch(() => formResult.innerHTML = "Si è verificato un errore."); });
 
         // --- LOGICA POST-IT ---
-        const aphorisms = [ "La musica è la vera lingua universale.", "Dove le parole finiscono, inizia la musica.", "La vita è come un pianoforte, ciò che ne esce dipende da come la suoni.", "La musica esprime ciò che non può essere detto e su cui è impossibile rimanere in silenzio.", "Senza musica, la vita sarebbe un errore." ];
-        const aphorismContainer = document.getElementById('aphorism-container');
-        const mainContainer = document.querySelector('.container');
-        function showRandomAphorism() { const rect = mainContainer.getBoundingClientRect(); const postit = document.createElement('div'); postit.className = 'aphorism-postit'; postit.textContent = aphorisms[Math.floor(Math.random() * aphorisms.length)]; let top, left; do { top = Math.random() * window.innerHeight; left = Math.random() * window.innerWidth; } while ( top > rect.top - 50 && top < rect.bottom + 50 && left > rect.left - 50 && left < rect.right + 50 ); postit.style.top = `${top}px`; postit.style.left = `${left}px`; const rotation = `rotate(${Math.random() * 20 - 10}deg)`; postit.style.setProperty('--transform-start', `${rotation} translateY(20px)`); postit.style.setProperty('--transform-end', `${rotation} translateY(0)`); aphorismContainer.appendChild(postit); setTimeout(() => { postit.remove(); }, 10000); }
-        setInterval(showRandomAphorism, 12000);
+        (function() {
+            const aphorisms = [ "La musica è la vera lingua universale.", "Dove le parole finiscono, inizia la musica.", "La vita è come un pianoforte, ciò che ne esce dipende da come la suoni.", "La musica esprime ciò che non può essere detto e su cui è impossibile rimanere in silenzio.", "Senza musica, la vita sarebbe un errore." ];
+            const aphorismContainer = document.getElementById('aphorism-container');
+            const mainContainer = document.querySelector('.container');
+            function showRandomAphorism() { const rect = mainContainer.getBoundingClientRect(); const postit = document.createElement('div'); postit.className = 'aphorism-postit'; postit.textContent = aphorisms[Math.floor(Math.random() * aphorisms.length)]; let top, left; do { top = Math.random() * window.innerHeight; left = Math.random() * window.innerWidth; } while ( top > rect.top - 50 && top < rect.bottom + 50 && left > rect.left - 50 && left < rect.right + 50 ); postit.style.top = `${top}px`; postit.style.left = `${left}px`; const rotation = `rotate(${Math.random() * 20 - 10}deg)`; postit.style.setProperty('--transform-start', `${rotation} translateY(20px)`); postit.style.setProperty('--transform-end', `${rotation} translateY(0)`); aphorismContainer.appendChild(postit); setTimeout(() => { postit.remove(); }, 10000); }
+            setInterval(showRandomAphorism, 12000);
+        })();
     });
 
     // --- SCRIPT CHATBOT ---
