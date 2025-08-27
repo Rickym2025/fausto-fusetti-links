@@ -4,11 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Fausto Fusetti - FF Musica</title>
-  <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@700&family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
   <style>
     /* --- IMPOSTAZIONI GENERALI --- */
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
       font-family: 'Montserrat', sans-serif;
       color: #f0f0f0;
@@ -17,145 +18,97 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden; /* Nasconde lo scroll causato dal video */
+      overflow: hidden;
     }
 
     /* --- VIDEO DI SFONDO --- */
-    #background-video {
-      position: fixed;
-      right: 0;
-      bottom: 0;
-      min-width: 100%;
-      min-height: 100%;
-      width: auto;
-      height: auto;
-      z-index: -100;
-      object-fit: cover;
-      filter: brightness(0.5);
-    }
+    #background-video { position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; width: auto; height: auto; z-index: -100; object-fit: cover; filter: brightness(0.5); }
     
     /* --- CONTENITORE PRINCIPALE --- */
     .container {
       position: relative;
       background: rgba(0, 0, 0, 0.4);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      padding: 80px 30px 40px 30px; /* Aumentato padding-top per far spazio al logo */
-      max-width: 680px;
-      width: 90%;
-      margin: 20px auto;
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      padding: 90px 30px 40px 30px;
+      max-width: 680px; width: 90%;
+      margin: 40px auto;
       border-radius: 20px;
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     /* --- LOGO --- */
-    .profile-logo {
-        width: 140px;
-        height: 140px;
-        border-radius: 50%;
-        border: 4px solid rgba(255, 255, 255, 0.9);
-        box-shadow: 0 0 20px rgba(6, 147, 227, 0.5);
-        object-fit: cover;
-        position: absolute;
-        top: 0;
-        left: 50%;
-        transform: translate(-50%, -50%);
-    }
+    .profile-logo { width: 150px; height: 150px; border-radius: 50%; border: 4px solid rgba(255, 255, 255, 0.9); box-shadow: 0 0 20px rgba(6, 147, 227, 0.5); object-fit: cover; position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); }
 
     /* --- TESTI --- */
     .header-logo { font-family: 'Arvo', serif; font-size: 3em; font-weight: 700; margin-bottom: 10px; letter-spacing: 2px; color: #FFFFFF; text-shadow: 0 0 10px rgba(6, 147, 227, 0.5), 0 0 20px rgba(6, 147, 227, 0.3); }
     h1 { font-size: 1.8em; margin-bottom: 15px; font-weight: 500; }
-    p.bio { font-size: 1.1em; margin-bottom: 35px; line-height: 1.6; color: #c7c7c7; }
+    p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1; }
+    p.bio strong { color: #fff; font-weight: 600; }
 
     /* --- PULSANTI --- */
     .button { display: block; margin: 18px auto; padding: 16px 30px; border: 2px solid #0693e3; border-radius: 30px; text-decoration: none; color: #f0f0f0; font-size: 1.2em; font-weight: 500; transition: all 0.3s ease; background-color: transparent; cursor: pointer; }
     .button:hover { background: #0693e3; color: white; transform: translateY(-3px); box-shadow: 0 4px 15px rgba(6, 147, 227, 0.4); }
     .button.collabora { border-color: #e3a006; }
     .button.collabora:hover { background: #e3a006; box-shadow: 0 4px 15px rgba(227, 160, 6, 0.4); }
+    .button i { margin-right: 10px; }
 
-    /* --- ICONE SOCIAL --- */
-    .social-icons { display: flex; justify-content: center; gap: 25px; margin: 40px 0 20px; }
-    .social-icons a { color: #c7c7c7; font-size: 1.8em; transition: all 0.3s ease; }
+    /* --- ICONE SOCIAL (PIÙ GRANDI) --- */
+    .social-icons { display: flex; justify-content: center; gap: 30px; margin: 40px 0 20px; }
+    .social-icons a { color: #c7c7c7; font-size: 2.2em; transition: all 0.3s ease; }
     .social-icons a:hover { color: #0693e3; transform: scale(1.2); }
     .footer-text { margin-top: 30px; font-size: 0.9em; color: #888; }
     
-    /* --- PLAYER AUDIO PERSONALIZZATO --- */
-    .audio-player-container {
-        background-color: rgba(0,0,0,0.3);
-        border-radius: 15px;
-        padding: 15px;
-        margin-top: 25px;
-    }
-    .audio-player {
-        display: flex;
-        align-items: center;
-        margin-bottom: 10px;
-    }
-    .audio-player:last-child { margin-bottom: 0; }
-    .play-pause-btn { background: none; border: 2px solid #0693e3; color: #0693e3; border-radius: 50%; width: 40px; height: 40px; font-size: 1.2em; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
-    .play-pause-btn:hover { background-color: #0693e3; color: white; }
-    .song-info { text-align: left; margin: 0 15px; flex-grow: 1; }
-    .song-title { font-weight: bold; }
-    .progress-container { width: 100%; height: 5px; background: #555; border-radius: 5px; cursor: pointer; margin-top: 5px; }
-    .progress-bar { width: 0%; height: 100%; background: #0693e3; border-radius: 5px; }
+    /* --- FINESTRE MODALI (PER VIDEO E MUSICA) --- */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
+    .modal-content { background: #1e1e1e; padding: 30px; border-radius: 15px; width: 100%; max-width: 550px; position: relative; max-height: 90vh; overflow-y: auto; }
+    .modal-close { position: absolute; top: 15px; right: 20px; font-size: 2em; color: white; cursor: pointer; line-height: 1; }
+    .modal-content h2 { margin-bottom: 20px; }
 
-    /* --- FINESTRA MODALE PER VIDEO --- */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 10000; }
-    .modal-content { background: #1e1e1e; padding: 30px; border-radius: 15px; width: 90%; max-width: 500px; position: relative; }
-    .modal-close { position: absolute; top: 15px; right: 20px; font-size: 2em; color: white; cursor: pointer; }
+    /* --- SISTEMA CATALOGO MUSICALE --- */
+    .music-catalog .info-box { background: rgba(6, 147, 227, 0.1); border: 1px solid #0693e3; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 1.1em; line-height: 1.5; }
+    .music-catalog .info-box i { color: #0693e3; margin-right: 10px; }
+    .tab-navigation { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+    .tab-btn { padding: 10px 15px; border: 1px solid #555; border-radius: 20px; background: none; color: #f0f0f0; cursor: pointer; transition: all 0.3s; }
+    .tab-btn.active { background-color: #0693e3; border-color: #0693e3; font-weight: bold; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .song-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #333; }
+    .song-item:last-child { border-bottom: none; }
+    .song-item .title { flex-grow: 1; text-align: left; }
+    .song-item .play-btn { background: none; border: 2px solid #0693e3; color: #0693e3; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
+    .song-item .play-btn:hover { background-color: #0693e3; color: white; }
+    #current-song-player { margin-top: 20px; padding-top: 20px; border-top: 1px solid #444; }
+    #current-song-player.hidden { display: none; }
 
     @media (max-width: 768px) {
-      .container { padding: 80px 20px 30px 20px; }
-      .header-logo { font-size: 2.5em; }
-      h1 { font-size: 1.5em; }
-      p.bio { font-size: 1em; }
+      .container { padding: 90px 20px 30px 20px; }
+      .header-logo { font-size: 2.5em; } h1 { font-size: 1.5em; } p.bio { font-size: 1em; }
       .button { padding: 14px 25px; font-size: 1.1em; }
+      .social-icons a { font-size: 2em; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Video di Sfondo -->
   <video autoplay muted loop id="background-video">
-    <source src="LINK_DEL_TUO_VIDEO.mp4" type="video/mp4">
-    Il tuo browser non supporta il tag video.
+    <source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/video_sfondo.mp4" type="video/mp4">
   </video>
 
-  <!-- Contenitore Principale -->
   <div class="container">
     <img src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/logo6.jpg" alt="Logo FF Musica" class="profile-logo">
     
     <div class="header-logo">FF Musica</div>
     <h1>Fausto Fusetti</h1>
     <p class="bio">
-      Da 40 anni musicista, compositore e autore. Dal liscio al jazz, dal pop alla pubblicità, la mia passione è trasformare idee in musica.
+      Con <strong>40 anni di esperienza</strong> come musicista, compositore e autore, trasformo emozioni in musica. La mia versatilità mi permette di spaziare tra ogni genere: dal liscio al moderno, dal jazz alle colonne sonore per la pubblicità.
+      <br><br>
+      Come polistrumentista (pianoforte, chitarra e voce), offro un servizio completo per la <strong>creazione di canzoni personalizzate</strong>. Se sei un'orchestra, un cantante o un editore in cerca di un brano inedito e su misura, sei nel posto giusto.
     </p>
 
-    <!-- Player Audio -->
-    <div class="audio-player-container">
-        <!-- BRANO 1 -->
-        <div class="audio-player" data-src="LINK_CANZONE_1.mp3">
-            <button class="play-pause-btn"><i class="fas fa-play"></i></button>
-            <div class="song-info">
-                <div class="song-title">Titolo Canzone 1</div>
-                <div class="progress-container"><div class="progress-bar"></div></div>
-            </div>
-        </div>
-        <!-- BRANO 2 -->
-        <div class="audio-player" data-src="LINK_CANZONE_2.mp3">
-            <button class="play-pause-btn"><i class="fas fa-play"></i></button>
-            <div class="song-info">
-                <div class="song-title">Titolo Canzone 2</div>
-                <div class="progress-container"><div class="progress-bar"></div></div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Pulsanti Link -->
-    <button id="open-video-modal" class="button">Guarda i Video</button>
-    <a href="mailto:tua-email@esempio.com" class="button collabora">
-        <i class="fas fa-pencil-alt"></i> Collaborazioni e Canzoni su Misura
-    </a>
+    <!-- Pulsanti Principali -->
+    <button id="open-music-modal" class="button"><i class="fas fa-music"></i>Catalogo Musicale</button>
+    <button id="open-video-modal" class="button"><i class="fas fa-video"></i>Guarda i Video</button>
+    <a href="mailto:modena.riccardo@gmail.com" class="button collabora"><i class="fas fa-pencil-alt"></i>Richiedi una Collaborazione</a>
     
     <!-- Icone Social -->
     <div class="social-icons">
@@ -163,63 +116,97 @@
       <a href="https://www.facebook.com/fausto.fusetti.9" target="_blank" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
       <a href="https://www.youtube.com/@faustofusetti5859" target="_blank" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
     </div>
-
-    <p class="footer-text">Disponibile per orchestre, cantanti ed editori.</p>
   </div>
 
-  <!-- Finestra Modale per i Video (nascosta di default) -->
+  <!-- Finestra Modale per i Video -->
   <div id="video-modal" class="modal-overlay">
     <div class="modal-content">
-        <span id="close-video-modal" class="modal-close">&times;</span>
+        <span class="modal-close" data-target="video-modal">&times;</span>
         <h2>Video Selezionati</h2>
         <a href="https://www.youtube.com/watch?v=7s3-7DV38IA" target="_blank" class="button">Produzioni Varie</a>
         <a href="https://www.youtube.com/watch?v=Y8YqyCT7h5E" target="_blank" class="button">Ascolta "Noi"</a>
         <a href="https://www.youtube.com/watch?v=igexCZ24Twg" target="_blank" class="button">Ascolta "Per Te"</a>
     </div>
   </div>
+  
+  <!-- Finestra Modale per il Catalogo Musicale -->
+  <div id="music-modal" class="modal-overlay">
+    <div class="modal-content music-catalog">
+        <span class="modal-close" data-target="music-modal">&times;</span>
+        <h2>Catalogo Musicale</h2>
+
+        <div class="info-box">
+            <i class="fas fa-comments"></i> Questo è solo un assaggio! Il mio archivio conta oltre 200 brani. <strong>Chiedi a Sara</strong> di trovare quello perfetto per te per genere, ritmo o atmosfera.
+        </div>
+        
+        <div class="tab-navigation">
+            <button class="tab-btn active" data-tab="moderno">Moderno</button>
+            <button class="tab-btn" data-tab="funky">Funky</button>
+            <button class="tab-btn" data-tab="liscio">Liscio</button>
+            <button class="tab-btn" data-tab="jazz">Jazz</button>
+        </div>
+        
+        <!-- Contenuto Schede -->
+        <div id="tab-moderno" class="tab-content active">
+            <div class="song-item" data-src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/1%20Trent'anni%20in%20un%20Caff%C3%A8.mp3">
+                <span class="title">Trent'anni in un Caffè</span>
+                <button class="play-btn"><i class="fas fa-play"></i></button>
+            </div>
+            <!-- Altri brani moderni qui -->
+        </div>
+        <div id="tab-funky" class="tab-content">
+            <div class="song-item" data-src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/7a%20Controtempo.mp3">
+                <span class="title">Controtempo</span>
+                <button class="play-btn"><i class="fas fa-play"></i></button>
+            </div>
+            <!-- Altri brani funky qui -->
+        </div>
+        <div id="tab-liscio" class="tab-content">
+            <p>Chiedi a Sara di farti ascoltare i miei brani di liscio!</p>
+        </div>
+        <div id="tab-jazz" class="tab-content">
+            <p>Chiedi a Sara di farti ascoltare le mie composizioni jazz!</p>
+        </div>
+
+        <div id="current-song-player" class="hidden">
+            <audio id="audio-player-element" controls style="width: 100%;"></audio>
+        </div>
+    </div>
+  </div>
 
   <!-- Inizio Codice Widget Chatbot Personalizzato -->
   <div id="chatbot-container">
-    <!-- ... (Tutto il codice del chatbot, da <style> a </script>, va qui sotto) ... -->
     <style>
-        /* CSS del Chatbot (invariato) */
+        /* CSS CHATBOT CON LARGHEZZA MODIFICATA */
         #chatbot-bubble { position: fixed; bottom: 25px; right: 25px; width: 65px; height: 65px; border-radius: 50%; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; background-image: url('https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/eva%20copia.jpg'); background-size: cover; background-position: center; border: 3px solid #0693e3; z-index: 9999; animation: bounce 2.5s ease-in-out 3s infinite; }
         @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-10px); } 60% { transform: translateY(-5px); } }
         #chatbot-bubble:hover { transform: scale(1.1); animation-play-state: paused; }
-        #chatbot-bubble svg { width: 32px; height: 32px; color: white; transition: opacity 0.3s ease; opacity: 0; position: absolute; }
         #chatbot-bubble.open { background-image: none; background-color: #0693e3; animation: none; }
-        #chatbot-bubble.open .icon-close { opacity: 1; }
-        #chatbot-welcome-bubble { display: none; /* Nascosto perché la chat si apre subito */ }
-        #welcome-close-btn { display: none; /* Nascosto perché la chat si apre subito */ }
-        #chatbot-window { position: fixed; bottom: 100px; right: 25px; width: 880px; max-width: 95vw; height: 700px; max-height: 85vh; background-color: #f9f7f3; border-radius: 15px; box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2); z-index: 9998; display: flex; flex-direction: column; overflow: hidden; transform: translateY(20px) scale(0.95); opacity: 0; visibility: hidden; transition: all 0.3s ease; }
+        #chatbot-bubble.open .icon-close { opacity: 1; } #chatbot-bubble svg { width: 32px; height: 32px; color: white; transition: opacity 0.3s ease; opacity: 0; position: absolute; }
+        #chatbot-welcome-bubble, #welcome-close-btn { display: none; }
+        #chatbot-window { position: fixed; bottom: 100px; right: 25px; width: 440px; /* LARGHEZZA MODIFICATA */ max-width: 95vw; height: 70vh; max-height: 600px; background-color: #f9f7f3; border-radius: 15px; box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2); z-index: 9998; display: flex; flex-direction: column; overflow: hidden; transform: translateY(20px) scale(0.95); opacity: 0; visibility: hidden; transition: all 0.3s ease; }
         #chatbot-window.open { transform: translateY(0) scale(1); opacity: 1; visibility: visible; }
         @media (max-width: 920px) { #chatbot-window { width: 100vw; height: 100vh; max-height: 100vh; bottom: 0; right: 0; top: 0; left: 0; border-radius: 0; } #chatbot-bubble { bottom: 10px; right: 10px; } }
         .chatbot-header { background-color: #0693e3; color: white; padding: 1rem; text-align: center; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .chatbot-header img { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; border: 2px solid white; }
-        .chatbot-header-text { display: flex; flex-direction: column; align-items: center; }
-        .chatbot-header h3 { margin: 0; font-size: 1.1rem; color: white; }
-        .chatbot-header small { opacity: 0.8; }
+        .chatbot-header h3 { margin: 0; font-size: 1.1rem; } .chatbot-header small { opacity: 0.8; }
         .chatbot-messages { flex-grow: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; }
         .message { display: flex; align-items: flex-end; margin-bottom: 10px; max-width: 85%; }
-        .message.user { align-self: flex-end; }
-        .message.bot { align-self: flex-start; }
+        .message.user { align-self: flex-end; } .message.bot { align-self: flex-start; }
         .message-avatar { width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; flex-shrink: 0; }
-        .message-text { padding: 10px 15px; border-radius: 18px; line-height: 1.4; word-wrap: break-word; overflow-wrap: break-word; }
+        .message-text { padding: 10px 15px; border-radius: 18px; line-height: 1.4; word-wrap: break-word; }
         .message.user .message-text { background-color: #eef2f5; color: #333; border-bottom-right-radius: 4px; }
         .message.bot .message-text { background-color: #0693e3; color: white; border-bottom-left-radius: 4px; }
-        .message.bot .message-text img { max-width: 250px; height: auto; border-radius: 10px; margin-top: 8px; margin-bottom: 8px; display: block; }
         .message.bot .message-text a { color: white; font-weight: bold; text-decoration: underline; }
         .chatbot-input { display: flex; border-top: 1px solid #ddd; background-color: white; padding: 10px; align-items: center; flex-shrink: 0; }
-        .chatbot-input input { flex-grow: 1; border: none; padding: 10px; font-size: 1rem; }
-        .chatbot-input input:focus-visible { outline: 2px solid #0693e3; outline-offset: 2px; }
-        .chatbot-input button { background: none; border: none; padding: 0 10px; cursor: pointer; color: #0693e3; transition: transform 0.2s ease; }
-        .chatbot-input button:hover { transform: scale(1.1); }
+        .chatbot-input input { flex-grow: 1; border: none; padding: 10px; font-size: 1rem; } .chatbot-input input:focus-visible { outline: 2px solid #0693e3; }
+        .chatbot-input button { background: none; border: none; padding: 0 10px; cursor: pointer; color: #0693e3; }
     </style>
     <div id="chatbot-bubble"><svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg></div>
     <div id="chatbot-window">
         <div class="chatbot-header">
             <img src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/eva%20copia.jpg" alt="Assistente Virtuale Sara">
-            <div class="chatbot-header-text"><h3>FF Musica</h3><small>Assistente Virtuale</small></div>
+            <div><h3>FF Musica</h3><small>Assistente Virtuale</small></div>
         </div>
         <div class="chatbot-messages" id="chatbot-messages"></div>
         <div class="chatbot-input">
@@ -230,123 +217,75 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // --- SCRIPT CHATBOT MODIFICATO ---
-        const webhookUrl = 'https://n8n.automaita.it/webhook/La-Bottega-Del-Delta-chat'; // MODIFICA CON IL TUO WEBHOOK
-        const bubble = document.getElementById('chatbot-bubble');
-        const windowEl = document.getElementById('chatbot-window');
-        const messagesEl = document.getElementById('chatbot-messages');
-        const inputField = document.getElementById('chatbot-input-field');
-        const sendBtn = document.getElementById('chatbot-send-btn');
-        if (!bubble) return;
-        let chatHistory = [];
-        const getOrCreateSessionId = () => { let sessionId = sessionStorage.getItem('chatbot_session_id'); if (!sessionId) { sessionId = crypto.randomUUID(); sessionStorage.setItem('chatbot_session_id', sessionId); } return sessionId; };
-        const saveChatState = () => sessionStorage.setItem('chatbot_state', JSON.stringify({ isOpen: windowEl.classList.contains('open'), history: chatHistory }));
-        const restoreChatState = () => {
-            const savedState = sessionStorage.getItem('chatbot_state');
-            if (savedState) {
-                try {
-                    const state = JSON.parse(savedState);
-                    if (state.history && Array.isArray(state.history)) { chatHistory = state.history; chatHistory.forEach(msg => addMessage(msg.text, msg.type, false)); }
-                    if (state.isOpen) { bubble.classList.add('open'); windowEl.classList.add('open'); }
-                } catch (e) { sessionStorage.removeItem('chatbot_state'); chatHistory = []; }
-            } else {
-                // MODIFICA: Apri la chat automaticamente la prima volta
-                setTimeout(() => toggleChat(true), 1000); 
-            }
-            if (chatHistory.length === 0) { addMessage("Ciao! Sono Sara, l'assistente virtuale di Fausto. Chiedimi pure di ascoltare alcuni brani o come collaborare con lui!", 'bot'); }
-        };
-        const toggleChat = (forceOpen = false) => {
-            if (forceOpen) { bubble.classList.add('open'); windowEl.classList.add('open'); }
-            else { bubble.classList.toggle('open'); windowEl.classList.toggle('open'); }
-            if (windowEl.classList.contains('open')) { inputField.focus(); }
-            saveChatState();
-        };
-        bubble.addEventListener('click', () => toggleChat());
-        const addMessage = (text, type, shouldSave = true) => {
-            if (shouldSave) { chatHistory.push({ text, type }); }
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${type}`;
-            if (type === 'bot') { const avatar = document.createElement('img'); avatar.className = 'message-avatar'; avatar.src = 'https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/eva%20copia.jpg'; avatar.alt = 'Sara'; messageDiv.appendChild(avatar); }
-            const textDiv = document.createElement('div');
-            textDiv.className = 'message-text';
-            textDiv.innerHTML = DOMPurify.sanitize(marked.parse(text));
-            messageDiv.appendChild(textDiv);
-            messagesEl.appendChild(messageDiv);
-            messagesEl.scrollTop = messagesEl.scrollHeight;
-            if (shouldSave) { saveChatState(); }
-        };
-        // ... (resto dello script del chatbot invariato)
-        const showTypingIndicator = () => { /* ... */ };
-        const hideTypingIndicator = () => { /* ... */ };
-        const sendMessage = async () => { /* ... */ };
-        sendBtn.addEventListener('click', sendMessage);
-        inputField.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
-        restoreChatState();
-    });
+      // Script del chatbot (invariato, ma lasciato per completezza)
+      // ... Lo script che mi hai fornito in precedenza va qui ...
     </script>
   </div>
-  <!-- Fine Codice Widget Chatbot Personalizzato -->
   
   <script>
-  // --- SCRIPT PER MODALE E PLAYER AUDIO ---
   document.addEventListener('DOMContentLoaded', function() {
-      // Gestione Finestra Modale Video
-      const videoModal = document.getElementById('video-modal');
-      const openModalBtn = document.getElementById('open-video-modal');
-      const closeModalBtn = document.getElementById('close-video-modal');
-      openModalBtn.addEventListener('click', () => { videoModal.style.display = 'flex'; });
-      closeModalBtn.addEventListener('click', () => { videoModal.style.display = 'none'; });
-      videoModal.addEventListener('click', (e) => { if (e.target === videoModal) { videoModal.style.display = 'none'; } });
-
-      // Gestione Player Audio Personalizzati
-      const audioPlayers = document.querySelectorAll('.audio-player');
-      let currentlyPlaying = null; // Audio element attualmente in riproduzione
-      let currentlyPlayingBtn = null; // Pulsante dell'audio attualmente in riproduzione
-
-      audioPlayers.forEach(player => {
-          const btn = player.querySelector('.play-pause-btn');
-          const progressBar = player.querySelector('.progress-bar');
-          const progressContainer = player.querySelector('.progress-container');
-          
-          const audio = new Audio(player.dataset.src);
-          audio.preload = "metadata";
-
+      // --- GESTIONE FINESTRE MODALI ---
+      const openModalBtns = document.querySelectorAll('[id^="open-"]');
+      const closeModalBtns = document.querySelectorAll('.modal-close');
+      openModalBtns.forEach(btn => {
           btn.addEventListener('click', () => {
-              if (currentlyPlaying && currentlyPlaying !== audio) {
-                  currentlyPlaying.pause();
-                  currentlyPlayingBtn.innerHTML = '<i class="fas fa-play"></i>';
+              const modalId = btn.id.replace('open-', '') + '-modal';
+              document.getElementById(modalId).style.display = 'flex';
+          });
+      });
+      closeModalBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+              const modalId = btn.dataset.target;
+              document.getElementById(modalId).style.display = 'none';
+          });
+      });
+      document.querySelectorAll('.modal-overlay').forEach(modal => {
+          modal.addEventListener('click', (e) => {
+              if (e.target === modal) {
+                  modal.style.display = 'none';
               }
-              if (audio.paused) {
-                  audio.play();
-                  btn.innerHTML = '<i class="fas fa-pause"></i>';
-                  currentlyPlaying = audio;
-                  currentlyPlayingBtn = btn;
+          });
+      });
+
+      // --- GESTIONE CATALOGO MUSICALE ---
+      const tabs = document.querySelectorAll('.tab-btn');
+      const tabContents = document.querySelectorAll('.tab-content');
+      tabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+              tabs.forEach(t => t.classList.remove('active'));
+              tab.classList.add('active');
+              const target = document.getElementById('tab-' + tab.dataset.tab);
+              tabContents.forEach(tc => tc.classList.remove('active'));
+              target.classList.add('active');
+          });
+      });
+
+      const audioPlayerContainer = document.getElementById('current-song-player');
+      const audioPlayer = document.getElementById('audio-player-element');
+      const songItems = document.querySelectorAll('.song-item');
+
+      songItems.forEach(item => {
+          const playBtn = item.querySelector('.play-btn');
+          const songSrc = item.dataset.src;
+
+          playBtn.addEventListener('click', () => {
+              // Resetta tutti i pulsanti a 'play'
+              document.querySelectorAll('.song-item .play-btn').forEach(btn => btn.innerHTML = '<i class="fas fa-play"></i>');
+              
+              if (audioPlayer.src === songSrc && !audioPlayer.paused) {
+                  audioPlayer.pause();
+                  playBtn.innerHTML = '<i class="fas fa-play"></i>';
               } else {
-                  audio.pause();
-                  btn.innerHTML = '<i class="fas fa-play"></i>';
-                  currentlyPlaying = null;
-                  currentlyPlayingBtn = null;
+                  audioPlayer.src = songSrc;
+                  audioPlayer.play();
+                  playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                  audioPlayerContainer.classList.remove('hidden');
               }
           });
+      });
 
-          audio.addEventListener('timeupdate', () => {
-              const progressPercent = (audio.currentTime / audio.duration) * 100;
-              progressBar.style.width = `${progressPercent}%`;
-          });
-
-          audio.addEventListener('ended', () => {
-              btn.innerHTML = '<i class="fas fa-play"></i>';
-              progressBar.style.width = '0%';
-              currentlyPlaying = null;
-              currentlyPlayingBtn = null;
-          });
-
-          progressContainer.addEventListener('click', (e) => {
-              const width = progressContainer.clientWidth;
-              const clickX = e.offsetX;
-              audio.currentTime = (clickX / width) * audio.duration;
-          });
+      audioPlayer.addEventListener('ended', () => {
+          document.querySelectorAll('.song-item .play-btn').forEach(btn => btn.innerHTML = '<i class="fas fa-play"></i>');
       });
   });
   </script>
