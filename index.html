@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fausto Fusetti - FF Musica</title>
+  <!-- Google Fonts: Montserrat per i testi, Arvo per i titoli -->
+  <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@700&family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Icone Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      /* Sfondo scuro e professionale */
+      background-color: #121212;
+      background-image: linear-gradient(rgba(18, 18, 18, 0.95), rgba(18, 18, 18, 0.85)), url('https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=2070&auto=format&fit=crop');
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: cover;
+      background-attachment: fixed;
+      color: #f0f0f0;
+      text-align: center;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 40px 30px;
+      max-width: 680px;
+      width: 90%;
+      margin: 20px auto;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Logo/Intestazione */
+    .header-logo {
+        font-family: 'Arvo', serif;
+        font-size: 3em;
+        font-weight: 700;
+        margin-bottom: 10px;
+        letter-spacing: 2px;
+        color: #FFFFFF;
+        text-shadow: 0 0 10px rgba(6, 147, 227, 0.5), 0 0 20px rgba(6, 147, 227, 0.3);
+    }
+
+    h1 {
+      font-size: 1.8em;
+      margin-bottom: 15px;
+      font-weight: 500;
+    }
+
+    p.bio {
+      font-size: 1.1em;
+      margin-bottom: 35px;
+      line-height: 1.6;
+      color: #c7c7c7;
+    }
+
+    /* Stile Pulsanti */
+    .button {
+      display: block;
+      margin: 18px auto;
+      padding: 16px 30px;
+      border: 2px solid #0693e3; /* Blu acceso */
+      border-radius: 30px;
+      text-decoration: none;
+      color: #f0f0f0;
+      font-size: 1.2em;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      background-color: transparent;
+    }
+
+    .button:hover {
+      background: #0693e3;
+      color: white;
+      transform: translateY(-3px);
+      box-shadow: 0 4px 15px rgba(6, 147, 227, 0.4);
+    }
+    
+    /* Pulsante Speciale per Collaborazioni */
+    .button.collabora {
+        border-color: #e3a006;
+    }
+    .button.collabora:hover {
+        background: #e3a006;
+        box-shadow: 0 4px 15px rgba(227, 160, 6, 0.4);
+    }
+
+
+    /* Icone Social */
+    .social-icons {
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      margin: 40px 0 20px;
+    }
+
+    .social-icons a {
+      color: #c7c7c7;
+      font-size: 1.8em;
+      transition: all 0.3s ease;
+    }
+
+    .social-icons a:hover {
+      color: #0693e3;
+      transform: scale(1.2);
+    }
+    
+    .footer-text {
+        margin-top: 30px;
+        font-size: 0.9em;
+        color: #888;
+    }
+
+    @media (max-width: 768px) {
+      .container { padding: 30px 20px; }
+      .header-logo { font-size: 2.5em; }
+      h1 { font-size: 1.5em; }
+      p.bio { font-size: 1em; }
+      .button { padding: 14px 25px; font-size: 1.1em; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header-logo">FF Musica</div>
+    <h1>Fausto Fusetti</h1>
+    <p class="bio">
+      Da 40 anni musicista, compositore e autore. Dal liscio al jazz, dal pop alla pubblicità, la mia passione è trasformare idee in musica.
+    </p>
+
+    <!-- Pulsanti Link -->
+    <a href="INSERISCI_QUI_LINK_SITO_WEB" class="button">Sito Web Ufficiale</a>
+    <a href="https://www.youtube.com/watch?v=7s3-7DV38IA" target="_blank" class="button">Guarda le mie Produzioni</a>
+    <a href="https://www.youtube.com/watch?v=Y8YqyCT7h5E" target="_blank" class="button">Ascolta "Noi"</a>
+    <a href="https://www.youtube.com/watch?v=igexCZ24Twg" target="_blank" class="button">Ascolta "Per Te"</a>
+
+    <a href="mailto: modena.riccardo@gmail.com" class="button collabora">
+        <i class="fas fa-pencil-alt"></i> Collaborazioni e Canzoni su Misura
+    </a>
+    
+    <!-- Icone Social -->
+    <div class="social-icons">
+      <a href="https://www.instagram.com/faustofusetti/" target="_blank" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+      <a href="https://www.facebook.com/fausto.fusetti.9" target="_blank" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
+      <a href="https://www.youtube.com/@faustofusetti5859" target="_blank" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+    </div>
+
+    <p class="footer-text">Disponibile per orchestre, cantanti ed editori.</p>
+
+  </div>
+
+  <!-- QUI SOTTO ANDRÀ INCOLLATO IL CODICE DEL CHATBOT -->
+  
+  
+</body>
+</html>
