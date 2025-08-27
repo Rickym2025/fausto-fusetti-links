@@ -14,10 +14,9 @@
     #background-video { position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; width: auto; height: auto; z-index: -100; object-fit: cover; filter: brightness(0.5); }
     .container-wrapper { min-height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center; padding: 20px; }
     .container { position: relative; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(10px); padding: 90px 30px 40px 30px; max-width: 680px; width: 100%; margin-top: 100px; margin-bottom: 40px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); z-index: 2; }
-    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-    #audio-cta { position: absolute; top: -25px; right: -20px; display: flex; align-items: center; background-color: rgba(6, 147, 227, 0.2); border: 1px solid var(--primary-color); padding: 8px 15px; border-radius: 30px; backdrop-filter: blur(5px); animation: pulse 2.5s infinite ease-in-out; z-index: 10; cursor: pointer; }
-    #audio-cta .cta-text { margin-right: 10px; font-weight: 500; color: #f0f0f0; }
-    #mute-btn-icon { background: white; color: var(--primary-color); border-radius: 50%; width: 35px; height: 35px; font-size: 1em; display: flex; align-items: center; justify-content: center; }
+    
+    #mute-btn { position: fixed; top: 20px; right: 20px; z-index: 10001; background: rgba(0,0,0,0.5); color: white; border: 1px solid white; border-radius: 50%; width: 45px; height: 45px; font-size: 1.2em; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+
     @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
     .profile-logo { width: 150px; height: 150px; border-radius: 50%; border: 4px solid rgba(255, 255, 255, 0.9); box-shadow: 0 0 20px var(--primary-color); object-fit: cover; position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); animation: spin 15s linear infinite; }
     h1 { font-size: 1.8em; margin-bottom: 15px; font-weight: 500; }
@@ -27,7 +26,6 @@
     .button.collabora { border-color: var(--secondary-color); } .button.collabora:hover { background: var(--secondary-color); box-shadow: 0 4px 15px rgba(227, 160, 6, 0.4); }
     .button i { margin-right: 10px; }
     .social-icons { display: flex; justify-content: center; gap: 30px; margin: 40px 0 20px; }
-    .social-icons a { color: #c7c7c7; font-size: 2.2em; }
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
     .modal-content { background: #1e1e1e; padding: 30px; border-radius: 15px; width: 100%; max-width: 550px; position: relative; max-height: 90vh; overflow-y: auto; }
     .modal-close { position: absolute; top: 15px; right: 20px; font-size: 2em; color: white; cursor: pointer; line-height: 1; }
@@ -56,15 +54,15 @@
 <body>
 
   <video autoplay muted loop playsinline preload="auto" id="background-video" poster="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/immagine%20sfondo.png"><source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/video_sfondo_compressed.mp4" type="video/mp4"></video>
-  <audio loop autoplay muted id="background-audio"><source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/7a-Controtempo-compresso.mp3" type="audio/mpeg"></audio>
+  <audio loop id="background-audio"><source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/7a-Controtempo-compresso.mp3" type="audio/mpeg"></audio>
+  <button id="mute-btn"><i class="fas fa-volume-up"></i></button>
   <div id="aphorism-container"></div>
   
   <div class="container-wrapper">
     <div class="container">
-      <div id="audio-cta"><span class="cta-text">Attiva la musica</span><div id="mute-btn-icon"><i class="fas fa-volume-mute"></i></div></div>
       <img src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/logo6.jpg" alt="Logo FF Musica" class="profile-logo">
       <div class="header-logo">FF Musica</div><h1>Fausto Fusetti</h1>
-      <p class="bio">Musicista, compositore e autore con <strong>40 anni di esperienza</strong>. Offro servizi professionali: <strong>creazione di canzoni su misura</strong> per artisti e orchestre; <strong>canzoni e testi personalizzati</strong> per privati, coppie, matrimoni e anniversari; e <strong>intrattenimento musicale dal vivo</strong> per eventi.</p>
+      <p class="bio">Con 40 anni di esperienza come musicista, compositore e autore, trasformo emozioni in musica. La mia versatilità mi permette di spaziare tra ogni genere: dal liscio al moderno, dal jazz alle colonne sonore per la pubblicità.<br><br>Come polistrumentista (pianoforte, chitarra e voce), offro un servizio completo per la creazione di canzoni personalizzate. Se sei un'orchestra, un cantante o un editore in cerca di un brano inedito e su misura, sei nel posto giusto.</p>
       <a href="#" class="button" style="display: none;" title="In Costruzione"><i class="fas fa-globe"></i>Sito Web</a>
       <button id="open-music-modal" class="button"><i class="fas fa-music"></i>Catalogo Musicale</button>
       <button id="open-video-modal" class="button"><i class="fas fa-video"></i>Guarda i Video</button>
@@ -87,16 +85,11 @@
     document.addEventListener('DOMContentLoaded', function() {
         // --- GESTIONE AUDIO SOTTOFONDO ---
         const bgAudio = document.getElementById('background-audio');
-        const audioCta = document.getElementById('audio-cta');
-        const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i');
-        const ctaText = document.querySelector('#audio-cta .cta-text');
-        
-        bgAudio.play().catch(() => console.log("Autoplay bloccato. L'utente deve interagire."));
-
-        audioCta.addEventListener('click', () => {
+        const muteBtn = document.getElementById('mute-btn');
+        document.body.addEventListener('click', () => { if (bgAudio.paused) bgAudio.play().catch(e => {}); }, { once: true });
+        muteBtn.addEventListener('click', () => {
             bgAudio.muted = !bgAudio.muted;
-            muteBtnIcon.className = bgAudio.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
-            ctaText.textContent = bgAudio.muted ? 'Attiva la musica' : 'Disattiva musica';
+            muteBtn.querySelector('i').className = bgAudio.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
         });
 
         // --- GESTIONE MODALI ---
@@ -122,20 +115,13 @@
         catalogPlayer.addEventListener('pause', () => playerBtn.innerHTML = '<i class="fas fa-play"></i>');
         
         async function loadMusicFromSheet() {
-            const sheetId = '1oKwAszQPcpBndaN5xCv5Ua917o8vEtkNAFfpNztCclY';
-            const sheetName = 'catalogo';
-            const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${sheetName}`;
-            
+            const sheetUrl = 'https://docs.google.com/spreadsheets/d/1oKwAszQPcpBndaN5xCv5Ua917o8vEtkNAFfpNztCclY/export?format=csv&gid=1445821517';
             try {
-                const response = await fetch(url);
+                const response = await fetch(sheetUrl);
                 if (!response.ok) throw new Error('Network response was not ok');
                 const data = await response.text();
-                const songs = data.trim().split(/\n/).slice(1).map(row => {
-                    const columns = row.split(',').map(s => s ? s.trim().replace(/^"|"$/g, '') : '');
-                    if (columns.length < 4) return null;
-                    return { genre: columns[0], argomento: columns[1], title: columns[2], url: columns[3] };
-                }).filter(s => s && s.genre && s.argomento && s.title && s.url);
-                if (songs.length === 0) throw new Error('Nessun dato valido trovato nel foglio di calcolo.');
+                const songs = data.trim().split(/\r\n|\n/).slice(1).map(row => { const [genre, argomento, title, url] = row.split(',').map(s => s ? s.trim().replace(/^"|"$/g, '') : ''); return { genre, argomento, title, url }; }).filter(s => s.genre && s.argomento && s.title && s.url);
+                if (songs.length === 0) throw new Error('Nessun dato valido trovato nel CSV.');
                 renderCatalog(songs);
             } catch (error) { console.error("Errore caricamento catalogo:", error); document.getElementById('tab-navigation-container').innerHTML = `<p style="color: #f44336;">Errore nel caricamento del catalogo.</p>`; }
         }
@@ -143,7 +129,6 @@
         function renderCatalog(songs) {
             const tabsContainer = document.getElementById('tab-navigation-container');
             const contentContainer = document.getElementById('tab-content-container');
-            
             const catalog = songs.reduce((acc, song) => {
                 const { genre, argomento, title, url } = song;
                 if (!acc[genre]) acc[genre] = {};
@@ -151,10 +136,8 @@
                 acc[genre][argomento].push({ title, url });
                 return acc;
             }, {});
-
             const genres = Object.keys(catalog);
             tabsContainer.innerHTML = genres.map((genre, index) => `<button class="tab-btn ${index === 0 ? 'active' : ''}" data-tab="${genre}">${genre}</button>`).join('');
-            
             contentContainer.innerHTML = genres.map((genre, index) => {
                 const argomenti = Object.keys(catalog[genre]);
                 const argomentiHtml = argomenti.map(argomento => {
