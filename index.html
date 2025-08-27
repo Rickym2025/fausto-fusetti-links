@@ -175,14 +175,65 @@
         const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i');
         const ctaText = document.querySelector('#audio-cta .cta-text');
         
-        // Prova a riprodurre l'audio
-        bgAudio.play().catch(error => console.log("Autoplay richiede interazione utente"));
+        // Funzione per tentare la riproduzione dell'audio
+        function tryPlayAudio() {
+            bgAudio.play().then(() => {
+                console.log('Audio avviato con successo');
+            }).catch(error => {
+                console.log('Autoplay bloccato dal browser - richiede interazione utente:', error);
+            });
+        }
         
+        // Tenta di riprodurre immediatamente
+        tryPlayAudio();
+        
+        // Gestione click sull'icona audio
         audioCta.addEventListener('click', () => {
-            bgAudio.muted = !bgAudio.muted;
-            muteBtnIcon.className = bgAudio.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
-            ctaText.textContent = bgAudio.muted ? 'Attiva la musica' : 'Disattiva musica';
+            if (bgAudio.paused) {
+                bgAudio.play().then(() => {
+                    bgAudio.muted = false;
+                    muteBtnIcon.className = 'fas fa-volume-up';
+                    ctaText.textContent = 'Disattiva musica';
+                }).catch(error => {
+                    console.log('Errore riproduzione audio:', error);
+                });
+            } else {
+                bgAudio.muted = !bgAudio.muted;
+                muteBtnIcon.className = bgAudio.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
+                ctaText.textContent = bgAudio.muted ? 'Attiva la musica' : 'Disattiva musica';
+            }
         });
+
+        // Event listener per quando l'audio inizia a suonare
+        bgAudio.addEventListener('play', () => {
+            if (!bgAudio.muted) {
+                muteBtnIcon.className = 'fas fa-volume-up';
+                ctaText.textContent = 'Disattiva musica';
+            }
+        });
+
+        // Event listener per quando l'audio va in pausa
+        bgAudio.addEventListener('pause', () => {
+            muteBtnIcon.className = 'fas fa-volume-mute';
+            ctaText.textContent = 'Attiva la musica';
+        });
+
+        // Aggiunge un listener per il primo click dell'utente per sbloccare l'audio
+        let audioUnlocked = false;
+        function unlockAudio() {
+            if (!audioUnlocked) {
+                bgAudio.play().then(() => {
+                    bgAudio.pause();
+                    bgAudio.currentTime = 0;
+                    audioUnlocked = true;
+                    console.log('Audio sbloccato');
+                }).catch(e => console.log('Audio ancora bloccato'));
+            }
+        }
+        
+        // Sblocca l'audio al primo click dell'utente
+        document.addEventListener('click', unlockAudio, { once: true });
+        document.addEventListener('touchstart', unlockAudio, { once: true });
 
         // Gestione Modali
         document.getElementById('open-video-modal').addEventListener('click', () => document.getElementById('video-modal').style.display = 'flex');
@@ -236,56 +287,72 @@
 
         // Caricamento Catalogo Musicale - URL CORRETTO
         async function loadMusicFromSheet() {
-            // URL corretto per il CSV pubblico di Google Sheets
-            const sheetUrl = 'https://docs.google.com/spreadsheets/d/1OzVKL-wUNXsaGK2tBnfZfB3jM9H8qL5iT2pR7kE3wX1/export?format=csv&gid=0';
+            // URL corretto per il CSV pubblico del tuo Google Sheets
+            const sheetUrl = 'https://docs.google.com/spreadsheets/d/1oKwAszQPcpBndaN5xCv5Ua917o8vEtkNAFfpNztCclY/export?format=csv&gid=0';
             
             try {
-                console.log('Caricamento catalogo musicale...');
+                console.log('Caricamento catalogo musicale dal Google Sheets...');
                 
-                // Dati musicali di esempio (sostituisci con il tuo Google Sheet quando sarà pronto)
-                const sampleData = [
-                    { genre: 'Liscio', title: 'Valzer della Sera', url: 'https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/sample1.mp3' },
-                    { genre: 'Liscio', title: 'Mazurka del Cuore', url: 'https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/sample2.mp3' },
-                    { genre: 'Jazz', title: 'Blue Evening', url: 'https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/sample3.mp3' },
-                    { genre: 'Jazz', title: 'Swing Time', url: 'https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/sample4.mp3' },
-                    { genre: 'Pop', title: 'Noi', url: 'https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/7a-Controtempo-compresso.mp3' },
-                    { genre: 'Pop', title: 'Per Te', url: 'https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/sample5.mp3' }
-                ];
-                
-                renderCatalog(sampleData);
-                
-                /*
-                // Decommentare quando il Google Sheet sarà pronto
                 const response = await fetch(sheetUrl);
-                if (!response.ok) throw new Error('Network response was not ok');
+                if (!response.ok) throw new Error('Errore nel caricamento del foglio di calcolo');
                 
                 const data = await response.text();
                 const lines = data.trim().split(/\r\n|\n/);
                 const songs = [];
                 
-                // Salta la prima riga (header)
+                console.log('Dati ricevuti:', data);
+                
+                // Salta la prima riga (header) e processa i dati
                 for (let i = 1; i < lines.length; i++) {
-                    const columns = lines[i].split(',').map(s => s.trim().replace(/"/g, ''));
-                    if (columns.length >= 3 && columns[0] && columns[1] && columns[2]) {
+                    const line = lines[i];
+                    if (!line.trim()) continue; // Salta righe vuote
+                    
+                    // Parse CSV considerando virgole dentro le virgolette
+                    const columns = [];
+                    let current = '';
+                    let inQuotes = false;
+                    
+                    for (let j = 0; j < line.length; j++) {
+                        const char = line[j];
+                        if (char === '"') {
+                            inQuotes = !inQuotes;
+                        } else if (char === ',' && !inQuotes) {
+                            columns.push(current.trim());
+                            current = '';
+                        } else {
+                            current += char;
+                        }
+                    }
+                    columns.push(current.trim()); // Aggiungi l'ultima colonna
+                    
+                    // Rimuovi virgolette dai valori
+                    const cleanColumns = columns.map(col => col.replace(/^"|"$/g, '').trim());
+                    
+                    if (cleanColumns.length >= 3 && cleanColumns[0] && cleanColumns[1] && cleanColumns[2]) {
                         songs.push({
-                            genre: columns[0],
-                            title: columns[1],
-                            url: columns[2]
+                            genre: cleanColumns[0],
+                            title: cleanColumns[1],
+                            url: cleanColumns[2]
                         });
                     }
                 }
+                
+                console.log('Canzoni caricate:', songs);
                 
                 if (songs.length > 0) {
                     renderCatalog(songs);
                 } else {
                     throw new Error('Nessun brano trovato nel catalogo');
                 }
-                */
                 
             } catch (error) {
                 console.error("Errore caricamento catalogo:", error);
                 document.getElementById('tab-navigation-container').innerHTML = 
-                    `<p style="color: #f44336;">Errore nel caricamento del catalogo. Riprova più tardi.</p>`;
+                    `<div style="color: #f44336; text-align: center; padding: 20px;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 2em; margin-bottom: 10px;"></i><br>
+                        <strong>Errore nel caricamento del catalogo</strong><br>
+                        <small>Verifica che il Google Sheets sia pubblico e accessibile</small>
+                    </div>`;
             }
         }
 
