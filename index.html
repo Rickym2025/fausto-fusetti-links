@@ -27,7 +27,6 @@
     .button.collabora { border-color: var(--secondary-color); } .button.collabora:hover { background: var(--secondary-color); box-shadow: 0 4px 15px rgba(227, 160, 6, 0.4); }
     .button i { margin-right: 10px; }
     .social-icons { display: flex; justify-content: center; gap: 30px; margin: 40px 0 20px; }
-    .social-icons a { color: #c7c7c7; font-size: 2.2em; transition: all 0.3s ease; }
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
     .modal-content { background: #1e1e1e; padding: 30px; border-radius: 15px; width: 100%; max-width: 550px; position: relative; max-height: 90vh; overflow-y: auto; }
     .modal-close { position: absolute; top: 15px; right: 20px; font-size: 2em; color: white; cursor: pointer; line-height: 1; }
@@ -36,12 +35,15 @@
     .tab-btn { padding: 10px 15px; border: 1px solid #555; border-radius: 20px; background: none; color: #f0f0f0; cursor: pointer; font-size: 0.9em; }
     .tab-btn.active { background-color: var(--primary-color); border-color: var(--primary-color); }
     .tab-content { display: none; } .tab-content.active { display: block; }
+    .argomento-title { color: var(--primary-color); text-align: left; margin-top: 20px; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #444; }
+    .argomento-title:first-of-type { margin-top: 0; }
     .song-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #333; }
+    .song-item:last-child { border-bottom: none; }
     .song-item .title { flex-grow: 1; text-align: left; }
     .song-item .play-btn { background: none; border: 2px solid var(--primary-color); color: var(--primary-color); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
     #catalog-player-display { margin-top: 20px; padding-top: 20px; border-top: 1px solid #444; display: none; align-items: center; gap: 15px; }
     .contact-form { display: flex; flex-direction: column; gap: 15px; text-align: left; }
-    .contact-form input, .contact-form textarea, .contact-form select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #555; background-color: #2c2c2c; color: #f0f0f0; font-size: 1em; font-family: 'Montserrat', sans-serif; }
+    .contact-form input, .contact-form textarea, .contact-form select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #555; background-color: #2c2c2c; color: #f0f0f0; font-size: 1em; }
     #form-result { margin-top: 15px; font-weight: bold; }
     .service-highlight { background: linear-gradient(135deg, rgba(6, 147, 227, 0.1), rgba(227, 160, 6, 0.1)); border: 2px solid transparent; background-clip: padding-box; position: relative; }
     .service-highlight::before { content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); border-radius: inherit; z-index: -1; }
@@ -58,7 +60,7 @@
       <div id="audio-cta"><span class="cta-text">Attiva la musica</span><div id="mute-btn-icon"><i class="fas fa-volume-mute"></i></div></div>
       <img src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/logo6.jpg" alt="Logo FF Musica" class="profile-logo">
       <div class="header-logo">FF Musica</div><h1>Fausto Fusetti</h1>
-      <p class="bio">Musicista, compositore e autore con <strong>40 anni di esperienza</strong>. Scrivo e produco musica di ogni genere, dal liscio al jazz, dal pop alla pubblicità.<br><br>Offro servizi professionali: <strong>creazione di canzoni su misura</strong> per artisti, orchestre ed editori, <strong>canzoni personalizzate</strong> per privati, coppie, anniversari e matrimoni, e <strong>intrattenimento musicale dal vivo</strong> per eventi speciali.</p>
+      <p class="bio">Musicista, compositore e autore con <strong>40 anni di esperienza</strong>. Offro servizi professionali: <strong>creazione di canzoni su misura</strong> per artisti, orchestre ed editori, <strong>canzoni personalizzate</strong> per privati, coppie, anniversari e matrimoni, e <strong>intrattenimento musicale dal vivo</strong> per eventi speciali.</p>
       <a href="#" class="button" style="display: none;" title="In Costruzione"><i class="fas fa-globe"></i>Sito Web</a>
       <button id="open-music-modal" class="button"><i class="fas fa-music"></i>Catalogo Musicale</button>
       <button id="open-video-modal" class="button"><i class="fas fa-video"></i>Guarda i Video</button>
@@ -70,29 +72,29 @@
 
   <div id="video-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="video-modal">&times;</span><h2>Video Selezionati</h2><a href="https://www.youtube.com/watch?v=7s3-7DV38IA" target="_blank" class="button">Produzioni Varie</a><a href="https://www.youtube.com/watch?v=Y8YqyCT7h5E" target="_blank" class="button">Ascolta "Noi"</a><a href="https://www.youtube.com/watch?v=igexCZ24Twg" target="_blank" class="button">Ascolta "Per Te"</a></div></div>
   <div id="music-modal" class="modal-overlay"><div class="modal-content music-catalog"><span class="modal-close" data-target="music-modal">&times;</span><h2>Catalogo Musicale</h2><div class="info-box"><i class="fas fa-comments"></i> Chiedi a <strong>Fausto AI</strong> di trovare il brano perfetto per te.</div><div id="tab-navigation-container" class="tab-navigation"><p>Caricamento catalogo...</p></div><div id="tab-content-container"></div><div id="catalog-player-display"><button id="catalog-player-button"><i class="fas fa-play"></i></button><span id="catalog-song-title">Seleziona un brano</span><audio id="catalog-audio-player"></audio></div></div></div>
-  <div id="services-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="services-modal">&times;</span><h2><i class="fas fa-heart" style="color: var(--secondary-color); margin-right: 10px;"></i>Canzoni Personalizzate</h2><div style="text-align: left; line-height: 1.6; margin-bottom: 20px;"><h3 style="color: var(--primary-color); margin-bottom: 10px;">✨ Servizi Esclusivi:</h3><ul style="list-style: none; padding-left: 0;"><li style="margin-bottom: 10px;"><i class="fas fa-heart" style="color: #e74c3c; margin-right: 8px;"></i> <strong>Canzoni per Coppie Innamorate</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-ring" style="color: #f39c12; margin-right: 8px;"></i> <strong>Anniversari di Matrimonio</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-gift" style="color: #9b59b6; margin-right: 8px;"></i> <strong>Testi Personalizzati</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-birthday-cake" style="color: #e67e22; margin-right: 8px;"></i> <strong>Eventi Speciali</strong></li></ul><div style="background: rgba(6, 147, 227, 0.1); border-left: 4px solid var(--primary-color); padding: 15px; margin: 20px 0; border-radius: 5px;"><p><strong>💡 Come funziona:</strong> Raccontami la vostra storia, i ricordi speciali, le emozioni che volete esprimere. Creerò una canzone unica che rappresenti il vostro amore.</p></div></div><button id="contact-for-custom-song" class="button collabora">Richiedi la Tua Canzone</button></div></div>
+  <div id="services-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="services-modal">&times;</span><h2><i class="fas fa-heart" style="color: var(--secondary-color); margin-right: 10px;"></i>Canzoni Personalizzate</h2><div style="text-align: left; line-height: 1.6; margin-bottom: 20px;"><h3 style="color: var(--primary-color); margin-bottom: 10px;">✨ Servizi Esclusivi:</h3><ul style="list-style: none; padding-left: 0;"><li style="margin-bottom: 10px;"><i class="fas fa-heart" style="color: #e74c3c; margin-right: 8px;"></i> <strong>Canzoni per Coppie</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-ring" style="color: #f39c12; margin-right: 8px;"></i> <strong>Anniversari e Matrimoni</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-gift" style="color: #9b59b6; margin-right: 8px;"></i> <strong>Testi Personalizzati</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-birthday-cake" style="color: #e67e22; margin-right: 8px;"></i> <strong>Eventi Speciali</strong></li></ul><div style="background: rgba(6, 147, 227, 0.1); border-left: 4px solid var(--primary-color); padding: 15px; margin: 20px 0; border-radius: 5px;"><p><strong>💡 Come funziona:</strong> Raccontami la tua storia, i tuoi ricordi. Creerò una canzone unica che rappresenti le tue emozioni.</p></div></div><button id="contact-for-custom-song" class="button collabora">Richiedi la Tua Canzone</button></div></div>
   <div id="contact-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="contact-modal">&times;</span><h2>Contattami per il tuo Progetto</h2><form id="contact-form" class="contact-form"><input type="hidden" name="access_key" value="9013a8d5-0901-42a0-b9e6-4c45553f960d"><input type="text" name="name" placeholder="Il tuo Nome" required><input type="email" name="email" placeholder="La tua Email" required><input type="tel" name="phone" placeholder="Il tuo Telefono (Opzionale)"><select name="service_type" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #555; background-color: #2c2c2c; color: #f0f0f0; font-size: 1em;"><option value="">Seleziona il tipo di servizio</option><option value="canzone_personalizzata">Canzone Personalizzata</option><option value="composizione_artista">Composizione per Artista</option><option value="intrattenimento_live">Intrattenimento Live</option><option value="altro">Altro</option></select><textarea name="message" rows="4" placeholder="Descrivi la tua idea o richiesta..." required></textarea><button type="submit" class="button collabora">Invia Messaggio</button></form><div id="form-result"></div></div></div>
+  
   <div id="chatbot-container"></div>
   
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
   <script>
+    // --- SCRIPT PAGINA PRINCIPALE ---
     document.addEventListener('DOMContentLoaded', function() {
-        // --- GESTIONE AUDIO SOTTOFONDO ---
+        // Gestione Audio Sottofondo
         const bgAudio = document.getElementById('background-audio');
         const audioCta = document.getElementById('audio-cta');
         const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i');
         const ctaText = document.querySelector('#audio-cta .cta-text');
-        
         bgAudio.play().catch(() => console.log("Autoplay bloccato. L'utente deve interagire."));
-
         audioCta.addEventListener('click', () => {
             bgAudio.muted = !bgAudio.muted;
             muteBtnIcon.className = bgAudio.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
             ctaText.textContent = bgAudio.muted ? 'Attiva la musica' : 'Disattiva musica';
         });
 
-        // --- GESTIONE MODALI ---
+        // Gestione Modali
         document.getElementById('open-video-modal').addEventListener('click', () => document.getElementById('video-modal').style.display = 'flex');
         document.getElementById('open-music-modal').addEventListener('click', () => document.getElementById('music-modal').style.display = 'flex');
         document.getElementById('open-services-modal').addEventListener('click', () => document.getElementById('services-modal').style.display = 'flex');
@@ -105,7 +107,7 @@
         document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', e => document.getElementById(e.currentTarget.dataset.target).style.display = 'none'));
         document.querySelectorAll('.modal-overlay').forEach(modal => modal.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; }));
 
-        // --- GESTIONE PLAYER CATALOGO ---
+        // Gestione Player Catalogo
         const catalogPlayer = document.getElementById('catalog-audio-player');
         const playerDisplay = document.getElementById('catalog-player-display');
         const playerBtn = document.getElementById('catalog-player-button');
@@ -115,12 +117,12 @@
         catalogPlayer.addEventListener('pause', () => playerBtn.innerHTML = '<i class="fas fa-play"></i>');
         
         async function loadMusicFromSheet() {
-            const sheetUrl = 'https://docs.google.com/spreadsheets/d/1oKwAszQPcpBndaN5xCv5Ua917o8vEtkNAFfpNztCclY/export?format=csv&gid=1445821517';
+            const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6z-1_l_b_g_E8g_R_k_T9_g_V_b_N2w_xO7jU6iR9pC0_g_YgC9Lg2m9m3Q5hF6n8k9r_d7c/pub?output=csv&gid=1445821517';
             try {
                 const response = await fetch(sheetUrl);
                 if (!response.ok) throw new Error('Network response was not ok');
                 const data = await response.text();
-                const songs = data.trim().split(/\r\n|\n/).slice(1).map(row => { const [genre, title, url] = row.split(',').map(s => s ? s.trim().replace(/^"|"$/g, '') : ''); return { genre, title, url }; }).filter(s => s.genre && s.title && s.url);
+                const songs = data.trim().split(/\r\n|\n/).slice(1).map(row => { const [genre, argomento, title, url] = row.split(',').map(s => s ? s.trim().replace(/^"|"$/g, '') : ''); return { genre, argomento, title, url }; }).filter(s => s.genre && s.argomento && s.title && s.url);
                 if (songs.length === 0) throw new Error('Nessun dato valido trovato nel CSV.');
                 renderCatalog(songs);
             } catch (error) { console.error("Errore caricamento catalogo:", error); document.getElementById('tab-navigation-container').innerHTML = `<p style="color: #f44336;">Errore nel caricamento del catalogo.</p>`; }
@@ -129,18 +131,31 @@
         function renderCatalog(songs) {
             const tabsContainer = document.getElementById('tab-navigation-container');
             const contentContainer = document.getElementById('tab-content-container');
-            const genres = [...new Set(songs.map(song => song.genre))];
+            
+            const catalog = songs.reduce((acc, song) => {
+                const { genre, argomento, title, url } = song;
+                if (!acc[genre]) acc[genre] = {};
+                if (!acc[genre][argomento]) acc[genre][argomento] = [];
+                acc[genre][argomento].push({ title, url });
+                return acc;
+            }, {});
+
+            const genres = Object.keys(catalog);
             tabsContainer.innerHTML = genres.map((genre, index) => `<button class="tab-btn ${index === 0 ? 'active' : ''}" data-tab="${genre}">${genre}</button>`).join('');
-            contentContainer.innerHTML = genres.map((genre, index) => `<div id="tab-${genre}" class="tab-content ${index === 0 ? 'active' : ''}"></div>`).join('');
-            songs.forEach(song => {
-                const genreContent = document.getElementById(`tab-${song.genre}`);
-                if (genreContent) {
-                    const songElement = document.createElement('div');
-                    songElement.className = 'song-item'; songElement.dataset.src = song.url; songElement.dataset.title = song.title;
-                    songElement.innerHTML = `<span class="title">${song.title}</span><button class="play-btn"><i class="fas fa-play"></i></button>`;
-                    genreContent.appendChild(songElement);
-                }
-            });
+            
+            contentContainer.innerHTML = genres.map((genre, index) => {
+                const argomenti = Object.keys(catalog[genre]);
+                const argomentiHtml = argomenti.map(argomento => {
+                    const songsHtml = catalog[genre][argomento].map(song => 
+                        `<div class="song-item" data-src="${song.url}" data-title="${song.title}">
+                            <span class="title">${song.title}</span>
+                            <button class="play-btn"><i class="fas fa-play"></i></button>
+                        </div>`
+                    ).join('');
+                    return `<h3 class="argomento-title">${argomento}</h3>${songsHtml}`;
+                }).join('');
+                return `<div id="tab-${genre}" class="tab-content ${index === 0 ? 'active' : ''}">${argomentiHtml}</div>`;
+            }).join('');
             addEventListenersToCatalog();
         }
 
@@ -163,43 +178,14 @@
         // --- GESTIONE FORM CONTATTO ---
         const form = document.getElementById('contact-form');
         const formResult = document.getElementById('form-result');
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(form);
-            formResult.innerHTML = "Invio in corso...";
-            fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        formResult.innerHTML = "Messaggio inviato con successo!";
-                        form.reset();
-                    } else { formResult.innerHTML = `Errore: ${data.message}`; }
-                })
-                .catch(() => formResult.innerHTML = "Si è verificato un errore.");
-        });
+        form.addEventListener('submit', function(e) { e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio in corso..."; fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).then(response => response.json()).then(data => { if (data.success) { formResult.innerHTML = "Messaggio inviato con successo!"; form.reset(); } else { formResult.innerHTML = `Errore: ${data.message}`; } }).catch(() => formResult.innerHTML = "Si è verificato un errore."); });
 
         // --- LOGICA POST-IT ---
-        (function() {
-            const aphorisms = [ "La musica è la vera lingua universale.", "Dove le parole finiscono, inizia la musica.", "La vita è come un pianoforte, ciò che ne esce dipende da come la suoni.", "La musica esprime ciò che non può essere detto e su cui è impossibile rimanere in silenzio.", "Senza musica, la vita sarebbe un errore." ];
-            const aphorismContainer = document.getElementById('aphorism-container');
-            const mainContainer = document.querySelector('.container');
-            function showRandomAphorism() {
-                const rect = mainContainer.getBoundingClientRect();
-                const postit = document.createElement('div');
-                postit.className = 'aphorism-postit';
-                postit.textContent = aphorisms[Math.floor(Math.random() * aphorisms.length)];
-                let top, left;
-                do { top = Math.random() * window.innerHeight; left = Math.random() * window.innerWidth; } while ( top > rect.top - 50 && top < rect.bottom + 50 && left > rect.left - 50 && left < rect.right + 50 );
-                postit.style.top = `${top}px`;
-                postit.style.left = `${left}px`;
-                const rotation = `rotate(${Math.random() * 20 - 10}deg)`;
-                postit.style.setProperty('--transform-start', `${rotation} translateY(20px)`);
-                postit.style.setProperty('--transform-end', `${rotation} translateY(0)`);
-                aphorismContainer.appendChild(postit);
-                setTimeout(() => { postit.remove(); }, 10000);
-            }
-            setInterval(showRandomAphorism, 12000);
-        })();
+        const aphorisms = [ "La musica è la vera lingua universale.", "Dove le parole finiscono, inizia la musica.", "La vita è come un pianoforte, ciò che ne esce dipende da come la suoni.", "La musica esprime ciò che non può essere detto e su cui è impossibile rimanere in silenzio.", "Senza musica, la vita sarebbe un errore." ];
+        const aphorismContainer = document.getElementById('aphorism-container');
+        const mainContainer = document.querySelector('.container');
+        function showRandomAphorism() { const rect = mainContainer.getBoundingClientRect(); const postit = document.createElement('div'); postit.className = 'aphorism-postit'; postit.textContent = aphorisms[Math.floor(Math.random() * aphorisms.length)]; let top, left; do { top = Math.random() * window.innerHeight; left = Math.random() * window.innerWidth; } while ( top > rect.top - 50 && top < rect.bottom + 50 && left > rect.left - 50 && left < rect.right + 50 ); postit.style.top = `${top}px`; postit.style.left = `${left}px`; const rotation = `rotate(${Math.random() * 20 - 10}deg)`; postit.style.setProperty('--transform-start', `${rotation} translateY(20px)`); postit.style.setProperty('--transform-end', `${rotation} translateY(0)`); aphorismContainer.appendChild(postit); setTimeout(() => { postit.remove(); }, 10000); }
+        setInterval(showRandomAphorism, 12000);
     });
 
     // --- SCRIPT CHATBOT ---
