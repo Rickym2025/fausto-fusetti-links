@@ -7,212 +7,311 @@
   <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
   <style>
-    :root { --primary-color: #0693e3; --secondary-color: #e3a006; }
+    /* --- IMPOSTAZIONI GENERALI --- */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
-    body { font-family: 'Montserrat', sans-serif; color: #f0f0f0; text-align: center; }
+    body { font-family: 'Montserrat', sans-serif; color: #f0f0f0; text-align: center; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+
+    /* --- VIDEO E AUDIO DI SFONDO --- */
     #background-video { position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; width: auto; height: auto; z-index: -100; object-fit: cover; filter: brightness(0.5); }
-    .container-wrapper { min-height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center; padding: 20px; }
-    .container { position: relative; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(10px); padding: 90px 30px 40px 30px; max-width: 680px; width: 100%; margin-top: 100px; margin-bottom: 40px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); z-index: 2; }
-    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-    #audio-cta { position: absolute; top: -25px; right: -20px; display: flex; align-items: center; background-color: rgba(6, 147, 227, 0.2); border: 1px solid var(--primary-color); padding: 8px 15px; border-radius: 30px; backdrop-filter: blur(5px); animation: pulse 2.5s infinite ease-in-out; z-index: 10; cursor: pointer; }
-    #audio-cta .cta-text { margin-right: 10px; font-weight: 500; color: #f0f0f0; }
-    #mute-btn-icon { background: white; color: var(--primary-color); border-radius: 50%; width: 35px; height: 35px; font-size: 1em; display: flex; align-items: center; justify-content: center; }
-    @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
-    .profile-logo { width: 150px; height: 150px; border-radius: 50%; border: 4px solid rgba(255, 255, 255, 0.9); box-shadow: 0 0 20px var(--primary-color); object-fit: cover; position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); animation: spin 15s linear infinite; }
+    #mute-btn { position: fixed; top: 20px; right: 20px; z-index: 10001; background: rgba(0,0,0,0.5); color: white; border: 1px solid white; border-radius: 50%; width: 45px; height: 45px; font-size: 1.2em; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    #mute-btn:hover { background: #0693e3; }
+    
+    /* --- CONTENITORE PRINCIPALE --- */
+    .container { position: relative; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 90px 30px 40px 30px; max-width: 680px; width: 90%; margin: 40px auto; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); }
+
+    /* --- LOGO GIRADISCHI --- */
+    @keyframes spin {
+        from { transform: translate(-50%, -50%) rotate(0deg); }
+        to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    .profile-logo { width: 150px; height: 150px; border-radius: 50%; border: 4px solid rgba(255, 255, 255, 0.9); box-shadow: 0 0 20px rgba(6, 147, 227, 0.5); object-fit: cover; position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); animation: spin 15s linear infinite; }
+
+    /* --- TESTI --- */
+    .header-logo { font-family: 'Arvo', serif; font-size: 3em; font-weight: 700; margin-bottom: 10px; letter-spacing: 2px; color: #FFFFFF; text-shadow: 0 0 10px rgba(6, 147, 227, 0.5), 0 0 20px rgba(6, 147, 227, 0.3); }
     h1 { font-size: 1.8em; margin-bottom: 15px; font-weight: 500; }
     p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1; }
-    .button { display: block; margin: 18px auto; padding: 16px 30px; border: 2px solid var(--primary-color); border-radius: 30px; text-decoration: none; color: #f0f0f0; font-size: 1.2em; font-weight: 500; transition: all 0.3s ease; background-color: transparent; cursor: pointer; }
-    .button:hover { background: var(--primary-color); color: white; transform: translateY(-3px); box-shadow: 0 4px 15px rgba(6, 147, 227, 0.4); }
-    .button.collabora { border-color: var(--secondary-color); } .button.collabora:hover { background: var(--secondary-color); box-shadow: 0 4px 15px rgba(227, 160, 6, 0.4); }
+    p.bio strong { color: #fff; font-weight: 600; }
+
+    /* --- PULSANTI --- */
+    .button { display: block; margin: 18px auto; padding: 16px 30px; border: 2px solid #0693e3; border-radius: 30px; text-decoration: none; color: #f0f0f0; font-size: 1.2em; font-weight: 500; transition: all 0.3s ease; background-color: transparent; cursor: pointer; }
+    .button:hover { background: #0693e3; color: white; transform: translateY(-3px); box-shadow: 0 4px 15px rgba(6, 147, 227, 0.4); }
+    .button.collabora { border-color: #e3a006; }
+    .button.collabora:hover { background: #e3a006; box-shadow: 0 4px 15px rgba(227, 160, 6, 0.4); }
     .button i { margin-right: 10px; }
-    .social-icons { display: flex; justify-content: center; gap: 22px; margin: 40px 0 20px; }
-    .social-icons a { color: #c7c7c7; font-size: 2em; transition: all 0.3s ease; }
+
+    /* --- ICONE SOCIAL --- */
+    .social-icons { display: flex; justify-content: center; gap: 30px; margin: 40px 0 20px; }
+    .social-icons a { color: #c7c7c7; font-size: 2.2em; transition: all 0.3s ease; }
+    .social-icons a:hover { color: #0693e3; transform: scale(1.2); }
+    
+    /* --- FINESTRE MODALI --- */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
     .modal-content { background: #1e1e1e; padding: 30px; border-radius: 15px; width: 100%; max-width: 550px; position: relative; max-height: 90vh; overflow-y: auto; }
     .modal-close { position: absolute; top: 15px; right: 20px; font-size: 2em; color: white; cursor: pointer; line-height: 1; }
-    .music-catalog .info-box { background: rgba(6, 147, 227, 0.1); border: 1px solid var(--primary-color); padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 1.1em; }
+    .modal-content h2 { margin-bottom: 20px; }
+
+    /* --- CATALOGO MUSICALE --- */
+    .music-catalog .info-box { background: rgba(6, 147, 227, 0.1); border: 1px solid #0693e3; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 1.1em; line-height: 1.5; }
     .tab-navigation { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
-    .tab-btn { padding: 10px 15px; border: 1px solid #555; border-radius: 20px; background: none; color: #f0f0f0; cursor: pointer; font-size: 0.9em; }
-    .tab-btn.active { background-color: var(--primary-color); border-color: var(--primary-color); }
+    .tab-btn { padding: 10px 15px; border: 1px solid #555; border-radius: 20px; background: none; color: #f0f0f0; cursor: pointer; transition: all 0.3s; }
+    .tab-btn.active { background-color: #0693e3; border-color: #0693e3; font-weight: bold; }
     .tab-content { display: none; } .tab-content.active { display: block; }
-    .argomento-title { color: var(--primary-color); text-align: left; margin-top: 20px; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #444; }
-    .argomento-title:first-of-type { margin-top: 0; }
     .song-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #333; }
-    .song-item:last-child { border-bottom: none; }
     .song-item .title { flex-grow: 1; text-align: left; }
-    .song-item .play-btn { background: none; border: 2px solid var(--primary-color); color: var(--primary-color); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
-    #catalog-player-display { margin-top: 20px; padding-top: 20px; border-top: 1px solid #444; display: none; align-items: center; gap: 15px; }
-    .contact-form { display: flex; flex-direction: column; gap: 15px; text-align: left; }
-    .contact-form input, .contact-form textarea, .contact-form select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #555; background-color: #2c2c2c; color: #f0f0f0; font-size: 1em; }
-    #form-result { margin-top: 15px; font-weight: bold; }
-    .service-highlight { background: linear-gradient(135deg, rgba(6, 147, 227, 0.1), rgba(227, 160, 6, 0.1)); border: 2px solid transparent; background-clip: padding-box; position: relative; }
-    .service-highlight::before { content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); border-radius: inherit; z-index: -1; }
-    #aphorism-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; pointer-events: none; }
-    @keyframes fadeInOut { 0% { opacity: 0; transform: var(--transform-start); } 15% { opacity: 1; transform: var(--transform-end); } 85% { opacity: 1; transform: var(--transform-end); } 100% { opacity: 0; transform: var(--transform-start); } }
-    .aphorism-postit { position: absolute; background-color: #fefabc; color: #333; padding: 15px; border-radius: 5px; box-shadow: 5px 5px 15px rgba(0,0,0,0.3); max-width: 250px; font-family: 'Georgia', serif; animation: fadeInOut 10s ease-in-out forwards; }
+    .song-item .play-btn { background: none; border: 2px solid #0693e3; color: #0693e3; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
+    #current-song-player { margin-top: 20px; padding-top: 20px; border-top: 1px solid #444; }
+    #current-song-player.hidden { display: none; }
+
+    /* --- STILI RESPONSIVE --- */
+    @media (max-width: 768px) {
+      .container { padding: 90px 20px 30px 20px; } .header-logo { font-size: 2.5em; } h1 { font-size: 1.5em; } p.bio { font-size: 1em; }
+      .button { padding: 14px 25px; font-size: 1.1em; } .social-icons a { font-size: 2em; }
+    }
   </style>
 </head>
 <body>
 
-  <video autoplay muted loop playsinline preload="auto" id="background-video" poster="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/immagine%20sfondo.png"><source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/video_sfondo_compressed.mp4" type="video/mp4"></video>
-  <audio loop autoplay muted id="background-audio"><source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/7a-Controtempo-compresso.mp3" type="audio/mpeg"></audio>
-  <div id="aphorism-container"></div>
-  
-  <div class="container-wrapper">
-    <div class="container">
-      <div id="audio-cta"><span class="cta-text">Attiva la musica</span><div id="mute-btn-icon"><i class="fas fa-volume-mute"></i></div></div>
-      <img src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/logo6.jpg" alt="Logo FF Musica" class="profile-logo">
-      <div class="header-logo">FF Musica</div><h1>Fausto Fusetti</h1>
-      <p class="bio">Musicista, compositore e autore con <strong>40 anni di esperienza</strong>. Offro servizi professionali: <strong>creazione di canzoni su misura</strong> per artisti, orchestre ed editori, <strong>canzoni personalizzate</strong> per privati, coppie, anniversari e matrimoni, e <strong>intrattenimento musicale dal vivo</strong> per eventi speciali.</p>
-      <a href="#" class="button" style="display: none;" title="In Costruzione"><i class="fas fa-globe"></i>Sito Web</a>
-      <button id="open-music-modal" class="button"><i class="fas fa-music"></i>Catalogo Musicale</button>
-      <button id="open-video-modal" class="button"><i class="fas fa-video"></i>Guarda i Video</button>
-      <button id="open-services-modal" class="button service-highlight"><i class="fas fa-heart"></i>Canzoni Personalizzate</button>
-      <button id="open-contact-modal" class="button collabora"><i class="fas fa-pencil-alt"></i>Contattami per un Progetto</button>
-      <div class="social-icons"><a href="https://www.instagram.com/faustofusetti/" target="_blank"><i class="fa-brands fa-instagram"></i></a><a href="https://www.facebook.com/fausto.fusetti.9" target="_blank"><i class="fa-brands fa-facebook"></i></a><a href="https://www.youtube.com/@faustofusetti5859" target="_blank"><i class="fa-brands fa-youtube"></i></a></div>
+  <!-- ELEMENTI MULTIMEDIALI -->
+  <video autoplay muted loop id="background-video">
+    <source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/video_sfondo.mp4" type="video/mp4">
+  </video>
+  <audio autoplay loop id="background-audio">
+    <source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/7a%20Controtempo.mp3" type="audio/mpeg">
+  </audio>
+  <button id="mute-btn" aria-label="Attiva/Disattiva audio">
+    <i class="fas fa-volume-up"></i>
+  </button>
+
+  <!-- CONTENUTO PRINCIPALE -->
+  <div class="container">
+    <img src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/logo6.jpg" alt="Logo FF Musica" class="profile-logo">
+    <div class="header-logo">FF Musica</div>
+    <h1>Fausto Fusetti</h1>
+    <p class="bio">
+      Con <strong>40 anni di esperienza</strong> come musicista, compositore e autore, trasformo emozioni in musica. La mia versatilità mi permette di spaziare tra ogni genere: dal liscio al moderno, dal jazz alle colonne sonore per la pubblicità.
+      <br><br>
+      Come polistrumentista (pianoforte, chitarra e voce), offro un servizio completo per la <strong>creazione di canzoni personalizzate</strong>. Se sei un'orchestra, un cantante o un editore in cerca di un brano inedito e su misura, sei nel posto giusto.
+    </p>
+
+    <button id="open-music-modal" class="button"><i class="fas fa-music"></i>Catalogo Musicale</button>
+    <button id="open-video-modal" class="button"><i class="fas fa-video"></i>Guarda i Video</button>
+    <a href="mailto:modena.riccardo@gmail.com" class="button collabora"><i class="fas fa-pencil-alt"></i>Richiedi una Collaborazione</a>
+    
+    <div class="social-icons">
+      <a href="https://www.instagram.com/faustofusetti/" target="_blank" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+      <a href="https://www.facebook.com/fausto.fusetti.9" target="_blank" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
+      <a href="https://www.youtube.com/@faustofusetti5859" target="_blank" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
     </div>
   </div>
 
-  <div id="video-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="video-modal">&times;</span><h2>Video Selezionati</h2><a href="https://www.youtube.com/watch?v=7s3-7DV38IA" target="_blank" class="button">Produzioni Varie</a><a href="https://www.youtube.com/watch?v=Y8YqyCT7h5E" target="_blank" class="button">Ascolta "Noi"</a><a href="https://www.youtube.com/watch?v=igexCZ24Twg" target="_blank" class="button">Ascolta "Per Te"</a></div></div>
-  <div id="music-modal" class="modal-overlay"><div class="modal-content music-catalog"><span class="modal-close" data-target="music-modal">&times;</span><h2>Catalogo Musicale</h2><div class="info-box"><i class="fas fa-comments"></i> Chiedi a <strong>Fausto AI</strong> di trovare il brano perfetto per te.</div><div id="tab-navigation-container" class="tab-navigation"><p>Caricamento catalogo...</p></div><div id="tab-content-container"></div><div id="catalog-player-display"><button id="catalog-player-button"><i class="fas fa-play"></i></button><span id="catalog-song-title">Seleziona un brano</span><audio id="catalog-audio-player"></audio></div></div></div>
-  <div id="services-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="services-modal">&times;</span><h2><i class="fas fa-heart" style="color: var(--secondary-color); margin-right: 10px;"></i>Canzoni Personalizzate</h2><div style="text-align: left; line-height: 1.6; margin-bottom: 20px;"><h3 style="color: var(--primary-color); margin-bottom: 10px;">✨ Servizi Esclusivi:</h3><ul style="list-style: none; padding-left: 0;"><li style="margin-bottom: 10px;"><i class="fas fa-heart" style="color: #e74c3c; margin-right: 8px;"></i> <strong>Canzoni per Coppie</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-ring" style="color: #f39c12; margin-right: 8px;"></i> <strong>Anniversari e Matrimoni</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-gift" style="color: #9b59b6; margin-right: 8px;"></i> <strong>Testi Personalizzati</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-birthday-cake" style="color: #e67e22; margin-right: 8px;"></i> <strong>Eventi Speciali</strong></li></ul><div style="background: rgba(6, 147, 227, 0.1); border-left: 4px solid var(--primary-color); padding: 15px; margin: 20px 0; border-radius: 5px;"><p><strong>💡 Come funziona:</strong> Raccontami la tua storia, i tuoi ricordi. Creerò una canzone unica che rappresenti le tue emozioni.</p></div></div><button id="contact-for-custom-song" class="button collabora">Richiedi la Tua Canzone</button></div></div>
-  <div id="contact-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="contact-modal">&times;</span><h2>Contattami per il tuo Progetto</h2><form id="contact-form" class="contact-form"><input type="hidden" name="access_key" value="9013a8d5-0901-42a0-b9e6-4c45553f960d"><input type="text" name="name" placeholder="Il tuo Nome" required><input type="email" name="email" placeholder="La tua Email" required><input type="tel" name="phone" placeholder="Il tuo Telefono (Opzionale)"><select name="service_type" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #555; background-color: #2c2c2c; color: #f0f0f0; font-size: 1em;"><option value="">Seleziona il tipo di servizio</option><option value="canzone_personalizzata">Canzone Personalizzata</option><option value="composizione_artista">Composizione per Artista</option><option value="intrattenimento_live">Intrattenimento Live</option><option value="altro">Altro</option></select><textarea name="message" rows="4" placeholder="Descrivi la tua idea o richiesta..." required></textarea><button type="submit" class="button collabora">Invia Messaggio</button></form><div id="form-result"></div></div></div>
+  <!-- FINESTRA MODALE VIDEO -->
+  <div id="video-modal" class="modal-overlay">
+    <div class="modal-content">
+        <span class="modal-close" data-target="video-modal">&times;</span>
+        <h2>Video Selezionati</h2>
+        <a href="https://www.youtube.com/watch?v=7s3-7DV38IA" target="_blank" class="button">Produzioni Varie</a>
+        <a href="https://www.youtube.com/watch?v=Y8YqyCT7h5E" target="_blank" class="button">Ascolta "Noi"</a>
+        <a href="https://www.youtube.com/watch?v=igexCZ24Twg" target="_blank" class="button">Ascolta "Per Te"</a>
+    </div>
+  </div>
   
-  <div id="chatbot-container"></div>
-  
+  <!-- FINESTRA MODALE MUSICA -->
+  <div id="music-modal" class="modal-overlay">
+    <div class="modal-content music-catalog">
+        <span class="modal-close" data-target="music-modal">&times;</span>
+        <h2>Catalogo Musicale</h2>
+        <div class="info-box"><i class="fas fa-comments"></i> Questo è solo un assaggio! Chiedi a <strong>Sara</strong> di trovare il brano perfetto per te tra oltre 200 composizioni.</div>
+        <div class="tab-navigation">
+            <button class="tab-btn active" data-tab="moderno">Moderno</button>
+            <button class="tab-btn" data-tab="funky">Funky</button>
+        </div>
+        <div id="tab-moderno" class="tab-content active">
+            <div class="song-item" data-src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/1%20Trent'anni%20in%20un%20Caff%C3%A8.mp3">
+                <span class="title">Trent'anni in un Caffè</span><button class="play-btn"><i class="fas fa-play"></i></button>
+            </div>
+        </div>
+        <div id="tab-funky" class="tab-content">
+            <div class="song-item" data-src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/7a%20Controtempo.mp3">
+                <span class="title">Controtempo</span><button class="play-btn"><i class="fas fa-play"></i></button>
+            </div>
+        </div>
+        <div id="current-song-player" class="hidden"><audio id="catalog-audio-player" controls style="width: 100%;"></audio></div>
+    </div>
+  </div>
+
+  <!-- WIDGET CHATBOT (Codice completo) -->
+  <div id="chatbot-container">
+    <style>
+        #chatbot-bubble { position: fixed; bottom: 25px; right: 25px; width: 65px; height: 65px; border-radius: 50%; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; background-image: url('https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/eva%20copia.jpg'); background-size: cover; background-position: center; border: 3px solid #0693e3; z-index: 9999; }
+        #chatbot-bubble:hover { transform: scale(1.1); } #chatbot-bubble.open { background-image: none; background-color: #0693e3; }
+        #chatbot-bubble.open .icon-close { opacity: 1; } #chatbot-bubble svg { width: 32px; height: 32px; color: white; transition: opacity 0.3s ease; opacity: 0; position: absolute; }
+        #chatbot-window { position: fixed; bottom: 100px; right: 25px; width: 440px; max-width: 95vw; height: 70vh; max-height: 600px; background-color: #f9f7f3; border-radius: 15px; box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2); z-index: 9998; display: flex; flex-direction: column; overflow: hidden; transform: translateY(20px) scale(0.95); opacity: 0; visibility: hidden; transition: all 0.3s ease; }
+        #chatbot-window.open { transform: translateY(0) scale(1); opacity: 1; visibility: visible; }
+        @media (max-width: 920px) { #chatbot-window { width: 100vw; height: 100vh; max-height: 100vh; bottom: 0; right: 0; top: 0; left: 0; border-radius: 0; } #chatbot-bubble { bottom: 10px; right: 10px; } }
+        .chatbot-header { background-color: #0693e3; color: white; padding: 1rem; text-align: center; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .chatbot-header img { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; border: 2px solid white; }
+        .chatbot-messages { flex-grow: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; }
+        .message { display: flex; align-items: flex-end; margin-bottom: 10px; max-width: 85%; } .message.user { align-self: flex-end; } .message.bot { align-self: flex-start; }
+        .message-avatar { width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; flex-shrink: 0; }
+        .message-text { padding: 10px 15px; border-radius: 18px; line-height: 1.4; word-wrap: break-word; } .message.user .message-text { background-color: #eef2f5; color: #333; border-bottom-right-radius: 4px; }
+        .message.bot .message-text { background-color: #0693e3; color: white; border-bottom-left-radius: 4px; }
+        .chatbot-input { display: flex; border-top: 1px solid #ddd; background-color: white; padding: 10px; align-items: center; flex-shrink: 0; }
+        .chatbot-input input { flex-grow: 1; border: none; padding: 10px; font-size: 1rem; } .chatbot-input input:focus-visible { outline: 2px solid #0693e3; }
+        .chatbot-input button { background: none; border: none; padding: 0 10px; cursor: pointer; color: #0693e3; }
+    </style>
+    <div id="chatbot-bubble"><svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg></div>
+    <div id="chatbot-window">
+        <div class="chatbot-header"><img src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/eva%20copia.jpg" alt="Sara"><div><h3>FF Musica</h3><small>Assistente Virtuale</small></div></div>
+        <div class="chatbot-messages" id="chatbot-messages"></div>
+        <div class="chatbot-input"><input type="text" id="chatbot-input-field" placeholder="Scrivi un messaggio..."><button id="chatbot-send-btn"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg></button></div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
   <script>
+    // SCRIPT PRINCIPALE PER LE FUNZIONALITÀ DELLA PAGINA
     document.addEventListener('DOMContentLoaded', function() {
-        // --- GESTIONE AUDIO SOTTOFONDO ---
+        
+        // --- GESTIONE AUDIO DI SOTTOFONDO E TASTO MUTE ---
         const bgAudio = document.getElementById('background-audio');
-        const audioCta = document.getElementById('audio-cta');
-        const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i');
-        const ctaText = document.querySelector('#audio-cta .cta-text');
+        const muteBtn = document.getElementById('mute-btn');
+        const muteIcon = muteBtn.querySelector('i');
         
-        bgAudio.play().catch(() => console.log("Autoplay bloccato. L'utente deve interagire."));
-
-        audioCta.addEventListener('click', () => {
+        // Prova a far partire l'audio (potrebbe essere bloccato dal browser)
+        bgAudio.play().catch(error => console.log("Autoplay bloccato dal browser. L'utente deve interagire prima."));
+        
+        muteBtn.addEventListener('click', () => {
             bgAudio.muted = !bgAudio.muted;
-            muteBtnIcon.className = bgAudio.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
-            ctaText.textContent = bgAudio.muted ? 'Attiva la musica' : 'Disattiva musica';
-        });
-
-        // --- GESTIONE MODALI ---
-        document.getElementById('open-video-modal').addEventListener('click', () => document.getElementById('video-modal').style.display = 'flex');
-        document.getElementById('open-music-modal').addEventListener('click', () => document.getElementById('music-modal').style.display = 'flex');
-        document.getElementById('open-services-modal').addEventListener('click', () => document.getElementById('services-modal').style.display = 'flex');
-        document.getElementById('open-contact-modal').addEventListener('click', () => document.getElementById('contact-modal').style.display = 'flex');
-        document.getElementById('contact-for-custom-song').addEventListener('click', () => {
-            document.getElementById('services-modal').style.display = 'none';
-            document.getElementById('contact-modal').style.display = 'flex';
-            document.querySelector('select[name="service_type"]').value = 'canzone_personalizzata';
-        });
-        document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', e => document.getElementById(e.currentTarget.dataset.target).style.display = 'none'));
-        document.querySelectorAll('.modal-overlay').forEach(modal => modal.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; }));
-
-        // --- GESTIONE PLAYER CATALOGO ---
-        const catalogPlayer = document.getElementById('catalog-audio-player');
-        const playerDisplay = document.getElementById('catalog-player-display');
-        const playerBtn = document.getElementById('catalog-player-button');
-        const playerTitle = document.getElementById('catalog-song-title');
-        playerBtn.addEventListener('click', () => { if (catalogPlayer.paused) catalogPlayer.play(); else catalogPlayer.pause(); });
-        catalogPlayer.addEventListener('play', () => playerBtn.innerHTML = '<i class="fas fa-pause"></i>');
-        catalogPlayer.addEventListener('pause', () => playerBtn.innerHTML = '<i class="fas fa-play"></i>');
-        
-        async function loadMusicFromSheet() {
-            const sheetUrl = 'https://docs.google.com/spreadsheets/d/1oKwAszQPcpBndaN5xCv5Ua917o8vEtkNAFfpNztCclY/export?format=csv&gid=1445821517';
-            try {
-                const response = await fetch(sheetUrl);
-                if (!response.ok) throw new Error('Network response was not ok');
-                const data = await response.text();
-                const songs = data.trim().split(/\r\n|\n/).slice(1).map(row => { const [genre, argomento, title, url] = row.split(',').map(s => s ? s.trim().replace(/^"|"$/g, '') : ''); return { genre, argomento, title, url }; }).filter(s => s.genre && s.argomento && s.title && s.url);
-                if (songs.length === 0) throw new Error('Nessun dato valido trovato nel CSV.');
-                renderCatalog(songs);
-            } catch (error) { console.error("Errore caricamento catalogo:", error); document.getElementById('tab-navigation-container').innerHTML = `<p style="color: #f44336;">Errore nel caricamento del catalogo.</p>`; }
-        }
-
-        function renderCatalog(songs) {
-            const tabsContainer = document.getElementById('tab-navigation-container');
-            const contentContainer = document.getElementById('tab-content-container');
-            
-            const catalog = songs.reduce((acc, song) => {
-                const { genre, argomento, title, url } = song;
-                if (!acc[genre]) acc[genre] = {};
-                if (!acc[genre][argomento]) acc[genre][argomento] = [];
-                acc[genre][argomento].push({ title, url });
-                return acc;
-            }, {});
-
-            const genres = Object.keys(catalog);
-            tabsContainer.innerHTML = genres.map((genre, index) => `<button class="tab-btn ${index === 0 ? 'active' : ''}" data-tab="${genre}">${genre}</button>`).join('');
-            
-            contentContainer.innerHTML = genres.map((genre, index) => {
-                const argomenti = Object.keys(catalog[genre]);
-                const argomentiHtml = argomenti.map(argomento => {
-                    const songsHtml = catalog[genre][argomento].map(song => `<div class="song-item" data-src="${song.url}" data-title="${song.title}"><span class="title">${song.title}</span><button class="play-btn"><i class="fas fa-play"></i></button></div>`).join('');
-                    return `<h3 class="argomento-title">${argomento}</h3>${songsHtml}`;
-                }).join('');
-                return `<div id="tab-${genre}" class="tab-content ${index === 0 ? 'active' : ''}">${argomentiHtml}</div>`;
-            }).join('');
-            addEventListenersToCatalog();
-        }
-
-        function addEventListenersToCatalog() {
-            document.querySelectorAll('.tab-btn').forEach(tab => tab.addEventListener('click', e => {
-                document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
-                e.currentTarget.classList.add('active');
-                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-                document.getElementById(`tab-${e.currentTarget.dataset.tab}`).classList.add('active');
-            }));
-            document.querySelectorAll('.song-item .play-btn').forEach(button => button.addEventListener('click', e => {
-                const item = e.currentTarget.closest('.song-item');
-                playerDisplay.classList.add('visible');
-                playerTitle.textContent = item.dataset.title;
-                if (catalogPlayer.src !== item.dataset.src || catalogPlayer.paused) { catalogPlayer.src = item.dataset.src; catalogPlayer.play(); } else { catalogPlayer.pause(); }
-            }));
-        }
-        loadMusicFromSheet();
-
-        // --- GESTIONE FORM CONTATTO ---
-        const form = document.getElementById('contact-form');
-        const formResult = document.getElementById('form-result');
-        form.addEventListener('submit', function(e) { e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio in corso..."; fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).then(response => response.json()).then(data => { if (data.success) { formResult.innerHTML = "Messaggio inviato con successo!"; form.reset(); } else { formResult.innerHTML = `Errore: ${data.message}`; } }).catch(() => formResult.innerHTML = "Si è verificato un errore."); });
-
-        // --- LOGICA POST-IT ---
-        (function() {
-            const aphorisms = [ "La musica è la vera lingua universale.", "Dove le parole finiscono, inizia la musica.", "La vita è come un pianoforte, ciò che ne esce dipende da come la suoni.", "La musica esprime ciò che non può essere detto e su cui è impossibile rimanere in silenzio.", "Senza musica, la vita sarebbe un errore." ];
-            const aphorismContainer = document.getElementById('aphorism-container');
-            const mainContainer = document.querySelector('.container');
-            function showRandomAphorism() { const rect = mainContainer.getBoundingClientRect(); const postit = document.createElement('div'); postit.className = 'aphorism-postit'; postit.textContent = aphorisms[Math.floor(Math.random() * aphorisms.length)]; let top, left; do { top = Math.random() * window.innerHeight; left = Math.random() * window.innerWidth; } while ( top > rect.top - 50 && top < rect.bottom + 50 && left > rect.left - 50 && left < rect.right + 50 ); postit.style.top = `${top}px`; postit.style.left = `${left}px`; const rotation = `rotate(${Math.random() * 20 - 10}deg)`; postit.style.setProperty('--transform-start', `${rotation} translateY(20px)`); postit.style.setProperty('--transform-end', `${rotation} translateY(0)`); aphorismContainer.appendChild(postit); setTimeout(() => { postit.remove(); }, 10000); }
-            setInterval(showRandomAphorism, 12000);
-        })();
-    });
-
-    // --- SCRIPT CHATBOT ---
-    (function() {
-        const chatbotHTML = `<style>:root{--primary-color:#0693e3}#chatbot-bubble{position:fixed;bottom:25px;right:25px;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/Fausto%20immagine.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:9999}#chatbot-bubble:hover{transform:scale(1.1)}#chatbot-bubble.open{background-image:none;background-color:var(--primary-color)}#chatbot-bubble.open .icon-close{opacity:1}#chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}#chatbot-welcome-bubble{background-color:#eef2f5;color:#1e293b;padding:12px 18px;border-radius:15px;box-shadow:0 4px 12px rgba(0,0,0,.15);font-size:15px;z-index:9998;cursor:pointer;opacity:0;animation:fadeInWelcome 1s ease 1s forwards;position:fixed;bottom:25px;right:105px;visibility:hidden}#chatbot-welcome-bubble.visible{visibility:visible}@keyframes fadeInWelcome{to{opacity:1}}#chatbot-window{position:fixed;bottom:100px;right:25px;width:440px;max-width:95vw;height:70vh;max-height:600px;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);z-index:9998;display:flex;flex-direction:column;overflow:hidden;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease}#chatbot-window.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}@media (max-width:920px){#chatbot-window{width:100vw;height:100vh;max-height:100vh;bottom:0;right:0;top:0;left:0;border-radius:0}#chatbot-bubble{bottom:10px;right:10px}#chatbot-welcome-bubble{display:none}}.chatbot-header{background-color:var(--primary-color);color:#fff;padding:1rem;text-align:center;display:flex;align-items:center;justify-content:center;flex-shrink:0}.chatbot-header img{width:40px;height:40px;border-radius:50%;margin-right:10px;border:2px solid #fff}.chatbot-messages{flex-grow:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column}.message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}.message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0}.message-text{padding:10px 15px;border-radius:18px;line-height:1.4;word-wrap:break-word}.message.user .message-text{background-color:#eef2f5;color:#333;border-bottom-right-radius:4px}.message.bot .message-text{background-color:var(--primary-color);color:#fff;border-bottom-left-radius:4px}.chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}.chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid var(--primary-color)}.chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}</style><div id="chatbot-bubble"><svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg></div><div id="chatbot-welcome-bubble">Ciao! Sono Fausto AI. Chiedimi qualcosa!</div><div id="chatbot-window"><div class="chatbot-header"><img src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/Fausto%20immagine.jpg" alt="Fausto AI"><div><h3>Fausto AI</h3><small>Assistente Virtuale</small></div></div><div class="chatbot-messages" id="chatbot-messages"></div><div class="chatbot-input"><input type="text" id="chatbot-input-field" placeholder="Scrivi un messaggio..."><button id="chatbot-send-btn"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg></button></div></div>`;
-        document.addEventListener('DOMContentLoaded', () => {
-            const container = document.getElementById('chatbot-container');
-            if (container) {
-                container.innerHTML = chatbotHTML;
-                const webhookUrl = 'INCOLLA_QUI_IL_TUO_WEBHOOK_N8N';
-                const bubble = document.getElementById('chatbot-bubble'), windowEl = document.getElementById('chatbot-window'), welcomeBubble = document.getElementById('chatbot-welcome-bubble'), messagesEl = document.getElementById('chatbot-messages'), inputField = document.getElementById('chatbot-input-field'), sendBtn = document.getElementById('chatbot-send-btn');
-                let chatHistory = [];
-                const getOrCreateSessionId = () => { let id = sessionStorage.getItem('chatbot_session_id'); if (!id) { id = crypto.randomUUID(); sessionStorage.setItem('chatbot_session_id', id); } return id; };
-                const saveChatState = () => sessionStorage.setItem('chatbot_state', JSON.stringify({ isOpen: windowEl.classList.contains('open'), history: chatHistory }));
-                const toggleChat = (forceOpen = false) => { const isOpen = windowEl.classList.contains('open'); if (forceOpen && !isOpen) { bubble.classList.add('open'); windowEl.classList.add('open'); welcomeBubble.classList.remove('visible'); } else if (!forceOpen) { bubble.classList.toggle('open'); windowEl.classList.toggle('open'); } if (windowEl.classList.contains('open')) { welcomeBubble.classList.remove('visible'); inputField.focus(); } else { welcomeBubble.classList.add('visible'); } saveChatState(); };
-                const addMessage = (text, type, shouldSave = true) => { if (shouldSave) chatHistory.push({ text, type }); const msgDiv = document.createElement('div'); msgDiv.className = `message ${type}`; if (type === 'bot') { const avatar = document.createElement('img'); avatar.className = 'message-avatar'; avatar.src = 'https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/Fausto%20immagine.jpg'; msgDiv.appendChild(avatar); } const textDiv = document.createElement('div'); textDiv.className = 'message-text'; textDiv.innerHTML = DOMPurify.sanitize(marked.parse(text)); msgDiv.appendChild(textDiv); messagesEl.appendChild(msgDiv); messagesEl.scrollTop = messagesEl.scrollHeight; if (shouldSave) saveChatState(); };
-                const restoreChatState = () => { const savedState = sessionStorage.getItem('chatbot_state'); let wasOpenedBefore = false; if (savedState) { try { const state = JSON.parse(savedState); if (state.history) { chatHistory = state.history; chatHistory.forEach(msg => addMessage(msg.text, msg.type, false)); } if (state.isOpen) { toggleChat(true); wasOpenedBefore = true; } } catch (e) {} } if (!wasOpenedBefore) { setTimeout(() => toggleChat(true), 1500); } else if (!windowEl.classList.contains('open')) { welcomeBubble.classList.add('visible'); } if (chatHistory.length === 0) { addMessage("Ciao! Sono Fausto AI, assistente virtuale. Sono qui per aiutarti a trovare il tuo brano ideale, tra le categorie: jazz, funky, blues, liscio, pop, cantautore. Cosa stai cercando?", 'bot'); } };
-                const sendMessage = async () => { const userMessage = inputField.value.trim(); if (userMessage === '') return; addMessage(userMessage, 'user'); inputField.value = ''; try { if (webhookUrl.includes('INCOLLA_QUI')) { addMessage("Il chatbot non è configurato.", 'bot'); return; } const response = await fetch(`${webhookUrl}?user_message=${encodeURIComponent(userMessage)}&conversation_id=${getOrCreateSessionId()}`, { method: 'POST' }); if (!response.ok) throw new Error("Network response"); const data = await response.json(); addMessage(data.response || "C'è stato un problema.", 'bot'); } catch (error) { addMessage('Spiacente, si è verificato un errore.', 'bot'); } };
-                bubble.addEventListener('click', () => toggleChat());
-                welcomeBubble.addEventListener('click', () => toggleChat(true));
-                sendBtn.addEventListener('click', sendMessage);
-                inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
-                restoreChatState();
+            if (bgAudio.muted) {
+                muteIcon.classList.remove('fa-volume-up');
+                muteIcon.classList.add('fa-volume-mute');
+            } else {
+                muteIcon.classList.remove('fa-volume-mute');
+                muteIcon.classList.add('fa-volume-up');
             }
         });
+
+        // --- GESTIONE FINESTRE MODALI ---
+        document.getElementById('open-video-modal').addEventListener('click', () => {
+            document.getElementById('video-modal').style.display = 'flex';
+        });
+        document.getElementById('open-music-modal').addEventListener('click', () => {
+            document.getElementById('music-modal').style.display = 'flex';
+        });
+        document.querySelectorAll('.modal-close').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.getElementById(btn.dataset.target).style.display = 'none';
+            });
+        });
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+        });
+
+        // --- GESTIONE CATALOGO MUSICALE INTERNO ALLA MODALE ---
+        const catalogPlayer = document.getElementById('catalog-audio-player');
+        const catalogPlayerContainer = document.getElementById('current-song-player');
+        
+        document.querySelectorAll('.tab-btn').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+                document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.song-item .play-btn').forEach(playBtn => {
+            playBtn.addEventListener('click', (e) => {
+                const songItem = e.currentTarget.closest('.song-item');
+                const songSrc = songItem.dataset.src;
+                
+                document.querySelectorAll('.song-item .play-btn').forEach(btn => {
+                    if(btn !== playBtn) btn.innerHTML = '<i class="fas fa-play"></i>';
+                });
+
+                if (catalogPlayer.src === songSrc && !catalogPlayer.paused) {
+                    catalogPlayer.pause();
+                    playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                } else {
+                    catalogPlayer.src = songSrc;
+                    catalogPlayer.play();
+                    playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                    catalogPlayerContainer.classList.remove('hidden');
+                }
+            });
+        });
+        catalogPlayer.addEventListener('ended', () => {
+            document.querySelectorAll('.song-item .play-btn').forEach(btn => btn.innerHTML = '<i class="fas fa-play"></i>');
+        });
+    });
+
+    // SCRIPT DEL CHATBOT (SEPARATO PER CHIAREZZA)
+    (function() {
+        const webhookUrl = 'INSERISCI_QUI_IL_TUO_WEBHOOK_N8N'; // CAMBIA QUESTO
+        const bubble = document.getElementById('chatbot-bubble');
+        const windowEl = document.getElementById('chatbot-window');
+        const messagesEl = document.getElementById('chatbot-messages');
+        const inputField = document.getElementById('chatbot-input-field');
+        const sendBtn = document.getElementById('chatbot-send-btn');
+        if (!bubble) return;
+
+        let chatHistory = [];
+        const getOrCreateSessionId = () => { let id = sessionStorage.getItem('chatbot_session_id'); if (!id) { id = crypto.randomUUID(); sessionStorage.setItem('chatbot_session_id', id); } return id; };
+        const saveChatState = () => sessionStorage.setItem('chatbot_state', JSON.stringify({ isOpen: windowEl.classList.contains('open'), history: chatHistory }));
+        const restoreChatState = () => {
+            const savedState = sessionStorage.getItem('chatbot_state');
+            if (savedState) {
+                try {
+                    const state = JSON.parse(savedState);
+                    if (state.history && Array.isArray(state.history)) { chatHistory = state.history; chatHistory.forEach(msg => addMessage(msg.text, msg.type, false)); }
+                    if (state.isOpen) { bubble.classList.add('open'); windowEl.classList.add('open'); }
+                } catch (e) { sessionStorage.removeItem('chatbot_state'); chatHistory = []; }
+            } else {
+                setTimeout(() => toggleChat(true), 1000); 
+            }
+            if (chatHistory.length === 0) { addMessage("Ciao! Sono Sara. Chiedimi di ascoltare un brano o come collaborare con Fausto!", 'bot'); }
+        };
+        const toggleChat = (forceOpen = false) => {
+            if (forceOpen) { bubble.classList.add('open'); windowEl.classList.add('open'); }
+            else { bubble.classList.toggle('open'); windowEl.classList.toggle('open'); }
+            if (windowEl.classList.contains('open')) { inputField.focus(); }
+            saveChatState();
+        };
+        bubble.addEventListener('click', () => toggleChat());
+        const addMessage = (text, type, shouldSave = true) => {
+            if (shouldSave) { chatHistory.push({ text, type }); }
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            if (type === 'bot') { const avatar = document.createElement('img'); avatar.className = 'message-avatar'; avatar.src = 'https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/eva%20copia.jpg'; messageDiv.appendChild(avatar); }
+            const textDiv = document.createElement('div');
+            textDiv.className = 'message-text';
+            textDiv.innerHTML = DOMPurify.sanitize(marked.parse(text));
+            messageDiv.appendChild(textDiv);
+            messagesEl.appendChild(messageDiv);
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+            if (shouldSave) { saveChatState(); }
+        };
+        const sendMessage = async () => {
+            const userMessage = inputField.value.trim();
+            if (userMessage === '') return;
+            addMessage(userMessage, 'user');
+            inputField.value = '';
+            
+            const sessionId = getOrCreateSessionId();
+            try {
+                const response = await fetch(`${webhookUrl}?user_message=${encodeURIComponent(userMessage)}&conversation_id=${sessionId}`, { method: 'POST' });
+                const data = await response.json();
+                addMessage(data.response || "C'è stato un problema.", 'bot');
+            } catch (error) {
+                addMessage('Spiacente, si è verificato un errore.', 'bot');
+            }
+        };
+        sendBtn.addEventListener('click', sendMessage);
+        inputField.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
+        
+        document.addEventListener('DOMContentLoaded', restoreChatState);
     })();
   </script>
 </body>
