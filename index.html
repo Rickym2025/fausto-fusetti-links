@@ -63,7 +63,7 @@
       <img src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/logo6.jpg" alt="Logo FF Musica" class="profile-logo">
       <div class="header-logo">FF Musica</div><h1>Fausto Fusetti</h1>
       <p class="bio">Musicista, compositore e autore con <strong>40 anni di esperienza</strong>. Scrivo e produco musica di ogni genere, dal liscio al jazz, dal pop alla pubblicità.<br><br>Offro due servizi principali: <strong>creazione di canzoni su misura</strong> per artisti, orchestre ed editori, e <strong>intrattenimento musicale dal vivo</strong> per serate, matrimoni, feste e cerimonie.</p>
-      <!-- <a href="#" class="button" style="display: none;"><i class="fas fa-globe"></i>Sito Web</a> -->
+      <a href="#" class="button" style="display: none;" title="In Costruzione"><i class="fas fa-globe"></i>Sito Web</a>
       <button id="open-music-modal" class="button"><i class="fas fa-music"></i>Catalogo Musicale</button>
       <button id="open-video-modal" class="button"><i class="fas fa-video"></i>Guarda i Video</button>
       <button id="open-contact-modal" class="button collabora"><i class="fas fa-pencil-alt"></i>Contattami per un Progetto</button>
@@ -92,6 +92,7 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
   <script>
+    // --- SCRIPT PAGINA PRINCIPALE ---
     document.addEventListener('DOMContentLoaded', function() {
         // Gestione Audio Sottofondo
         const bgAudio = document.getElementById('background-audio');
@@ -182,64 +183,48 @@
                 })
                 .catch(error => formResult.innerHTML = "Si è verificato un errore.");
         });
-
-        (function() {
-            const aphorisms = [
-                "La musica è la vera lingua universale.",
-                "Dove le parole finiscono, inizia la musica.",
-                "La vita è come un pianoforte, ciò che ne esce dipende da come la suoni.",
-                "La musica esprime ciò che non può essere detto e su cui è impossibile rimanere in silenzio.",
-                "Senza musica, la vita sarebbe un errore."
-            ];
-            const container = document.getElementById('aphorism-container');
-            const mainContainer = document.querySelector('.container');
-            function showRandomAphorism() {
-                const rect = mainContainer.getBoundingClientRect();
-                const postit = document.createElement('div');
-                postit.className = 'aphorism-postit';
-                postit.textContent = aphorisms[Math.floor(Math.random() * aphorisms.length)];
-                
-                let top, left;
-                do {
-                    top = Math.random() * window.innerHeight;
-                    left = Math.random() * window.innerWidth;
-                } while (
-                    top > rect.top - 50 && top < rect.bottom + 50 &&
-                    left > rect.left - 50 && left < rect.right + 50
-                );
-                
-                postit.style.top = `${top}px`;
-                postit.style.left = `${left}px`;
-                const rotation = `rotate(${Math.random() * 20 - 10}deg)`;
-                postit.style.setProperty('--transform-start', `${rotation} translateY(20px)`);
-                postit.style.setProperty('--transform-end', `${rotation} translateY(0)`);
-
-                container.appendChild(postit);
-                setTimeout(() => { postit.remove(); }, 10000);
-            }
-            setInterval(showRandomAphorism, 12000);
-        })();
     });
 
+    // --- SCRIPT POST-IT E CHATBOT ---
     (function() {
+        // Logica Post-it
+        const aphorisms = [ "La musica è la vera lingua universale.", "Dove le parole finiscono, inizia la musica.", "La vita è come un pianoforte, ciò che ne esce dipende da come la suoni.", "La musica esprime ciò che non può essere detto e su cui è impossibile rimanere in silenzio.", "Senza musica, la vita sarebbe un errore." ];
+        const aphorismContainer = document.getElementById('aphorism-container');
+        const mainContainer = document.querySelector('.container');
+        function showRandomAphorism() {
+            const rect = mainContainer.getBoundingClientRect();
+            const postit = document.createElement('div');
+            postit.className = 'aphorism-postit';
+            postit.textContent = aphorisms[Math.floor(Math.random() * aphorisms.length)];
+            let top, left;
+            do { top = Math.random() * window.innerHeight; left = Math.random() * window.innerWidth; } while ( top > rect.top - 50 && top < rect.bottom + 50 && left > rect.left - 50 && left < rect.right + 50 );
+            postit.style.top = `${top}px`;
+            postit.style.left = `${left}px`;
+            const rotation = `rotate(${Math.random() * 20 - 10}deg)`;
+            postit.style.setProperty('--transform-start', `${rotation} translateY(20px)`);
+            postit.style.setProperty('--transform-end', `${rotation} translateY(0)`);
+            aphorismContainer.appendChild(postit);
+            setTimeout(() => { postit.remove(); }, 10000);
+        }
+        setInterval(showRandomAphorism, 12000);
+
+        // Logica Chatbot
         const chatbotHTML = `<style>:root{--primary-color:#0693e3}#chatbot-bubble{position:fixed;bottom:25px;right:25px;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/eva%20copia.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:9999}#chatbot-bubble:hover{transform:scale(1.1)}#chatbot-bubble.open{background-image:none;background-color:var(--primary-color)}#chatbot-bubble.open .icon-close{opacity:1}#chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}#chatbot-welcome-bubble{background-color:#eef2f5;color:#1e293b;padding:12px 18px;border-radius:15px;box-shadow:0 4px 12px rgba(0,0,0,.15);font-size:15px;z-index:9998;cursor:pointer;opacity:0;animation:fadeInWelcome 1s ease 1s forwards;position:fixed;bottom:25px;right:105px;visibility:hidden}#chatbot-welcome-bubble.visible{visibility:visible}@keyframes fadeInWelcome{to{opacity:1}}#chatbot-window{position:fixed;bottom:100px;right:25px;width:440px;max-width:95vw;height:70vh;max-height:600px;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);z-index:9998;display:flex;flex-direction:column;overflow:hidden;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease}#chatbot-window.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}@media (max-width:920px){#chatbot-window{width:100vw;height:100vh;max-height:100vh;bottom:0;right:0;top:0;left:0;border-radius:0}#chatbot-bubble{bottom:10px;right:10px}#chatbot-welcome-bubble{display:none}}.chatbot-header{background-color:var(--primary-color);color:#fff;padding:1rem;text-align:center;display:flex;align-items:center;justify-content:center;flex-shrink:0}.chatbot-header img{width:40px;height:40px;border-radius:50%;margin-right:10px;border:2px solid #fff}.chatbot-messages{flex-grow:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column}.message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}.message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0}.message-text{padding:10px 15px;border-radius:18px;line-height:1.4;word-wrap:break-word}.message.user .message-text{background-color:#eef2f5;color:#333;border-bottom-right-radius:4px}.message.bot .message-text{background-color:var(--primary-color);color:#fff;border-bottom-left-radius:4px}.chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}.chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid var(--primary-color)}.chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}</style><div id="chatbot-bubble"><svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg></div><div id="chatbot-welcome-bubble">Ciao! Sono Sara. Chiedimi qualcosa!</div><div id="chatbot-window"><div class="chatbot-header"><img src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/eva%20copia.jpg" alt="Sara"><div><h3>FF Musica</h3><small>Assistente Virtuale</small></div></div><div class="chatbot-messages" id="chatbot-messages"></div><div class="chatbot-input"><input type="text" id="chatbot-input-field" placeholder="Scrivi un messaggio..."><button id="chatbot-send-btn"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg></button></div></div>`;
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('chatbot-container').innerHTML = chatbotHTML;
-            const webhookUrl = 'INCOLLA_QUI_IL_TUO_WEBHOOK_N8N';
-            const bubble = document.getElementById('chatbot-bubble'), windowEl = document.getElementById('chatbot-window'), welcomeBubble = document.getElementById('chatbot-welcome-bubble'), messagesEl = document.getElementById('chatbot-messages'), inputField = document.getElementById('chatbot-input-field'), sendBtn = document.getElementById('chatbot-send-btn');
-            let chatHistory = [];
-            const getOrCreateSessionId = () => { let id = sessionStorage.getItem('chatbot_session_id'); if (!id) { id = crypto.randomUUID(); sessionStorage.setItem('chatbot_session_id', id); } return id; };
-            const saveChatState = () => sessionStorage.setItem('chatbot_state', JSON.stringify({ isOpen: windowEl.classList.contains('open'), history: chatHistory }));
-            const toggleChat = (forceOpen = false) => { const isOpen = windowEl.classList.contains('open'); if (forceOpen && !isOpen) { bubble.classList.add('open'); windowEl.classList.add('open'); welcomeBubble.classList.remove('visible'); } else if (!forceOpen) { bubble.classList.toggle('open'); windowEl.classList.toggle('open'); } if (windowEl.classList.contains('open')) { welcomeBubble.classList.remove('visible'); inputField.focus(); } else { welcomeBubble.classList.add('visible'); } saveChatState(); };
-            const addMessage = (text, type, shouldSave = true) => { if (shouldSave) chatHistory.push({ text, type }); const msgDiv = document.createElement('div'); msgDiv.className = `message ${type}`; if (type === 'bot') { const avatar = document.createElement('img'); avatar.className = 'message-avatar'; avatar.src = 'https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/eva%20copia.jpg'; msgDiv.appendChild(avatar); } const textDiv = document.createElement('div'); textDiv.className = 'message-text'; textDiv.innerHTML = DOMPurify.sanitize(marked.parse(text)); msgDiv.appendChild(textDiv); messagesEl.appendChild(msgDiv); messagesEl.scrollTop = messagesEl.scrollHeight; if (shouldSave) saveChatState(); };
-            const restoreChatState = () => { const savedState = sessionStorage.getItem('chatbot_state'); let wasOpenedBefore = false; if (savedState) { try { const state = JSON.parse(savedState); if (state.history) { chatHistory = state.history; chatHistory.forEach(msg => addMessage(msg.text, msg.type, false)); } if (state.isOpen) { toggleChat(true); wasOpenedBefore = true; } } catch (e) {} } if (!wasOpenedBefore) { setTimeout(() => toggleChat(true), 1500); } else if (!windowEl.classList.contains('open')) { welcomeBubble.classList.add('visible'); } if (chatHistory.length === 0) addMessage("Ciao! Sono Sara. Chiedimi di ascoltare un brano o come collaborare con Fausto!", 'bot'); };
-            const sendMessage = async () => { const userMessage = inputField.value.trim(); if (userMessage === '') return; addMessage(userMessage, 'user'); inputField.value = ''; try { if (webhookUrl.includes('INCOLLA_QUI')) { addMessage("Il chatbot non è configurato.", 'bot'); return; } const response = await fetch(`${webhookUrl}?user_message=${encodeURIComponent(userMessage)}&conversation_id=${getOrCreateSessionId()}`, { method: 'POST' }); if (!response.ok) throw new Error("Network response"); const data = await response.json(); addMessage(data.response || "C'è stato un problema.", 'bot'); } catch (error) { addMessage('Spiacente, si è verificato un errore.', 'bot'); } };
-            bubble.addEventListener('click', () => toggleChat());
-            welcomeBubble.addEventListener('click', () => toggleChat(true));
-            sendBtn.addEventListener('click', sendMessage);
-            inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
-            restoreChatState();
-        });
+        document.getElementById('chatbot-container').innerHTML = chatbotHTML;
+        const webhookUrl = 'INCOLLA_QUI_IL_TUO_WEBHOOK_N8N';
+        const bubble = document.getElementById('chatbot-bubble'), windowEl = document.getElementById('chatbot-window'), welcomeBubble = document.getElementById('chatbot-welcome-bubble'), messagesEl = document.getElementById('chatbot-messages'), inputField = document.getElementById('chatbot-input-field'), sendBtn = document.getElementById('chatbot-send-btn');
+        let chatHistory = [];
+        const getOrCreateSessionId = () => { let id = sessionStorage.getItem('chatbot_session_id'); if (!id) { id = crypto.randomUUID(); sessionStorage.setItem('chatbot_session_id', id); } return id; };
+        const saveChatState = () => sessionStorage.setItem('chatbot_state', JSON.stringify({ isOpen: windowEl.classList.contains('open'), history: chatHistory }));
+        const toggleChat = (forceOpen = false) => { const isOpen = windowEl.classList.contains('open'); if (forceOpen && !isOpen) { bubble.classList.add('open'); windowEl.classList.add('open'); welcomeBubble.classList.remove('visible'); } else if (!forceOpen) { bubble.classList.toggle('open'); windowEl.classList.toggle('open'); } if (windowEl.classList.contains('open')) { welcomeBubble.classList.remove('visible'); inputField.focus(); } else { welcomeBubble.classList.add('visible'); } saveChatState(); };
+        const addMessage = (text, type, shouldSave = true) => { if (shouldSave) chatHistory.push({ text, type }); const msgDiv = document.createElement('div'); msgDiv.className = `message ${type}`; if (type === 'bot') { const avatar = document.createElement('img'); avatar.className = 'message-avatar'; avatar.src = 'https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/eva%20copia.jpg'; msgDiv.appendChild(avatar); } const textDiv = document.createElement('div'); textDiv.className = 'message-text'; textDiv.innerHTML = DOMPurify.sanitize(marked.parse(text)); msgDiv.appendChild(textDiv); messagesEl.appendChild(msgDiv); messagesEl.scrollTop = messagesEl.scrollHeight; if (shouldSave) saveChatState(); };
+        const restoreChatState = () => { const savedState = sessionStorage.getItem('chatbot_state'); let wasOpenedBefore = false; if (savedState) { try { const state = JSON.parse(savedState); if (state.history) { chatHistory = state.history; chatHistory.forEach(msg => addMessage(msg.text, msg.type, false)); } if (state.isOpen) { toggleChat(true); wasOpenedBefore = true; } } catch (e) {} } if (!wasOpenedBefore) { setTimeout(() => toggleChat(true), 1500); } else if (!windowEl.classList.contains('open')) { welcomeBubble.classList.add('visible'); } if (chatHistory.length === 0) addMessage("Ciao! Sono Sara. Chiedimi di ascoltare un brano o come collaborare con Fausto!", 'bot'); };
+        const sendMessage = async () => { const userMessage = inputField.value.trim(); if (userMessage === '') return; addMessage(userMessage, 'user'); inputField.value = ''; try { if (webhookUrl.includes('INCOLLA_QUI')) { addMessage("Il chatbot non è configurato.", 'bot'); return; } const response = await fetch(`${webhookUrl}?user_message=${encodeURIComponent(userMessage)}&conversation_id=${getOrCreateSessionId()}`, { method: 'POST' }); if (!response.ok) throw new Error("Network response"); const data = await response.json(); addMessage(data.response || "C'è stato un problema.", 'bot'); } catch (error) { addMessage('Spiacente, si è verificato un errore.', 'bot'); } };
+        bubble.addEventListener('click', () => toggleChat());
+        welcomeBubble.addEventListener('click', () => toggleChat(true));
+        sendBtn.addEventListener('click', sendMessage);
+        inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
+        document.addEventListener('DOMContentLoaded', restoreChatState);
     })();
   </script>
 </body>
