@@ -50,7 +50,6 @@
     #form-result { margin-top: 15px; font-weight: bold; }
     .service-highlight { background: linear-gradient(135deg, rgba(6, 147, 227, 0.1), rgba(227, 160, 6, 0.1)); border: 2px solid transparent; background-clip: padding-box; position: relative; }
     .service-highlight::before { content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); border-radius: inherit; z-index: -1; }
-    /* --- MODIFICA #1: Stili per i Post-it --- */
     #aphorism-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; pointer-events: none; }
     @keyframes fadeInOut { 0% { opacity: 0; transform: var(--transform-start); } 15% { opacity: 1; transform: var(--transform-end); } 85% { opacity: 1; transform: var(--transform-end); } 100% { opacity: 0; transform: var(--transform-start); } }
     .aphorism-postit { position: absolute; background-color: #fefabc; color: #333; padding: 15px; border-radius: 5px; box-shadow: 5px 5px 15px rgba(0,0,0,0.3); max-width: 250px; font-family: 'Georgia', serif; animation: fadeInOut 10s ease-in-out forwards; }
@@ -108,15 +107,15 @@
         const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i');
         const ctaText = document.querySelector('#audio-cta .cta-text');
         const catalogPlayer = document.getElementById('catalog-audio-player');
-        let userWantsBgMusic = false;
+        let isBgAudioInitialized = false;
 
         audioCta.addEventListener('click', () => {
-            if (!userWantsBgMusic) {
+            if (!isBgAudioInitialized) {
                 bgAudio.play().then(() => {
-                    userWantsBgMusic = true;
+                    isBgAudioInitialized = true;
                     bgAudio.muted = false;
                     updateMuteButton();
-                }).catch(e => console.error("Errore avvio audio:", e));
+                }).catch(e => console.error("Errore avvio audio di sottofondo:", e));
             } else {
                 bgAudio.muted = !bgAudio.muted;
                 updateMuteButton();
@@ -128,9 +127,9 @@
             ctaText.textContent = bgAudio.muted ? 'Attiva la musica' : 'Disattiva musica';
         }
 
-        catalogPlayer.addEventListener('play', () => { if (userWantsBgMusic && !bgAudio.paused) bgAudio.pause(); });
-        catalogPlayer.addEventListener('pause', () => { if (userWantsBgMusic && bgAudio.paused) bgAudio.play(); });
-        catalogPlayer.addEventListener('ended', () => { if (userWantsBgMusic && bgAudio.paused) bgAudio.play(); resetPlayingState(); });
+        catalogPlayer.addEventListener('play', () => { if (isBgAudioInitialized && !bgAudio.paused && !bgAudio.muted) bgAudio.pause(); });
+        catalogPlayer.addEventListener('pause', () => { if (isBgAudioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play(); });
+        catalogPlayer.addEventListener('ended', () => { if (isBgAudioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play(); resetPlayingState(); });
 
         // --- GESTIONE MODALI ---
         document.getElementById('open-music-modal').addEventListener('click', () => document.getElementById('music-modal').style.display = 'flex');
@@ -245,7 +244,6 @@
         const formResult = document.getElementById('form-result');
         form.addEventListener('submit', function(e) { e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio in corso..."; fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).then(response => response.json()).then(data => { if (data.success) { formResult.innerHTML = "Messaggio inviato con successo!"; form.reset(); } else { formResult.innerHTML = `Errore: ${data.message}`; } }).catch(() => formResult.innerHTML = "Si è verificato un errore."); });
     
-        // --- MODIFICA #1: LOGICA POST-IT RIPRISTINATA ---
         const aphorisms = [ "La musica è la vera lingua universale.", "Dove le parole finiscono, inizia la musica.", "La vita è come un pianoforte, ciò che ne esce dipende da come la suoni.", "La musica esprime ciò che non può essere detto e su cui è impossibile rimanere in silenzio.", "Senza musica, la vita sarebbe un errore." ];
         const aphorismContainer = document.getElementById('aphorism-container');
         const mainContainer = document.querySelector('.container');
@@ -266,8 +264,7 @@
             #chatbot-welcome-bubble{background-color:#eef2f5;color:#1e293b;padding:12px 18px;border-radius:15px;box-shadow:0 4px 12px rgba(0,0,0,.15);font-size:15px;z-index:9998;cursor:pointer;opacity:0;animation:fadeInWelcome 1s ease 1s forwards;position:fixed;bottom:25px;right:105px;visibility:hidden}
             #chatbot-welcome-bubble.visible{visibility:visible}@keyframes fadeInWelcome{to{opacity:1}}
             
-            /* --- MODIFICA #3: Stili per il chatbot e logo --- */
-            #chatbot-window-wrapper {position:fixed;bottom:115px;right:25px;width:440px;max-width:95vw;height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease;}
+            #chatbot-window-wrapper {position:fixed;bottom:140px;right:25px;width:440px;max-width:95vw;height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease;}
             #chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}
             #chatbot-window{position:relative; margin-top: 45px; width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;}
             .chatbot-header-logo {width: 90px;height: 90px;border-radius: 50%;border: 3px solid #fff;box-shadow: 0 0 10px rgba(0,0,0,0.3);object-fit: cover;position: absolute;top: 0;left: 50%;transform: translateX(-50%); z-index: 10000;}
