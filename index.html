@@ -109,7 +109,7 @@
   
   <div id="chatbot-container"></div>
   
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/showdown/dist/showdown.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -283,7 +283,7 @@
         setInterval(showRandomAphorism, 12000);
     });
 
-    // --- SCRIPT CHATBOT (SENZA SESSIONSTORAGE) ---
+    // --- SCRIPT CHATBOT (SENZA SESSIONSTORAGE E CON LIBRERIA SICURA) ---
     (function() {
         document.addEventListener('DOMContentLoaded', () => {
             const chatbotHTML = `
@@ -335,7 +335,8 @@
                 container.innerHTML = chatbotHTML;
                 const webhookUrl = 'INCOLLA_QUI_IL_TUO_WEBHOOK_N8N';
                 const bubble = document.getElementById('chatbot-bubble'), windowWrapper = document.getElementById('chatbot-window-wrapper'), messagesEl = document.getElementById('chatbot-messages'), inputField = document.getElementById('chatbot-input-field'), sendBtn = document.getElementById('chatbot-send-btn');
-                
+                const converter = new showdown.Converter();
+
                 const toggleChat = () => {
                     windowWrapper.classList.toggle('open');
                     bubble.classList.toggle('open');
@@ -348,7 +349,7 @@
                         const avatar = document.createElement('img'); avatar.className = 'message-avatar'; avatar.src = 'https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/Fausto%20immagine.jpg'; msgDiv.appendChild(avatar);
                     }
                     const textDiv = document.createElement('div'); textDiv.className = 'message-text';
-                    textDiv.innerHTML = DOMPurify.sanitize(marked.parse(text));
+                    textDiv.innerHTML = DOMPurify.sanitize(converter.makeHtml(text));
                     msgDiv.appendChild(textDiv); messagesEl.appendChild(msgDiv);
                     messagesEl.scrollTop = messagesEl.scrollHeight;
                 };
