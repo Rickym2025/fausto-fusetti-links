@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Fausto Fusetti - FF Musica</title>
-  <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@700&amp;family=Montserrat:wght@400;500;600&amp;display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
   <style>
     :root { --primary-color: #0693e3; --secondary-color: #e3a006; }
@@ -285,51 +285,51 @@
 
     // --- SCRIPT CHATBOT (SENZA SESSIONSTORAGE) ---
     (function() {
-        const chatbotHTML = `
-        <style>
-            :root{--primary-color:#0693e3}
-            #chatbot-bubble{position:fixed;bottom:25px;right:25px;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/Fausto%20immagine.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:9999}
-            #chatbot-bubble:hover{transform:scale(1.1)}
-            #chatbot-bubble.open{background-image:none;background-color:var(--primary-color)}
-            #chatbot-bubble.open .icon-close{opacity:1}
-            #chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}
-            
-            #chatbot-window-wrapper {position:fixed;bottom:140px;right:25px;width:440px;max-width:95vw;height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease;}
-            #chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}
-            #chatbot-window{position:relative; margin-top: 45px; width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;}
-            .chatbot-header-logo {width: 90px;height: 90px;border-radius: 50%;border: 3px solid #fff;box-shadow: 0 0 10px rgba(0,0,0,0.3);object-fit: cover;position: absolute;top: 0;left: 50%;transform: translateX(-50%); z-index: 10000;}
-            
-            @media (max-width:920px){#chatbot-window-wrapper{width:100vw;height:100vh;max-height:100vh;bottom:0;right:0;top:0;left:0;border-radius:0;} #chatbot-bubble{bottom:10px;right:10px}}
-            .chatbot-header{background-color:var(--primary-color);color:#fff;padding:1rem; padding-top: 55px; text-align:center;flex-shrink:0}
-            .chatbot-messages{flex-grow:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column}
-            .message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}
-            .message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0}
-            .message-text{padding:10px 15px;border-radius:18px;line-height:1.4;word-wrap:break-word}
-            .message.user .message-text{background-color:#eef2f5;color:#333;border-bottom-right-radius:4px}
-            .message.bot .message-text{background-color:var(--primary-color);color:#fff;border-bottom-left-radius:4px}
-            .chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}
-            .chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid var(--primary-color)}
-            .chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}
-        </style>
-        <div id="chatbot-bubble">
-            <svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
-        </div>
-        <div id="chatbot-window-wrapper">
-            <img src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/Fausto%20immagine.jpg" alt="Fausto AI" class="chatbot-header-logo">
-            <div id="chatbot-window">
-                <div class="chatbot-header">
-                    <div><h3>Fausto AI</h3><small>Assistente Virtuale</small></div>
-                </div>
-                <div class="chatbot-messages" id="chatbot-messages"></div>
-                <div class="chatbot-input">
-                    <input type="text" id="chatbot-input-field" placeholder="Scrivi un messaggio...">
-                    <button id="chatbot-send-btn"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg></button>
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatbotHTML = `
+            <style>
+                :root{--primary-color:#0693e3}
+                #chatbot-bubble{position:fixed;bottom:25px;right:25px;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/Fausto%20immagine.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:9999}
+                #chatbot-bubble:hover{transform:scale(1.1)}
+                #chatbot-bubble.open{background-image:none;background-color:var(--primary-color)}
+                #chatbot-bubble.open .icon-close{opacity:1}
+                #chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}
+                
+                #chatbot-window-wrapper {position:fixed;bottom:140px;right:25px;width:440px;max-width:95vw;height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease;}
+                #chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}
+                #chatbot-window{position:relative; margin-top: 45px; width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;}
+                .chatbot-header-logo {width: 90px;height: 90px;border-radius: 50%;border: 3px solid #fff;box-shadow: 0 0 10px rgba(0,0,0,0.3);object-fit: cover;position: absolute;top: 0;left: 50%;transform: translateX(-50%); z-index: 10000;}
+                
+                @media (max-width:920px){#chatbot-window-wrapper{width:100vw;height:100vh;max-height:100vh;bottom:0;right:0;top:0;left:0;border-radius:0;} #chatbot-bubble{bottom:10px;right:10px}}
+                .chatbot-header{background-color:var(--primary-color);color:#fff;padding:1rem; padding-top: 55px; text-align:center;flex-shrink:0}
+                .chatbot-messages{flex-grow:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column}
+                .message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}
+                .message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0}
+                .message-text{padding:10px 15px;border-radius:18px;line-height:1.4;word-wrap:break-word}
+                .message.user .message-text{background-color:#eef2f5;color:#333;border-bottom-right-radius:4px}
+                .message.bot .message-text{background-color:var(--primary-color);color:#fff;border-bottom-left-radius:4px}
+                .chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}
+                .chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid var(--primary-color)}
+                .chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}
+            </style>
+            <div id="chatbot-bubble">
+                <svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
+            </div>
+            <div id="chatbot-window-wrapper">
+                <img src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/Fausto%20immagine.jpg" alt="Fausto AI" class="chatbot-header-logo">
+                <div id="chatbot-window">
+                    <div class="chatbot-header">
+                        <div><h3>Fausto AI</h3><small>Assistente Virtuale</small></div>
+                    </div>
+                    <div class="chatbot-messages" id="chatbot-messages"></div>
+                    <div class="chatbot-input">
+                        <input type="text" id="chatbot-input-field" placeholder="Scrivi un messaggio...">
+                        <button id="chatbot-send-btn"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg></button>
+                    </div>
                 </div>
             </div>
-        </div>
         `;
         
-        document.addEventListener('DOMContentLoaded', () => {
             const container = document.getElementById('chatbot-container');
             if (container) {
                 container.innerHTML = chatbotHTML;
