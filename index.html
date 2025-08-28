@@ -31,7 +31,8 @@
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
     .modal-content { background: #1e1e1e; padding: 30px; border-radius: 15px; width: 100%; max-width: 550px; position: relative; max-height: 90vh; overflow-y: auto; }
     .modal-close { position: absolute; top: 15px; right: 20px; font-size: 2em; color: white; cursor: pointer; line-height: 1; }
-    .music-catalog .info-box { background: rgba(6, 147, 227, 0.1); border: 1px solid var(--primary-color); padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 1.1em; }
+    /* --- MODIFICA #2: Spazio aggiunto qui --- */
+    .music-catalog .info-box { background: rgba(6, 147, 227, 0.1); border: 1px solid var(--primary-color); padding: 15px; border-radius: 10px; margin-bottom: 25px; font-size: 1.1em; }
     .filter-group { margin-bottom: 15px; }
     .filter-group .filter-label { text-align: left; margin-bottom: 8px; font-weight: 500; color: var(--primary-color); }
     .filter-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -54,15 +55,17 @@
 </head>
 <body>
 
-  <video autoplay muted loop playsinline preload="auto" id="background-video" poster="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/immagine%20sfondo.png"><source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/video_sfondo_compressed.mp4" type="video/mp4"></video>
-  <audio loop id="background-audio"><source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/7a-Controtempo-compresso.mp3" type="audio/mpeg"></audio>
+  <video autoplay muted loop playsinline preload="auto" id="background-video" poster="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/immagine%20sfondo.png"><source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/video_sfondo_compressed.mp4" type="video/mp4"></source></video>
+  <audio loop id="background-audio"><source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/7a-Controtempo-compresso.mp3" type="audio/mpeg"></source></audio>
   
   <div class="container-wrapper">
     <div class="container">
       <div id="audio-cta"><span class="cta-text">Attiva la musica</span><div id="mute-btn-icon"><i class="fas fa-volume-mute"></i></div></div>
       <img src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/logo6.jpg" alt="Logo FF Musica" class="profile-logo">
       <h1>Fausto Fusetti</h1>
-      <p class="bio">Con 40 anni di esperienza come musicista, compositore e autore, trasformo emozioni in musica. La mia versatilità mi permette di spaziare tra ogni genere: dal liscio al moderno, dal jazz alle colonne sonore per la pubblicità.<br><br>Come polistrumentista (pianoforte, chitarra, tromba, chitarra basso e voce), offro un servizio completo per la creazione di canzoni personalizzate. Se sei un'orchestra, un cantante o un editore in cerca di un brano inedito e su misura, sei nel posto giusto, ti posso fornire: base con tracce aperte, musica con spartito e parole..</p>
+      <!-- --- MODIFICA #1: Testo aggiornato --- -->
+      <p class="bio">Con 40 anni di esperienza come musicista, compositore e autore, trasformo emozioni in musica. La mia versatilità mi permette di spaziare tra ogni genere: dal liscio al moderno, dal jazz alle colonne sonore per la pubblicità.<br><br>Come polistrumentista (pianoforte, chitarra, tromba, chitarra basso e voce), offro un servizio completo per la creazione di canzoni personalizzate. Se sei un'orchestra, un cantante o un editore in cerca di un brano inedito e su misura, sei nel posto giusto, ti posso fornire: base con tracce aperte, musica con spartito e parole.</p>
+      
       <button id="open-music-modal" class="button"><i class="fas fa-music"></i>Catalogo Musicale</button>
       <button id="open-video-modal" class="button"><i class="fas fa-video"></i>Guarda i Video</button>
       <button id="open-services-modal" class="button service-highlight"><i class="fas fa-heart"></i>Canzoni Personalizzate</button>
@@ -85,7 +88,7 @@
   </div>
 
   <div id="services-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="services-modal">&times;</span><h2><i class="fas fa-heart" style="color: var(--secondary-color); margin-right: 10px;"></i>Canzoni Personalizzate</h2><div style="text-align: left; line-height: 1.6; margin-bottom: 20px;"><h3 style="color: var(--primary-color); margin-bottom: 10px;">✨ Servizi Esclusivi:</h3><ul style="list-style: none; padding-left: 0;"><li style="margin-bottom: 10px;"><i class="fas fa-heart" style="color: #e74c3c; margin-right: 8px;"></i> <strong>Canzoni per Coppie</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-ring" style="color: #f39c12; margin-right: 8px;"></i> <strong>Anniversari e Matrimoni</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-gift" style="color: #9b59b6; margin-right: 8px;"></i> <strong>Testi Personalizzati</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-birthday-cake" style="color: #e67e22; margin-right: 8px;"></i> <strong>Eventi Speciali</strong></li></ul><div style="background: rgba(6, 147, 227, 0.1); border-left: 4px solid var(--primary-color); padding: 15px; margin: 20px 0; border-radius: 5px;"><p><strong>💡 Come funziona:</strong> Raccontami la tua storia, i tuoi ricordi. Creerò una canzone unica che rappresenti le tue emozioni.</p></div></div><button id="contact-for-custom-song" class="button collabora">Richiedi la Tua Canzone</button></div></div>
-  <div id="contact-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="contact-modal">&times;</span><h2>Contattami per il tuo Progetto</h2><form id="contact-form" class="contact-form"><input type="hidden" name="access_key" value="9013a8d5-0901-42a0-b9e6-4c45553f960d"><input type="text" name="name" placeholder="Il tuo Nome" required><input type="email" name="email" placeholder="La tua Email" required><input type="tel" name="phone" placeholder="Il tuo Telefono (Opzionale)"><select name="service_type" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #555; background-color: #2c2c2c; color: #f0f0f0; font-size: 1em;"><option value="">Seleziona il tipo di servizio</option><option value="canzone_personalizzata">Canzone Personalizzata</option><option value="composizione_artista">Composizione per Artista</option><option value="intrattenimento_live">Intrattenimento Live</option><option value="altro">Altro</option></select><textarea name="message" rows="4" placeholder="Descrivi la tua idea o richiesta..." required></textarea><button type="submit" class="button collabora">Invia Messaggio</button></form><div id="form-result"></div></div></div>
+  <div id="contact-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="contact-modal">&times;</span><h2>Contattami per il tuo Progetto</h2><form id="contact-form" class="contact-form"><input type="hidden" name="access_key" value="9013a8d5-0901-42a0-b9e6-4c45553f960d"/><input type="text" name="name" placeholder="Il tuo Nome" required/><input type="email" name="email" placeholder="La tua Email" required/><input type="tel" name="phone" placeholder="Il tuo Telefono (Opzionale)"/><select name="service_type" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #555; background-color: #2c2c2c; color: #f0f0f0; font-size: 1em;"><option value="">Seleziona il tipo di servizio</option><option value="canzone_personalizzata">Canzone Personalizzata</option><option value="composizione_artista">Composizione per Artista</option><option value="intrattenimento_live">Intrattenimento Live</option><option value="altro">Altro</option></select><textarea name="message" rows="4" placeholder="Descrivi la tua idea o richiesta..." required></textarea><button type="submit" class="button collabora">Invia Messaggio</button></form><div id="form-result"></div></div></div>
   
   <div id="chatbot-container"></div>
   
@@ -96,7 +99,7 @@
         
         const sheetApiUrl = 'https://script.google.com/macros/s/AKfycbyyvfsSlgx6J-dIeLaIi3Crd6eqG029DDsGzF3Wy8u1VIfwhTMDZJdTPS_ubYszUyFR/exec';
 
-        // --- GESTIONE AUDIO GLOBALE ---
+        // --- MODIFICA #4: GESTIONE AUDIO GLOBALE CORRETTA ---
         const bgAudio = document.getElementById('background-audio');
         const audioCta = document.getElementById('audio-cta');
         const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i');
@@ -252,12 +255,15 @@
             #chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}
             #chatbot-welcome-bubble{background-color:#eef2f5;color:#1e293b;padding:12px 18px;border-radius:15px;box-shadow:0 4px 12px rgba(0,0,0,.15);font-size:15px;z-index:9998;cursor:pointer;opacity:0;animation:fadeInWelcome 1s ease 1s forwards;position:fixed;bottom:25px;right:105px;visibility:hidden}
             #chatbot-welcome-bubble.visible{visibility:visible}@keyframes fadeInWelcome{to{opacity:1}}
-            #chatbot-window-wrapper {position:fixed;bottom:100px;right:25px;width:440px;max-width:95vw;height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease; padding-top: 40px; /* Spazio per il logo */}
+            
+            /* --- MODIFICA #3: Stili per il logo del chatbot --- */
+            #chatbot-window-wrapper {position:fixed;bottom:100px;right:25px;width:440px;max-width:95vw;height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease; padding-top: 45px; /* Spazio per metà logo */}
             #chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}
-            #chatbot-window{width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;}
-            .chatbot-header-logo {width: 80px;height: 80px;border-radius: 50%;border: 3px solid #fff;box-shadow: 0 0 10px rgba(0,0,0,0.3);object-fit: cover;position: absolute;top: 0;left: 50%;transform: translateX(-50%); z-index: 10000;}
-            @media (max-width:920px){#chatbot-window-wrapper{width:100vw;height:100vh;max-height:100vh;bottom:0;right:0;top:0;left:0;border-radius:0; padding-top: 40px;} #chatbot-bubble{bottom:10px;right:10px} #chatbot-welcome-bubble{display:none}}
-            .chatbot-header{background-color:var(--primary-color);color:#fff;padding:1rem;text-align:center;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+            #chatbot-window{position:relative; width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;}
+            .chatbot-header-logo {width: 90px;height: 90px;border-radius: 50%;border: 3px solid #fff;box-shadow: 0 0 10px rgba(0,0,0,0.3);object-fit: cover;position: absolute;top: -45px; /* Spostato in alto di metà della sua altezza */ left: 50%;transform: translateX(-50%); z-index: 10000;}
+            
+            @media (max-width:920px){#chatbot-window-wrapper{width:100vw;height:100vh;max-height:100vh;bottom:0;right:0;top:0;left:0;border-radius:0; padding-top: 45px;} #chatbot-bubble{bottom:10px;right:10px} #chatbot-welcome-bubble{display:none}}
+            .chatbot-header{background-color:var(--primary-color);color:#fff;padding:1rem; padding-top: 55px; /* Spinge il testo sotto il logo */ text-align:center;flex-shrink:0}
             .chatbot-messages{flex-grow:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column}
             .message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}
             .message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0}
