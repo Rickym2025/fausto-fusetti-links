@@ -15,7 +15,7 @@
     .container-wrapper { min-height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center; padding: 20px; }
     .container { position: relative; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(10px); padding: 90px 30px 40px 30px; max-width: 680px; width: 100%; margin-top: 100px; margin-bottom: 40px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); z-index: 2; }
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-    #audio-cta { position: absolute; top: -25px; right: -20px; display: flex; align-items: center; background-color: rgba(6, 147, 227, 0.2); border: 1px solid var(--primary-color); padding: 8px 15px; border-radius: 30px; backdrop-filter: blur(5px); animation: pulse 2.5s infinite ease-in-out; z-index: 10; cursor: pointer; visibility: hidden; /* Nascosto all'inizio */ }
+    #audio-cta { position: absolute; top: -25px; right: -20px; display: flex; align-items: center; background-color: rgba(6, 147, 227, 0.2); border: 1px solid var(--primary-color); padding: 8px 15px; border-radius: 30px; backdrop-filter: blur(5px); animation: pulse 2.5s infinite ease-in-out; z-index: 10; cursor: pointer; visibility: hidden; /* Nascosto finché l'audio non è attivo */ }
     #audio-cta .cta-text { margin-right: 10px; font-weight: 500; color: #f0f0f0; }
     #mute-btn-icon { background: white; color: var(--primary-color); border-radius: 50%; width: 35px; height: 35px; font-size: 1em; display: flex; align-items: center; justify-content: center; }
     @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
@@ -54,7 +54,7 @@
     @keyframes fadeInOut { 0% { opacity: 0; transform: var(--transform-start); } 15% { opacity: 1; transform: var(--transform-end); } 85% { opacity: 1; transform: var(--transform-end); } 100% { opacity: 0; transform: var(--transform-start); } }
     .aphorism-postit { position: absolute; background-color: #fefabc; color: #333; padding: 15px; border-radius: 5px; box-shadow: 5px 5px 15px rgba(0,0,0,0.3); max-width: 250px; font-family: 'Georgia', serif; animation: fadeInOut 10s ease-in-out forwards; }
     
-    #audio-start-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.9); display: none; align-items: center; justify-content: center; z-index: 100000; backdrop-filter: blur(10px); }
+    #audio-start-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.9); display: flex; align-items: center; justify-content: center; z-index: 100000; backdrop-filter: blur(10px); }
     #audio-start-content { background: rgba(6, 147, 227, 0.1); border: 2px solid var(--primary-color); padding: 40px; border-radius: 20px; text-align: center; max-width: 500px; margin: 20px; }
     #audio-start-content h2 { color: var(--primary-color); margin-bottom: 15px; font-size: 1.8em; }
     #audio-start-content p { margin-bottom: 25px; font-size: 1.1em; line-height: 1.6; }
@@ -64,12 +64,11 @@
 </head>
 <body>
 
-  <!-- Overlay per avviare l'audio -->
   <div id="audio-start-overlay">
     <div id="audio-start-content">
       <h2><i class="fas fa-music"></i> Benvenuto!</h2>
       <p>Per la migliore esperienza, questa pagina include una musica di sottofondo. Clicca per attivarla.</p>
-      <button id="start-audio-btn"><i class="fas fa-play"></i> Attiva la Musica</button>
+      <button id="start-audio-btn">Avvia l'Esperienza Musicale</button>
     </div>
   </div>
 
@@ -134,7 +133,6 @@
                 audioStartOverlay.style.display = 'none';
                 audioCta.style.visibility = 'visible';
                 updateMuteButton();
-                sessionStorage.setItem('audioConsent', 'true');
             }).catch(e => {
                 console.error("Avvio audio fallito anche dopo il click:", e);
                 audioStartOverlay.style.display = 'none';
@@ -142,17 +140,7 @@
         }
 
         startAudioBtn.addEventListener('click', initializeAudio);
-
-        if (sessionStorage.getItem('audioConsent') !== 'true') {
-            audioStartOverlay.style.display = 'flex';
-        } else {
-            bgAudio.play().then(() => {
-                audioInitialized = true;
-                bgAudio.muted = false;
-                audioCta.style.visibility = 'visible';
-                updateMuteButton();
-            }).catch(() => { /* Fallimento silenzioso, l'utente può usare il CTA */ });
-        }
+        audioStartOverlay.style.display = 'flex'; // Mostra sempre l'overlay all'inizio
         
         audioCta.addEventListener('click', () => {
             if (!audioInitialized) {
@@ -177,14 +165,7 @@
         document.getElementById('open-video-modal').addEventListener('click', () => document.getElementById('video-modal').style.display = 'flex');
         document.getElementById('open-services-modal').addEventListener('click', () => document.getElementById('services-modal').style.display = 'flex');
         document.getElementById('open-contact-modal').addEventListener('click', () => document.getElementById('contact-modal').style.display = 'flex');
-        const contactForCustomSongBtn = document.getElementById('contact-for-custom-song');
-        if(contactForCustomSongBtn) {
-            contactForCustomSongBtn.addEventListener('click', () => {
-                document.getElementById('services-modal').style.display = 'none';
-                document.getElementById('contact-modal').style.display = 'flex';
-                document.querySelector('select[name="service_type"]').value = 'canzone_personalizzata';
-            });
-        }
+        document.getElementById('contact-for-custom-song').addEventListener('click', () => { document.getElementById('services-modal').style.display = 'none'; document.getElementById('contact-modal').style.display = 'flex'; document.querySelector('select[name="service_type"]').value = 'canzone_personalizzata'; });
         document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', e => document.getElementById(e.currentTarget.dataset.target).style.display = 'none'));
 
         // --- LOGICA CATALOGO MUSICALE ---
@@ -287,6 +268,7 @@
         
         loadMusicFromApi();
 
+        // --- GESTIONE FORM CONTATTO ---
         const form = document.getElementById('contact-form');
         const formResult = document.getElementById('form-result');
         form.addEventListener('submit', function(e) { e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio in corso..."; fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).then(response => response.json()).then(data => { if (data.success) { formResult.innerHTML = "Messaggio inviato con successo!"; form.reset(); } else { formResult.innerHTML = `Errore: ${data.message}`; } }).catch(() => formResult.innerHTML = "Si è verificato un errore."); });
