@@ -72,7 +72,7 @@
     </div>
   </div>
 
-  <!-- NOTA: I percorsi dei file sono stati resi relativi. Assicurati di caricare questi file nel tuo repository GitHub. -->
+  <!-- Assicurati che questi file siano presenti nel tuo repository GitHub -->
   <video autoplay muted loop playsinline preload="auto" id="background-video" poster="immagine_sfondo.png"><source src="video_sfondo_compressed.mp4" type="video/mp4" /></video>
   <audio loop preload="auto" id="background-audio"><source src="7a-Controtempo-compresso.mp3" type="audio/mpeg" /></audio>
   <div id="aphorism-container"></div>
@@ -117,7 +117,7 @@
         
         const sheetApiUrl = 'https://script.google.com/macros/s/AKfycbyyvfsSlgx6J-dIeLaIi3Crd6eqG029DDsGzF3Wy8u1VIfwhTMDZJdTPS_ubYszUyFR/exec';
 
-        // --- GESTIONE AUDIO DEFINITIVA (CODICE CORRETTO) ---
+        // --- GESTIONE AUDIO DEFINITIVA ---
         const bgAudio = document.getElementById('background-audio');
         const audioCta = document.getElementById('audio-cta');
         const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i');
@@ -138,14 +138,13 @@
                     updateMuteButton();
                 }).catch(e => {
                     console.error("L'avvio automatico dell'audio è stato bloccato dal browser.", e);
-                    // L'overlay resta visibile per permettere un'altra interazione
                     audioStartOverlay.style.display = 'flex';
                 });
             }
         }
 
         startAudioBtn.addEventListener('click', initializeAudio);
-        audioStartOverlay.style.display = 'flex'; // Mostra l'overlay all'inizio
+        audioStartOverlay.style.display = 'flex'; 
         
         audioCta.addEventListener('click', () => {
             if (!audioInitialized) {
@@ -328,7 +327,8 @@
                     </div>
                     <div class="chatbot-messages" id="chatbot-messages"></div>
                     <div class="chatbot-input">
-                        <input type="text" id="chatbot-input-field" placeholder="Scrivi un messaggio...">
+                        <!-- Correzione: Aggiunti name e autocomplete -->
+                        <input type="text" id="chatbot-input-field" name="chatbot_message" autocomplete="off" placeholder="Scrivi un messaggio...">
                         <button id="chatbot-send-btn"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg></button>
                     </div>
                 </div>
