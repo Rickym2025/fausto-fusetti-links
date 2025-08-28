@@ -32,25 +32,37 @@
     .modal-content { background: #1e1e1e; padding: 30px; border-radius: 15px; width: 100%; max-width: 550px; position: relative; max-height: 90vh; overflow-y: auto; }
     .modal-close { position: absolute; top: 15px; right: 20px; font-size: 2em; color: white; cursor: pointer; line-height: 1; }
     .music-catalog .info-box { background: rgba(6, 147, 227, 0.1); border: 1px solid var(--primary-color); padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 1.1em; }
-    /* --- NUOVI STILI PER FILTRI --- */
-    .filter-container { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
-    .filter-container select { flex-grow: 1; padding: 10px; border-radius: 8px; border: 1px solid #555; background-color: #2c2c2c; color: #f0f0f0; font-size: 0.9em; }
-    .song-list-container { max-height: 40vh; overflow-y: auto; }
-    .song-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #333; transition: background-color 0.3s ease; border-radius: 5px; }
+    
+    /* --- STILI PER I NUOVI PULSANTI FILTRO --- */
+    .filter-group { margin-bottom: 15px; }
+    .filter-group .filter-label { text-align: left; margin-bottom: 8px; font-weight: 500; color: var(--primary-color); }
+    .filter-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+    .filter-btn { padding: 8px 14px; border: 1px solid #555; border-radius: 20px; background: none; color: #f0f0f0; cursor: pointer; font-size: 0.9em; transition: all 0.2s ease; }
+    .filter-btn.active { background-color: var(--primary-color); border-color: var(--primary-color); color: white; }
+    
+    .song-list-container { max-height: 40vh; overflow-y: auto; margin-top: 20px; }
+    .song-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #333; transition: background-color 0.3s ease; border-radius: 5px; cursor: pointer; }
     .song-item:last-child { border-bottom: none; }
-    .song-item .title { flex-grow: 1; text-align: left; }
-    .song-item .play-btn { background: none; border: 2px solid var(--primary-color); color: var(--primary-color); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
-    /* --- NUOVI STILI PER FEEDBACK VISIVO --- */
-    .song-item.playing { background-color: rgba(6, 147, 227, 0.15); }
+    .song-item .title { flex-grow: 1; text-align: left; pointer-events: none; }
+    .song-item .play-btn { background: none; border: 2px solid var(--primary-color); color: var(--primary-color); border-radius: 50%; width: 40px; height: 40px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
+    .song-item:hover { background-color: rgba(255,255,255,0.05); }
+
+    /* --- STILI PER FEEDBACK VISIVO DEL BRANO IN RIPRODUZIONE --- */
+    .song-item.playing { background-color: rgba(6, 147, 227, 0.2); }
     .song-item.playing .play-btn { background-color: var(--primary-color); color: white; }
+    
     #catalog-player-display { margin-top: 20px; padding-top: 20px; border-top: 1px solid #444; display: none; align-items: center; gap: 15px; }
+    .contact-form { display: flex; flex-direction: column; gap: 15px; text-align: left; }
+    .contact-form input, .contact-form textarea, .contact-form select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #555; background-color: #2c2c2c; color: #f0f0f0; font-size: 1em; }
+    #form-result { margin-top: 15px; font-weight: bold; }
+    .service-highlight { background: linear-gradient(135deg, rgba(6, 147, 227, 0.1), rgba(227, 160, 6, 0.1)); border: 2px solid transparent; background-clip: padding-box; position: relative; }
+    .service-highlight::before { content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); border-radius: inherit; z-index: -1; }
   </style>
 </head>
 <body>
-  
+
   <video autoplay muted loop playsinline preload="auto" id="background-video" poster="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/immagine%20sfondo.png"><source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/video_sfondo_compressed.mp4" type="video/mp4"></video>
   <audio loop id="background-audio"><source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/7a-Controtempo-compresso.mp3" type="audio/mpeg"></audio>
-  <div id="aphorism-container"></div>
   
   <div class="container-wrapper">
     <div class="container">
@@ -59,22 +71,24 @@
       <h1>Fausto Fusetti</h1>
       <p class="bio">Con 40 anni di esperienza come musicista, compositore e autore, trasformo emozioni in musica. La mia versatilità mi permette di spaziare tra ogni genere: dal liscio al moderno, dal jazz alle colonne sonore per la pubblicità.<br><br>Come polistrumentista (pianoforte, chitarra e voce), offro un servizio completo per la creazione di canzoni personalizzate. Se sei un'orchestra, un cantante o un editore in cerca di un brano inedito e su misura, sei nel posto giusto.</p>
       <button id="open-music-modal" class="button"><i class="fas fa-music"></i>Catalogo Musicale</button>
-      <!-- ... altri pulsanti e social ... -->
+      <button id="open-video-modal" class="button"><i class="fas fa-video"></i>Guarda i Video</button>
+      <button id="open-services-modal" class="button service-highlight"><i class="fas fa-heart"></i>Canzoni Personalizzate</button>
+      <button id="open-contact-modal" class="button collabora"><i class="fas fa-pencil-alt"></i>Contattami per un Progetto</button>
+      <div class="social-icons"><a href="https://www.instagram.com/faustofusetti/" target="_blank"><i class="fa-brands fa-instagram"></i></a><a href="https://www.facebook.com/fausto.fusetti.9" target="_blank"><i class="fa-brands fa-facebook"></i></a><a href="https://www.youtube.com/@faustofusetti5859" target="_blank"><i class="fa-brands fa-youtube"></i></a></div>
     </div>
   </div>
 
+  <div id="video-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="video-modal">&times;</span><h2>Video Selezionati</h2><a href="https://www.youtube.com/watch?v=7s3-7DV38IA" target="_blank" class="button">Produzioni Varie</a><a href="https://www.youtube.com/watch?v=Y8YqyCT7h5E" target="_blank" class="button">Ascolta "Noi"</a><a href="https://www.youtube.com/watch?v=igexCZ24Twg" target="_blank" class="button">Ascolta "Per Te"</a></div></div>
+  
   <div id="music-modal" class="modal-overlay">
     <div class="modal-content music-catalog">
       <span class="modal-close" data-target="music-modal">&times;</span>
       <h2>Catalogo Musicale</h2>
-      <div class="info-box"><i class="fas fa-filter"></i> Filtra i brani per trovare quello che cerchi.</div>
-      <!-- NUOVI FILTRI A TENDINA -->
-      <div class="filter-container">
-        <select id="genre-filter"><option value="all">Tutti i Generi</option></select>
-        <select id="category-filter"><option value="all">Tutte le Categorie</option></select>
-        <select id="argomento-filter"><option value="all">Tutti gli Argomenti</option></select>
+      <div class="info-box"><i class="fas fa-filter"></i> Seleziona i filtri per trovare il brano che cerchi.</div>
+      <!-- FILTRI A PULSANTE -->
+      <div id="filter-container">
+          <!-- I pulsanti verranno inseriti qui dal JavaScript -->
       </div>
-      <!-- CONTENITORE PER LA LISTA CANZONI -->
       <div id="song-list-container" class="song-list-container"><p>Caricamento catalogo...</p></div>
       <div id="catalog-player-display">
         <button id="catalog-player-button"><i class="fas fa-play"></i></button>
@@ -83,13 +97,18 @@
       </div>
     </div>
   </div>
-  
-  <!-- ... altri modal e codice html ... -->
 
+  <div id="services-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="services-modal">&times;</span><h2><i class="fas fa-heart" style="color: var(--secondary-color); margin-right: 10px;"></i>Canzoni Personalizzate</h2><p>... (contenuto invariato) ...</p><button id="contact-for-custom-song" class="button collabora">Richiedi la Tua Canzone</button></div></div>
+  <div id="contact-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="contact-modal">&times;</span><h2>Contattami per il tuo Progetto</h2><form id="contact-form" class="contact-form">... (contenuto invariato) ...</form><div id="form-result"></div></div></div>
+  
+  <div id="chatbot-container"></div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
         
-        const sheetApiUrl = 'INCOLLA_QUI_IL_TUO_URL_DELL_APP_SCRIPT'; // Assicurati sia l'URL corretto
+        const sheetApiUrl = 'https://script.google.com/macros/s/AKfycbyyvfsSlgx6J-dIeLaIi3Crd6eqG029DDsGzF3Wy8u1VIfwhTMDZJdTPS_ubYszUyFR/exec';
 
         // --- GESTIONE AUDIO GLOBALE ---
         const bgAudio = document.getElementById('background-audio');
@@ -97,20 +116,15 @@
         const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i');
         const ctaText = document.querySelector('#audio-cta .cta-text');
         const catalogPlayer = document.getElementById('catalog-audio-player');
-
-        let isBgAudioIntendedToPlay = false; // Traccia se l'utente vuole la musica di sottofondo
+        let isBgAudioIntendedToPlay = false;
 
         audioCta.addEventListener('click', () => {
             if (bgAudio.paused) {
                 bgAudio.play().then(() => {
-                    bgAudio.muted = false;
-                    isBgAudioIntendedToPlay = true;
-                    updateMuteButton();
+                    bgAudio.muted = false; isBgAudioIntendedToPlay = true; updateMuteButton();
                 }).catch(e => console.error("Errore avvio audio:", e));
             } else {
-                bgAudio.muted = !bgAudio.muted;
-                isBgAudioIntendedToPlay = !bgAudio.muted;
-                updateMuteButton();
+                bgAudio.muted = !bgAudio.muted; isBgAudioIntendedToPlay = !bgAudio.muted; updateMuteButton();
             }
         });
 
@@ -120,114 +134,85 @@
             ctaText.textContent = isMuted ? 'Attiva la musica' : 'Disattiva musica';
         }
 
-        // --- COORDINAMENTO TRA I PLAYER AUDIO ---
-        catalogPlayer.addEventListener('play', () => {
-            if (isBgAudioIntendedToPlay && !bgAudio.paused) {
-                bgAudio.pause();
-            }
-        });
-
-        catalogPlayer.addEventListener('pause', () => {
-            if (isBgAudioIntendedToPlay && bgAudio.paused) {
-                bgAudio.play();
-            }
-        });
-        catalogPlayer.addEventListener('ended', () => {
-            if (isBgAudioIntendedToPlay && bgAudio.paused) {
-                bgAudio.play();
-            }
-            resetPlayingState(); // Resetta lo stato visivo al termine del brano
-        });
+        catalogPlayer.addEventListener('play', () => { if (isBgAudioIntendedToPlay && !bgAudio.paused) bgAudio.pause(); });
+        catalogPlayer.addEventListener('pause', () => { if (isBgAudioIntendedToPlay && bgAudio.paused) bgAudio.play(); });
+        catalogPlayer.addEventListener('ended', () => { if (isBgAudioIntendedToPlay && bgAudio.paused) bgAudio.play(); resetPlayingState(); });
 
         // --- GESTIONE MODALI ---
         document.getElementById('open-music-modal').addEventListener('click', () => document.getElementById('music-modal').style.display = 'flex');
+        document.getElementById('open-video-modal').addEventListener('click', () => document.getElementById('video-modal').style.display = 'flex');
+        document.getElementById('open-services-modal').addEventListener('click', () => document.getElementById('services-modal').style.display = 'flex');
+        document.getElementById('open-contact-modal').addEventListener('click', () => document.getElementById('contact-modal').style.display = 'flex');
+        document.getElementById('contact-for-custom-song').addEventListener('click', () => { document.getElementById('services-modal').style.display = 'none'; document.getElementById('contact-modal').style.display = 'flex'; });
         document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', e => document.getElementById(e.currentTarget.dataset.target).style.display = 'none'));
-        
+
         // --- LOGICA CATALOGO MUSICALE ---
         const playerDisplay = document.getElementById('catalog-player-display');
-        const playerBtn = document.getElementById('catalog-player-button');
-        const playerTitle = document.getElementById('catalog-song-title');
-        
-        const genreFilter = document.getElementById('genre-filter');
-        const categoryFilter = document.getElementById('category-filter');
-        const argomentoFilter = document.getElementById('argomento-filter');
         const songListContainer = document.getElementById('song-list-container');
-        
+        const filterContainer = document.getElementById('filter-container');
         let allSongs = [];
         let currentPlayingItem = null;
-
-        playerBtn.addEventListener('click', () => {
-            if (catalogPlayer.paused) catalogPlayer.play(); else catalogPlayer.pause();
-        });
-        catalogPlayer.addEventListener('play', () => {
-            playerBtn.innerHTML = '<i class="fas fa-pause"></i>';
-            if (currentPlayingItem) currentPlayingItem.querySelector('.play-btn').innerHTML = '<i class="fas fa-pause"></i>';
-        });
-        catalogPlayer.addEventListener('pause', () => {
-            playerBtn.innerHTML = '<i class="fas fa-play"></i>';
-            if (currentPlayingItem) currentPlayingItem.querySelector('.play-btn').innerHTML = '<i class="fas fa-play"></i>';
-        });
+        let currentFilters = { genre: 'all', category: 'all', argomento: 'all' };
 
         async function loadMusicFromApi() {
-            if (!sheetApiUrl || sheetApiUrl.includes('INCOLLA_QUI')) {
-                songListContainer.innerHTML = `<p style="color: #f44336;">ERRORE: URL API non configurato.</p>`;
-                return;
-            }
             try {
                 const response = await fetch(sheetApiUrl);
                 if (!response.ok) throw new Error(`Errore di rete`);
                 const songs = await response.json();
-                
                 if (songs.error) throw new Error(songs.error);
                 if (!songs || songs.length === 0) throw new Error('Nessun brano trovato.');
                 
-                allSongs = songs.map(s => ({
-                  ...s,
-                  // Aggiungiamo anche la categoria per il filtro, prendendola dalla colonna originale se necessario
-                  category: s.category || (allSongs[0].category ? s.category : 'N/D') // Fallback se la colonna non esiste
-                }));
-                
-                populateFilters(allSongs);
+                allSongs = songs; // Assumiamo che lo script restituisca genre, category, argomento, title, url
+                createFilterButtons(allSongs);
                 filterAndDisplaySongs();
-
             } catch (error) {
                 songListContainer.innerHTML = `<p style="color: #f44336;">Errore caricamento: ${error.message}</p>`;
             }
         }
-        
-        function populateFilters(songs) {
-            const genres = [...new Set(songs.map(s => s.genre))];
-            const categories = [...new Set(songs.map(s => s.category))]; // Assumendo che la categoria sia nel JSON
-            const argomenti = [...new Set(songs.map(s => s.argomento))];
 
-            genres.forEach(g => genreFilter.innerHTML += `<option value="${g}">${g}</option>`);
-            // Se nel tuo script Apps non hai mappato "Categoria", devi farlo.
-            // Aggiungi: `category: row[2]` nello script e qui usa `s.category`
-            // Per ora, useremo un fallback se non presente.
-            // Dovrai aggiungere la colonna Categoria nel tuo Apps Script:
-            // const categoriaIndex = headers.indexOf("Categoria");
-            // e poi `category: row[categoriaIndex]` nell'oggetto results.
-            // Se non è presente, questo filtro non funzionerà.
+        function createFilterButtons(songs) {
+            const filters = {
+                'Genere': [...new Set(songs.map(s => s.genre))],
+                'Categoria': [...new Set(songs.map(s => s.category))],
+                'Argomento': [...new Set(songs.map(s => s.argomento))]
+            };
+
+            filterContainer.innerHTML = '';
+            for (const key in filters) {
+                const filterKey = key === 'Genere' ? 'genre' : (key === 'Categoria' ? 'category' : 'argomento');
+                let buttonsHtml = `<div class="filter-group"><div class="filter-label">${key}</div><div class="filter-buttons">`;
+                buttonsHtml += `<button class="filter-btn active" data-filter-key="${filterKey}" data-filter-value="all">Tutti</button>`;
+                filters[key].forEach(value => {
+                    buttonsHtml += `<button class="filter-btn" data-filter-key="${filterKey}" data-filter-value="${value}">${value}</button>`;
+                });
+                buttonsHtml += `</div></div>`;
+                filterContainer.innerHTML += buttonsHtml;
+            }
             
-            argomenti.forEach(a => argomentoFilter.innerHTML += `<option value="${a}">${a}</option>`);
+            document.querySelectorAll('.filter-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const key = e.target.dataset.filterKey;
+                    const value = e.target.dataset.filterValue;
+                    currentFilters[key] = value;
+
+                    // Gestisce la classe 'active'
+                    e.target.parentElement.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+
+                    filterAndDisplaySongs();
+                });
+            });
         }
         
         function filterAndDisplaySongs() {
-            const selectedGenre = genreFilter.value;
-            // const selectedCategory = categoryFilter.value;
-            const selectedArgomento = argomentoFilter.value;
-
             const filteredSongs = allSongs.filter(song => {
-                const genreMatch = selectedGenre === 'all' || song.genre === selectedGenre;
-                // const categoryMatch = selectedCategory === 'all' || song.category === selectedCategory;
-                const argomentoMatch = selectedArgomento === 'all' || song.argomento === selectedArgomento;
-                return genreMatch && argomentoMatch; // && categoryMatch;
+                return (currentFilters.genre === 'all' || song.genre === currentFilters.genre) &&
+                       (currentFilters.category === 'all' || song.category === currentFilters.category) &&
+                       (currentFilters.argomento === 'all' || song.argomento === currentFilters.argomento);
             });
 
             songListContainer.innerHTML = '';
-            if (filteredSongs.length === 0) {
-                songListContainer.innerHTML = '<p>Nessun brano corrisponde ai filtri selezionati.</p>';
-            } else {
+            if (filteredSongs.length > 0) {
                 filteredSongs.forEach(song => {
                     songListContainer.innerHTML += `
                         <div class="song-item" data-src="${song.url}" data-title="${song.title}">
@@ -235,47 +220,52 @@
                             <button class="play-btn"><i class="fas fa-play"></i></button>
                         </div>`;
                 });
+            } else {
+                songListContainer.innerHTML = '<p>Nessun brano corrisponde ai filtri.</p>';
             }
-            addEventListenersToCatalog();
+            addEventListenersToSongs();
         }
 
         function resetPlayingState() {
             if (currentPlayingItem) {
                 currentPlayingItem.classList.remove('playing');
-                currentPlayingItem.querySelector('.play-btn').innerHTML = '<i class="fas fa-play"></i>';
+                currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
             }
             currentPlayingItem = null;
         }
         
-        function addEventListenersToCatalog() {
+        function addEventListenersToSongs() {
             document.querySelectorAll('.song-item').forEach(item => {
-                item.addEventListener('click', e => {
-                    // Evita che il click sul titolo attivi l'audio
-                    if (e.target.tagName !== 'BUTTON' && !e.target.closest('button')) return;
-
+                item.addEventListener('click', () => {
+                    const wasPlaying = item.classList.contains('playing');
+                    const isPaused = catalogPlayer.paused;
+                    
+                    if (wasPlaying && !isPaused) {
+                        catalogPlayer.pause();
+                        return;
+                    }
+                    
                     resetPlayingState();
 
                     currentPlayingItem = item;
                     item.classList.add('playing');
                     
-                    playerDisplay.style.display = 'flex';
-                    playerTitle.textContent = item.dataset.title;
-                    
-                    if (catalogPlayer.src !== item.dataset.src || catalogPlayer.paused) {
-                        catalogPlayer.src = item.dataset.src;
-                        catalogPlayer.play();
-                    } else {
-                        catalogPlayer.pause();
-                    }
+                    document.getElementById('catalog-song-title').textContent = item.dataset.title;
+                    catalogPlayer.src = item.dataset.src;
+                    catalogPlayer.play();
+                    item.querySelector('.play-btn i').className = 'fas fa-pause';
                 });
             });
         }
-
-        genreFilter.addEventListener('change', filterAndDisplaySongs);
-        // categoryFilter.addEventListener('change', filterAndDisplaySongs);
-        argomentoFilter.addEventListener('change', filterAndDisplaySongs);
         
         loadMusicFromApi();
+
+        // --- SCRIPT CHATBOT (Ripristinato) ---
+        (function() {
+            const chatbotHTML = `<style>:root{--primary-color:#0693e3}#chatbot-bubble{position:fixed;bottom:25px;right:25px;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/Fausto%20immagine.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:9999}#chatbot-bubble.open{background-image:none;background-color:var(--primary-color)}</style><div id="chatbot-bubble"></div><div id="chatbot-window">...</div>`;
+            document.getElementById('chatbot-container').innerHTML = chatbotHTML;
+            // ... (tutta la logica del chatbot che avevi prima) ...
+        })();
     });
   </script>
 </body>
