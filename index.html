@@ -140,10 +140,13 @@
         }
 
         startAudioBtn.addEventListener('click', initializeAudio);
-        audioStartOverlay.style.display = 'flex'; // Mostra sempre l'overlay all'inizio
+
+        // Mostra sempre l'overlay all'inizio
+        audioStartOverlay.style.display = 'flex';
         
         audioCta.addEventListener('click', () => {
             if (!audioInitialized) {
+                // Questo serve come fallback se l'overlay dovesse fallire
                 initializeAudio();
             } else {
                 bgAudio.muted = !bgAudio.muted;
@@ -268,7 +271,6 @@
         
         loadMusicFromApi();
 
-        // --- GESTIONE FORM CONTATTO ---
         const form = document.getElementById('contact-form');
         const formResult = document.getElementById('form-result');
         form.addEventListener('submit', function(e) { e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio in corso..."; fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).then(response => response.json()).then(data => { if (data.success) { formResult.innerHTML = "Messaggio inviato con successo!"; form.reset(); } else { formResult.innerHTML = `Errore: ${data.message}`; } }).catch(() => formResult.innerHTML = "Si è verificato un errore."); });
