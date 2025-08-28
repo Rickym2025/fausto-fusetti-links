@@ -55,12 +55,60 @@
     .aphorism-postit { position: absolute; background-color: #fefabc; color: #333; padding: 15px; border-radius: 5px; box-shadow: 5px 5px 15px rgba(0,0,0,0.3); max-width: 250px; font-family: 'Georgia', serif; animation: fadeInOut 10s ease-in-out forwards; }
     
     /* Stili per l'overlay di avviso audio */
-    #audio-start-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.9); display: flex; align-items: center; justify-content: center; z-index: 100000; backdrop-filter: blur(10px); }
-    #audio-start-content { background: rgba(6, 147, 227, 0.1); border: 2px solid var(--primary-color); padding: 40px; border-radius: 20px; text-align: center; max-width: 500px; margin: 20px; backdrop-filter: blur(5px); }
-    #audio-start-content h2 { color: var(--primary-color); margin-bottom: 15px; font-size: 1.8em; }
-    #audio-start-content p { margin-bottom: 25px; font-size: 1.1em; line-height: 1.6; }
-    #start-audio-btn { background: var(--primary-color); color: white; border: none; padding: 15px 30px; border-radius: 30px; font-size: 1.2em; cursor: pointer; transition: all 0.3s ease; }
-    #start-audio-btn:hover { background: var(--secondary-color); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(227, 160, 6, 0.4); }
+    #audio-start-overlay { 
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        width: 100vw; 
+        height: 100vh; 
+        background: rgba(0, 0, 0, 0.9); 
+        display: none; 
+        align-items: center; 
+        justify-content: center; 
+        z-index: 100000; 
+        backdrop-filter: blur(10px);
+        visibility: hidden;
+    }
+    #audio-start-content { 
+        background: rgba(6, 147, 227, 0.1); 
+        border: 2px solid var(--primary-color); 
+        padding: 40px; 
+        border-radius: 20px; 
+        text-align: center; 
+        max-width: 500px; 
+        margin: 20px; 
+        backdrop-filter: blur(5px); 
+    }
+    #audio-start-content h2 { 
+        color: var(--primary-color); 
+        margin-bottom: 15px; 
+        font-size: 1.8em; 
+    }
+    #audio-start-content p { 
+        margin-bottom: 25px; 
+        font-size: 1.1em; 
+        line-height: 1.6; 
+    }
+    #start-audio-btn { 
+        background: var(--primary-color); 
+        color: white; 
+        border: none; 
+        padding: 15px 30px; 
+        border-radius: 30px; 
+        font-size: 1.2em; 
+        cursor: pointer; 
+        transition: all 0.3s ease; 
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 500;
+    }
+    #start-audio-btn:hover { 
+        background: var(--secondary-color); 
+        transform: translateY(-2px); 
+        box-shadow: 0 4px 15px rgba(227, 160, 6, 0.4); 
+    }
+    #start-audio-btn:active {
+        transform: translateY(0);
+    }
   </style>
 </head>
 <body>
@@ -154,27 +202,74 @@
         }
         
         function showAudioOverlay() {
+            console.log('Mostro overlay audio');
             audioStartOverlay.style.display = 'flex';
+            audioStartOverlay.style.visibility = 'visible';
         }
         
         function hideAudioOverlay() {
+            console.log('Nascondo overlay audio');
             audioStartOverlay.style.display = 'none';
+            audioStartOverlay.style.visibility = 'hidden';
         }
         
         // Gestore per il pulsante di avvio audio nell'overlay
-        startAudioBtn.addEventListener('click', async () => {
+        startAudioBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            console.log('Pulsante cliccato - tentativo di avvio audio...');
+            
             try {
-                await bgAudio.play();
+                // Prima prova a caricare l'audio
+                bgAudio.load();
+                
+                // Poi prova a farlo partire
+                const playPromise = bgAudio.play();
+                await playPromise;
+                
+                console.log('Audio avviato con successo!');
                 audioEnabled = true;
                 userHasInteracted = true;
-                hideAudioOverlay();
+                bgAudio.muted = false;
+                
+                // Nascondi l'overlay
+                audioStartOverlay.style.display = 'none';
+                audioStartOverlay.style.visibility = 'hidden';
+                
                 updateMuteButton(false);
                 
                 // Salva la preferenza dell'utente
                 sessionStorage.setItem('audioEnabled', 'true');
+                sessionStorage.setItem('audioMuted', 'false');
+                
             } catch (error) {
                 console.error('Errore nell\'avvio dell\'audio:', error);
-                alert('Impossibile riprodurre l\'audio. Controlla le impostazioni del browser.');
+                
+                // Anche se c'è un errore, nascondi l'overlay e permetti di proseguire
+                audioStartOverlay.style.display = 'none';
+                audioStartOverlay.style.visibility = 'hidden';
+                
+                // Mostra un messaggio più user-friendly
+                const alertDiv = document.createElement('div');
+                alertDiv.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #f44336;
+                    color: white;
+                    padding: 15px 20px;
+                    border-radius: 5px;
+                    z-index: 100001;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                `;
+                alertDiv.textContent = 'Audio non disponibile al momento, ma puoi continuare a navigare!';
+                document.body.appendChild(alertDiv);
+                
+                // Rimuovi l'avviso dopo 3 secondi
+                setTimeout(() => {
+                    if (alertDiv.parentNode) {
+                        alertDiv.parentNode.removeChild(alertDiv);
+                    }
+                }, 3000);
             }
         });
         
@@ -410,7 +505,18 @@
         // Rimuovi l'overlay se l'utente clicca fuori dall'area del contenuto
         audioStartOverlay.addEventListener('click', (e) => {
             if (e.target === audioStartOverlay) {
-                hideAudioOverlay();
+                console.log('Click fuori dall\'area - chiudo overlay');
+                audioStartOverlay.style.display = 'none';
+                audioStartOverlay.style.visibility = 'hidden';
+            }
+        });
+        
+        // Gestore per il tasto ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && audioStartOverlay.style.display === 'flex') {
+                console.log('ESC premuto - chiudo overlay');
+                audioStartOverlay.style.display = 'none';
+                audioStartOverlay.style.visibility = 'hidden';
             }
         });
     });
