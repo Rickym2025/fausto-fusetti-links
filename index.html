@@ -160,12 +160,16 @@
         catalogPlayer.addEventListener('pause', () => { if (audioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play(); });
         catalogPlayer.addEventListener('ended', () => { if (audioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play(); resetPlayingState(); });
 
-        // --- GESTIONE MODALI ---
+        // --- GESTIONE MODALI CORRETTA ---
         document.getElementById('open-music-modal').addEventListener('click', () => document.getElementById('music-modal').style.display = 'flex');
         document.getElementById('open-video-modal').addEventListener('click', () => document.getElementById('video-modal').style.display = 'flex');
         document.getElementById('open-services-modal').addEventListener('click', () => document.getElementById('services-modal').style.display = 'flex');
         document.getElementById('open-contact-modal').addEventListener('click', () => document.getElementById('contact-modal').style.display = 'flex');
-        document.getElementById('contact-for-custom-song').addEventListener('click', () => { document.getElementById('services-modal').style.display = 'none'; document.getElementById('contact-modal').style.display = 'flex'; document.querySelector('select[name="service_type"]').value = 'canzone_personalizzata'; });
+        document.getElementById('contact-for-custom-song').addEventListener('click', () => { 
+            document.getElementById('services-modal').style.display = 'none'; 
+            document.getElementById('contact-modal').style.display = 'flex'; 
+            document.querySelector('#contact-modal select[name="service_type"]').value = 'canzone_personalizzata'; 
+        });
         document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', e => document.getElementById(e.currentTarget.dataset.target).style.display = 'none'));
 
         // --- LOGICA CATALOGO MUSICALE ---
@@ -354,7 +358,7 @@
                     addMessage(userMessage, 'user'); inputField.value = '';
                     try {
                         if (webhookUrl.includes('INCOLLA_QUI')) { addMessage("Il chatbot non è configurato.", 'bot'); return; }
-                        const conversationId = 'session-' + Date.now(); // Simple unique ID
+                        const conversationId = 'session-' + Date.now(); 
                         const response = await fetch(`${webhookUrl}?user_message=${encodeURIComponent(userMessage)}&conversation_id=${conversationId}`, { method: 'POST' });
                         if (!response.ok) throw new Error("Network response");
                         const data = await response.json(); addMessage(data.response || "C'è stato un problema.", 'bot');
@@ -365,7 +369,6 @@
                 sendBtn.addEventListener('click', sendMessage);
                 inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
 
-                // Avvia il chatbot dopo un breve ritardo
                 setTimeout(() => {
                     if(!windowWrapper.classList.contains('open')) {
                         toggleChat();
