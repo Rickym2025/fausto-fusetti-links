@@ -159,10 +159,6 @@
             ctaText.textContent = bgAudio.muted ? 'Attiva la musica' : 'Disattiva musica';
         }
 
-        catalogPlayer.addEventListener('play', () => { if (audioInitialized && !bgAudio.paused && !bgAudio.muted) bgAudio.pause(); });
-        catalogPlayer.addEventListener('pause', () => { if (audioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play(); window.resetPlayingState(); });
-        catalogPlayer.addEventListener('ended', () => { if (audioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play(); window.resetPlayingState(); });
-
         // --- GESTIONE MODALI CORRETTA ---
         document.getElementById('open-music-modal').addEventListener('click', () => document.getElementById('music-modal').style.display = 'flex');
         document.getElementById('open-video-modal').addEventListener('click', () => document.getElementById('video-modal').style.display = 'flex');
@@ -247,17 +243,26 @@
         }
         
         // =========================================================================
-        // ===== MODIFICA #1: Rendiamo la funzione resetPlayingState globale =====
+        // ===== MODIFICA #1: La funzione resetPlayingState diventa globale      =====
         // =========================================================================
         window.resetPlayingState = function() {
             if (currentPlayingItem) {
                 currentPlayingItem.classList.remove('playing');
                 currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
+                currentPlayingItem = null;
             }
-            currentPlayingItem = null;
-            // Aggiungiamo questa riga per fermare anche il player del catalogo per sicurezza
-            document.getElementById('catalog-audio-player').pause(); 
+            // Ferma anche il player del catalogo per sicurezza
+            const player = document.getElementById('catalog-audio-player');
+            if(player) {
+              player.pause();
+              player.currentTime = 0;
+            }
         }
+        
+        // Collegamento degli eventi del player alla funzione di reset globale
+        catalogPlayer.addEventListener('play', () => { if (audioInitialized && !bgAudio.paused && !bgAudio.muted) bgAudio.pause(); });
+        catalogPlayer.addEventListener('pause', () => { if (audioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play(); window.resetPlayingState(); });
+        catalogPlayer.addEventListener('ended', () => { if (audioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play(); window.resetPlayingState(); });
         
         function addEventListenersToSongs() {
             document.querySelectorAll('.song-item').forEach(item => {
@@ -313,15 +318,17 @@
                 .chatbot-messages{flex-grow:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column}
                 .message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}
                 .message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0}
-                .message-text{padding:10px 15px;border-radius:18px;line-height:1.4;word-wrap:break-word;text-align: left; }
-                /* Stili aggiuntivi per i link delle canzoni nel chatbot */
-                .message-text ul { list-style: none; padding: 0; margin: 0; }
-                .message-text li { margin-bottom: 8px; }
-                .message-text a.chatbot-song-link { color: #fff; text-decoration: underline; cursor: pointer; }
-                .message-text a.chatbot-song-link:hover { color: var(--secondary-color); }
-
+                .message-text{padding:10px 15px;border-radius:18px;line-height:1.4;overflow-wrap: break-word; word-break: break-word;}
                 .message.user .message-text{background-color:#eef2f5;color:#333;border-bottom-right-radius:4px}
                 .message.bot .message-text{background-color:var(--primary-color);color:#fff;border-bottom-left-radius:4px}
+                
+                /* ===== MODIFICA #2: Stili per i bullet points e i link ===== */
+                .message-text ul { list-style: none; padding: 0; margin: 0; }
+                .message-text li { margin-bottom: 8px; }
+                .message-text a.chatbot-song-link { color: #fff; font-weight: 500; text-decoration: none; cursor: pointer; display: inline-block; padding: 2px 0; border-bottom: 1px dotted #fff;}
+                .message-text a.chatbot-song-link:hover { color: var(--secondary-color); border-bottom-color: var(--secondary-color); }
+                .message-text a.chatbot-song-link.playing { color: var(--secondary-color); font-weight: bold; border-bottom: 1px solid var(--secondary-color); }
+
                 .chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}
                 .chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid var(--primary-color)}
                 .chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}
@@ -350,6 +357,9 @@
                 const webhookUrl = 'https://n8n.automaita.it/webhook/ffausto-ai-chat';
                 const bubble = document.getElementById('chatbot-bubble'), windowWrapper = document.getElementById('chatbot-window-wrapper'), messagesEl = document.getElementById('chatbot-messages'), inputField = document.getElementById('chatbot-input-field'), sendBtn = document.getElementById('chatbot-send-btn');
                 const converter = new showdown.Converter();
+                
+                // ===== MODIFICA #3: Variabile per tracciare il link della canzone in riproduzione nella chat =====
+                let currentChatPlayingLink = null;
 
                 const toggleChat = () => {
                     windowWrapper.classList.toggle('open');
@@ -357,60 +367,77 @@
                     if (windowWrapper.classList.contains('open')) inputField.focus();
                 };
 
-                // =========================================================================
-                // ===== MODIFICA #2: Sostituzione della funzione addMessage           =====
-                // =========================================================================
+                // ===== MODIFICA #4: Funzione addMessage potenziata con gestione dello stato di riproduzione =====
                 const addMessage = (text, type) => {
                     const msgDiv = document.createElement('div');
                     msgDiv.className = `message ${type}`;
                     
                     if (type === 'bot') {
-                        const avatar = document.createElement('img');
-                        avatar.className = 'message-avatar';
-                        avatar.src = 'fausto_immagine.jpg';
-                        msgDiv.appendChild(avatar);
+                        const avatar = document.createElement('img'); avatar.className = 'message-avatar'; avatar.src = 'fausto_immagine.jpg'; msgDiv.appendChild(avatar);
                     }
                     
-                    const textDiv = document.createElement('div');
-                    textDiv.className = 'message-text';
-                    
-                    // La libreria Showdown può gestire HTML, quindi non è necessaria conversione.
-                    // Usiamo DOMPurify per sanificare l'HTML ricevuto, permettendo gli attributi e i tag che ci servono.
-                    textDiv.innerHTML = DOMPurify.sanitize(text, {
-                        ADD_ATTR: ['data-src', 'class'], // Permettiamo 'data-src' e 'class'
-                        ADD_TAGS: ['a', 'ul', 'li']      // Permettiamo i tag per le liste e i link
-                    });
+                    const textDiv = document.createElement('div'); textDiv.className = 'message-text';
+                    textDiv.innerHTML = DOMPurify.sanitize(text, { ADD_ATTR: ['data-src', 'class'], ADD_TAGS: ['a', 'ul', 'li'] });
                     
                     msgDiv.appendChild(textDiv);
                     messagesEl.appendChild(msgDiv);
                     messagesEl.scrollTop = messagesEl.scrollHeight;
 
-                    // --- LOGICA PER INTERCETTARE I CLICK SUI BRANI ---
                     const songLinks = textDiv.querySelectorAll('.chatbot-song-link');
-                    
                     songLinks.forEach(link => {
-                        link.addEventListener('click', (event) => {
-                            event.preventDefault(); // Impedisce al link di aprire una nuova pagina
+                        const originalText = link.textContent;
+                        link.textContent = `▶️ ${originalText}`;
 
+                        link.addEventListener('click', (event) => {
+                            event.preventDefault();
                             const songUrl = link.dataset.src;
-                            if (!songUrl) return; // Non fare nulla se non c'è URL
+                            if (!songUrl) return;
                             
                             const catalogPlayer = document.getElementById('catalog-audio-player');
                             
-                            if (catalogPlayer) {
-                                // Usiamo la funzione globale che abbiamo definito prima
-                                if (typeof window.resetPlayingState === 'function') {
-                                    window.resetPlayingState();
+                            // Caso 1: Clicco sullo stesso link che è già in riproduzione per fermarlo
+                            if (currentChatPlayingLink === link) {
+                                catalogPlayer.pause();
+                                link.textContent = `▶️ ${originalText}`;
+                                link.classList.remove('playing');
+                                currentChatPlayingLink = null;
+                            } 
+                            // Caso 2: Clicco su un nuovo link
+                            else {
+                                // Resetta il link precedente se ce n'era uno
+                                if (currentChatPlayingLink) {
+                                    currentChatPlayingLink.textContent = `▶️ ${currentChatPlayingLink.dataset.originalText}`;
+                                    currentChatPlayingLink.classList.remove('playing');
                                 }
+                                
+                                // Ferma qualsiasi altra musica (sia del catalogo che del chatbot)
+                                if (typeof window.resetPlayingState === 'function') window.resetPlayingState();
                                 
                                 catalogPlayer.src = songUrl;
                                 catalogPlayer.play();
                                 
-                                console.log("Riproduzione avviata dal chatbot:", songUrl);
+                                // Aggiorna il nuovo link
+                                link.dataset.originalText = originalText;
+                                link.textContent = `❚❚ In Riproduzione...`;
+                                link.classList.add('playing');
+                                currentChatPlayingLink = link;
                             }
                         });
                     });
                 };
+                
+                // ===== MODIFICA #5: Listener per resettare l'icona quando la musica finisce o va in pausa =====
+                const mainPlayer = document.getElementById('catalog-audio-player');
+                const resetChatLink = () => {
+                    if (currentChatPlayingLink) {
+                        currentChatPlayingLink.textContent = `▶️ ${currentChatPlayingLink.dataset.originalText}`;
+                        currentChatPlayingLink.classList.remove('playing');
+                        currentChatPlayingLink = null;
+                    }
+                };
+                mainPlayer.addEventListener('pause', resetChatLink);
+                mainPlayer.addEventListener('ended', resetChatLink);
+
 
                 const sendMessage = async () => {
                     const userMessage = inputField.value.trim(); if (userMessage === '') return;
