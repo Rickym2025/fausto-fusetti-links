@@ -334,7 +334,7 @@
             const container = document.getElementById('chatbot-container');
             if (container) {
                 container.innerHTML = chatbotHTML;
-                const webhookUrl = 'INCOLLA_QUI_IL_TUO_WEBHOOK_N8N';
+                const webhookUrl = 'https://n8n.automaita.it/webhook-test/ffausto-ai-chat';
                 const bubble = document.getElementById('chatbot-bubble'), windowWrapper = document.getElementById('chatbot-window-wrapper'), welcomeBubble = document.getElementById('chatbot-welcome-bubble'), messagesEl = document.getElementById('chatbot-messages'), inputField = document.getElementById('chatbot-input-field'), sendBtn = document.getElementById('chatbot-send-btn');
                 let chatHistory = [];
                 const getOrCreateSessionId = () => { let id = sessionStorage.getItem('chatbot_session_id'); if (!id) { id = crypto.randomUUID(); sessionStorage.setItem('chatbot_session_id', id); } return id; };
