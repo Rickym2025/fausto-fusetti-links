@@ -247,24 +247,28 @@
             if (currentPlayingItem) {
                 currentPlayingItem.classList.remove('playing');
                 currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
+                currentPlayingItem = null;
             }
-            currentPlayingItem = null;
         }
-        
+
         function addEventListenersToSongs() {
-            document.querySelectorAll('.song-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    const isCurrentlyPlaying = item.classList.contains('playing');
-                    if (isCurrentlyPlaying) {
-                        if (catalogPlayer.paused) { catalogPlayer.play(); } else { catalogPlayer.pause(); }
-                        item.querySelector('.play-btn i').className = catalogPlayer.paused ? 'fas fa-play' : 'fas fa-pause';
-                    } else {
+            const items = document.querySelectorAll('.song-item');
+            items.forEach(item => {
+                const btn = item.querySelector('.play-btn');
+                btn.addEventListener('click', () => {
+                    if (currentPlayingItem === item) {
+                        // stop
+                        catalogPlayer.pause();
                         resetPlayingState();
-                        currentPlayingItem = item;
-                        item.classList.add('playing');
+                    } else {
+                        // stop current
+                        resetPlayingState();
+                        // play new
                         catalogPlayer.src = item.dataset.src;
                         catalogPlayer.play();
+                        item.classList.add('playing');
                         item.querySelector('.play-btn i').className = 'fas fa-pause';
+                        currentPlayingItem = item;
                     }
                 });
             });
