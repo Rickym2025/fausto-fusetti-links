@@ -72,7 +72,6 @@
     </div>
   </div>
 
-  <!-- Assicurati che questi file siano presenti nel tuo repository GitHub -->
   <video autoplay muted loop playsinline preload="auto" id="background-video" poster="immagine_sfondo.png"><source src="video_sfondo_compressed.mp4" type="video/mp4" /></video>
   <audio loop preload="auto" id="background-audio"><source src="7a-Controtempo-compresso.mp3" type="audio/mpeg" /></audio>
   <div id="aphorism-container"></div>
@@ -161,8 +160,8 @@
         }
 
         catalogPlayer.addEventListener('play', () => { if (audioInitialized && !bgAudio.paused && !bgAudio.muted) bgAudio.pause(); });
-        catalogPlayer.addEventListener('pause', () => { if (audioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play(); resetPlayingState(); });
-        catalogPlayer.addEventListener('ended', () => { if (audioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play(); resetPlayingState(); });
+        catalogPlayer.addEventListener('pause', () => { if (audioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play(); window.resetPlayingState(); });
+        catalogPlayer.addEventListener('ended', () => { if (audioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play(); window.resetPlayingState(); });
 
         // --- GESTIONE MODALI CORRETTA ---
         document.getElementById('open-music-modal').addEventListener('click', () => document.getElementById('music-modal').style.display = 'flex');
@@ -246,13 +245,18 @@
             }
             addEventListenersToSongs();
         }
-
-        function resetPlayingState() {
+        
+        // =========================================================================
+        // ===== MODIFICA #1: Rendiamo la funzione resetPlayingState globale =====
+        // =========================================================================
+        window.resetPlayingState = function() {
             if (currentPlayingItem) {
                 currentPlayingItem.classList.remove('playing');
                 currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
             }
             currentPlayingItem = null;
+            // Aggiungiamo questa riga per fermare anche il player del catalogo per sicurezza
+            document.getElementById('catalog-audio-player').pause(); 
         }
         
         function addEventListenersToSongs() {
@@ -263,7 +267,7 @@
                         if (catalogPlayer.paused) { catalogPlayer.play(); } else { catalogPlayer.pause(); }
                         item.querySelector('.play-btn i').className = catalogPlayer.paused ? 'fas fa-play' : 'fas fa-pause';
                     } else {
-                        resetPlayingState();
+                        window.resetPlayingState(); // Usiamo la versione globale
                         currentPlayingItem = item;
                         item.classList.add('playing');
                         catalogPlayer.src = item.dataset.src;
@@ -310,6 +314,12 @@
                 .message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}
                 .message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0}
                 .message-text{padding:10px 15px;border-radius:18px;line-height:1.4;word-wrap:break-word;text-align: left; }
+                /* Stili aggiuntivi per i link delle canzoni nel chatbot */
+                .message-text ul { list-style: none; padding: 0; margin: 0; }
+                .message-text li { margin-bottom: 8px; }
+                .message-text a.chatbot-song-link { color: #fff; text-decoration: underline; cursor: pointer; }
+                .message-text a.chatbot-song-link:hover { color: var(--secondary-color); }
+
                 .message.user .message-text{background-color:#eef2f5;color:#333;border-bottom-right-radius:4px}
                 .message.bot .message-text{background-color:var(--primary-color);color:#fff;border-bottom-left-radius:4px}
                 .chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}
@@ -327,7 +337,6 @@
                     </div>
                     <div class="chatbot-messages" id="chatbot-messages"></div>
                     <div class="chatbot-input">
-                        <!-- Correzione: Aggiunti name e autocomplete -->
                         <input type="text" id="chatbot-input-field" name="chatbot_message" autocomplete="off" placeholder="Scrivi un messaggio...">
                         <button id="chatbot-send-btn"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg></button>
                     </div>
@@ -348,60 +357,60 @@
                     if (windowWrapper.classList.contains('open')) inputField.focus();
                 };
 
-const addMessage = (text, type) => {
-    const msgDiv = document.createElement('div');
-    msgDiv.className = `message ${type}`;
-    
-    if (type === 'bot') {
-        const avatar = document.createElement('img');
-        avatar.className = 'message-avatar';
-        avatar.src = 'fausto_immagine.jpg';
-        msgDiv.appendChild(avatar);
-    }
-    
-    const textDiv = document.createElement('div');
-    textDiv.className = 'message-text';
-    textDiv.style.textAlign = 'left'; // Allinea il testo a sinistra
-    
-    // Usiamo Showdown per convertire Markdown, ma DOMPurify ora permetterà i nostri attributi personalizzati
-    textDiv.innerHTML = DOMPurify.sanitize(converter.makeHtml(text), {
-        ADD_ATTR: ['data-src'], // Permetti l'attributo 'data-src'
-        ADD_TAGS: ['a', 'ul', 'li'] // Assicurati che i tag siano permessi
-    });
-    
-    msgDiv.appendChild(textDiv);
-    messagesEl.appendChild(msgDiv);
-    messagesEl.scrollTop = messagesEl.scrollHeight;
+                // =========================================================================
+                // ===== MODIFICA #2: Sostituzione della funzione addMessage           =====
+                // =========================================================================
+                const addMessage = (text, type) => {
+                    const msgDiv = document.createElement('div');
+                    msgDiv.className = `message ${type}`;
+                    
+                    if (type === 'bot') {
+                        const avatar = document.createElement('img');
+                        avatar.className = 'message-avatar';
+                        avatar.src = 'fausto_immagine.jpg';
+                        msgDiv.appendChild(avatar);
+                    }
+                    
+                    const textDiv = document.createElement('div');
+                    textDiv.className = 'message-text';
+                    
+                    // La libreria Showdown può gestire HTML, quindi non è necessaria conversione.
+                    // Usiamo DOMPurify per sanificare l'HTML ricevuto, permettendo gli attributi e i tag che ci servono.
+                    textDiv.innerHTML = DOMPurify.sanitize(text, {
+                        ADD_ATTR: ['data-src', 'class'], // Permettiamo 'data-src' e 'class'
+                        ADD_TAGS: ['a', 'ul', 'li']      // Permettiamo i tag per le liste e i link
+                    });
+                    
+                    msgDiv.appendChild(textDiv);
+                    messagesEl.appendChild(msgDiv);
+                    messagesEl.scrollTop = messagesEl.scrollHeight;
 
-    // --- NUOVA LOGICA PER INTERCETTARE I CLICK SUI BRANI ---
-    // Cerca tutti i link speciali che abbiamo appena aggiunto alla chat
-    const songLinks = textDiv.querySelectorAll('.chatbot-song-link');
-    
-    songLinks.forEach(link => {
-        link.addEventListener('click', (event) => {
-            event.preventDefault(); // Impedisce al link di navigare (fondamentale!)
+                    // --- LOGICA PER INTERCETTARE I CLICK SUI BRANI ---
+                    const songLinks = textDiv.querySelectorAll('.chatbot-song-link');
+                    
+                    songLinks.forEach(link => {
+                        link.addEventListener('click', (event) => {
+                            event.preventDefault(); // Impedisce al link di aprire una nuova pagina
 
-            const songUrl = link.dataset.src; // Prende l'URL del brano
-            
-            // Accedi al player audio principale della pagina
-            const catalogPlayer = document.getElementById('catalog-audio-player');
-            const resetPlayingState = window.resetPlayingState; // Assumendo che sia globale
-
-            if (catalogPlayer) {
-                // Ferma qualsiasi altra canzone in riproduzione
-                if (typeof resetPlayingState === 'function') {
-                    resetPlayingState();
-                }
-                
-                catalogPlayer.src = songUrl;
-                catalogPlayer.play();
-                
-                // Opzionale: potremmo aggiungere una notifica o un'evidenziazione
-                console.log("Riproduzione avviata dal chatbot:", songUrl);
-            }
-        });
-    });
-};
+                            const songUrl = link.dataset.src;
+                            if (!songUrl) return; // Non fare nulla se non c'è URL
+                            
+                            const catalogPlayer = document.getElementById('catalog-audio-player');
+                            
+                            if (catalogPlayer) {
+                                // Usiamo la funzione globale che abbiamo definito prima
+                                if (typeof window.resetPlayingState === 'function') {
+                                    window.resetPlayingState();
+                                }
+                                
+                                catalogPlayer.src = songUrl;
+                                catalogPlayer.play();
+                                
+                                console.log("Riproduzione avviata dal chatbot:", songUrl);
+                            }
+                        });
+                    });
+                };
 
                 const sendMessage = async () => {
                     const userMessage = inputField.value.trim(); if (userMessage === '') return;
