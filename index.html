@@ -109,6 +109,7 @@
   
   <div id="chatbot-container"></div>
   
+  <!-- LIBRERIA SICURA CHE SOSTITUISCE MARKED.JS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
   <script>
@@ -247,28 +248,24 @@
             if (currentPlayingItem) {
                 currentPlayingItem.classList.remove('playing');
                 currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
-                currentPlayingItem = null;
             }
+            currentPlayingItem = null;
         }
-
+        
         function addEventListenersToSongs() {
-            const items = document.querySelectorAll('.song-item');
-            items.forEach(item => {
-                const btn = item.querySelector('.play-btn');
-                btn.addEventListener('click', () => {
-                    if (currentPlayingItem === item) {
-                        // stop
-                        catalogPlayer.pause();
-                        resetPlayingState();
+            document.querySelectorAll('.song-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const isCurrentlyPlaying = item.classList.contains('playing');
+                    if (isCurrentlyPlaying) {
+                        if (catalogPlayer.paused) { catalogPlayer.play(); } else { catalogPlayer.pause(); }
+                        item.querySelector('.play-btn i').className = catalogPlayer.paused ? 'fas fa-play' : 'fas fa-pause';
                     } else {
-                        // stop current
                         resetPlayingState();
-                        // play new
+                        currentPlayingItem = item;
+                        item.classList.add('playing');
                         catalogPlayer.src = item.dataset.src;
                         catalogPlayer.play();
-                        item.classList.add('playing');
                         item.querySelector('.play-btn i').className = 'fas fa-pause';
-                        currentPlayingItem = item;
                     }
                 });
             });
