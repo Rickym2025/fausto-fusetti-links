@@ -58,7 +58,6 @@
 <body>
 
   <video autoplay muted loop playsinline preload="auto" id="background-video" poster="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/immagine%20sfondo.png"><source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/video_sfondo_compressed.mp4" type="video/mp4"></source></video>
-  <!-- MODIFICA #2: Aggiunto `autoplay` e `muted` per favorire il precaricamento -->
   <audio loop autoplay muted id="background-audio"><source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/7a-Controtempo-compresso.mp3" type="audio/mpeg"></source></audio>
   <div id="aphorism-container"></div>
   
@@ -83,6 +82,7 @@
     <div class="modal-content music-catalog">
       <span class="modal-close" data-target="music-modal">&times;</span>
       <h2>Catalogo Musicale</h2>
+      
       <div class="info-box"><i class="fas fa-filter"></i> Seleziona i filtri per trovare il brano che cerchi.</div>
       <div id="filter-container"></div>
       <div id="song-list-container" class="song-list-container"><p>Caricamento catalogo...</p></div>
@@ -110,22 +110,25 @@
         const catalogPlayer = document.getElementById('catalog-audio-player');
         
         audioCta.addEventListener('click', () => {
-            // Se l'audio è in pausa, il primo click lo avvia e lo smuta
+            // Se l'audio è in pausa (probabilmente bloccato dal browser), il primo click lo avvia
             if (bgAudio.paused) {
                 bgAudio.play().then(() => {
+                    // Una volta partito, lo smutiamo
                     bgAudio.muted = false;
-                    updateMuteButton();
-                }).catch(e => console.error("Errore avvio audio di sottofondo:", e));
+                    updateMuteButton(false);
+                }).catch(e => {
+                    console.error("L'avvio dell'audio è stato bloccato dal browser. È necessaria un'interazione diretta.", e);
+                });
             } else {
-                // Se è già in esecuzione, alterna solo lo stato muto
+                // Se è già in esecuzione, il click alterna solo lo stato muto
                 bgAudio.muted = !bgAudio.muted;
-                updateMuteButton();
+                updateMuteButton(bgAudio.muted);
             }
         });
 
-        function updateMuteButton() {
-            muteBtnIcon.className = bgAudio.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
-            ctaText.textContent = bgAudio.muted ? 'Attiva la musica' : 'Disattiva musica';
+        function updateMuteButton(isMuted) {
+            muteBtnIcon.className = isMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
+            ctaText.textContent = isMuted ? 'Attiva la musica' : 'Disattiva musica';
         }
 
         catalogPlayer.addEventListener('play', () => { if (!bgAudio.paused && !bgAudio.muted) bgAudio.pause(); });
