@@ -15,7 +15,7 @@
     .container-wrapper { min-height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center; padding: 20px; }
     .container { position: relative; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(10px); padding: 90px 30px 40px 30px; max-width: 680px; width: 100%; margin-top: 100px; margin-bottom: 40px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); z-index: 2; }
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-    #audio-cta { position: absolute; top: -25px; right: -20px; display: flex; align-items: center; background-color: rgba(6, 147, 227, 0.2); border: 1px solid var(--primary-color); padding: 8px 15px; border-radius: 30px; backdrop-filter: blur(5px); animation: pulse 2.5s infinite ease-in-out; z-index: 10; cursor: pointer; }
+    #audio-cta { position: absolute; top: -25px; right: -20px; display: flex; align-items: center; background-color: rgba(6, 147, 227, 0.2); border: 1px solid var(--primary-color); padding: 8px 15px; border-radius: 30px; backdrop-filter: blur(5px); animation: pulse 2.5s infinite ease-in-out; z-index: 10; cursor: pointer; visibility: hidden; /* Nascosto all'inizio */ }
     #audio-cta .cta-text { margin-right: 10px; font-weight: 500; color: #f0f0f0; }
     #mute-btn-icon { background: white; color: var(--primary-color); border-radius: 50%; width: 35px; height: 35px; font-size: 1em; display: flex; align-items: center; justify-content: center; }
     @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
@@ -54,7 +54,6 @@
     @keyframes fadeInOut { 0% { opacity: 0; transform: var(--transform-start); } 15% { opacity: 1; transform: var(--transform-end); } 85% { opacity: 1; transform: var(--transform-end); } 100% { opacity: 0; transform: var(--transform-start); } }
     .aphorism-postit { position: absolute; background-color: #fefabc; color: #333; padding: 15px; border-radius: 5px; box-shadow: 5px 5px 15px rgba(0,0,0,0.3); max-width: 250px; font-family: 'Georgia', serif; animation: fadeInOut 10s ease-in-out forwards; }
     
-    /* Stili per l'overlay di avviso audio */
     #audio-start-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.9); display: none; align-items: center; justify-content: center; z-index: 100000; backdrop-filter: blur(10px); }
     #audio-start-content { background: rgba(6, 147, 227, 0.1); border: 2px solid var(--primary-color); padding: 40px; border-radius: 20px; text-align: center; max-width: 500px; margin: 20px; }
     #audio-start-content h2 { color: var(--primary-color); margin-bottom: 15px; font-size: 1.8em; }
@@ -70,7 +69,7 @@
     <div id="audio-start-content">
       <h2><i class="fas fa-music"></i> Benvenuto!</h2>
       <p>Per la migliore esperienza, questa pagina include una musica di sottofondo. Clicca per attivarla.</p>
-      <button id="start-audio-btn"><i class="fas fa-play"></i> Avvia l'Esperienza Musicale</button>
+      <button id="start-audio-btn"><i class="fas fa-play"></i> Attiva la Musica</button>
     </div>
   </div>
 
@@ -93,11 +92,21 @@
     </div>
   </div>
 
-  <!-- Contenuto dei modal (invariato) -->
-  <div id="video-modal" class="modal-overlay">...</div>
-  <div id="music-modal" class="modal-overlay">...</div>
-  <div id="services-modal" class="modal-overlay">...</div>
-  <div id="contact-modal" class="modal-overlay">...</div>
+  <div id="video-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="video-modal">&times;</span><h2>Video Selezionati</h2><a href="https://www.youtube.com/watch?v=7s3-7DV38IA" target="_blank" class="button">Produzioni Varie</a><a href="https://www.youtube.com/watch?v=Y8YqyCT7h5E" target="_blank" class="button">Ascolta "Noi"</a><a href="https://www.youtube.com/watch?v=igexCZ24Twg" target="_blank" class="button">Ascolta "Per Te"</a></div></div>
+  
+  <div id="music-modal" class="modal-overlay">
+    <div class="modal-content music-catalog">
+      <span class="modal-close" data-target="music-modal">&times;</span>
+      <h2>Catalogo Musicale</h2>
+      <div class="info-box"><i class="fas fa-filter"></i> Seleziona i filtri per trovare il brano che cerchi.</div>
+      <div id="filter-container"></div>
+      <div id="song-list-container" class="song-list-container"><p>Caricamento catalogo...</p></div>
+      <audio id="catalog-audio-player"></audio>
+    </div>
+  </div>
+
+  <div id="services-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="services-modal">&times;</span><h2><i class="fas fa-heart" style="color: var(--secondary-color); margin-right: 10px;"></i>Canzoni Personalizzate</h2><div style="text-align: left; line-height: 1.6; margin-bottom: 20px;"><h3 style="color: var(--primary-color); margin-bottom: 10px;">✨ Servizi Esclusivi:</h3><ul style="list-style: none; padding-left: 0;"><li style="margin-bottom: 10px;"><i class="fas fa-heart" style="color: #e74c3c; margin-right: 8px;"></i> <strong>Canzoni per Coppie</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-ring" style="color: #f39c12; margin-right: 8px;"></i> <strong>Anniversari e Matrimoni</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-gift" style="color: #9b59b6; margin-right: 8px;"></i> <strong>Testi Personalizzati</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-birthday-cake" style="color: #e67e22; margin-right: 8px;"></i> <strong>Eventi Speciali</strong></li></ul><div style="background: rgba(6, 147, 227, 0.1); border-left: 4px solid var(--primary-color); padding: 15px; margin: 20px 0; border-radius: 5px;"><p><strong>💡 Come funziona:</strong> Raccontami la tua storia, i tuoi ricordi. Creerò una canzone unica che rappresenti le tue emozioni.</p></div></div><button id="contact-for-custom-song" class="button collabora">Richiedi la Tua Canzone</button></div></div>
+  <div id="contact-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="contact-modal">&times;</span><h2>Contattami per il tuo Progetto</h2><form id="contact-form" class="contact-form"><input type="hidden" name="access_key" value="9013a8d5-0901-42a0-b9e6-4c45553f960d"/><input type="text" name="name" placeholder="Il tuo Nome" required/><input type="email" name="email" placeholder="La tua Email" required/><input type="tel" name="phone" placeholder="Il tuo Telefono (Opzionale)"/><select name="service_type" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #555; background-color: #2c2c2c; color: #f0f0f0; font-size: 1em;"><option value="">Seleziona il tipo di servizio</option><option value="canzone_personalizzata">Canzone Personalizzata</option><option value="composizione_artista">Composizione per Artista</option><option value="intrattenimento_live">Intrattenimento Live</option><option value="altro">Altro</option></select><textarea name="message" rows="4" placeholder="Descrivi la tua idea o richiesta..." required></textarea><button type="submit" class="button collabora">Invia Messaggio</button></form><div id="form-result"></div></div></div>
   
   <div id="chatbot-container"></div>
   
@@ -123,6 +132,7 @@
                 audioInitialized = true;
                 bgAudio.muted = false;
                 audioStartOverlay.style.display = 'none';
+                audioCta.style.visibility = 'visible';
                 updateMuteButton();
                 sessionStorage.setItem('audioConsent', 'true');
             }).catch(e => {
@@ -139,6 +149,7 @@
             bgAudio.play().then(() => {
                 audioInitialized = true;
                 bgAudio.muted = false;
+                audioCta.style.visibility = 'visible';
                 updateMuteButton();
             }).catch(() => { /* Fallimento silenzioso, l'utente può usare il CTA */ });
         }
@@ -161,13 +172,19 @@
         catalogPlayer.addEventListener('pause', () => { if (audioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play(); });
         catalogPlayer.addEventListener('ended', () => { if (audioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play(); resetPlayingState(); });
 
-        // --- (Il resto dello script per modali, catalogo, form e post-it rimane invariato) ---
         // --- GESTIONE MODALI ---
         document.getElementById('open-music-modal').addEventListener('click', () => document.getElementById('music-modal').style.display = 'flex');
         document.getElementById('open-video-modal').addEventListener('click', () => document.getElementById('video-modal').style.display = 'flex');
         document.getElementById('open-services-modal').addEventListener('click', () => document.getElementById('services-modal').style.display = 'flex');
         document.getElementById('open-contact-modal').addEventListener('click', () => document.getElementById('contact-modal').style.display = 'flex');
-        document.getElementById('contact-for-custom-song').addEventListener('click', () => { document.getElementById('services-modal').style.display = 'none'; document.getElementById('contact-modal').style.display = 'flex'; document.querySelector('select[name="service_type"]').value = 'canzone_personalizzata'; });
+        const contactForCustomSongBtn = document.getElementById('contact-for-custom-song');
+        if(contactForCustomSongBtn) {
+            contactForCustomSongBtn.addEventListener('click', () => {
+                document.getElementById('services-modal').style.display = 'none';
+                document.getElementById('contact-modal').style.display = 'flex';
+                document.querySelector('select[name="service_type"]').value = 'canzone_personalizzata';
+            });
+        }
         document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', e => document.getElementById(e.currentTarget.dataset.target).style.display = 'none'));
 
         // --- LOGICA CATALOGO MUSICALE ---
@@ -334,7 +351,7 @@
             const container = document.getElementById('chatbot-container');
             if (container) {
                 container.innerHTML = chatbotHTML;
-                const webhookUrl = 'https://n8n.automaita.it/webhook-test/ffausto-ai-chat';
+                const webhookUrl = 'INCOLLA_QUI_IL_TUO_WEBHOOK_N8N';
                 const bubble = document.getElementById('chatbot-bubble'), windowWrapper = document.getElementById('chatbot-window-wrapper'), welcomeBubble = document.getElementById('chatbot-welcome-bubble'), messagesEl = document.getElementById('chatbot-messages'), inputField = document.getElementById('chatbot-input-field'), sendBtn = document.getElementById('chatbot-send-btn');
                 let chatHistory = [];
                 const getOrCreateSessionId = () => { let id = sessionStorage.getItem('chatbot_session_id'); if (!id) { id = crypto.randomUUID(); sessionStorage.setItem('chatbot_session_id', id); } return id; };
