@@ -55,7 +55,7 @@
     .aphorism-postit { position: absolute; background-color: #fefabc; color: #333; padding: 15px; border-radius: 5px; box-shadow: 5px 5px 15px rgba(0,0,0,0.3); max-width: 250px; font-family: 'Georgia', serif; animation: fadeInOut 10s ease-in-out forwards; }
     
     /* Stili per l'overlay di avviso audio */
-    #audio-start-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.9); display: flex; align-items: center; justify-content: center; z-index: 100000; backdrop-filter: blur(10px); }
+    #audio-start-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.9); display: none; align-items: center; justify-content: center; z-index: 100000; backdrop-filter: blur(10px); }
     #audio-start-content { background: rgba(6, 147, 227, 0.1); border: 2px solid var(--primary-color); padding: 40px; border-radius: 20px; text-align: center; max-width: 500px; margin: 20px; }
     #audio-start-content h2 { color: var(--primary-color); margin-bottom: 15px; font-size: 1.8em; }
     #audio-start-content p { margin-bottom: 25px; font-size: 1.1em; line-height: 1.6; }
@@ -75,8 +75,7 @@
   </div>
 
   <video autoplay muted loop playsinline preload="auto" id="background-video" poster="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/immagine%20sfondo.png"><source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/video_sfondo_compressed.mp4" type="video/mp4"></source></video>
-  <!-- URL CORRETTO E SENZA AUTOPLAY/MUTED GESTITI DA JS -->
-  <audio loop preload="auto" id="background-audio"><source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/7a%20Controtempo.mp3" type="audio/mpeg"></source></audio>
+  <audio loop preload="auto" id="background-audio"><source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/7a-Controtempo-compresso.mp3" type="audio/mpeg"></source></audio>
   <div id="aphorism-container"></div>
   
   <div class="container-wrapper">
@@ -119,7 +118,6 @@
         const startAudioBtn = document.getElementById('start-audio-btn');
         let audioInitialized = false;
 
-        // Funzione per avviare l'audio dopo l'interazione dell'utente
         function initializeAudio() {
             bgAudio.play().then(() => {
                 audioInitialized = true;
@@ -129,24 +127,20 @@
                 sessionStorage.setItem('audioConsent', 'true');
             }).catch(e => {
                 console.error("Avvio audio fallito anche dopo il click:", e);
-                audioStartOverlay.style.display = 'none'; // Nasconde l'overlay anche se fallisce
+                audioStartOverlay.style.display = 'none';
             });
         }
 
         startAudioBtn.addEventListener('click', initializeAudio);
 
-        // Mostra l'overlay solo se l'utente non ha già dato il consenso
         if (sessionStorage.getItem('audioConsent') !== 'true') {
             audioStartOverlay.style.display = 'flex';
         } else {
-            // Se il consenso è già stato dato, prova a far partire l'audio
             bgAudio.play().then(() => {
                 audioInitialized = true;
                 bgAudio.muted = false;
                 updateMuteButton();
-            }).catch(() => {
-                // In caso di policy aggressive, potrebbe fallire comunque. Il pulsante CTA lo risolverà.
-            });
+            }).catch(() => { /* Fallimento silenzioso, l'utente può usare il CTA */ });
         }
         
         audioCta.addEventListener('click', () => {
