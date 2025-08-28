@@ -32,25 +32,19 @@
     .modal-content { background: #1e1e1e; padding: 30px; border-radius: 15px; width: 100%; max-width: 550px; position: relative; max-height: 90vh; overflow-y: auto; }
     .modal-close { position: absolute; top: 15px; right: 20px; font-size: 2em; color: white; cursor: pointer; line-height: 1; }
     .music-catalog .info-box { background: rgba(6, 147, 227, 0.1); border: 1px solid var(--primary-color); padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 1.1em; }
-    
-    /* --- STILI PER I NUOVI PULSANTI FILTRO --- */
     .filter-group { margin-bottom: 15px; }
     .filter-group .filter-label { text-align: left; margin-bottom: 8px; font-weight: 500; color: var(--primary-color); }
     .filter-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
     .filter-btn { padding: 8px 14px; border: 1px solid #555; border-radius: 20px; background: none; color: #f0f0f0; cursor: pointer; font-size: 0.9em; transition: all 0.2s ease; }
     .filter-btn.active { background-color: var(--primary-color); border-color: var(--primary-color); color: white; }
-    
     .song-list-container { max-height: 40vh; overflow-y: auto; margin-top: 20px; }
     .song-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #333; transition: background-color 0.3s ease; border-radius: 5px; cursor: pointer; }
     .song-item:last-child { border-bottom: none; }
     .song-item .title { flex-grow: 1; text-align: left; pointer-events: none; }
     .song-item .play-btn { background: none; border: 2px solid var(--primary-color); color: var(--primary-color); border-radius: 50%; width: 40px; height: 40px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
     .song-item:hover { background-color: rgba(255,255,255,0.05); }
-
-    /* --- STILI PER FEEDBACK VISIVO DEL BRANO IN RIPRODUZIONE --- */
     .song-item.playing { background-color: rgba(6, 147, 227, 0.2); }
     .song-item.playing .play-btn { background-color: var(--primary-color); color: white; }
-    
     #catalog-player-display { margin-top: 20px; padding-top: 20px; border-top: 1px solid #444; display: none; align-items: center; gap: 15px; }
     .contact-form { display: flex; flex-direction: column; gap: 15px; text-align: left; }
     .contact-form input, .contact-form textarea, .contact-form select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #555; background-color: #2c2c2c; color: #f0f0f0; font-size: 1em; }
@@ -85,21 +79,14 @@
       <span class="modal-close" data-target="music-modal">&times;</span>
       <h2>Catalogo Musicale</h2>
       <div class="info-box"><i class="fas fa-filter"></i> Seleziona i filtri per trovare il brano che cerchi.</div>
-      <!-- FILTRI A PULSANTE -->
-      <div id="filter-container">
-          <!-- I pulsanti verranno inseriti qui dal JavaScript -->
-      </div>
+      <div id="filter-container"></div>
       <div id="song-list-container" class="song-list-container"><p>Caricamento catalogo...</p></div>
-      <div id="catalog-player-display">
-        <button id="catalog-player-button"><i class="fas fa-play"></i></button>
-        <span id="catalog-song-title">Seleziona un brano</span>
-        <audio id="catalog-audio-player"></audio>
-      </div>
+      <div id="catalog-player-display" style="display:none;"><audio id="catalog-audio-player"></audio></div>
     </div>
   </div>
 
-  <div id="services-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="services-modal">&times;</span><h2><i class="fas fa-heart" style="color: var(--secondary-color); margin-right: 10px;"></i>Canzoni Personalizzate</h2><p>... (contenuto invariato) ...</p><button id="contact-for-custom-song" class="button collabora">Richiedi la Tua Canzone</button></div></div>
-  <div id="contact-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="contact-modal">&times;</span><h2>Contattami per il tuo Progetto</h2><form id="contact-form" class="contact-form">... (contenuto invariato) ...</form><div id="form-result"></div></div></div>
+  <div id="services-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="services-modal">&times;</span><h2><i class="fas fa-heart" style="color: var(--secondary-color); margin-right: 10px;"></i>Canzoni Personalizzate</h2><div style="text-align: left; line-height: 1.6; margin-bottom: 20px;"><h3 style="color: var(--primary-color); margin-bottom: 10px;">✨ Servizi Esclusivi:</h3><ul style="list-style: none; padding-left: 0;"><li style="margin-bottom: 10px;"><i class="fas fa-heart" style="color: #e74c3c; margin-right: 8px;"></i> <strong>Canzoni per Coppie</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-ring" style="color: #f39c12; margin-right: 8px;"></i> <strong>Anniversari e Matrimoni</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-gift" style="color: #9b59b6; margin-right: 8px;"></i> <strong>Testi Personalizzati</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-birthday-cake" style="color: #e67e22; margin-right: 8px;"></i> <strong>Eventi Speciali</strong></li></ul><div style="background: rgba(6, 147, 227, 0.1); border-left: 4px solid var(--primary-color); padding: 15px; margin: 20px 0; border-radius: 5px;"><p><strong>💡 Come funziona:</strong> Raccontami la tua storia, i tuoi ricordi. Creerò una canzone unica che rappresenti le tue emozioni.</p></div></div><button id="contact-for-custom-song" class="button collabora">Richiedi la Tua Canzone</button></div></div>
+  <div id="contact-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="contact-modal">&times;</span><h2>Contattami per il tuo Progetto</h2><form id="contact-form" class="contact-form"><input type="hidden" name="access_key" value="9013a8d5-0901-42a0-b9e6-4c45553f960d"><input type="text" name="name" placeholder="Il tuo Nome" required><input type="email" name="email" placeholder="La tua Email" required><input type="tel" name="phone" placeholder="Il tuo Telefono (Opzionale)"><select name="service_type" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #555; background-color: #2c2c2c; color: #f0f0f0; font-size: 1em;"><option value="">Seleziona il tipo di servizio</option><option value="canzone_personalizzata">Canzone Personalizzata</option><option value="composizione_artista">Composizione per Artista</option><option value="intrattenimento_live">Intrattenimento Live</option><option value="altro">Altro</option></select><textarea name="message" rows="4" placeholder="Descrivi la tua idea o richiesta..." required></textarea><button type="submit" class="button collabora">Invia Messaggio</button></form><div id="form-result"></div></div></div>
   
   <div id="chatbot-container"></div>
   
@@ -116,38 +103,39 @@
         const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i');
         const ctaText = document.querySelector('#audio-cta .cta-text');
         const catalogPlayer = document.getElementById('catalog-audio-player');
-        let isBgAudioIntendedToPlay = false;
+        let userWantsBgMusic = false;
 
         audioCta.addEventListener('click', () => {
-            if (bgAudio.paused) {
+            if (!userWantsBgMusic) {
                 bgAudio.play().then(() => {
-                    bgAudio.muted = false; isBgAudioIntendedToPlay = true; updateMuteButton();
+                    userWantsBgMusic = true;
+                    bgAudio.muted = false;
+                    updateMuteButton();
                 }).catch(e => console.error("Errore avvio audio:", e));
             } else {
-                bgAudio.muted = !bgAudio.muted; isBgAudioIntendedToPlay = !bgAudio.muted; updateMuteButton();
+                bgAudio.muted = !bgAudio.muted;
+                updateMuteButton();
             }
         });
 
         function updateMuteButton() {
-            const isMuted = bgAudio.muted || !isBgAudioIntendedToPlay;
-            muteBtnIcon.className = isMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
-            ctaText.textContent = isMuted ? 'Attiva la musica' : 'Disattiva musica';
+            muteBtnIcon.className = bgAudio.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
+            ctaText.textContent = bgAudio.muted ? 'Attiva la musica' : 'Disattiva musica';
         }
 
-        catalogPlayer.addEventListener('play', () => { if (isBgAudioIntendedToPlay && !bgAudio.paused) bgAudio.pause(); });
-        catalogPlayer.addEventListener('pause', () => { if (isBgAudioIntendedToPlay && bgAudio.paused) bgAudio.play(); });
-        catalogPlayer.addEventListener('ended', () => { if (isBgAudioIntendedToPlay && bgAudio.paused) bgAudio.play(); resetPlayingState(); });
+        catalogPlayer.addEventListener('play', () => { if (userWantsBgMusic && !bgAudio.paused) bgAudio.pause(); });
+        catalogPlayer.addEventListener('pause', () => { if (userWantsBgMusic && bgAudio.paused) bgAudio.play(); });
+        catalogPlayer.addEventListener('ended', () => { if (userWantsBgMusic && bgAudio.paused) bgAudio.play(); resetPlayingState(); });
 
         // --- GESTIONE MODALI ---
         document.getElementById('open-music-modal').addEventListener('click', () => document.getElementById('music-modal').style.display = 'flex');
         document.getElementById('open-video-modal').addEventListener('click', () => document.getElementById('video-modal').style.display = 'flex');
         document.getElementById('open-services-modal').addEventListener('click', () => document.getElementById('services-modal').style.display = 'flex');
         document.getElementById('open-contact-modal').addEventListener('click', () => document.getElementById('contact-modal').style.display = 'flex');
-        document.getElementById('contact-for-custom-song').addEventListener('click', () => { document.getElementById('services-modal').style.display = 'none'; document.getElementById('contact-modal').style.display = 'flex'; });
+        document.getElementById('contact-for-custom-song').addEventListener('click', () => { document.getElementById('services-modal').style.display = 'none'; document.getElementById('contact-modal').style.display = 'flex'; document.querySelector('select[name="service_type"]').value = 'canzone_personalizzata'; });
         document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', e => document.getElementById(e.currentTarget.dataset.target).style.display = 'none'));
 
         // --- LOGICA CATALOGO MUSICALE ---
-        const playerDisplay = document.getElementById('catalog-player-display');
         const songListContainer = document.getElementById('song-list-container');
         const filterContainer = document.getElementById('filter-container');
         let allSongs = [];
@@ -162,7 +150,7 @@
                 if (songs.error) throw new Error(songs.error);
                 if (!songs || songs.length === 0) throw new Error('Nessun brano trovato.');
                 
-                allSongs = songs; // Assumiamo che lo script restituisca genre, category, argomento, title, url
+                allSongs = songs;
                 createFilterButtons(allSongs);
                 filterAndDisplaySongs();
             } catch (error) {
@@ -176,29 +164,22 @@
                 'Categoria': [...new Set(songs.map(s => s.category))],
                 'Argomento': [...new Set(songs.map(s => s.argomento))]
             };
-
             filterContainer.innerHTML = '';
             for (const key in filters) {
                 const filterKey = key === 'Genere' ? 'genre' : (key === 'Categoria' ? 'category' : 'argomento');
                 let buttonsHtml = `<div class="filter-group"><div class="filter-label">${key}</div><div class="filter-buttons">`;
                 buttonsHtml += `<button class="filter-btn active" data-filter-key="${filterKey}" data-filter-value="all">Tutti</button>`;
-                filters[key].forEach(value => {
-                    buttonsHtml += `<button class="filter-btn" data-filter-key="${filterKey}" data-filter-value="${value}">${value}</button>`;
-                });
+                filters[key].forEach(value => { buttonsHtml += `<button class="filter-btn" data-filter-key="${filterKey}" data-filter-value="${value}">${value}</button>`; });
                 buttonsHtml += `</div></div>`;
                 filterContainer.innerHTML += buttonsHtml;
             }
-            
             document.querySelectorAll('.filter-btn').forEach(button => {
                 button.addEventListener('click', (e) => {
                     const key = e.target.dataset.filterKey;
                     const value = e.target.dataset.filterValue;
                     currentFilters[key] = value;
-
-                    // Gestisce la classe 'active'
                     e.target.parentElement.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
                     e.target.classList.add('active');
-
                     filterAndDisplaySongs();
                 });
             });
@@ -210,7 +191,6 @@
                        (currentFilters.category === 'all' || song.category === currentFilters.category) &&
                        (currentFilters.argomento === 'all' || song.argomento === currentFilters.argomento);
             });
-
             songListContainer.innerHTML = '';
             if (filteredSongs.length > 0) {
                 filteredSongs.forEach(song => {
@@ -237,36 +217,132 @@
         function addEventListenersToSongs() {
             document.querySelectorAll('.song-item').forEach(item => {
                 item.addEventListener('click', () => {
-                    const wasPlaying = item.classList.contains('playing');
-                    const isPaused = catalogPlayer.paused;
-                    
-                    if (wasPlaying && !isPaused) {
-                        catalogPlayer.pause();
-                        return;
+                    const isCurrentlyPlaying = item.classList.contains('playing');
+                    if (isCurrentlyPlaying) {
+                        if (catalogPlayer.paused) { catalogPlayer.play(); } else { catalogPlayer.pause(); }
+                        item.querySelector('.play-btn i').className = catalogPlayer.paused ? 'fas fa-play' : 'fas fa-pause';
+                    } else {
+                        resetPlayingState();
+                        currentPlayingItem = item;
+                        item.classList.add('playing');
+                        catalogPlayer.src = item.dataset.src;
+                        catalogPlayer.play();
+                        item.querySelector('.play-btn i').className = 'fas fa-pause';
                     }
-                    
-                    resetPlayingState();
-
-                    currentPlayingItem = item;
-                    item.classList.add('playing');
-                    
-                    document.getElementById('catalog-song-title').textContent = item.dataset.title;
-                    catalogPlayer.src = item.dataset.src;
-                    catalogPlayer.play();
-                    item.querySelector('.play-btn i').className = 'fas fa-pause';
                 });
             });
         }
         
         loadMusicFromApi();
 
-        // --- SCRIPT CHATBOT (Ripristinato) ---
-        (function() {
-            const chatbotHTML = `<style>:root{--primary-color:#0693e3}#chatbot-bubble{position:fixed;bottom:25px;right:25px;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/Fausto%20immagine.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:9999}#chatbot-bubble.open{background-image:none;background-color:var(--primary-color)}</style><div id="chatbot-bubble"></div><div id="chatbot-window">...</div>`;
-            document.getElementById('chatbot-container').innerHTML = chatbotHTML;
-            // ... (tutta la logica del chatbot che avevi prima) ...
-        })();
+        // --- GESTIONE FORM CONTATTO ---
+        const form = document.getElementById('contact-form');
+        const formResult = document.getElementById('form-result');
+        form.addEventListener('submit', function(e) { e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio in corso..."; fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).then(response => response.json()).then(data => { if (data.success) { formResult.innerHTML = "Messaggio inviato con successo!"; form.reset(); } else { formResult.innerHTML = `Errore: ${data.message}`; } }).catch(() => formResult.innerHTML = "Si è verificato un errore."); });
     });
+
+    // --- SCRIPT CHATBOT (COMPLETO E MODIFICATO) ---
+    (function() {
+        // Ho spostato gli stili qui dentro per mantenere il chatbot autonomo
+        const chatbotHTML = `
+        <style>
+            :root{--primary-color:#0693e3}
+            #chatbot-bubble{position:fixed;bottom:25px;right:25px;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/Fausto%20immagine.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:9999}
+            #chatbot-bubble:hover{transform:scale(1.1)}
+            #chatbot-bubble.open{background-image:none;background-color:var(--primary-color)}
+            #chatbot-bubble.open .icon-close{opacity:1}
+            #chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}
+            #chatbot-window{position:fixed;bottom:100px;right:25px;width:440px;max-width:95vw;height:70vh;max-height:600px;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);z-index:9998;display:flex;flex-direction:column;overflow:hidden;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease}
+            #chatbot-window.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}
+            @media (max-width:920px){#chatbot-window{width:100vw;height:100vh;max-height:100vh;bottom:0;right:0;top:0;left:0;border-radius:0}#chatbot-bubble{bottom:10px;right:10px}}
+            
+            /* --- MODIFICHE STILISTICHE CHATBOT --- */
+            .chatbot-header{background-color:var(--primary-color);color:#fff;padding: 20px 1rem 1rem; text-align:center;position:relative;flex-shrink:0; padding-top: 50px;}
+            .chatbot-header-logo {
+                width: 80px;
+                height: 80px;
+                border-radius: 50%;
+                border: 3px solid #fff;
+                box-shadow: 0 0 10px rgba(0,0,0,0.3);
+                object-fit: cover;
+                position: absolute;
+                top: 0;
+                left: 50%;
+                transform: translate(-50%, -50%); /* Posiziona a cavallo */
+            }
+            .chatbot-header-text h3 { margin: 0; }
+            .chatbot-header-text small { opacity: 0.8; }
+            
+            .chatbot-messages{flex-grow:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column}
+            .message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}
+            .message.user{align-self:flex-end}
+            .message.bot{align-self:flex-start}
+            .message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0}
+            .message-text{padding:10px 15px;border-radius:18px;line-height:1.4;word-wrap:break-word}
+            .message.user .message-text{background-color:#eef2f5;color:#333;border-bottom-right-radius:4px}
+            .message.bot .message-text{background-color:var(--primary-color);color:#fff;border-bottom-left-radius:4px}
+            .chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}
+            .chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}
+            .chatbot-input input:focus-visible{outline:2px solid var(--primary-color)}
+            .chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}
+        </style>
+        <div id="chatbot-bubble">
+            <svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
+        </div>
+        <div id="chatbot-window">
+            <div class="chatbot-header">
+                <img src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/Fausto%20immagine.jpg" alt="Fausto AI" class="chatbot-header-logo">
+                <div class="chatbot-header-text">
+                    <h3>Fausto AI</h3>
+                    <small>Assistente Virtuale</small>
+                </div>
+            </div>
+            <div class="chatbot-messages" id="chatbot-messages"></div>
+            <div class="chatbot-input">
+                <input type="text" id="chatbot-input-field" placeholder="Scrivi un messaggio...">
+                <button id="chatbot-send-btn"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg></button>
+            </div>
+        </div>`;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('chatbot-container');
+            if (container) {
+                container.innerHTML = chatbotHTML;
+                const webhookUrl = 'INCOLLA_QUI_IL_TUO_WEBHOOK_N8N';
+                const bubble = document.getElementById('chatbot-bubble'), windowEl = document.getElementById('chatbot-window'), messagesEl = document.getElementById('chatbot-messages'), inputField = document.getElementById('chatbot-input-field'), sendBtn = document.getElementById('chatbot-send-btn');
+                let chatHistory = [];
+                const toggleChat = () => { bubble.classList.toggle('open'); windowEl.classList.toggle('open'); if (windowEl.classList.contains('open')) inputField.focus(); };
+                const addMessage = (text, type) => {
+                    const msgDiv = document.createElement('div'); msgDiv.className = `message ${type}`;
+                    if (type === 'bot') {
+                        const avatar = document.createElement('img'); avatar.className = 'message-avatar';
+                        avatar.src = 'https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/Fausto%20immagine.jpg';
+                        msgDiv.appendChild(avatar);
+                    }
+                    const textDiv = document.createElement('div'); textDiv.className = 'message-text';
+                    textDiv.innerHTML = DOMPurify.sanitize(marked.parse(text));
+                    msgDiv.appendChild(textDiv); messagesEl.appendChild(msgDiv);
+                    messagesEl.scrollTop = messagesEl.scrollHeight;
+                };
+                const sendMessage = async () => {
+                    const userMessage = inputField.value.trim(); if (userMessage === '') return;
+                    addMessage(userMessage, 'user'); inputField.value = '';
+                    try {
+                        if (webhookUrl.includes('INCOLLA_QUI')) { addMessage("Il chatbot non è configurato.", 'bot'); return; }
+                        const response = await fetch(`${webhookUrl}?user_message=${encodeURIComponent(userMessage)}`, { method: 'POST' });
+                        if (!response.ok) throw new Error("Network response");
+                        const data = await response.json();
+                        addMessage(data.response || "C'è stato un problema.", 'bot');
+                    } catch (error) { addMessage('Spiacente, si è verificato un errore.', 'bot'); }
+                };
+                bubble.addEventListener('click', toggleChat);
+                sendBtn.addEventListener('click', sendMessage);
+                inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
+                
+                addMessage("Ciao! Sono Fausto AI, il tuo assistente virtuale. Chiedimi di trovare un brano per te!", 'bot');
+            }
+        });
+    })();
   </script>
 </body>
 </html>
