@@ -72,8 +72,8 @@
     </div>
   </div>
 
-  <video autoplay muted loop playsinline preload="auto" id="background-video" poster="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/immagine%20sfondo.png"><source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/video_sfondo_compressed.mp4" type="video/mp4"></source></video>
-  <audio loop preload="auto" id="background-audio"><source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/7a-Controtempo-compresso.mp3" type="audio/mpeg"></source></audio>
+  <video autoplay muted loop playsinline preload="auto" id="background-video" poster="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/immagine%20sfondo.png"><source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/video_sfondo_compressed.mp4" type="video/mp4" /></video>
+  <audio loop preload="auto" id="background-audio"><source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/7a-Controtempo-compresso.mp3" type="audio/mpeg" /></audio>
   <div id="aphorism-container"></div>
   
   <div class="container-wrapper">
@@ -140,8 +140,6 @@
         }
 
         startAudioBtn.addEventListener('click', initializeAudio);
-
-        // Mostra sempre l'overlay all'inizio
         audioStartOverlay.style.display = 'flex';
         
         audioCta.addEventListener('click', () => {
@@ -281,7 +279,7 @@
         setInterval(showRandomAphorism, 12000);
     });
 
-    // --- SCRIPT CHATBOT (con layout corretto) ---
+    // --- SCRIPT CHATBOT (SENZA SESSIONSTORAGE) ---
     (function() {
         const chatbotHTML = `
         <style>
@@ -291,15 +289,13 @@
             #chatbot-bubble.open{background-image:none;background-color:var(--primary-color)}
             #chatbot-bubble.open .icon-close{opacity:1}
             #chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}
-            #chatbot-welcome-bubble{background-color:#eef2f5;color:#1e293b;padding:12px 18px;border-radius:15px;box-shadow:0 4px 12px rgba(0,0,0,.15);font-size:15px;z-index:9998;cursor:pointer;opacity:0;animation:fadeInWelcome 1s ease 1s forwards;position:fixed;bottom:25px;right:105px;visibility:hidden}
-            #chatbot-welcome-bubble.visible{visibility:visible}@keyframes fadeInWelcome{to{opacity:1}}
             
             #chatbot-window-wrapper {position:fixed;bottom:140px;right:25px;width:440px;max-width:95vw;height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease;}
             #chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}
             #chatbot-window{position:relative; margin-top: 45px; width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;}
             .chatbot-header-logo {width: 90px;height: 90px;border-radius: 50%;border: 3px solid #fff;box-shadow: 0 0 10px rgba(0,0,0,0.3);object-fit: cover;position: absolute;top: 0;left: 50%;transform: translateX(-50%); z-index: 10000;}
             
-            @media (max-width:920px){#chatbot-window-wrapper{width:100vw;height:100vh;max-height:100vh;bottom:0;right:0;top:0;left:0;border-radius:0;} #chatbot-bubble{bottom:10px;right:10px} #chatbot-welcome-bubble{display:none}}
+            @media (max-width:920px){#chatbot-window-wrapper{width:100vw;height:100vh;max-height:100vh;bottom:0;right:0;top:0;left:0;border-radius:0;} #chatbot-bubble{bottom:10px;right:10px}}
             .chatbot-header{background-color:var(--primary-color);color:#fff;padding:1rem; padding-top: 55px; text-align:center;flex-shrink:0}
             .chatbot-messages{flex-grow:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column}
             .message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}
@@ -314,7 +310,6 @@
         <div id="chatbot-bubble">
             <svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
         </div>
-        <div id="chatbot-welcome-bubble">Ciao! Sono Fausto AI. Chiedimi qualcosa!</div>
         <div id="chatbot-window-wrapper">
             <img src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/Fausto%20immagine.jpg" alt="Fausto AI" class="chatbot-header-logo">
             <div id="chatbot-window">
@@ -335,20 +330,15 @@
             if (container) {
                 container.innerHTML = chatbotHTML;
                 const webhookUrl = 'INCOLLA_QUI_IL_TUO_WEBHOOK_N8N';
-                const bubble = document.getElementById('chatbot-bubble'), windowWrapper = document.getElementById('chatbot-window-wrapper'), welcomeBubble = document.getElementById('chatbot-welcome-bubble'), messagesEl = document.getElementById('chatbot-messages'), inputField = document.getElementById('chatbot-input-field'), sendBtn = document.getElementById('chatbot-send-btn');
-                let chatHistory = [];
-                const getOrCreateSessionId = () => { let id = sessionStorage.getItem('chatbot_session_id'); if (!id) { id = crypto.randomUUID(); sessionStorage.setItem('chatbot_session_id', id); } return id; };
-                const saveChatState = () => sessionStorage.setItem('chatbot_state', JSON.stringify({ isOpen: windowWrapper.classList.contains('open'), history: chatHistory }));
-                const toggleChat = (forceOpen = false) => {
-                    const isOpen = windowWrapper.classList.contains('open');
-                    if (forceOpen && !isOpen) { bubble.classList.add('open'); windowWrapper.classList.add('open'); welcomeBubble.classList.remove('visible'); } 
-                    else if (!forceOpen) { bubble.classList.toggle('open'); windowWrapper.classList.toggle('open'); }
-                    if (windowWrapper.classList.contains('open')) { welcomeBubble.classList.remove('visible'); inputField.focus(); } 
-                    else { welcomeBubble.classList.add('visible'); }
-                    saveChatState();
+                const bubble = document.getElementById('chatbot-bubble'), windowWrapper = document.getElementById('chatbot-window-wrapper'), messagesEl = document.getElementById('chatbot-messages'), inputField = document.getElementById('chatbot-input-field'), sendBtn = document.getElementById('chatbot-send-btn');
+                
+                const toggleChat = () => {
+                    windowWrapper.classList.toggle('open');
+                    bubble.classList.toggle('open');
+                    if (windowWrapper.classList.contains('open')) inputField.focus();
                 };
-                const addMessage = (text, type, shouldSave = true) => {
-                    if (shouldSave) chatHistory.push({ text, type });
+
+                const addMessage = (text, type) => {
                     const msgDiv = document.createElement('div'); msgDiv.className = `message ${type}`;
                     if (type === 'bot') {
                         const avatar = document.createElement('img'); avatar.className = 'message-avatar'; avatar.src = 'https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/Fausto%20immagine.jpg'; msgDiv.appendChild(avatar);
@@ -357,48 +347,32 @@
                     textDiv.innerHTML = DOMPurify.sanitize(marked.parse(text));
                     msgDiv.appendChild(textDiv); messagesEl.appendChild(msgDiv);
                     messagesEl.scrollTop = messagesEl.scrollHeight;
-                    if (shouldSave) saveChatState();
                 };
-                const restoreChatState = () => {
-                    let wasOpenedBefore = false;
-                    try {
-                        const savedState = sessionStorage.getItem('chatbot_state');
-                        if (savedState) {
-                            const state = JSON.parse(savedState);
-                            if (state.history) { chatHistory = state.history; chatHistory.forEach(msg => addMessage(msg.text, msg.type, false)); }
-                            if (state.isOpen) { toggleChat(true); wasOpenedBefore = true; }
-                        }
-                    } catch(e) {
-                        console.warn("Could not restore chat state from sessionStorage", e);
-                        sessionStorage.removeItem('chatbot_state'); // Clear corrupted state
-                    }
-                    
-                    if (!wasOpenedBefore) { setTimeout(() => toggleChat(true), 1500); } 
-                    else if (!windowWrapper.classList.contains('open')) { welcomeBubble.classList.add('visible'); }
-                    if (chatHistory.length === 0) { addMessage("Ciao! Sono Fausto AI, assistente virtuale. Sono qui per aiutarti a trovare il tuo brano ideale, tra le categorie: jazz, funky, blues, liscio, pop, cantautore. Cosa stai cercando?", 'bot'); }
-                };
+
                 const sendMessage = async () => {
                     const userMessage = inputField.value.trim(); if (userMessage === '') return;
                     addMessage(userMessage, 'user'); inputField.value = '';
                     try {
                         if (webhookUrl.includes('INCOLLA_QUI')) { addMessage("Il chatbot non è configurato.", 'bot'); return; }
-                        const response = await fetch(`${webhookUrl}?user_message=${encodeURIComponent(userMessage)}&conversation_id=${getOrCreateSessionId()}`, { method: 'POST' });
+                        // Genera un ID univoco per ogni messaggio, visto che non usiamo più la sessione
+                        const conversationId = crypto.randomUUID(); 
+                        const response = await fetch(`${webhookUrl}?user_message=${encodeURIComponent(userMessage)}&conversation_id=${conversationId}`, { method: 'POST' });
                         if (!response.ok) throw new Error("Network response");
                         const data = await response.json(); addMessage(data.response || "C'è stato un problema.", 'bot');
                     } catch (error) { addMessage('Spiacente, si è verificato un errore.', 'bot'); }
                 };
                 
-                try {
-                    bubble.addEventListener('click', () => toggleChat());
-                    welcomeBubble.addEventListener('click', () => toggleChat(true));
-                    sendBtn.addEventListener('click', sendMessage);
-                    inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
-                    restoreChatState();
-                } catch (e) {
-                    console.error("Chatbot disabled due to security restrictions (sandboxed environment).", e);
-                    if(bubble) bubble.style.display = 'none';
-                    if(welcomeBubble) welcomeBubble.style.display = 'none';
-                }
+                bubble.addEventListener('click', toggleChat);
+                sendBtn.addEventListener('click', sendMessage);
+                inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
+
+                // Avvia il chatbot
+                setTimeout(() => {
+                    if(!windowWrapper.classList.contains('open')) {
+                        toggleChat();
+                    }
+                }, 1500);
+                addMessage("Ciao! Sono Fausto AI, assistente virtuale. Sono qui per aiutarti a trovare il tuo brano ideale. Cosa stai cercando?", 'bot');
             }
         });
     })();
