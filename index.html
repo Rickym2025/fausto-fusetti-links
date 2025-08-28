@@ -348,16 +348,60 @@
                     if (windowWrapper.classList.contains('open')) inputField.focus();
                 };
 
-                const addMessage = (text, type) => {
-                    const msgDiv = document.createElement('div'); msgDiv.className = `message ${type}`;
-                    if (type === 'bot') {
-                        const avatar = document.createElement('img'); avatar.className = 'message-avatar'; avatar.src = 'fausto_immagine.jpg'; msgDiv.appendChild(avatar);
-                    }
-                    const textDiv = document.createElement('div'); textDiv.className = 'message-text';
-                    textDiv.innerHTML = DOMPurify.sanitize(converter.makeHtml(text));
-                    msgDiv.appendChild(textDiv); messagesEl.appendChild(msgDiv);
-                    messagesEl.scrollTop = messagesEl.scrollHeight;
-                };
+const addMessage = (text, type) => {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `message ${type}`;
+    
+    if (type === 'bot') {
+        const avatar = document.createElement('img');
+        avatar.className = 'message-avatar';
+        avatar.src = 'fausto_immagine.jpg';
+        msgDiv.appendChild(avatar);
+    }
+    
+    const textDiv = document.createElement('div');
+    textDiv.className = 'message-text';
+    textDiv.style.textAlign = 'left'; // Allinea il testo a sinistra
+    
+    // Usiamo Showdown per convertire Markdown, ma DOMPurify ora permetterà i nostri attributi personalizzati
+    textDiv.innerHTML = DOMPurify.sanitize(converter.makeHtml(text), {
+        ADD_ATTR: ['data-src'], // Permetti l'attributo 'data-src'
+        ADD_TAGS: ['a', 'ul', 'li'] // Assicurati che i tag siano permessi
+    });
+    
+    msgDiv.appendChild(textDiv);
+    messagesEl.appendChild(msgDiv);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+
+    // --- NUOVA LOGICA PER INTERCETTARE I CLICK SUI BRANI ---
+    // Cerca tutti i link speciali che abbiamo appena aggiunto alla chat
+    const songLinks = textDiv.querySelectorAll('.chatbot-song-link');
+    
+    songLinks.forEach(link => {
+        link.addEventListener('click', (event) => {
+            event.preventDefault(); // Impedisce al link di navigare (fondamentale!)
+
+            const songUrl = link.dataset.src; // Prende l'URL del brano
+            
+            // Accedi al player audio principale della pagina
+            const catalogPlayer = document.getElementById('catalog-audio-player');
+            const resetPlayingState = window.resetPlayingState; // Assumendo che sia globale
+
+            if (catalogPlayer) {
+                // Ferma qualsiasi altra canzone in riproduzione
+                if (typeof resetPlayingState === 'function') {
+                    resetPlayingState();
+                }
+                
+                catalogPlayer.src = songUrl;
+                catalogPlayer.play();
+                
+                // Opzionale: potremmo aggiungere una notifica o un'evidenziazione
+                console.log("Riproduzione avviata dal chatbot:", songUrl);
+            }
+        });
+    });
+};
 
                 const sendMessage = async () => {
                     const userMessage = inputField.value.trim(); if (userMessage === '') return;
