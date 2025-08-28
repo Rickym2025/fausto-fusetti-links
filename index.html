@@ -58,7 +58,8 @@
 <body>
 
   <video autoplay muted loop playsinline preload="auto" id="background-video" poster="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/immagine%20sfondo.png"><source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/video_sfondo_compressed.mp4" type="video/mp4"></source></video>
-  <audio loop id="background-audio"><source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/7a-Controtempo-compresso.mp3" type="audio/mpeg"></source></audio>
+  <!-- MODIFICA #2: Aggiunto `autoplay` e `muted` per favorire il precaricamento -->
+  <audio loop autoplay muted id="background-audio"><source src="https://pub-89945f8350374b50818d716fdc3c108b.r2.dev/7a-Controtempo-compresso.mp3" type="audio/mpeg"></source></audio>
   <div id="aphorism-container"></div>
   
   <div class="container-wrapper">
@@ -107,16 +108,16 @@
         const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i');
         const ctaText = document.querySelector('#audio-cta .cta-text');
         const catalogPlayer = document.getElementById('catalog-audio-player');
-        let isBgAudioInitialized = false;
-
+        
         audioCta.addEventListener('click', () => {
-            if (!isBgAudioInitialized) {
+            // Se l'audio è in pausa, il primo click lo avvia e lo smuta
+            if (bgAudio.paused) {
                 bgAudio.play().then(() => {
-                    isBgAudioInitialized = true;
                     bgAudio.muted = false;
                     updateMuteButton();
                 }).catch(e => console.error("Errore avvio audio di sottofondo:", e));
             } else {
+                // Se è già in esecuzione, alterna solo lo stato muto
                 bgAudio.muted = !bgAudio.muted;
                 updateMuteButton();
             }
@@ -127,9 +128,9 @@
             ctaText.textContent = bgAudio.muted ? 'Attiva la musica' : 'Disattiva musica';
         }
 
-        catalogPlayer.addEventListener('play', () => { if (isBgAudioInitialized && !bgAudio.paused && !bgAudio.muted) bgAudio.pause(); });
-        catalogPlayer.addEventListener('pause', () => { if (isBgAudioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play(); });
-        catalogPlayer.addEventListener('ended', () => { if (isBgAudioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play(); resetPlayingState(); });
+        catalogPlayer.addEventListener('play', () => { if (!bgAudio.paused && !bgAudio.muted) bgAudio.pause(); });
+        catalogPlayer.addEventListener('pause', () => { if (bgAudio.paused && !bgAudio.muted) bgAudio.play(); });
+        catalogPlayer.addEventListener('ended', () => { if (bgAudio.paused && !bgAudio.muted) bgAudio.play(); resetPlayingState(); });
 
         // --- GESTIONE MODALI ---
         document.getElementById('open-music-modal').addEventListener('click', () => document.getElementById('music-modal').style.display = 'flex');
