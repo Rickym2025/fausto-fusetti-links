@@ -158,8 +158,8 @@
                 if (!modal) return;
                 if (modalId === 'music-modal' && catalogPlayer) {
                     catalogPlayer.pause();
-                    catalogPlayer.removeAttribute('src'); // Azione CRITICA: Svuota il player.
-                    catalogPlayer.load(); // Forza il reset del player
+                    catalogPlayer.removeAttribute('src'); 
+                    catalogPlayer.load(); 
                     if (window.resetPlayingState) window.resetPlayingState();
                 }
                 modal.style.display = 'none';
@@ -258,14 +258,12 @@
             }
             if(songListContainer) loadMusicFromApi();
 
-            // --- FORM DI CONTATTO ---
             const form = document.getElementById('contact-form');
             if(form){
                 const formResult = document.getElementById('form-result');
                 form.addEventListener('submit', function(e) { e.preventDefault(); const formData = new FormData(form); if(formResult) formResult.innerHTML = "Invio..."; fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).then(r => r.json()).then(d => { if(formResult){ if (d.success) { formResult.innerHTML = "Messaggio inviato!"; form.reset(); } else { formResult.innerHTML = `Errore: ${d.message}`; } }}).catch(() => {if(formResult) formResult.innerHTML = "Errore.";}); });
             }
 
-            // --- AFORISMI ---
             const aphorismContainer = document.getElementById('aphorism-container');
             if(aphorismContainer){
                 const aphorisms = [ "La musica è la vera lingua universale.", "Dove le parole finiscono, inizia la musica.", "La vita è come un pianoforte, ciò che ne esce dipende da come la suoni." ];
@@ -285,11 +283,14 @@
                     #chatbot-bubble.open{background-image:none;background-color:var(--primary-color)}
                     #chatbot-bubble.open .icon-close{opacity:1}
                     #chatbot-bubble .icon-close{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}
+                    @keyframes fadeInBounce { 0% { opacity: 0; transform: translateY(10px) scale(0.9); } 70% { opacity: 1; transform: translateY(-5px) scale(1.05); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+                    #chatbot-notification { position: fixed; bottom: 100px; right: 25px; background: #fff; color: #333; padding: 8px 15px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,.2); z-index: 9998; font-size: 0.9em; opacity: 0; animation: fadeInBounce 1s ease-in-out 2.5s forwards; }
+                    #chatbot-notification::after { content: ''; position: absolute; bottom: -8px; right: 20px; width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 8px solid #fff; }
                     #chatbot-window-wrapper {position:fixed;bottom:140px;right:25px;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out;}
                     #chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}
                     #chatbot-window{position:relative; margin-top: 45px; width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;}
                     .chatbot-header-logo {width: 90px;height: 90px;border-radius: 50%;border: 3px solid #fff;box-shadow: 0 0 10px rgba(0,0,0,0.3);object-fit: cover;position: absolute;top: 0;left: 50%;transform: translateX(-50%); z-index: 10000;}
-                    @media (max-width: 768px) { #chatbot-window-wrapper { bottom: 100px; right: 15px; width: calc(100vw - 30px); } #chatbot-bubble { bottom: 15px; right: 15px; } }
+                    @media (max-width: 768px) { #chatbot-window-wrapper { bottom: 100px; right: 15px; width: calc(100vw - 30px); } #chatbot-bubble { bottom: 15px; right: 15px; } #chatbot-notification { right: 15px; bottom: 90px; } #chatbot-notification::after { right: 25px; } }
                     .chatbot-header {position: relative; background-color: var(--primary-color); color: #fff; padding: 1rem; padding-top: 55px; text-align: center; flex-shrink: 0;}
                     .chatbot-close-btn {position: absolute; top: 10px; right: 15px; font-size: 2.2em; color: white; cursor: pointer; line-height: 1; font-weight: 300;}
                     .chatbot-messages{flex-grow:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column}
@@ -302,6 +303,7 @@
                     .chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid var(--primary-color)}
                     .chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}
                 </style>
+                <div id="chatbot-notification">Ciao! Hai domande?</div>
                 <div id="chatbot-bubble"><svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg></div>
                 <div id="chatbot-window-wrapper"><img src="fausto_immagine.jpg" alt="Fausto AI" class="chatbot-header-logo"><div id="chatbot-window"><div class="chatbot-header"><div><h3>Fausto AI</h3><small>Assistente Virtuale</small></div><span class="chatbot-close-btn">&times;</span></div><div class="chatbot-messages" id="chatbot-messages"></div><div class="chatbot-input"><input type="text" id="chatbot-input-field" name="chatbot_message" autocomplete="off" placeholder="Scrivi un messaggio..."><button id="chatbot-send-btn"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg></button></div></div></div>`;
                 
@@ -314,11 +316,13 @@
                 const inputField = document.getElementById('chatbot-input-field');
                 const sendBtn = document.getElementById('chatbot-send-btn');
                 const closeBtn = document.querySelector('.chatbot-close-btn');
+                const notification = document.getElementById('chatbot-notification');
 
                 if (!bubble || !windowWrapper || !closeBtn) return;
 
                 const toggleChat = () => {
                     const isChatOpen = windowWrapper.classList.contains('open');
+                    if(notification) notification.style.display = 'none'; // Nascondi la notifica per sempre al primo click
                     if (isChatOpen) {
                         windowWrapper.classList.remove('open');
                         bubble.classList.remove('open');
@@ -362,14 +366,13 @@
                 }
                 
                 if (window.innerWidth > 768) {
-                    setTimeout(() => { if(!windowWrapper.classList.contains('open')) { toggleChat(); } }, 1500);
+                    setTimeout(() => { if(!windowWrapper.classList.contains('open')) { toggleChat(); } }, 2500);
                 }
-                addMessage("Ciao! Sono Fausto AI. Come posso aiutarti?", 'bot');
+                addMessage("Ciao! Sono Fausto AI, il tuo assistente virtuale. Come posso aiutarti a trovare il brano perfetto per te?", 'bot');
             })();
         });
     } catch (e) {
         console.error("ERRORE CRITICO NELLO SCRIPT:", e);
-        // Fallback in caso di errore catastrofico per non mostrare una pagina bianca.
         document.body.innerHTML = "Si è verificato un errore critico. Per favore, ricarica la pagina.";
     }
   </script>
