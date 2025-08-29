@@ -148,14 +148,11 @@
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
             if (!modal) return;
-
             if (modalId === 'music-modal' && catalogPlayer) {
                 catalogPlayer.pause();
                 catalogPlayer.removeAttribute('src'); 
                 catalogPlayer.load();
                 if (window.resetPlayingState) window.resetPlayingState();
-                
-                // Riattiva l'audio di sottofondo in modo sicuro
                 if (audioInitialized && !bgAudio.muted && bgAudio.paused) {
                     bgAudio.play().catch(e => console.error("Errore nel riavvio del sottofondo:", e));
                 }
@@ -196,6 +193,10 @@
             } catch (error) { if(songListContainer) songListContainer.innerHTML = `<p style="color: #f44336;">Errore caricamento: ${error.message}</p>`; }
         }
         
+        function createFilterButtons(songs) { /* ... (codice invariato) ... */ }
+        function filterAndDisplaySongs() { /* ... (codice invariato) ... */ }
+        
+        // Funzioni originali per completezza
         function createFilterButtons(songs) {
             const filters = { 'Genere': [...new Set(songs.map(s => s.genre))], 'Categoria': [...new Set(songs.map(s => s.category))], 'Argomento': [...new Set(songs.map(s => s.argomento))] };
             filterContainer.innerHTML = '';
@@ -235,10 +236,9 @@
         }
 
         // =========================================================================================
-        // ===== LOGICA PLAYER AUDIO DEFINITIVA E SEMPLIFICATA PER MASSIMA COMPATIBILITÀ =====
+        // ===== MODIFICA #1: LOGICA PLAYER AUDIO CON RESET FORZATO (.load())              =====
         // =========================================================================================
         if(catalogPlayer) {
-            // Evento PLAY: gestisce le conseguenze dell'avvio di una canzone
             catalogPlayer.addEventListener('play', () => {
                 if (audioInitialized) bgAudio.pause();
                 if (currentPlayingItem) {
@@ -246,19 +246,14 @@
                     currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-pause';
                 }
             });
-
-            // Evento PAUSE: gestisce le conseguenze della messa in pausa
             catalogPlayer.addEventListener('pause', () => {
                 if (currentPlayingItem) {
                     currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
                 }
-                // Riattiva il sottofondo solo se la modale della musica è ancora aperta
                 if (document.getElementById('music-modal').style.display === 'flex' && audioInitialized && !bgAudio.muted) {
                     bgAudio.play().catch(e => {});
                 }
             });
-
-            // Evento ENDED: gestisce la fine della canzone
             catalogPlayer.addEventListener('ended', () => { 
                 window.resetPlayingState(); 
                 if (audioInitialized && !bgAudio.muted) {
@@ -273,20 +268,19 @@
                     const isThisItemPlaying = (item === currentPlayingItem);
 
                     if (isThisItemPlaying) {
-                        // Click sullo stesso brano: semplice play/pausa
                         if (catalogPlayer.paused) {
                             catalogPlayer.play();
                         } else {
                             catalogPlayer.pause();
                         }
                     } else {
-                        // Click su un nuovo brano
-                        window.resetPlayingState(); // Resetta l'interfaccia del brano precedente
-                        currentPlayingItem = item; // Imposta il nuovo brano come attivo
+                        window.resetPlayingState();
+                        currentPlayingItem = item;
                         catalogPlayer.src = item.dataset.src;
+                        catalogPlayer.load(); // <-- QUESTA È LA MODIFICA CHIAVE: resetta a fondo il player
                         catalogPlayer.play().catch(error => {
                             console.error("Riproduzione fallita:", error);
-                            window.resetPlayingState(); // Se fallisce, resetta tutto
+                            window.resetPlayingState();
                         });
                     }
                 });
@@ -297,13 +291,15 @@
 
         const form = document.getElementById('contact-form');
         const formResult = document.getElementById('form-result');
+        form.addEventListener('submit', function(e) { /* ... (codice invariato) ... */ });
+        function showRandomAphorism() { /* ... (codice invariato) ... */ }
+        setInterval(showRandomAphorism, 12000);
+        // Funzioni originali per completezza
         form.addEventListener('submit', function(e) { e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio in corso..."; fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).then(response => response.json()).then(data => { if (data.success) { formResult.innerHTML = "Messaggio inviato con successo!"; form.reset(); } else { formResult.innerHTML = `Errore: ${data.message}`; } }).catch(() => formResult.innerHTML = "Si è verificato un errore."); });
-    
         const aphorisms = [ "La musica è la vera lingua universale.", "Dove le parole finiscono, inizia la musica.", "La vita è come un pianoforte, ciò che ne esce dipende da come la suoni." ];
         const aphorismContainer = document.getElementById('aphorism-container');
         const mainContainer = document.querySelector('.container');
         function showRandomAphorism() { const rect = mainContainer.getBoundingClientRect(); const postit = document.createElement('div'); postit.className = 'aphorism-postit'; postit.textContent = aphorisms[Math.floor(Math.random() * aphorisms.length)]; let top, left; do { top = Math.random() * window.innerHeight; left = Math.random() * window.innerWidth; } while ( top > rect.top - 50 && top < rect.bottom + 50 && left > rect.left - 50 && left < rect.right + 50 ); postit.style.top = `${top}px`; postit.style.left = `${left}px`; const rotation = `rotate(${Math.random() * 20 - 10}deg)`; postit.style.setProperty('--transform-start', `${rotation} translateY(20px)`); postit.style.setProperty('--transform-end', `${rotation} translateY(0)`); aphorismContainer.appendChild(postit); setTimeout(() => { postit.remove(); }, 10000); }
-        setInterval(showRandomAphorism, 12000);
     });
 
     (function() {
@@ -326,16 +322,16 @@
                 .chatbot-header {position: relative; background-color: var(--primary-color); color: #fff; padding: 1rem; padding-top: 55px; text-align: center; flex-shrink: 0;}
                 .chatbot-close-btn {position: absolute; top: 10px; right: 15px; font-size: 2.2em; color: white; cursor: pointer; line-height: 1; font-weight: 300;}
                 
-                /* ========================================================================================= */
-                /* ===== MODIFICA #3: AGGIUNTA SFONDO ALLA CHAT                                        ===== */
-                /* ========================================================================================= */
                 .chatbot-messages {
                     flex-grow:1;
                     padding:1rem;
                     overflow-y:auto;
                     display:flex;
                     flex-direction:column;
-                    background-image: url('sfondo_chat.jpg');
+                    /* ========================================================================================= */
+                    /* ===== MODIFICA #2: URL COMPLETO PER SFONDO CHAT                                     ===== */
+                    /* ========================================================================================= */
+                    background-image: url('https://github.com/Rickym2025/fausto-fusetti-links/blob/main/sfondo_chat.jpg?raw=true');
                     background-size: cover;
                     background-position: center;
                     background-repeat: no-repeat;
@@ -344,11 +340,8 @@
                 .message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}
                 .message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0}
                 .message-text{padding:10px 15px;border-radius:18px;line-height:1.4;overflow-wrap: break-word; word-break: break-word;text-align: left;}
-                
-                /* Aggiunta trasparenza per leggibilità su sfondo */
                 .message.user .message-text{background-color:rgba(238, 242, 245, 0.95);color:#333;border-bottom-right-radius:4px}
                 .message.bot .message-text{background-color:rgba(6, 147, 227, 0.9);color:#fff;border-bottom-left-radius:4px}
-                
                 .chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}
                 .chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid var(--primary-color)}
                 .chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}
@@ -372,6 +365,8 @@
             </div>`;
             
             const container = document.getElementById('chatbot-container');
+            if (container) { /* ... (codice chatbot JS invariato) ... */ }
+            // Funzione originale per completezza
             if (container) {
                 container.innerHTML = chatbotHTML;
                 const webhookUrl = 'https://n8n.automaita.it/webhook/ffausto-ai-chat';
