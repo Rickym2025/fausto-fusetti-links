@@ -146,15 +146,17 @@
         }
 
         // =========================================================================================
-        // ===== MODIFICA #1: GESTIONE MODALI PIÙ STABILE PER MOBILE                             =====
+        // ===== MODIFICA #1: GESTIONE CHIUSURA MODALE ANTI-CRASH PER MOBILE                     =====
         // =========================================================================================
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
             if (!modal) return;
             if (modalId === 'music-modal' && catalogPlayer) {
+                // Metodo più sicuro: mette solo in pausa e resetta l'interfaccia.
                 catalogPlayer.pause();
-                catalogPlayer.src = ''; // Metodo più sicuro per resettare il player su mobile
-                if (window.resetPlayingState) window.resetPlayingState();
+                if (window.resetPlayingState) {
+                    window.resetPlayingState();
+                }
             }
             modal.style.display = 'none';
         }
@@ -277,7 +279,17 @@
         const formResult = document.getElementById('form-result');
         form.addEventListener('submit', function(e) { e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio in corso..."; fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).then(response => response.json()).then(data => { if (data.success) { formResult.innerHTML = "Messaggio inviato con successo!"; form.reset(); } else { formResult.innerHTML = `Errore: ${data.message}`; } }).catch(() => formResult.innerHTML = "Si è verificato un errore."); });
     
-        const aphorisms = [ "La musica è la vera lingua universale.", "Dove le parole finiscono, inizia la musica.", "La vita è come un pianoforte, ciò che ne esce dipende da come la suoni." ];
+        // =========================================================================================
+        // ===== MODIFICA #2: AGGIORNAMENTO LISTA AFORISMI                                       =====
+        // =========================================================================================
+        const aphorisms = [
+            "La musica è la vera lingua universale.",
+            "Dove le parole finiscono, inizia la musica.",
+            "La vita è come un pianoforte, ciò che ne esce dipende da come la suoni.",
+            "La musica può cambiare il mondo perché può cambiare le persone.",
+            "Ogni nota suonata è un'emozione che prende vita.",
+            "La musica è il silenzio che ha trovato la sua voce."
+        ];
         const aphorismContainer = document.getElementById('aphorism-container');
         const mainContainer = document.querySelector('.container');
         function showRandomAphorism() { const rect = mainContainer.getBoundingClientRect(); const postit = document.createElement('div'); postit.className = 'aphorism-postit'; postit.textContent = aphorisms[Math.floor(Math.random() * aphorisms.length)]; let top, left; do { top = Math.random() * window.innerHeight; left = Math.random() * window.innerWidth; } while ( top > rect.top - 50 && top < rect.bottom + 50 && left > rect.left - 50 && left < rect.right + 50 ); postit.style.top = `${top}px`; postit.style.left = `${left}px`; const rotation = `rotate(${Math.random() * 20 - 10}deg)`; postit.style.setProperty('--transform-start', `${rotation} translateY(20px)`); postit.style.setProperty('--transform-end', `${rotation} translateY(0)`); aphorismContainer.appendChild(postit); setTimeout(() => { postit.remove(); }, 10000); }
@@ -293,43 +305,16 @@
                 #chatbot-bubble.open{background-image:none;background-color:var(--primary-color)}
                 #chatbot-bubble.open .icon-close{opacity:1}
                 #chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}
+                
                 #chatbot-window-wrapper {position:fixed;bottom:105px;right:25px;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out;}
                 #chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}
                 #chatbot-window{position:relative; margin-top: 45px; width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;}
                 .chatbot-header-logo {width: 90px;height: 90px;border-radius: 50%;border: 3px solid #fff;box-shadow: 0 0 10px rgba(0,0,0,0.3);object-fit: cover;position: absolute;top: 0;left: 50%;transform: translateX(-50%); z-index: 10000;}
-
-                /* ========================================================================================= */
-                /* ===== MODIFICA #2: AGGIUNTA MESSAGGIO DI BENVENUTO CHATBOT E STILI ASSOCIATI         ===== */
-                /* ========================================================================================= */
-                #chatbot-welcome-message {
-                    position: fixed;
-                    bottom: 100px;
-                    right: 40px;
-                    background: var(--primary-color);
-                    color: white;
-                    padding: 10px 15px;
-                    border-radius: 12px;
-                    box-shadow: 0 4px 12px rgba(0,0,0,.2);
-                    opacity: 0;
-                    transform: translateY(10px);
-                    transition: all 0.4s ease-in-out;
-                    visibility: hidden;
-                    z-index: 9997;
-                    font-size: 0.9em;
-                }
-                #chatbot-welcome-message.visible { opacity: 1; transform: translateY(0); visibility: visible; }
-                #chatbot-welcome-message::after {
-                    content: '';
-                    position: absolute;
-                    bottom: -7px;
-                    right: 25px;
-                    width: 0;
-                    height: 0;
-                    border-left: 8px solid transparent;
-                    border-right: 8px solid transparent;
-                    border-top: 8px solid var(--primary-color);
-                }
                 
+                #chatbot-welcome-message { position: fixed; bottom: 100px; right: 40px; background: var(--primary-color); color: white; padding: 10px 15px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,.2); opacity: 0; transform: translateY(10px); transition: all 0.4s ease-in-out; visibility: hidden; z-index: 9997; font-size: 0.9em; }
+                #chatbot-welcome-message.visible { opacity: 1; transform: translateY(0); visibility: visible; }
+                #chatbot-welcome-message::after { content: ''; position: absolute; bottom: -7px; right: 25px; width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 8px solid var(--primary-color); }
+
                 @media (max-width: 768px) {
                     #chatbot-window-wrapper { bottom: 100px; right: 15px; }
                     #chatbot-bubble { bottom: 15px; right: 15px; }
@@ -339,7 +324,21 @@
 
                 .chatbot-header {position: relative; background-color: var(--primary-color); color: #fff; padding: 1rem; padding-top: 55px; text-align: center; flex-shrink: 0;}
                 .chatbot-close-btn {position: absolute; top: 10px; right: 15px; font-size: 2.2em; color: white; cursor: pointer; line-height: 1; font-weight: 300;}
-                .chatbot-messages{flex-grow:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column}
+                
+                /* ========================================================================================= */
+                /* ===== MODIFICA #3: AGGIUNTA IMMAGINE DI SFONDO ALLA CHAT                            ===== */
+                /* ========================================================================================= */
+                .chatbot-messages {
+                    flex-grow:1;
+                    padding:1rem;
+                    overflow-y:auto;
+                    display:flex;
+                    flex-direction:column;
+                    background-image: linear-gradient(rgba(249, 247, 243, 0.85), rgba(249, 247, 243, 0.85)), url('https://github.com/Rickym2025/fausto-fusetti-links/blob/main/sfondo_chat.jpg?raw=true');
+                    background-size: cover;
+                    background-position: center;
+                }
+
                 .message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}
                 .message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0}
                 .message-text{padding:10px 15px;border-radius:18px;line-height:1.4;overflow-wrap: break-word; word-break: break-word;text-align: left;}
@@ -374,7 +373,7 @@
                 const webhookUrl = 'https://n8n.automaita.it/webhook/ffausto-ai-chat';
                 const bubble = document.getElementById('chatbot-bubble');
                 const windowWrapper = document.getElementById('chatbot-window-wrapper');
-                const welcomeMessage = document.getElementById('chatbot-welcome-message'); // Aggiunto riferimento
+                const welcomeMessage = document.getElementById('chatbot-welcome-message');
                 const messagesEl = document.getElementById('chatbot-messages');
                 const inputField = document.getElementById('chatbot-input-field');
                 const sendBtn = document.getElementById('chatbot-send-btn');
@@ -383,8 +382,7 @@
                 if (!bubble || !windowWrapper || !closeBtn) return;
 
                 const toggleChat = () => {
-                    if (welcomeMessage) welcomeMessage.classList.remove('visible'); // Nascondi il messaggio all'interazione
-
+                    if (welcomeMessage) welcomeMessage.classList.remove('visible');
                     const isChatOpen = windowWrapper.classList.contains('open');
                     if (isChatOpen) {
                         windowWrapper.classList.remove('open');
@@ -399,11 +397,7 @@
                 bubble.addEventListener('click', toggleChat);
                 closeBtn.addEventListener('click', toggleChat);
 
-                const addMessage = (text, type) => { /* ... logica invariata ... */ };
-                const sendMessage = async () => { /* ... logica invariata ... */ };
-
-                // Funzioni originali per completezza
-                const addMessageUnchanged = (text, type) => {
+                const addMessage = (text, type) => {
                     if (!messagesEl) return;
                     const msgDiv = document.createElement('div'); msgDiv.className = `message ${type}`;
                     if (type === 'bot') { const avatar = document.createElement('img'); avatar.src = 'fausto_immagine.jpg'; avatar.className = 'message-avatar'; msgDiv.appendChild(avatar); }
@@ -413,39 +407,48 @@
                     messagesEl.appendChild(msgDiv);
                     messagesEl.scrollTop = messagesEl.scrollHeight;
                 };
-                const sendMessageUnchanged = async () => {
+
+                const sendMessage = async () => {
                     if (!inputField) return;
                     const userMessage = inputField.value.trim(); if (userMessage === '') return;
-                    addMessageUnchanged(userMessage, 'user'); inputField.value = '';
+                    addMessage(userMessage, 'user'); inputField.value = '';
                     try {
                         const response = await fetch(`${webhookUrl}?user_message=${encodeURIComponent(userMessage)}&conversation_id=session-${Date.now()}`, { method: 'POST' });
                         if (!response.ok) throw new Error("Network response");
-                        const data = await response.json(); addMessageUnchanged(data.response || "C'è stato un problema.", 'bot');
-                    } catch (error) { addMessageUnchanged('Spiacente, si è verificato un errore.', 'bot'); }
+                        const data = await response.json(); addMessage(data.response || "C'è stato un problema.", 'bot');
+                    } catch (error) { addMessage('Spiacente, si è verificato un errore.', 'bot'); }
                 };
-                // Ri-assegno le funzioni per mantenere il codice funzionante
-                addMessage = addMessageUnchanged;
-                sendMessage = sendMessageUnchanged;
 
                 if (sendBtn && inputField) {
                     sendBtn.addEventListener('click', sendMessage);
                     inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
                 }
                 
-                // Logica per mostrare/nascondere il messaggio di benvenuto
+                // =========================================================================================
+                // ===== MODIFICA #4: RIPRISTINO LOGICA APERTURA PC / CHIUSO MOBILE                    =====
+                // =========================================================================================
+
+                // Mostra il messaggio "Cosa ascoltiamo?" dopo 3 secondi se la chat non è aperta
                 if (welcomeMessage) {
                     setTimeout(() => {
                         if (!windowWrapper.classList.contains('open')) {
                             welcomeMessage.classList.add('visible');
                         }
-                    }, 3000); // Mostra dopo 3 secondi
+                    }, 3000);
+                    // Nascondi lo stesso messaggio dopo 10 secondi totali
                     setTimeout(() => {
                         welcomeMessage.classList.remove('visible');
-                    }, 10000); // Nascondi dopo 10 secondi totali
+                    }, 10000);
                 }
                 
+                // Apri la chat in automatico SOLO su schermi grandi (PC)
                 if (window.innerWidth > 768) {
-                    setTimeout(() => { if (!windowWrapper.classList.contains('open')) { toggleChat(); } }, 1500);
+                    setTimeout(() => {
+                        // Controlla di nuovo che non sia già stata aperta dall'utente
+                        if (!windowWrapper.classList.contains('open')) {
+                            toggleChat();
+                        }
+                    }, 1500);
                 }
                 addMessage("Ciao! Sono Fausto AI, il tuo assistente virtuale. Come posso aiutarti a trovare il brano perfetto per te?", 'bot');
             }
