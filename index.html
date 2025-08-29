@@ -93,7 +93,7 @@
       <div class="info-box"><i class="fas fa-filter"></i> Seleziona i filtri per trovare il brano che cerchi.</div>
       <div id="filter-container"></div>
       <div id="song-list-container" class="song-list-container"><p>Caricamento catalogo...</p></div>
-      <!-- Il player audio verrà creato dinamicamente qui -->
+      <audio id="catalog-audio-player" preload="auto"></audio>
     </div>
   </div>
   <div id="services-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="services-modal">&times;</span><h2><i class="fas fa-heart" style="color: var(--secondary-color); margin-right: 10px;"></i>Canzoni Personalizzate</h2><div style="text-align: left; line-height: 1.6; margin-bottom: 20px;"><h3 style="color: var(--primary-color); margin-bottom: 10px;">✨ Servizi Esclusivi:</h3><ul style="list-style: none; padding-left: 0;"><li style="margin-bottom: 10px;"><i class="fas fa-heart" style="color: #e74c3c; margin-right: 8px;"></i> <strong>Canzoni per Coppie</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-ring" style="color: #f39c12; margin-right: 8px;"></i> <strong>Anniversari e Matrimoni</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-gift" style="color: #9b59b6; margin-right: 8px;"></i> <strong>Testi Personalizzati</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-birthday-cake" style="color: #e67e22; margin-right: 8px;"></i> <strong>Eventi Speciali</strong></li></ul><div style="background: rgba(6, 147, 227, 0.1); border-left: 4px solid var(--primary-color); padding: 15px; margin: 20px 0; border-radius: 5px;"><p><strong>💡 Come funziona:</strong> Raccontami la tua storia, i tuoi ricordi. Creerò una canzone unica che rappresenti le tue emozioni.</p></div></div><button id="contact-for-custom-song" class="button collabora">Richiedi la Tua Canzone</button></div></div>
@@ -111,15 +111,19 @@
         const audioCta = document.getElementById('audio-cta');
         const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i');
         const ctaText = document.querySelector('#audio-cta .cta-text');
+        const catalogPlayer = document.getElementById('catalog-audio-player');
         const audioStartOverlay = document.getElementById('audio-start-overlay');
         const startAudioBtn = document.getElementById('start-audio-btn');
         let audioInitialized = false;
-        
-        // =========================================================================================
-        // ===== MODIFICA #1: GESTIONE PLAYER AUDIO DINAMICO PER MASSIMA STABILITÀ MOBILE    =====
-        // =========================================================================================
-        let catalogPlayer = null; // Il player verrà creato e distrutto al bisogno
+        let isAudioBusy = false; // Flag "semaforo" per prevenire race conditions su mobile
 
+        function initializeAudio() { /* ... (codice invariato) ... */ }
+        startAudioBtn.addEventListener('click', initializeAudio);
+        audioStartOverlay.style.display = 'flex';
+        audioCta.addEventListener('click', () => { /* ... (codice invariato) ... */ });
+        function updateMuteButton() { /* ... (codice invariato) ... */ }
+        
+        // Funzioni base (invariate)
         function initializeAudio() {
             const playPromise = bgAudio.play();
             if (playPromise !== undefined) {
@@ -134,8 +138,6 @@
                 });
             }
         }
-        startAudioBtn.addEventListener('click', initializeAudio);
-        audioStartOverlay.style.display = 'flex';
         audioCta.addEventListener('click', () => {
             if (!audioInitialized) {
                 initializeAudio();
@@ -152,11 +154,10 @@
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
             if (!modal) return;
-
             if (modalId === 'music-modal' && catalogPlayer) {
                 catalogPlayer.pause();
-                catalogPlayer.remove(); // Rimuove l'elemento audio dal DOM
-                catalogPlayer = null;   // Distrugge il riferimento
+                catalogPlayer.removeAttribute('src'); 
+                catalogPlayer.load();
                 if (window.resetPlayingState) window.resetPlayingState();
                 if (audioInitialized && !bgAudio.muted && bgAudio.paused) {
                     bgAudio.play().catch(e => console.error("Errore nel riavvio del sottofondo:", e));
@@ -186,6 +187,11 @@
         const filterContainer = document.getElementById('filter-container');
         let allSongs = [], currentPlayingItem = null, currentFilters = { genre: 'all', category: 'all', argomento: 'all' };
 
+        async function loadMusicFromApi() { /* ... (codice invariato) ... */ }
+        function createFilterButtons(songs) { /* ... (codice invariato) ... */ }
+        function filterAndDisplaySongs() { /* ... (codice invariato) ... */ }
+        
+        // Funzioni catalogo (invariate)
         async function loadMusicFromApi() {
             try {
                 const response = await fetch(sheetApiUrl);
@@ -197,7 +203,6 @@
                 filterAndDisplaySongs();
             } catch (error) { if(songListContainer) songListContainer.innerHTML = `<p style="color: #f44336;">Errore caricamento: ${error.message}</p>`; }
         }
-        
         function createFilterButtons(songs) {
             const filters = { 'Genere': [...new Set(songs.map(s => s.genre))], 'Categoria': [...new Set(songs.map(s => s.category))], 'Argomento': [...new Set(songs.map(s => s.argomento))] };
             filterContainer.innerHTML = '';
@@ -235,17 +240,11 @@
             }
             currentPlayingItem = null;
         }
-        
-        function createAndSetupPlayer() {
-            if (catalogPlayer) {
-                catalogPlayer.pause();
-                catalogPlayer.remove();
-            }
-            
-            catalogPlayer = document.createElement('audio');
-            catalogPlayer.id = 'catalog-audio-player';
-            document.querySelector('.music-catalog').appendChild(catalogPlayer);
 
+        // =========================================================================================
+        // ===== LOGICA PLAYER AUDIO DEFINITIVA CON FLAG ANTI-CRASH ("SEMAFORO")             =====
+        // =========================================================================================
+        if(catalogPlayer) {
             catalogPlayer.addEventListener('play', () => {
                 if (audioInitialized) bgAudio.pause();
                 if (currentPlayingItem) {
@@ -268,29 +267,44 @@
                 }
             });
         }
-
+        
         function addEventListenersToSongs() {
             document.querySelectorAll('.song-item').forEach(item => {
                 item.addEventListener('click', () => {
+                    if (isAudioBusy) { return; } // Se il semaforo è rosso, ignora il click
+
                     const isThisItemPlaying = (item === currentPlayingItem);
 
-                    if (isThisItemPlaying && catalogPlayer) {
+                    if (isThisItemPlaying) {
                         if (catalogPlayer.paused) {
                             catalogPlayer.play();
                         } else {
                             catalogPlayer.pause();
                         }
                     } else {
+                        isAudioBusy = true; // Semaforo rosso: operazione in corso
                         window.resetPlayingState();
                         currentPlayingItem = item;
                         
-                        createAndSetupPlayer(); // Crea un player nuovo e pulito
+                        // Resetta a fondo il player prima di cambiare sorgente
+                        catalogPlayer.pause();
+                        catalogPlayer.removeAttribute('src');
+                        catalogPlayer.load();
 
                         catalogPlayer.src = item.dataset.src;
-                        catalogPlayer.play().catch(error => {
-                            console.error("Riproduzione fallita:", error);
-                            window.resetPlayingState();
-                        });
+                        const playPromise = catalogPlayer.play();
+
+                        if (playPromise !== undefined) {
+                            playPromise.then(() => {
+                                isAudioBusy = false; // Semaforo verde: operazione completata
+                            }).catch(error => {
+                                console.error("Riproduzione fallita:", error);
+                                window.resetPlayingState();
+                                isAudioBusy = false; // Semaforo verde anche in caso di errore
+                            });
+                        } else {
+                            isAudioBusy = false; // Se non c'è una Promise, sblocca subito
+                        }
                     }
                 });
             });
@@ -302,12 +316,17 @@
         const formResult = document.getElementById('form-result');
         form.addEventListener('submit', function(e) { e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio in corso..."; fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).then(response => response.json()).then(data => { if (data.success) { formResult.innerHTML = "Messaggio inviato con successo!"; form.reset(); } else { formResult.innerHTML = `Errore: ${data.message}`; } }).catch(() => formResult.innerHTML = "Si è verificato un errore."); });
     
-        const aphorisms = [   "La musica è la vera lingua universale.",
-  "Dove le parole finiscono, inizia la musica.",
-  "La vita è come un pianoforte, ciò che ne esce dipende da come la suoni.",
-  "La musica può cambiare il mondo perché può cambiare le persone.",
-  "Ogni nota suonata è un'emozione che prende vita.",
-  "La musica è il silenzio che ha trovato la sua voce." ];
+        // =========================================================================================
+        // ===== MODIFICA: AGGIUNTA NUOVI AFORISMI                                           =====
+        // =========================================================================================
+        const aphorisms = [ 
+            "La musica è la vera lingua universale.",
+            "Dove le parole finiscono, inizia la musica.",
+            "La vita è come un pianoforte, ciò che ne esce dipende da come la suoni.",
+            "La musica può cambiare il mondo perché può cambiare le persone.",
+            "Ogni nota suonata è un'emozione che prende vita.",
+            "La musica è il silenzio che ha trovato la sua voce."
+        ];
         const aphorismContainer = document.getElementById('aphorism-container');
         const mainContainer = document.querySelector('.container');
         function showRandomAphorism() { const rect = mainContainer.getBoundingClientRect(); const postit = document.createElement('div'); postit.className = 'aphorism-postit'; postit.textContent = aphorisms[Math.floor(Math.random() * aphorisms.length)]; let top, left; do { top = Math.random() * window.innerHeight; left = Math.random() * window.innerWidth; } while ( top > rect.top - 50 && top < rect.bottom + 50 && left > rect.left - 50 && left < rect.right + 50 ); postit.style.top = `${top}px`; postit.style.left = `${left}px`; const rotation = `rotate(${Math.random() * 20 - 10}deg)`; postit.style.setProperty('--transform-start', `${rotation} translateY(20px)`); postit.style.setProperty('--transform-end', `${rotation} translateY(0)`); aphorismContainer.appendChild(postit); setTimeout(() => { postit.remove(); }, 10000); }
@@ -323,17 +342,50 @@
                 #chatbot-bubble.open{background-image:none;background-color:var(--primary-color)}
                 #chatbot-bubble.open .icon-close{opacity:1}
                 #chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}
+                
+                /* ========================================================================================= */
+                /* ===== MODIFICA: STILE E LOGICA PER IL TESTO ACCANTO ALL'ICONA CHAT              ===== */
+                /* ========================================================================================= */
+                .chatbot-tooltip {
+                    position: absolute;
+                    right: 120%;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    background-color: rgba(6, 147, 227, 0.9);
+                    color: #fff;
+                    padding: 8px 12px;
+                    border-radius: 8px;
+                    white-space: nowrap;
+                    font-size: 0.9em;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                    opacity: 1;
+                    transition: opacity 0.3s ease, visibility 0.3s ease;
+                    visibility: visible;
+                }
+                .chatbot-tooltip::after {
+                    content: '';
+                    position: absolute;
+                    top: 50%;
+                    left: 100%;
+                    margin-top: -5px;
+                    border-width: 5px;
+                    border-style: solid;
+                    border-color: transparent transparent transparent rgba(6, 147, 227, 0.9);
+                }
+                #chatbot-bubble.open .chatbot-tooltip {
+                    opacity: 0;
+                    visibility: hidden;
+                }
+
                 #chatbot-window-wrapper {position:fixed;bottom:140px;right:25px;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out;}
                 #chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}
                 #chatbot-window{position:relative; margin-top: 45px; width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;}
                 .chatbot-header-logo {width: 90px;height: 90px;border-radius: 50%;border: 3px solid #fff;box-shadow: 0 0 10px rgba(0,0,0,0.3);object-fit: cover;position: absolute;top: 0;left: 50%;transform: translateX(-50%); z-index: 10000;}
                 
-                /* ========================================================================================= */
-                /* ===== MODIFICA #2: POSIZIONE CHAT ALZATA PER MOBILE                             ===== */
-                /* ========================================================================================= */
                 @media (max-width: 768px) {
                     #chatbot-window-wrapper { bottom: 115px; right: 15px; }
                     #chatbot-bubble { bottom: 25px; right: 15px; }
+                    .chatbot-tooltip { display: none; } /* Nasconde il fumetto su schermi piccoli per pulizia */
                 }
 
                 .chatbot-header {position: relative; background-color: var(--primary-color); color: #fff; padding: 1rem; padding-top: 55px; text-align: center; flex-shrink: 0;}
@@ -361,6 +413,7 @@
                 .chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}
             </style>
             <div id="chatbot-bubble">
+                <div class="chatbot-tooltip">Ciao, cosa ti posso far ascoltare?</div>
                 <svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
             </div>
             <div id="chatbot-window-wrapper">
