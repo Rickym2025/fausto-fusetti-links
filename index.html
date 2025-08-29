@@ -30,7 +30,7 @@
     .social-icons a { color: #c7c7c7; font-size: 2.2em; transition: all 0.3s ease; }
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
     .modal-content { background: #1e1e1e; padding: 30px; border-radius: 15px; width: 100%; max-width: 550px; position: relative; max-height: 90vh; overflow-y: auto; }
-    .modal-close { position: absolute; top: 15px; right: 20px; font-size: 2em; color: white; cursor: pointer; line-height: 1; }
+    .modal-close { position: absolute; top: 15px; right: 20px; font-size: 2em; color: white; cursor: pointer; line-height: 1; z-index: 10; }
     .music-catalog .info-box { background: rgba(6, 147, 227, 0.1); border: 1px solid var(--primary-color); padding: 15px; border-radius: 10px; margin-bottom: 25px; font-size: 1.1em; }
     .filter-group { margin-bottom: 15px; }
     .filter-group .filter-label { text-align: left; margin-bottom: 8px; font-weight: 500; color: var(--primary-color); }
@@ -115,15 +115,31 @@
         const audioStartOverlay = document.getElementById('audio-start-overlay');
         const startAudioBtn = document.getElementById('start-audio-btn');
         let audioInitialized = false;
-        let isAudioBusy = false; // Flag "semaforo" per prevenire race conditions su mobile
+        let isAudioBusy = false; 
 
-        function initializeAudio() { /* ... (codice invariato) ... */ }
-        startAudioBtn.addEventListener('click', initializeAudio);
-        audioStartOverlay.style.display = 'flex';
-        audioCta.addEventListener('click', () => { /* ... (codice invariato) ... */ });
-        function updateMuteButton() { /* ... (codice invariato) ... */ }
-        
-        // Funzioni base (invariate)
+        // =========================================================================================
+        // ===== MODIFICA #1: LOGICA ROBUSTA PER IL CONTROLLO DELLA MUSICA DI SOTTOFONDO       =====
+        // =========================================================================================
+        function controlBgAudio(shouldPlay) {
+            if (!audioInitialized) return;
+            
+            if (shouldPlay && !catalogPlayer.playing) {
+                bgAudio.muted = false;
+                bgAudio.play().catch(e => {});
+            } else {
+                bgAudio.pause();
+            }
+
+            // Aggiorna sempre l'interfaccia in base allo stato reale
+            if (bgAudio.paused || bgAudio.muted) {
+                muteBtnIcon.className = 'fas fa-volume-mute';
+                ctaText.textContent = 'Attiva la musica';
+            } else {
+                muteBtnIcon.className = 'fas fa-volume-up';
+                ctaText.textContent = 'Disattiva musica';
+            }
+        }
+
         function initializeAudio() {
             const playPromise = bgAudio.play();
             if (playPromise !== undefined) {
@@ -132,36 +148,33 @@
                     bgAudio.muted = false;
                     audioStartOverlay.style.display = 'none';
                     audioCta.style.visibility = 'visible';
-                    updateMuteButton();
+                    controlBgAudio(true);
                 }).catch(e => {
                     audioStartOverlay.style.display = 'flex';
                 });
             }
         }
+        startAudioBtn.addEventListener('click', initializeAudio);
+        audioStartOverlay.style.display = 'flex';
+
         audioCta.addEventListener('click', () => {
             if (!audioInitialized) {
                 initializeAudio();
             } else {
-                bgAudio.muted = !bgAudio.muted;
-                updateMuteButton();
+                controlBgAudio(bgAudio.paused || bgAudio.muted);
             }
         });
-        function updateMuteButton() {
-            muteBtnIcon.className = bgAudio.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
-            ctaText.textContent = bgAudio.muted ? 'Attiva la musica' : 'Disattiva musica';
-        }
 
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
             if (!modal) return;
+
             if (modalId === 'music-modal' && catalogPlayer) {
                 catalogPlayer.pause();
                 catalogPlayer.removeAttribute('src'); 
                 catalogPlayer.load();
                 if (window.resetPlayingState) window.resetPlayingState();
-                if (audioInitialized && !bgAudio.muted && bgAudio.paused) {
-                    bgAudio.play().catch(e => console.error("Errore nel riavvio del sottofondo:", e));
-                }
+                controlBgAudio(true); // Riattiva il sottofondo quando si chiude la modale
             }
             modal.style.display = 'none';
         }
@@ -191,7 +204,6 @@
         function createFilterButtons(songs) { /* ... (codice invariato) ... */ }
         function filterAndDisplaySongs() { /* ... (codice invariato) ... */ }
         
-        // Funzioni catalogo (invariate)
         async function loadMusicFromApi() {
             try {
                 const response = await fetch(sheetApiUrl);
@@ -242,36 +254,32 @@
         }
 
         // =========================================================================================
-        // ===== LOGICA PLAYER AUDIO DEFINITIVA CON FLAG ANTI-CRASH ("SEMAFORO")             =====
+        // ===== MODIFICA #2: LOGICA PLAYER AUDIO CON "SEMAFORO" ANTI-CRASH                  =====
         // =========================================================================================
         if(catalogPlayer) {
             catalogPlayer.addEventListener('play', () => {
-                if (audioInitialized) bgAudio.pause();
+                controlBgAudio(false);
                 if (currentPlayingItem) {
                     currentPlayingItem.classList.add('playing');
                     currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-pause';
                 }
             });
             catalogPlayer.addEventListener('pause', () => {
+                controlBgAudio(true);
                 if (currentPlayingItem) {
                     currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
-                }
-                if (document.getElementById('music-modal').style.display === 'flex' && audioInitialized && !bgAudio.muted) {
-                    bgAudio.play().catch(e => {});
                 }
             });
             catalogPlayer.addEventListener('ended', () => { 
                 window.resetPlayingState(); 
-                if (audioInitialized && !bgAudio.muted) {
-                    bgAudio.play().catch(e => {});
-                }
+                controlBgAudio(true);
             });
         }
         
         function addEventListenersToSongs() {
             document.querySelectorAll('.song-item').forEach(item => {
                 item.addEventListener('click', () => {
-                    if (isAudioBusy) { return; } // Se il semaforo è rosso, ignora il click
+                    if (isAudioBusy) { return; }
 
                     const isThisItemPlaying = (item === currentPlayingItem);
 
@@ -282,28 +290,24 @@
                             catalogPlayer.pause();
                         }
                     } else {
-                        isAudioBusy = true; // Semaforo rosso: operazione in corso
+                        isAudioBusy = true;
                         window.resetPlayingState();
                         currentPlayingItem = item;
                         
-                        // Resetta a fondo il player prima di cambiare sorgente
                         catalogPlayer.pause();
-                        catalogPlayer.removeAttribute('src');
+                        catalogPlayer.src = item.dataset.src;
                         catalogPlayer.load();
 
-                        catalogPlayer.src = item.dataset.src;
                         const playPromise = catalogPlayer.play();
-
                         if (playPromise !== undefined) {
-                            playPromise.then(() => {
-                                isAudioBusy = false; // Semaforo verde: operazione completata
-                            }).catch(error => {
+                            playPromise.then(() => { isAudioBusy = false; })
+                            .catch(error => {
                                 console.error("Riproduzione fallita:", error);
                                 window.resetPlayingState();
-                                isAudioBusy = false; // Semaforo verde anche in caso di errore
+                                isAudioBusy = false;
                             });
                         } else {
-                            isAudioBusy = false; // Se non c'è una Promise, sblocca subito
+                            isAudioBusy = false;
                         }
                     }
                 });
@@ -316,9 +320,6 @@
         const formResult = document.getElementById('form-result');
         form.addEventListener('submit', function(e) { e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio in corso..."; fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).then(response => response.json()).then(data => { if (data.success) { formResult.innerHTML = "Messaggio inviato con successo!"; form.reset(); } else { formResult.innerHTML = `Errore: ${data.message}`; } }).catch(() => formResult.innerHTML = "Si è verificato un errore."); });
     
-        // =========================================================================================
-        // ===== MODIFICA: AGGIUNTA NUOVI AFORISMI                                           =====
-        // =========================================================================================
         const aphorisms = [ 
             "La musica è la vera lingua universale.",
             "Dove le parole finiscono, inizia la musica.",
@@ -343,9 +344,6 @@
                 #chatbot-bubble.open .icon-close{opacity:1}
                 #chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}
                 
-                /* ========================================================================================= */
-                /* ===== MODIFICA: STILE E LOGICA PER IL TESTO ACCANTO ALL'ICONA CHAT              ===== */
-                /* ========================================================================================= */
                 .chatbot-tooltip {
                     position: absolute;
                     right: 120%;
@@ -382,10 +380,12 @@
                 #chatbot-window{position:relative; margin-top: 45px; width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;}
                 .chatbot-header-logo {width: 90px;height: 90px;border-radius: 50%;border: 3px solid #fff;box-shadow: 0 0 10px rgba(0,0,0,0.3);object-fit: cover;position: absolute;top: 0;left: 50%;transform: translateX(-50%); z-index: 10000;}
                 
+                /* ========================================================================================= */
+                /* ===== MODIFICA #3: POSIZIONE CHAT ALZATA PER MOBILE                             ===== */
+                /* ========================================================================================= */
                 @media (max-width: 768px) {
-                    #chatbot-window-wrapper { bottom: 115px; right: 15px; }
-                    #chatbot-bubble { bottom: 25px; right: 15px; }
-                    .chatbot-tooltip { display: none; } /* Nasconde il fumetto su schermi piccoli per pulizia */
+                    #chatbot-window-wrapper { bottom: 125px; right: 15px; }
+                    #chatbot-bubble { bottom: 30px; right: 15px; }
                 }
 
                 .chatbot-header {position: relative; background-color: var(--primary-color); color: #fff; padding: 1rem; padding-top: 55px; text-align: center; flex-shrink: 0;}
@@ -413,7 +413,7 @@
                 .chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}
             </style>
             <div id="chatbot-bubble">
-                <div class="chatbot-tooltip">Ciao, cosa ti posso far ascoltare?</div>
+                <div class="chatbot-tooltip">Ciao, cosa ascoltiamo?</div>
                 <svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
             </div>
             <div id="chatbot-window-wrapper">
