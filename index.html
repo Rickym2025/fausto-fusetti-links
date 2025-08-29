@@ -53,22 +53,9 @@
     #aphorism-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; pointer-events: none; }
     @keyframes fadeInOut { 0% { opacity: 0; transform: var(--transform-start); } 15% { opacity: 1; transform: var(--transform-end); } 85% { opacity: 1; transform: var(--transform-end); } 100% { opacity: 0; transform: var(--transform-start); } }
     .aphorism-postit { position: absolute; background-color: #fefabc; color: #333; padding: 15px; border-radius: 5px; box-shadow: 5px 5px 15px rgba(0,0,0,0.3); max-width: 250px; font-family: 'Georgia', serif; animation: fadeInOut 10s ease-in-out forwards; }
-    #audio-start-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.9); display: flex; align-items: center; justify-content: center; z-index: 100000; backdrop-filter: blur(10px); }
-    #audio-start-content { background: rgba(6, 147, 227, 0.1); border: 2px solid var(--primary-color); padding: 40px; border-radius: 20px; text-align: center; max-width: 500px; margin: 20px; }
-    #audio-start-content h2 { color: var(--primary-color); margin-bottom: 15px; font-size: 1.8em; }
-    #audio-start-content p { margin-bottom: 25px; font-size: 1.1em; line-height: 1.6; }
-    #start-audio-btn { background: var(--primary-color); color: white; border: none; padding: 15px 30px; border-radius: 30px; font-size: 1.2em; cursor: pointer; transition: all 0.3s ease; }
-    #start-audio-btn:hover { background: var(--secondary-color); transform: translateY(-2px); }
   </style>
 </head>
 <body>
-  <div id="audio-start-overlay">
-    <div id="audio-start-content">
-      <h2><i class="fas fa-music"></i> Benvenuto!</h2>
-      <p>Per la migliore esperienza, questa pagina include una musica di sottofondo. Clicca per attivarla.</p>
-      <button id="start-audio-btn">Avvia l'Esperienza Musicale</button>
-    </div>
-  </div>
 <video autoplay muted loop playsinline preload="auto" id="background-video" poster="immagine_sfondo.png"><source src="video_sfondo_compressed.mp4" type="video/mp4" /></video>
 <audio loop preload="auto" id="background-audio"><source src="7a-Controtempo-compresso.mp3" type="audio/mpeg" /></audio>
   <div id="aphorism-container"></div>
@@ -112,7 +99,6 @@
         const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i');
         const ctaText = document.querySelector('#audio-cta .cta-text');
         const catalogPlayer = document.getElementById('catalog-audio-player');
-        const audioStartOverlay = document.getElementById('audio-start-overlay');
         
         let hasInteracted = false;
         let audioInitialized = false;
@@ -141,16 +127,20 @@
             if (hasInteracted) return;
             hasInteracted = true;
             
-            bgAudio.play().then(() => {
-                audioInitialized = true;
-                bgAudio.muted = false;
-                if (audioStartOverlay) audioStartOverlay.style.display = 'none';
-                if (audioCta) audioCta.style.visibility = 'visible';
-                updateMuteButtonUI();
-            }).catch(e => {
-                console.error("La riproduzione audio iniziale è stata bloccata.");
-                if (audioStartOverlay) audioStartOverlay.style.display = 'none';
-            });
+            // Prova a sbloccare l'audio in background
+            const playPromise = bgAudio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    audioInitialized = true;
+                    bgAudio.muted = false;
+                    audioCta.style.visibility = 'visible';
+                    updateMuteButtonUI();
+                }).catch(error => {
+                    // Se fallisce, significa che l'utente deve interagire con un pulsante esplicito.
+                    // Il codice non farà nulla, l'audio rimarrà sbloccabile tramite i pulsanti.
+                    console.log("Prima interazione non ha avviato l'audio, necessario click esplicito.");
+                });
+            }
             
             document.removeEventListener('click', handleFirstInteraction);
             document.removeEventListener('touchend', handleFirstInteraction);
@@ -160,13 +150,16 @@
         document.addEventListener('touchend', handleFirstInteraction);
 
         audioCta.addEventListener('click', () => {
-            if (!audioInitialized) return;
             bgAudio.muted = !bgAudio.muted;
             updateMuteButtonUI();
-            if (bgAudio.muted) {
-                bgAudio.pause();
-            } else {
+            if (!bgAudio.muted) {
+                if(!audioInitialized){
+                    audioInitialized = true;
+                    audioCta.style.visibility = 'visible';
+                }
                 bgAudio.play().catch(e => {});
+            } else {
+                bgAudio.pause();
             }
         });
 
@@ -198,7 +191,7 @@
         
         document.querySelectorAll('.modal-close').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                e.stopPropagation(); // Evita che il click si propaghi e causi problemi
+                e.stopPropagation();
                 const modalId = e.currentTarget.dataset.target;
                 closeModal(modalId);
             });
@@ -261,6 +254,48 @@
             currentPlayingItem = null;
         }
 
+        // =========================================================================================
+        // ===== MODIFICA #2: LOGICA PLAYER ASINCRONA E SEQUENZIALE PER EVITARE CRASH        =====
+        // =========================================================================================
+        async function playSong(item) {
+            if (isAudioBusy) return;
+            isAudioBusy = true;
+
+            const isThisItemPlaying = item === currentPlayingItem;
+
+            if (isThisItemPlaying) {
+                if (catalogPlayer.paused) {
+                    await catalogPlayer.play().catch(e => console.error(e));
+                } else {
+                    catalogPlayer.pause();
+                }
+                isAudioBusy = false;
+            } else {
+                if (currentPlayingItem) {
+                    catalogPlayer.pause();
+                    // Attendiamo la conferma della pausa
+                    await new Promise(resolve => setTimeout(resolve, 150)); 
+                }
+                
+                window.resetPlayingState();
+                currentPlayingItem = item;
+                
+                item.querySelector('.play-btn i').className = 'fas fa-spinner fa-spin';
+
+                catalogPlayer.src = item.dataset.src;
+                catalogPlayer.load();
+                
+                try {
+                    await catalogPlayer.play();
+                } catch (error) {
+                    console.error("Riproduzione fallita:", error);
+                    window.resetPlayingState();
+                } finally {
+                    isAudioBusy = false;
+                }
+            }
+        }
+
         if(catalogPlayer) {
             catalogPlayer.addEventListener('play', () => {
                 if (audioInitialized) bgAudio.pause();
@@ -283,38 +318,7 @@
         
         function addEventListenersToSongs() {
             document.querySelectorAll('.song-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    if (isAudioBusy) { return; }
-
-                    const isThisItemPlaying = (item === currentPlayingItem);
-
-                    if (isThisItemPlaying) {
-                        if (catalogPlayer.paused) {
-                            catalogPlayer.play();
-                        } else {
-                            catalogPlayer.pause();
-                        }
-                    } else {
-                        isAudioBusy = true;
-                        window.resetPlayingState();
-                        currentPlayingItem = item;
-                        
-                        catalogPlayer.pause();
-                        catalogPlayer.src = item.dataset.src;
-                        
-                        const playPromise = catalogPlayer.play();
-                        if (playPromise !== undefined) {
-                            playPromise.then(() => { isAudioBusy = false; })
-                            .catch(error => {
-                                console.error("Riproduzione fallita:", error);
-                                window.resetPlayingState();
-                                isAudioBusy = false;
-                            });
-                        } else {
-                            isAudioBusy = false;
-                        }
-                    }
-                });
+                item.addEventListener('click', () => playSong(item));
             });
         }
         
@@ -385,14 +389,14 @@
                 .chatbot-header-logo {width: 90px;height: 90px;border-radius: 50%;border: 3px solid #fff;box-shadow: 0 0 10px rgba(0,0,0,0.3);object-fit: cover;position: absolute;top: 0;left: 50%;transform: translateX(-50%); z-index: 10000;}
                 
                 /* ========================================================================================= */
-                /* ===== MODIFICA #2 & #3: POSIZIONE CHAT ALZATA E TOOLTIP VISIBILE SU MOBILE      ===== */
+                /* ===== MODIFICA #3: POSIZIONE CHAT ALZATA E TOOLTIP VISIBILE SU MOBILE           ===== */
                 /* ========================================================================================= */
                 #chatbot-window-wrapper { bottom: 140px; right: 25px; }
-                #chatbot-bubble { bottom: 30px; right: 25px; }
+                #chatbot-bubble { bottom: 40px; right: 25px; }
 
                 @media (max-width: 768px) {
-                    #chatbot-window-wrapper { bottom: 125px; right: 15px; }
-                    #chatbot-bubble { bottom: 30px; right: 15px; }
+                    #chatbot-window-wrapper { bottom: 130px; right: 15px; }
+                    #chatbot-bubble { bottom: 40px; right: 15px; }
                 }
 
                 .chatbot-header {position: relative; background-color: var(--primary-color); color: #fff; padding: 1rem; padding-top: 55px; text-align: center; flex-shrink: 0;}
