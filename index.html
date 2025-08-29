@@ -104,7 +104,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
   
-   <script>
+    <script>
     document.addEventListener('DOMContentLoaded', function() {
         // --- SEZIONE: DOM & STATO GLOBALE ---
         const bgAudio = document.getElementById('background-audio');
@@ -128,24 +128,19 @@
         // --- SEZIONE: LOGICA AUDIO PRINCIPALE E INIZIALIZZAZIONE ---
         const startExperience = () => {
             if (isAudioContextUnlocked) return;
-            // 1. Rimuovi l'overlay immediatamente per dare un feedback visivo.
             audioStartOverlay.style.display = 'none';
-            // 2. Segna l'interazione come avvenuta. Questo sblocca l'audio per azioni future.
             isAudioContextUnlocked = true;
 
-            // 3. Prova a far partire la musica.
             bgAudio.muted = false;
             const playPromise = bgAudio.play();
 
             if (playPromise !== undefined) {
                 playPromise.then(() => {
-                    // Successo: la musica parte.
                     audioCta.style.visibility = 'visible';
                     updateMuteButtonUI();
                 }).catch(error => {
-                    // Fallimento (normale su alcuni browser): l'utente dovrà interagire di nuovo (es. click su Mute/Unmute).
-                    console.warn("Autoplay bloccato dal browser. L'audio è sbloccato per interazioni future.", error);
-                    bgAudio.muted = true; // Assicura che sia muto se non è partito.
+                    console.warn("Autoplay bloccato. L'audio è sbloccato per interazioni future.", error);
+                    bgAudio.muted = true;
                     audioCta.style.visibility = 'visible';
                     updateMuteButtonUI();
                 });
@@ -231,11 +226,13 @@
 
         // --- SEZIONE: CARICAMENTO DATI E FILTRI ---
         const addEventListenersToSongs = () => document.querySelectorAll('.song-item').forEach(item => item.addEventListener('click', () => playSong(item)));
+        
         const filterAndDisplaySongs = () => {
             const filteredSongs = allSongs.filter(song => Object.keys(currentFilters).every(key => currentFilters[key] === 'all' || song[key] === currentFilters[key]));
             songListContainer.innerHTML = filteredSongs.length ? filteredSongs.map(song => `<div class="song-item" data-src="${song.url}" data-title="${song.title}"><span class="title">${song.title}</span><button class="play-btn"><i class="fas fa-play"></i></button></div>`).join('') : '<p>Nessun brano corrisponde ai filtri.</p>';
             addEventListenersToSongs();
         };
+
         const createFilterButtons = (songs) => {
             const filters = { 'Genere': 'genre', 'Categoria': 'category', 'Argomento': 'argomento' };
             filterContainer.innerHTML = Object.entries(filters).map(([label, key]) => {
@@ -251,6 +248,7 @@
                 filterAndDisplaySongs();
             }));
         };
+        
         const loadMusicFromApi = async () => {
             try {
                 const response = await fetch(sheetApiUrl);
@@ -262,6 +260,7 @@
                 songListContainer.innerHTML = `<p style="color: #f44336;">Errore caricamento: ${error.message}</p>`;
             }
         };
+        
         loadMusicFromApi();
 
         // --- SEZIONE: FORM DI CONTATTO ---
