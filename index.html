@@ -104,7 +104,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
   
-  <!-- SCRIPT PRINCIPALE (MODALI, CATALOGO, AUDIO, ECC.) -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
         
@@ -130,24 +129,17 @@
                     audioCta.style.visibility = 'visible';
                     updateMuteButton();
                 }).catch(e => {
-                    console.error("L'avvio automatico dell'audio è stato bloccato dal browser.", e);
+                    console.error("L'avvio automatico è stato bloccato dal browser.", e);
                     audioStartOverlay.style.display = 'flex';
                 });
             }
         }
-
         startAudioBtn.addEventListener('click', initializeAudio);
         audioStartOverlay.style.display = 'flex'; 
-        
         audioCta.addEventListener('click', () => {
-            if (!audioInitialized) {
-                initializeAudio();
-            } else {
-                bgAudio.muted = !bgAudio.muted;
-                updateMuteButton();
-            }
+            if (!audioInitialized) { initializeAudio(); } 
+            else { bgAudio.muted = !bgAudio.muted; updateMuteButton(); }
         });
-
         function updateMuteButton() {
             muteBtnIcon.className = bgAudio.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
             ctaText.textContent = bgAudio.muted ? 'Attiva la musica' : 'Disattiva musica';
@@ -164,22 +156,22 @@
             document.querySelector('#contact-modal select[name="service_type"]').value = 'canzone_personalizzata'; 
         });
 
-        // =========================================================================================================
-        // ===== MODIFICA #1: Correzione per la chiusura del modale su mobile (aggiunto evento 'touchend') =====
-        // =========================================================================================================
-        const closeModal = (event) => {
-            event.preventDefault(); // Previene eventi "fantasma" come il click dopo il tocco
-            const targetModalId = event.currentTarget.dataset.target;
-            if (targetModalId) {
-                document.getElementById(targetModalId).style.display = 'none';
-            }
-        };
-
+        // =================================================================================================
+        // ===== MODIFICA #1: GESTORE DI CHIUSURA MODALE SEMPLIFICATO E SICURO PER EVITARE CRASH        =====
+        // =================================================================================================
+        // La versione precedente con 'touchend' causava un blocco. Torniamo a un singolo evento 'click',
+        // che è stabile e gestisce correttamente i "tocchi" sui dispositivi mobili.
         document.querySelectorAll('.modal-close').forEach(btn => {
-            btn.addEventListener('click', closeModal);
-            btn.addEventListener('touchend', closeModal); // Aggiunto listener per il tocco
+            btn.addEventListener('click', (event) => {
+                const modalId = event.currentTarget.dataset.target;
+                if (modalId) {
+                    const modal = document.getElementById(modalId);
+                    if (modal) {
+                        modal.style.display = 'none';
+                    }
+                }
+            });
         });
-
 
         // --- LOGICA CATALOGO MUSICALE ---
         const songListContainer = document.getElementById('song-list-container');
@@ -195,7 +187,6 @@
                 const songs = await response.json();
                 if (songs.error) throw new Error(songs.error);
                 if (!songs || songs.length === 0) throw new Error('Nessun brano trovato.');
-                
                 allSongs = songs;
                 createFilterButtons(allSongs);
                 filterAndDisplaySongs();
@@ -203,7 +194,6 @@
                 songListContainer.innerHTML = `<p style="color: #f44336;">Errore caricamento: ${error.message}</p>`;
             }
         }
-
         function createFilterButtons(songs) {
             const filters = {
                 'Genere': [...new Set(songs.map(s => s.genre))],
@@ -230,28 +220,18 @@
                 });
             });
         }
-        
         function filterAndDisplaySongs() {
-            const filteredSongs = allSongs.filter(song => {
-                return (currentFilters.genre === 'all' || song.genre === currentFilters.genre) &&
-                       (currentFilters.category === 'all' || song.category === currentFilters.category) &&
-                       (currentFilters.argomento === 'all' || song.argomento === currentFilters.argomento);
-            });
+            const filteredSongs = allSongs.filter(song => (currentFilters.genre === 'all' || song.genre === currentFilters.genre) && (currentFilters.category === 'all' || song.category === currentFilters.category) && (currentFilters.argomento === 'all' || song.argomento === currentFilters.argomento));
             songListContainer.innerHTML = '';
             if (filteredSongs.length > 0) {
                 filteredSongs.forEach(song => {
-                    songListContainer.innerHTML += `
-                        <div class="song-item" data-src="${song.url}" data-title="${song.title}">
-                            <span class="title">${song.title}</span>
-                            <button class="play-btn"><i class="fas fa-play"></i></button>
-                        </div>`;
+                    songListContainer.innerHTML += `<div class="song-item" data-src="${song.url}" data-title="${song.title}"><span class="title">${song.title}</span><button class="play-btn"><i class="fas fa-play"></i></button></div>`;
                 });
             } else {
                 songListContainer.innerHTML = '<p>Nessun brano corrisponde ai filtri.</p>';
             }
             addEventListenersToSongs();
         }
-        
         window.resetPlayingState = function() {
             if (currentPlayingItem) {
                 currentPlayingItem.classList.remove('playing');
@@ -259,28 +239,18 @@
                 currentPlayingItem = null;
             }
             const player = document.getElementById('catalog-audio-player');
-            if(player && !player.paused) {
-              player.pause();
-              player.currentTime = 0;
-            }
+            if(player && !player.paused) { player.pause(); player.currentTime = 0; }
         }
-        
         catalogPlayer.addEventListener('play', () => { if (audioInitialized && !bgAudio.paused && !bgAudio.muted) bgAudio.pause(); });
         catalogPlayer.addEventListener('pause', () => { if (audioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play(); window.resetPlayingState(); });
         catalogPlayer.addEventListener('ended', () => { if (audioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play(); window.resetPlayingState(); });
-        
         function addEventListenersToSongs() {
             document.querySelectorAll('.song-item').forEach(item => {
                 item.addEventListener('click', () => {
                     const isCurrentlyPlaying = item.classList.contains('playing');
                     if (isCurrentlyPlaying) {
-                        if (catalogPlayer.paused) { 
-                            catalogPlayer.play(); 
-                            item.querySelector('.play-btn i').className = 'fas fa-pause';
-                        } else { 
-                            catalogPlayer.pause(); 
-                            item.querySelector('.play-btn i').className = 'fas fa-play';
-                        }
+                        if (catalogPlayer.paused) { catalogPlayer.play(); item.querySelector('.play-btn i').className = 'fas fa-pause'; } 
+                        else { catalogPlayer.pause(); item.querySelector('.play-btn i').className = 'fas fa-play'; }
                     } else {
                         window.resetPlayingState(); 
                         currentPlayingItem = item;
@@ -292,13 +262,14 @@
                 });
             });
         }
-        
         loadMusicFromApi();
 
+        // --- FORM DI CONTATTO ---
         const form = document.getElementById('contact-form');
         const formResult = document.getElementById('form-result');
-        form.addEventListener('submit', function(e) { e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio in corso..."; fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).then(response => response.json()).then(data => { if (data.success) { formResult.innerHTML = "Messaggio inviato con successo!"; form.reset(); } else { formResult.innerHTML = `Errore: ${data.message}`; } }).catch(() => formResult.innerHTML = "Si è verificato un errore."); });
+        form.addEventListener('submit', function(e) { e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio in corso..."; fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).then(r => r.json()).then(d => { if (d.success) { formResult.innerHTML = "Messaggio inviato!"; form.reset(); } else { formResult.innerHTML = `Errore: ${d.message}`; } }).catch(() => formResult.innerHTML = "Errore."); });
     
+        // --- AFORISMI ---
         const aphorisms = [ "La musica è la vera lingua universale.", "Dove le parole finiscono, inizia la musica.", "La vita è come un pianoforte, ciò che ne esce dipende da come la suoni.", "La musica esprime ciò che non può essere detto e su cui è impossibile rimanere in silenzio.", "Senza musica, la vita sarebbe un errore." ];
         const aphorismContainer = document.getElementById('aphorism-container');
         const mainContainer = document.querySelector('.container');
@@ -373,21 +344,20 @@
             const inputField = document.getElementById('chatbot-input-field');
             const sendBtn = document.getElementById('chatbot-send-btn');
             const closeBtn = document.querySelector('.chatbot-close-btn');
-            const converter = new showdown.Converter();
             let currentChatPlayingLink = null;
 
             const toggleChat = () => {
+                const isOpening = !windowWrapper.classList.contains('open');
                 windowWrapper.classList.toggle('open');
-                bubble.classList.toggle('open');
                 
                 // =========================================================================================================
                 // ===== MODIFICA #2: Nasconde la bolla quando la chat è aperta e la mostra quando è chiusa             =====
                 // =========================================================================================================
-                const isChatOpen = windowWrapper.classList.contains('open');
-                bubble.style.display = isChatOpen ? 'none' : 'flex';
-
-                if (isChatOpen) {
-                    setTimeout(() => inputField.focus(), 300);
+                if (isOpening) {
+                    bubble.style.display = 'none';
+                    setTimeout(() => inputField.focus(), 300); // Focus solo all'apertura
+                } else {
+                    bubble.style.display = 'flex';
                 }
             };
 
@@ -403,8 +373,7 @@
                 messagesEl.appendChild(msgDiv);
                 messagesEl.scrollTop = messagesEl.scrollHeight;
 
-                const songLinks = textDiv.querySelectorAll('.chatbot-song-link');
-                songLinks.forEach(link => {
+                textDiv.querySelectorAll('.chatbot-song-link').forEach(link => {
                     const originalText = link.textContent;
                     link.textContent = `▶️ ${originalText}`;
                     link.dataset.originalText = originalText;
@@ -448,7 +417,6 @@
                 const userMessage = inputField.value.trim(); if (userMessage === '') return;
                 addMessage(userMessage, 'user'); inputField.value = '';
                 try {
-                    if (webhookUrl.includes('INCOLLA_QUI')) { addMessage("Il chatbot non è configurato.", 'bot'); return; }
                     const conversationId = 'session-' + Date.now(); 
                     const response = await fetch(`${webhookUrl}?user_message=${encodeURIComponent(userMessage)}&conversation_id=${conversationId}`, { method: 'POST' });
                     if (!response.ok) throw new Error("Network response");
