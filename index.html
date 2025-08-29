@@ -164,19 +164,23 @@
         }
 
         if(catalogPlayer) {
-            catalogPlayer.addEventListener('play', () => {
-                if (audioInitialized && !bgAudio.paused && !bgAudio.muted) bgAudio.pause();
-                if(currentPlayingItem) {
-                    currentPlayingItem.classList.add('playing');
-                    currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-pause';
-                }
-            });
+// GESTORE 'PLAY' MODIFICATO
+catalogPlayer.addEventListener('play', () => {
+    if (audioInitialized && !bgAudio.paused && !bgAudio.muted) bgAudio.pause();
+    // Controllo di sicurezza: aggiorna l'UI solo se l'elemento corrente corrisponde alla traccia nel player
+    if (currentPlayingItem && catalogPlayer.src === currentPlayingItem.dataset.src) {
+        currentPlayingItem.classList.add('playing');
+        currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-pause';
+    }
+});
 
-            catalogPlayer.addEventListener('pause', () => {
-                if(currentPlayingItem) {
-                    currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
-                }
-            });
+// GESTORE 'PAUSE' MODIFICATO
+catalogPlayer.addEventListener('pause', () => {
+    // Controllo di sicurezza: aggiorna l'UI solo se l'elemento corrente corrisponde alla traccia nel player
+    if (currentPlayingItem && catalogPlayer.src === currentPlayingItem.dataset.src) {
+        currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
+    }
+});
 
             catalogPlayer.addEventListener('ended', () => {
                 window.resetPlayingState();
