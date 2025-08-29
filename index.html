@@ -103,11 +103,10 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+  
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-        
         const sheetApiUrl = 'https://script.google.com/macros/s/AKfycbyyvfsSlgx6J-dIeLaIi3Crd6eqG029DDsGzF3Wy8u1VIfwhTMDZJdTPS_ubYszUyFR/exec';
-
         const bgAudio = document.getElementById('background-audio');
         const audioCta = document.getElementById('audio-cta');
         const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i');
@@ -131,10 +130,8 @@
                 });
             }
         }
-
         startAudioBtn.addEventListener('click', initializeAudio);
-        audioStartOverlay.style.display = 'flex'; 
-        
+        audioStartOverlay.style.display = 'flex';
         audioCta.addEventListener('click', () => {
             if (!audioInitialized) {
                 initializeAudio();
@@ -143,7 +140,6 @@
                 updateMuteButton();
             }
         });
-
         function updateMuteButton() {
             muteBtnIcon.className = bgAudio.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
             ctaText.textContent = bgAudio.muted ? 'Attiva la musica' : 'Disattiva musica';
@@ -155,40 +151,35 @@
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
             if (!modal) return;
-            // Azione critica per prevenire il crash: spegne e resetta il player del catalogo
             if (modalId === 'music-modal' && catalogPlayer) {
                 catalogPlayer.pause();
-                catalogPlayer.removeAttribute('src'); // Rimuove la sorgente
-                catalogPlayer.load(); // Forza il reset
-                if(window.resetPlayingState) window.resetPlayingState();
+                catalogPlayer.removeAttribute('src'); 
+                catalogPlayer.load();
+                if (window.resetPlayingState) window.resetPlayingState();
             }
             modal.style.display = 'none';
         }
-
+        
         document.getElementById('open-music-modal').addEventListener('click', () => document.getElementById('music-modal').style.display = 'flex');
         document.getElementById('open-video-modal').addEventListener('click', () => document.getElementById('video-modal').style.display = 'flex');
         document.getElementById('open-services-modal').addEventListener('click', () => document.getElementById('services-modal').style.display = 'flex');
         document.getElementById('open-contact-modal').addEventListener('click', () => document.getElementById('contact-modal').style.display = 'flex');
-        
         document.getElementById('contact-for-custom-song').addEventListener('click', () => { 
             closeModal('services-modal'); 
             document.getElementById('contact-modal').style.display = 'flex'; 
             document.querySelector('#contact-modal select[name="service_type"]').value = 'canzone_personalizzata'; 
         });
-
+        
         document.querySelectorAll('.modal-close').forEach(btn => {
-            btn.addEventListener('click', e => {
+            btn.addEventListener('click', (e) => {
                 const modalId = e.currentTarget.dataset.target;
                 closeModal(modalId);
             });
         });
 
-        // --- LOGICA CATALOGO MUSICALE ---
         const songListContainer = document.getElementById('song-list-container');
         const filterContainer = document.getElementById('filter-container');
-        let allSongs = [];
-        let currentPlayingItem = null;
-        let currentFilters = { genre: 'all', category: 'all', argomento: 'all' };
+        let allSongs = [], currentPlayingItem = null, currentFilters = { genre: 'all', category: 'all', argomento: 'all' };
 
         async function loadMusicFromApi() {
             try {
@@ -199,18 +190,21 @@
                 allSongs = songs;
                 createFilterButtons(allSongs);
                 filterAndDisplaySongs();
-            } catch (error) {
-                if (songListContainer) songListContainer.innerHTML = `<p style="color: #f44336;">Errore caricamento: ${error.message}</p>`;
-            }
+            } catch (error) { if(songListContainer) songListContainer.innerHTML = `<p style="color: #f44336;">Errore caricamento: ${error.message}</p>`; }
         }
+        function createFilterButtons(songs) { /* ... logica originale ... */ }
+        function filterAndDisplaySongs() { /* ... logica originale ... */ }
+        window.resetPlayingState = function() { /* ... logica originale ... */ }
+        if(catalogPlayer) {
+            catalogPlayer.addEventListener('play', () => { /* ... logica originale ... */ });
+            catalogPlayer.addEventListener('pause', () => { /* ... logica originale ... */ });
+            catalogPlayer.addEventListener('ended', () => { /* ... logica originale ... */ });
+        }
+        function addEventListenersToSongs() { /* ... logica originale ... */ }
 
+        // Ricarico la logica originale del catalogo per completezza
         function createFilterButtons(songs) {
-            if (!filterContainer) return;
-            const filters = {
-                'Genere': [...new Set(songs.map(s => s.genre))],
-                'Categoria': [...new Set(songs.map(s => s.category))],
-                'Argomento': [...new Set(songs.map(s => s.argomento))]
-            };
+            const filters = { 'Genere': [...new Set(songs.map(s => s.genre))], 'Categoria': [...new Set(songs.map(s => s.category))], 'Argomento': [...new Set(songs.map(s => s.argomento))] };
             filterContainer.innerHTML = '';
             for (const key in filters) {
                 const filterKey = key === 'Genere' ? 'genre' : (key === 'Categoria' ? 'category' : 'argomento');
@@ -222,8 +216,7 @@
             }
             document.querySelectorAll('.filter-btn').forEach(button => {
                 button.addEventListener('click', (e) => {
-                    const key = e.target.dataset.filterKey;
-                    const value = e.target.dataset.filterValue;
+                    const key = e.target.dataset.filterKey; const value = e.target.dataset.filterValue;
                     currentFilters[key] = value;
                     e.target.parentElement.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
                     e.target.classList.add('active');
@@ -231,25 +224,14 @@
                 });
             });
         }
-        
         function filterAndDisplaySongs() {
-            if (!songListContainer) return;
-            const filteredSongs = allSongs.filter(song => {
-                return (currentFilters.genre === 'all' || song.genre === currentFilters.genre) &&
-                       (currentFilters.category === 'all' || song.category === currentFilters.category) &&
-                       (currentFilters.argomento === 'all' || song.argomento === currentFilters.argomento);
-            });
+            const filteredSongs = allSongs.filter(song => (currentFilters.genre === 'all' || song.genre === currentFilters.genre) && (currentFilters.category === 'all' || song.category === currentFilters.category) && (currentFilters.argomento === 'all' || song.argomento === currentFilters.argomento));
             songListContainer.innerHTML = '';
             if (filteredSongs.length > 0) {
-                filteredSongs.forEach(song => {
-                    songListContainer.innerHTML += `<div class="song-item" data-src="${song.url}" data-title="${song.title}"><span class="title">${song.title}</span><button class="play-btn"><i class="fas fa-play"></i></button></div>`;
-                });
-            } else {
-                songListContainer.innerHTML = '<p>Nessun brano corrisponde ai filtri.</p>';
-            }
+                filteredSongs.forEach(song => { songListContainer.innerHTML += `<div class="song-item" data-src="${song.url}" data-title="${song.title}"><span class="title">${song.title}</span><button class="play-btn"><i class="fas fa-play"></i></button></div>`; });
+            } else { songListContainer.innerHTML = '<p>Nessun brano corrisponde ai filtri.</p>'; }
             addEventListenersToSongs();
         }
-        
         window.resetPlayingState = function() {
             if (currentPlayingItem) {
                 currentPlayingItem.classList.remove('playing');
@@ -257,17 +239,14 @@
                 currentPlayingItem = null;
             }
         }
-        
-        if (catalogPlayer) {
+        if(catalogPlayer) {
             catalogPlayer.addEventListener('play', () => { if (audioInitialized && !bgAudio.paused && !bgAudio.muted) bgAudio.pause(); });
             catalogPlayer.addEventListener('pause', () => { if (audioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play(); window.resetPlayingState(); });
             catalogPlayer.addEventListener('ended', () => { if (audioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play(); window.resetPlayingState(); });
         }
-        
         function addEventListenersToSongs() {
             document.querySelectorAll('.song-item').forEach(item => {
                 item.addEventListener('click', () => {
-                    if (!catalogPlayer) return;
                     const isCurrentlyPlaying = item.classList.contains('playing');
                     if (isCurrentlyPlaying) {
                         if (catalogPlayer.paused) { catalogPlayer.play(); } else { catalogPlayer.pause(); }
@@ -283,30 +262,21 @@
                 });
             });
         }
-        
         loadMusicFromApi();
 
         const form = document.getElementById('contact-form');
         const formResult = document.getElementById('form-result');
-        if (form && formResult) {
-            form.addEventListener('submit', function(e) { e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio in corso..."; fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).then(response => response.json()).then(data => { if (data.success) { formResult.innerHTML = "Messaggio inviato con successo!"; form.reset(); } else { formResult.innerHTML = `Errore: ${data.message}`; } }).catch(() => formResult.innerHTML = "Si è verificato un errore."); });
-        }
-        
+        form.addEventListener('submit', function(e) { e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio in corso..."; fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).then(response => response.json()).then(data => { if (data.success) { formResult.innerHTML = "Messaggio inviato con successo!"; form.reset(); } else { formResult.innerHTML = `Errore: ${data.message}`; } }).catch(() => formResult.innerHTML = "Si è verificato un errore."); });
+    
+        const aphorisms = [ "La musica è la vera lingua universale.", "Dove le parole finiscono, inizia la musica.", "La vita è come un pianoforte, ciò che ne esce dipende da come la suoni." ];
         const aphorismContainer = document.getElementById('aphorism-container');
         const mainContainer = document.querySelector('.container');
-        if (aphorismContainer && mainContainer) {
-            const aphorisms = [ "La musica è la vera lingua universale.", "Dove le parole finiscono, inizia la musica.", "La vita è come un pianoforte, ciò che ne esce dipende da come la suoni.", "La musica esprime ciò che non può essere detto e su cui è impossibile rimanere in silenzio.", "Senza musica, la vita sarebbe un errore." ];
-            function showRandomAphorism() { const rect = mainContainer.getBoundingClientRect(); const postit = document.createElement('div'); postit.className = 'aphorism-postit'; postit.textContent = aphorisms[Math.floor(Math.random() * aphorisms.length)]; let top, left; do { top = Math.random() * window.innerHeight; left = Math.random() * window.innerWidth; } while ( top > rect.top - 50 && top < rect.bottom + 50 && left > rect.left - 50 && left < rect.right + 50 ); postit.style.top = `${top}px`; postit.style.left = `${left}px`; const rotation = `rotate(${Math.random() * 20 - 10}deg)`; postit.style.setProperty('--transform-start', `${rotation} translateY(20px)`); postit.style.setProperty('--transform-end', `${rotation} translateY(0)`); aphorismContainer.appendChild(postit); setTimeout(() => { postit.remove(); }, 10000); }
-            setInterval(showRandomAphorism, 12000);
-        }
+        function showRandomAphorism() { const rect = mainContainer.getBoundingClientRect(); const postit = document.createElement('div'); postit.className = 'aphorism-postit'; postit.textContent = aphorisms[Math.floor(Math.random() * aphorisms.length)]; let top, left; do { top = Math.random() * window.innerHeight; left = Math.random() * window.innerWidth; } while ( top > rect.top - 50 && top < rect.bottom + 50 && left > rect.left - 50 && left < rect.right + 50 ); postit.style.top = `${top}px`; postit.style.left = `${left}px`; const rotation = `rotate(${Math.random() * 20 - 10}deg)`; postit.style.setProperty('--transform-start', `${rotation} translateY(20px)`); postit.style.setProperty('--transform-end', `${rotation} translateY(0)`); aphorismContainer.appendChild(postit); setTimeout(() => { postit.remove(); }, 10000); }
+        setInterval(showRandomAphorism, 12000);
     });
 
-    // --- SCRIPT CHATBOT (STABILE) ---
     (function() {
         document.addEventListener('DOMContentLoaded', () => {
-            const chatbotContainer = document.getElementById('chatbot-container');
-            if (!chatbotContainer) return;
-
             const chatbotHTML = `
             <style>
                 #chatbot-bubble{position:fixed;bottom:25px;right:25px;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(fausto_immagine.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:9999}
@@ -358,64 +328,66 @@
                 </div>
             </div>`;
             
-            container.innerHTML = chatbotHTML;
-            
-            const webhookUrl = 'https://n8n.automaita.it/webhook/ffausto-ai-chat';
-            const bubble = document.getElementById('chatbot-bubble');
-            const windowWrapper = document.getElementById('chatbot-window-wrapper');
-            const messagesEl = document.getElementById('chatbot-messages');
-            const inputField = document.getElementById('chatbot-input-field');
-            const sendBtn = document.getElementById('chatbot-send-btn');
-            const closeBtn = document.querySelector('.chatbot-close-btn');
+            const container = document.getElementById('chatbot-container');
+            if (container) {
+                container.innerHTML = chatbotHTML;
+                const webhookUrl = 'https://n8n.automaita.it/webhook/ffausto-ai-chat';
+                const bubble = document.getElementById('chatbot-bubble');
+                const windowWrapper = document.getElementById('chatbot-window-wrapper');
+                const messagesEl = document.getElementById('chatbot-messages');
+                const inputField = document.getElementById('chatbot-input-field');
+                const sendBtn = document.getElementById('chatbot-send-btn');
+                const closeBtn = document.querySelector('.chatbot-close-btn');
 
-            if (!bubble || !windowWrapper || !closeBtn) return;
+                if (!bubble || !windowWrapper || !closeBtn) return;
 
-            const toggleChat = () => {
-                const isChatOpen = windowWrapper.classList.contains('open');
-                if (isChatOpen) {
-                    windowWrapper.classList.remove('open');
-                    bubble.classList.remove('open');
-                } else {
-                    windowWrapper.classList.add('open');
-                    bubble.classList.add('open');
-                    if(inputField) setTimeout(() => inputField.focus(), 350);
+                const toggleChat = () => {
+                    const isChatOpen = windowWrapper.classList.contains('open');
+                    if (isChatOpen) {
+                        windowWrapper.classList.remove('open');
+                        bubble.classList.remove('open');
+                    } else {
+                        windowWrapper.classList.add('open');
+                        bubble.classList.add('open');
+                        if (inputField) setTimeout(() => inputField.focus(), 350);
+                    }
+                };
+                
+                bubble.addEventListener('click', toggleChat);
+                closeBtn.addEventListener('click', toggleChat);
+
+                const addMessage = (text, type) => {
+                    if (!messagesEl) return;
+                    const msgDiv = document.createElement('div'); msgDiv.className = `message ${type}`;
+                    if (type === 'bot') { const avatar = document.createElement('img'); avatar.src = 'fausto_immagine.jpg'; avatar.className = 'message-avatar'; msgDiv.appendChild(avatar); }
+                    const textDiv = document.createElement('div'); textDiv.className = 'message-text';
+                    textDiv.innerHTML = DOMPurify.sanitize(text);
+                    msgDiv.appendChild(textDiv);
+                    messagesEl.appendChild(msgDiv);
+                    messagesEl.scrollTop = messagesEl.scrollHeight;
+                };
+
+                const sendMessage = async () => {
+                    if (!inputField) return;
+                    const userMessage = inputField.value.trim(); if (userMessage === '') return;
+                    addMessage(userMessage, 'user'); inputField.value = '';
+                    try {
+                        const response = await fetch(`${webhookUrl}?user_message=${encodeURIComponent(userMessage)}&conversation_id=session-${Date.now()}`, { method: 'POST' });
+                        if (!response.ok) throw new Error("Network response");
+                        const data = await response.json(); addMessage(data.response || "C'è stato un problema.", 'bot');
+                    } catch (error) { addMessage('Spiacente, si è verificato un errore.', 'bot'); }
+                };
+
+                if (sendBtn && inputField) {
+                    sendBtn.addEventListener('click', sendMessage);
+                    inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
                 }
-            };
-            
-            bubble.addEventListener('click', toggleChat);
-            closeBtn.addEventListener('click', toggleChat);
-
-            const addMessage = (text, type) => {
-                if (!messagesEl) return;
-                const msgDiv = document.createElement('div'); msgDiv.className = `message ${type}`;
-                if (type === 'bot') { const avatar = document.createElement('img'); avatar.src = 'fausto_immagine.jpg'; avatar.className = 'message-avatar'; msgDiv.appendChild(avatar); }
-                const textDiv = document.createElement('div'); textDiv.className = 'message-text';
-                textDiv.innerHTML = DOMPurify.sanitize(text);
-                msgDiv.appendChild(textDiv);
-                messagesEl.appendChild(msgDiv);
-                messagesEl.scrollTop = messagesEl.scrollHeight;
-            };
-
-            const sendMessage = async () => {
-                if(!inputField) return;
-                const userMessage = inputField.value.trim(); if (userMessage === '') return;
-                addMessage(userMessage, 'user'); inputField.value = '';
-                try {
-                    const response = await fetch(`${webhookUrl}?user_message=${encodeURIComponent(userMessage)}&conversation_id=session-${Date.now()}`, { method: 'POST' });
-                    if (!response.ok) throw new Error("Network response");
-                    const data = await response.json(); addMessage(data.response || "C'è stato un problema.", 'bot');
-                } catch (error) { addMessage('Spiacente, si è verificato un errore.', 'bot'); }
-            };
-
-            if (sendBtn && inputField) {
-                sendBtn.addEventListener('click', sendMessage);
-                inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
+                
+                if (window.innerWidth > 768) {
+                    setTimeout(() => { if (!windowWrapper.classList.contains('open')) { toggleChat(); } }, 1500);
+                }
+                addMessage("Ciao! Sono Fausto AI, il tuo assistente virtuale. Come posso aiutarti a trovare il brano perfetto per te?", 'bot');
             }
-            
-            if (window.innerWidth > 768) {
-                setTimeout(() => { if(!windowWrapper.classList.contains('open')) { toggleChat(); } }, 2500);
-            }
-            addMessage("Ciao! Sono Fausto AI, il tuo assistente virtuale. Come posso aiutarti a trovare il brano perfetto per te?", 'bot');
         });
     })();
   </script>
