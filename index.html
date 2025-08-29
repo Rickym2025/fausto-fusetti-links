@@ -223,57 +223,72 @@
             if (currentPlayingItem) {
                 currentPlayingItem.classList.remove('playing');
                 currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
-                currentPlayingItem = null;
             }
+            currentPlayingItem = null;
         }
 
         // =========================================================================================
-        // ===== MODIFICA #1: CORREZIONE EVENT LISTENERS DEL PLAYER                        =====
+        // ===== CODICE PLAYER AUDIO ROBUSTO PER DESKTOP E MOBILE                          =====
         // =========================================================================================
         if(catalogPlayer) {
-            catalogPlayer.addEventListener('play', () => { 
-                if (audioInitialized && !bgAudio.paused && !bgAudio.muted) bgAudio.pause(); 
-            });
-
-            // L'evento 'pause' ora gestisce solo la musica di sottofondo, senza resettare lo stato.
-            catalogPlayer.addEventListener('pause', () => { 
-                if (audioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play(); 
-                // La chiamata a window.resetPlayingState() è stata rimossa da qui per evitare conflitti.
-            });
-
-            // L'evento 'ended' (fine della canzone) resetta correttamente lo stato.
+            // Quando una canzone del catalogo finisce, ripristina lo stato e fai ripartire la musica di sottofondo
             catalogPlayer.addEventListener('ended', () => { 
-                if (audioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play(); 
+                if (audioInitialized && !bgAudio.muted) {
+                    bgAudio.play();
+                }
                 window.resetPlayingState(); 
             });
         }
-
-        // =========================================================================================
-        // ===== MODIFICA #2: LOGICA PLAY/PAUSE RESA PIÙ ROBUSTA                         =====
-        // =========================================================================================
+        
         function addEventListenersToSongs() {
             document.querySelectorAll('.song-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    const isCurrentlyPlaying = item.classList.contains('playing');
+                // Usiamo una funzione `async` per poter attendere (`await`) la conferma della riproduzione
+                item.addEventListener('click', async () => {
+                    const isCurrentlyPlayingItem = item.classList.contains('playing');
                     const icon = item.querySelector('.play-btn i');
 
-                    if (isCurrentlyPlaying) {
-                        // Se sto cliccando sul brano già attivo, gestisco il play/pause.
+                    if (isCurrentlyPlayingItem) {
+                        // Logica per il brano GIÀ attivo (play/pausa)
                         if (catalogPlayer.paused) {
-                            catalogPlayer.play();
-                            icon.className = 'fas fa-pause';
+                            try {
+                                if (audioInitialized) bgAudio.pause(); // Metti in pausa il sottofondo prima di riprendere
+                                await catalogPlayer.play();
+                                icon.className = 'fas fa-pause';
+                            } catch (err) {
+                                console.error("La ripresa della riproduzione è fallita:", err);
+                                if (audioInitialized && !bgAudio.muted) bgAudio.play(); // Se fallisce, ripristina il sottofondo
+                            }
                         } else {
                             catalogPlayer.pause();
                             icon.className = 'fas fa-play';
+                            if (audioInitialized && !bgAudio.muted) bgAudio.play(); // Riprendi il sottofondo
                         }
                     } else {
-                        // Se sto cliccando su un nuovo brano.
-                        window.resetPlayingState(); // Resetto l'eventuale brano precedente.
+                        // Logica per un NUOVO brano
+                        window.resetPlayingState(); // Resetta l'interfaccia del brano precedente
+
+                        if (audioInitialized) {
+                            bgAudio.pause(); // Metti in pausa il sottofondo
+                        }
+
                         currentPlayingItem = item;
-                        item.classList.add('playing');
                         catalogPlayer.src = item.dataset.src;
-                        catalogPlayer.play();
-                        icon.className = 'fas fa-pause';
+                        
+                        try {
+                            // Tenta di avviare la riproduzione e attendi il risultato
+                            await catalogPlayer.play();
+                            
+                            // Se la riproduzione parte con successo:
+                            item.classList.add('playing');
+                            icon.className = 'fas fa-pause';
+                        } catch (err) {
+                            console.error("L'avvio della riproduzione è fallito:", err);
+                            // Se fallisce (bloccato dal browser, ecc.), resetta tutto a uno stato pulito
+                            window.resetPlayingState(); 
+                            if (audioInitialized && !bgAudio.muted) {
+                                bgAudio.play(); // Fai ripartire la musica di sottofondo
+                            }
+                        }
                     }
                 });
             });
