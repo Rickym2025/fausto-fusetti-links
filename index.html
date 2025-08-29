@@ -111,10 +111,8 @@
     try {
         document.addEventListener('DOMContentLoaded', function() {
             
-            // --- VARIABILI GLOBALI E CONFIGURAZIONE ---
             const sheetApiUrl = 'https://script.google.com/macros/s/AKfycbyyvfsSlgx6J-dIeLaIi3Crd6eqG029DDsGzF3Wy8u1VIfwhTMDZJdTPS_ubYszUyFR/exec';
             
-            // --- FUNZIONI DI BASE (AUDIO, MODALI) ---
             const bgAudio = document.getElementById('background-audio');
             const audioCta = document.getElementById('audio-cta');
             const muteBtnIcon = document.getElementById('mute-btn-icon');
@@ -152,7 +150,6 @@
                 else { bgAudio.muted = !bgAudio.muted; updateMuteButton(); }
             });
 
-            // --- GESTIONE MODALI (LOGICA ANTI-CRASH) ---
             function closeModal(modalId) {
                 const modal = document.getElementById(modalId);
                 if (!modal) return;
@@ -188,7 +185,6 @@
                 });
             }
 
-            // --- LOGICA CATALOGO MUSICALE ---
             const songListContainer = document.getElementById('song-list-container');
             const filterContainer = document.getElementById('filter-container');
             let allSongs = [], currentPlayingItem = null, currentFilters = { genre: 'all', category: 'all', argomento: 'all' };
@@ -284,7 +280,7 @@
                     #chatbot-bubble.open .icon-close{opacity:1}
                     #chatbot-bubble .icon-close{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}
                     @keyframes fadeInBounce { 0% { opacity: 0; transform: translateY(10px) scale(0.9); } 70% { opacity: 1; transform: translateY(-5px) scale(1.05); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
-                    #chatbot-notification { position: fixed; bottom: 100px; right: 25px; background: #fff; color: #333; padding: 8px 15px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,.2); z-index: 9998; font-size: 0.9em; opacity: 0; animation: fadeInBounce 1s ease-in-out 2.5s forwards; }
+                    #chatbot-notification { position: fixed; bottom: 100px; right: 25px; background: #fff; color: #333; padding: 8px 15px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,.2); z-index: 9998; font-size: 0.9em; opacity: 0; animation: fadeInBounce 1s ease-in-out 3s forwards; }
                     #chatbot-notification::after { content: ''; position: absolute; bottom: -8px; right: 20px; width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 8px solid #fff; }
                     #chatbot-window-wrapper {position:fixed;bottom:140px;right:25px;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out;}
                     #chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}
@@ -322,7 +318,7 @@
 
                 const toggleChat = () => {
                     const isChatOpen = windowWrapper.classList.contains('open');
-                    if(notification) notification.style.display = 'none'; // Nascondi la notifica per sempre al primo click
+                    if(notification) notification.style.display = 'none'; 
                     if (isChatOpen) {
                         windowWrapper.classList.remove('open');
                         bubble.classList.remove('open');
