@@ -368,9 +368,9 @@
             })();
         });
     } catch (e) {
-        console.error("ERRORE GRAVE NEL SITO:", e);
-        // Potresti aggiungere un messaggio di fallback per l'utente qui
-        // document.body.innerHTML = "Si è verificato un errore critico. Si prega di ricaricare la pagina.";
+        console.error("ERRORE CRITICO NELLO SCRIPT:", e);
+        // Fallback in caso di errore catastrofico per non mostrare una pagina bianca.
+        document.body.innerHTML = "Si è verificato un errore critico. Per favore, ricarica la pagina.";
     }
   </script>
 </body>
