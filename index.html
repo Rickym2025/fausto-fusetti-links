@@ -117,21 +117,8 @@
         let audioInitialized = false;
         let isAudioBusy = false; 
 
-        // =========================================================================================
-        // ===== MODIFICA #1: LOGICA ROBUSTA PER IL CONTROLLO DELLA MUSICA DI SOTTOFONDO       =====
-        // =========================================================================================
-        function controlBgAudio(shouldPlay) {
-            if (!audioInitialized) return;
-            
-            if (shouldPlay && !catalogPlayer.playing) {
-                bgAudio.muted = false;
-                bgAudio.play().catch(e => {});
-            } else {
-                bgAudio.pause();
-            }
-
-            // Aggiorna sempre l'interfaccia in base allo stato reale
-            if (bgAudio.paused || bgAudio.muted) {
+        function updateMuteButtonUI() {
+            if (bgAudio.muted) {
                 muteBtnIcon.className = 'fas fa-volume-mute';
                 ctaText.textContent = 'Attiva la musica';
             } else {
@@ -140,19 +127,22 @@
             }
         }
 
-        function initializeAudio() {
-            const playPromise = bgAudio.play();
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    audioInitialized = true;
-                    bgAudio.muted = false;
-                    audioStartOverlay.style.display = 'none';
-                    audioCta.style.visibility = 'visible';
-                    controlBgAudio(true);
-                }).catch(e => {
-                    audioStartOverlay.style.display = 'flex';
-                });
+        function resumeBgAudioIfNeeded() {
+            if (audioInitialized && !bgAudio.muted) {
+                bgAudio.play().catch(e => {});
             }
+        }
+        
+        function initializeAudio() {
+            bgAudio.play().then(() => {
+                audioInitialized = true;
+                bgAudio.muted = false;
+                audioStartOverlay.style.display = 'none';
+                audioCta.style.visibility = 'visible';
+                updateMuteButtonUI();
+            }).catch(e => {
+                audioStartOverlay.style.display = 'flex';
+            });
         }
         startAudioBtn.addEventListener('click', initializeAudio);
         audioStartOverlay.style.display = 'flex';
@@ -161,7 +151,13 @@
             if (!audioInitialized) {
                 initializeAudio();
             } else {
-                controlBgAudio(bgAudio.paused || bgAudio.muted);
+                bgAudio.muted = !bgAudio.muted;
+                if (!bgAudio.muted && bgAudio.paused) {
+                    bgAudio.play().catch(e => {});
+                } else if (bgAudio.muted) {
+                    bgAudio.pause();
+                }
+                updateMuteButtonUI();
             }
         });
 
@@ -170,11 +166,13 @@
             if (!modal) return;
 
             if (modalId === 'music-modal' && catalogPlayer) {
+                isAudioBusy = true;
                 catalogPlayer.pause();
                 catalogPlayer.removeAttribute('src'); 
                 catalogPlayer.load();
                 if (window.resetPlayingState) window.resetPlayingState();
-                controlBgAudio(true); // Riattiva il sottofondo quando si chiude la modale
+                resumeBgAudioIfNeeded();
+                isAudioBusy = false;
             }
             modal.style.display = 'none';
         }
@@ -200,10 +198,6 @@
         const filterContainer = document.getElementById('filter-container');
         let allSongs = [], currentPlayingItem = null, currentFilters = { genre: 'all', category: 'all', argomento: 'all' };
 
-        async function loadMusicFromApi() { /* ... (codice invariato) ... */ }
-        function createFilterButtons(songs) { /* ... (codice invariato) ... */ }
-        function filterAndDisplaySongs() { /* ... (codice invariato) ... */ }
-        
         async function loadMusicFromApi() {
             try {
                 const response = await fetch(sheetApiUrl);
@@ -253,26 +247,23 @@
             currentPlayingItem = null;
         }
 
-        // =========================================================================================
-        // ===== MODIFICA #2: LOGICA PLAYER AUDIO CON "SEMAFORO" ANTI-CRASH                  =====
-        // =========================================================================================
         if(catalogPlayer) {
             catalogPlayer.addEventListener('play', () => {
-                controlBgAudio(false);
+                if (audioInitialized) bgAudio.pause();
                 if (currentPlayingItem) {
                     currentPlayingItem.classList.add('playing');
                     currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-pause';
                 }
             });
             catalogPlayer.addEventListener('pause', () => {
-                controlBgAudio(true);
+                resumeBgAudioIfNeeded();
                 if (currentPlayingItem) {
                     currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
                 }
             });
             catalogPlayer.addEventListener('ended', () => { 
                 window.resetPlayingState(); 
-                controlBgAudio(true);
+                resumeBgAudioIfNeeded();
             });
         }
         
@@ -296,8 +287,7 @@
                         
                         catalogPlayer.pause();
                         catalogPlayer.src = item.dataset.src;
-                        catalogPlayer.load();
-
+                        
                         const playPromise = catalogPlayer.play();
                         if (playPromise !== undefined) {
                             playPromise.then(() => { isAudioBusy = false; })
@@ -375,14 +365,17 @@
                     visibility: hidden;
                 }
 
-                #chatbot-window-wrapper {position:fixed;bottom:140px;right:25px;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out;}
+                #chatbot-window-wrapper {position:fixed;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out;}
                 #chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}
                 #chatbot-window{position:relative; margin-top: 45px; width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;}
                 .chatbot-header-logo {width: 90px;height: 90px;border-radius: 50%;border: 3px solid #fff;box-shadow: 0 0 10px rgba(0,0,0,0.3);object-fit: cover;position: absolute;top: 0;left: 50%;transform: translateX(-50%); z-index: 10000;}
                 
                 /* ========================================================================================= */
-                /* ===== MODIFICA #3: POSIZIONE CHAT ALZATA PER MOBILE                             ===== */
+                /* ===== MODIFICA #3: POSIZIONE CHAT ALZATA PER DESKTOP E MOBILE                   ===== */
                 /* ========================================================================================= */
+                #chatbot-window-wrapper { bottom: 140px; right: 25px; }
+                #chatbot-bubble { bottom: 30px; right: 25px; }
+
                 @media (max-width: 768px) {
                     #chatbot-window-wrapper { bottom: 125px; right: 15px; }
                     #chatbot-bubble { bottom: 30px; right: 15px; }
