@@ -53,9 +53,22 @@
     #aphorism-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; pointer-events: none; }
     @keyframes fadeInOut { 0% { opacity: 0; transform: var(--transform-start); } 15% { opacity: 1; transform: var(--transform-end); } 85% { opacity: 1; transform: var(--transform-end); } 100% { opacity: 0; transform: var(--transform-start); } }
     .aphorism-postit { position: absolute; background-color: #fefabc; color: #333; padding: 15px; border-radius: 5px; box-shadow: 5px 5px 15px rgba(0,0,0,0.3); max-width: 250px; font-family: 'Georgia', serif; animation: fadeInOut 10s ease-in-out forwards; }
+    #audio-start-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.9); display: flex; align-items: center; justify-content: center; z-index: 100000; backdrop-filter: blur(10px); }
+    #audio-start-content { background: rgba(6, 147, 227, 0.1); border: 2px solid var(--primary-color); padding: 40px; border-radius: 20px; text-align: center; max-width: 500px; margin: 20px; }
+    #audio-start-content h2 { color: var(--primary-color); margin-bottom: 15px; font-size: 1.8em; }
+    #audio-start-content p { margin-bottom: 25px; font-size: 1.1em; line-height: 1.6; }
+    #start-audio-btn { background: var(--primary-color); color: white; border: none; padding: 15px 30px; border-radius: 30px; font-size: 1.2em; cursor: pointer; transition: all 0.3s ease; }
+    #start-audio-btn:hover { background: var(--secondary-color); transform: translateY(-2px); }
   </style>
 </head>
 <body>
+  <div id="audio-start-overlay">
+    <div id="audio-start-content">
+      <h2><i class="fas fa-music"></i> Benvenuto!</h2>
+      <p>Per la migliore esperienza, questa pagina include una musica di sottofondo. Clicca per attivarla.</p>
+      <button id="start-audio-btn">Avvia l'Esperienza Musicale</button>
+    </div>
+  </div>
 <video autoplay muted loop playsinline preload="auto" id="background-video" poster="immagine_sfondo.png"><source src="video_sfondo_compressed.mp4" type="video/mp4" /></video>
 <audio loop preload="auto" id="background-audio"><source src="7a-Controtempo-compresso.mp3" type="audio/mpeg" /></audio>
   <div id="aphorism-container"></div>
@@ -99,10 +112,39 @@
         const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i');
         const ctaText = document.querySelector('#audio-cta .cta-text');
         const catalogPlayer = document.getElementById('catalog-audio-player');
+        const audioStartOverlay = document.getElementById('audio-start-overlay');
+        const startAudioBtn = document.getElementById('start-audio-btn');
         
-        let hasInteracted = false;
-        let audioInitialized = false;
-        let isAudioBusy = false; 
+        let audioContextUnlocked = false;
+        let isAudioBusy = false;
+
+        // =========================================================================================
+        // ===== MODIFICA #1: SBLOCCO GLOBALE DELL'AUDIO ALLA PRIMA INTERAZIONE              =====
+        // =========================================================================================
+        function unlockAllAudio() {
+            if (audioContextUnlocked) return;
+            
+            // Sblocca entrambi i player in modo silenzioso
+            bgAudio.play().then(() => bgAudio.pause()).catch(() => {});
+            catalogPlayer.play().then(() => catalogPlayer.pause()).catch(() => {});
+
+            audioContextUnlocked = true;
+            document.removeEventListener('click', unlockAllAudio);
+            document.removeEventListener('touchend', unlockAllAudio);
+        }
+        document.addEventListener('click', unlockAllAudio);
+        document.addEventListener('touchend', unlockAllAudio);
+
+        function startExperience() {
+            if (!audioContextUnlocked) unlockAllAudio();
+            
+            audioStartOverlay.style.display = 'none';
+            audioCta.style.visibility = 'visible';
+            bgAudio.muted = false;
+            bgAudio.play().catch(e => {});
+            updateMuteButtonUI();
+        }
+        startAudioBtn.addEventListener('click', startExperience);
 
         function updateMuteButtonUI() {
             if (bgAudio.muted) {
@@ -115,44 +157,19 @@
         }
 
         function resumeBgAudioIfNeeded() {
-            if (audioInitialized && !bgAudio.muted) {
+            if (audioContextUnlocked && !bgAudio.muted) {
                 bgAudio.play().catch(e => {});
             }
         }
-        
-        function handleFirstInteraction() {
-            if (hasInteracted) return;
-            hasInteracted = true;
-            
-            const playPromise = bgAudio.play();
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    audioInitialized = true;
-                    bgAudio.muted = false;
-                    audioCta.style.visibility = 'visible';
-                    updateMuteButtonUI();
-                }).catch(error => {
-                    console.log("Prima interazione non ha avviato l'audio, necessario click esplicito.");
-                });
-            }
-            document.removeEventListener('click', handleFirstInteraction);
-            document.removeEventListener('touchend', handleFirstInteraction);
-        }
-        
-        document.addEventListener('click', handleFirstInteraction);
-        document.addEventListener('touchend', handleFirstInteraction);
 
         audioCta.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (!hasInteracted) handleFirstInteraction();
-            
             bgAudio.muted = !bgAudio.muted;
             updateMuteButtonUI();
-
-            if (!bgAudio.muted && bgAudio.paused) {
-                bgAudio.play().catch(e => {});
-            } else if (bgAudio.muted) {
+            if (bgAudio.muted) {
                 bgAudio.pause();
+            } else {
+                resumeBgAudioIfNeeded();
             }
         });
 
@@ -172,19 +189,10 @@
             modal.style.display = 'none';
         }
         
-        document.querySelectorAll('.button').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const modalId = `open-${e.currentTarget.id.split('-')[1]}-modal`;
-                const targetModal = document.getElementById(e.currentTarget.id.replace('open-', ''));
-                if (targetModal) targetModal.style.display = 'flex';
-            });
-        });
-
         document.getElementById('open-music-modal').addEventListener('click', () => document.getElementById('music-modal').style.display = 'flex');
         document.getElementById('open-video-modal').addEventListener('click', () => document.getElementById('video-modal').style.display = 'flex');
         document.getElementById('open-services-modal').addEventListener('click', () => document.getElementById('services-modal').style.display = 'flex');
         document.getElementById('open-contact-modal').addEventListener('click', () => document.getElementById('contact-modal').style.display = 'flex');
-
         document.getElementById('contact-for-custom-song').addEventListener('click', () => { 
             closeModal('services-modal'); 
             document.getElementById('contact-modal').style.display = 'flex'; 
@@ -203,6 +211,10 @@
         const filterContainer = document.getElementById('filter-container');
         let allSongs = [], currentPlayingItem = null, currentFilters = { genre: 'all', category: 'all', argomento: 'all' };
 
+        async function loadMusicFromApi() { /* ... */ }
+        function createFilterButtons(songs) { /* ... */ }
+        function filterAndDisplaySongs() { /* ... */ }
+        
         async function loadMusicFromApi() {
             try {
                 const response = await fetch(sheetApiUrl);
@@ -272,10 +284,12 @@
                 if (currentPlayingItem) {
                     catalogPlayer.pause();
                     await new Promise(resolve => {
-                        catalogPlayer.onpause = () => {
-                            catalogPlayer.onpause = null;
-                            resolve();
-                        };
+                        const checkPause = setInterval(() => {
+                            if (catalogPlayer.paused) {
+                                clearInterval(checkPause);
+                                resolve();
+                            }
+                        }, 50);
                     });
                 }
                 
@@ -283,7 +297,6 @@
                 currentPlayingItem = item;
                 
                 item.querySelector('.play-btn i').className = 'fas fa-spinner fa-spin';
-
                 catalogPlayer.src = item.dataset.src;
                 
                 try {
@@ -299,7 +312,7 @@
 
         if(catalogPlayer) {
             catalogPlayer.addEventListener('play', () => {
-                if (audioInitialized) bgAudio.pause();
+                if (audioContextUnlocked) bgAudio.pause();
                 if (currentPlayingItem) {
                     currentPlayingItem.classList.add('playing');
                     currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-pause';
@@ -319,7 +332,10 @@
         
         function addEventListenersToSongs() {
             document.querySelectorAll('.song-item').forEach(item => {
-                item.addEventListener('click', () => playSong(item));
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    playSong(item);
+                });
             });
         }
         
@@ -347,10 +363,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const chatbotHTML = `
             <style>
-                /* ========================================================================================= */
-                /* ===== MODIFICA #4: Z-INDEX AUMENTATO PER STARE SOPRA LE MODALI                  ===== */
-                /* ========================================================================================= */
-                #chatbot-bubble{position:fixed;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(fausto_immagine.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:10001}
+                #chatbot-bubble{position:fixed;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(fausto_immagine.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:10002}
                 #chatbot-bubble:hover{transform:scale(1.1)}
                 #chatbot-bubble.open{background-image:none;background-color:var(--primary-color)}
                 #chatbot-bubble.open .icon-close{opacity:1}
@@ -387,7 +400,7 @@
                     visibility: hidden;
                 }
 
-                #chatbot-window-wrapper {position:fixed;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:10000;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out;}
+                #chatbot-window-wrapper {position:fixed;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:10001;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out;}
                 #chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}
                 #chatbot-window{position:relative; margin-top: 45px; width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;}
                 .chatbot-header-logo {width: 90px;height: 90px;border-radius: 50%;border: 3px solid #fff;box-shadow: 0 0 10px rgba(0,0,0,0.3);object-fit: cover;position: absolute;top: 0;left: 50%;transform: translateX(-50%); z-index: 10000;}
