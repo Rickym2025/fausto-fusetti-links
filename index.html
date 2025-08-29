@@ -145,18 +145,12 @@
             ctaText.textContent = bgAudio.muted ? 'Attiva la musica' : 'Disattiva musica';
         }
 
-        // =========================================================================================
-        // ===== MODIFICA #1: GESTIONE CHIUSURA MODALE ANTI-CRASH PER MOBILE                     =====
-        // =========================================================================================
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
             if (!modal) return;
             if (modalId === 'music-modal' && catalogPlayer) {
-                // Metodo più sicuro: mette solo in pausa e resetta l'interfaccia.
                 catalogPlayer.pause();
-                if (window.resetPlayingState) {
-                    window.resetPlayingState();
-                }
+                if (window.resetPlayingState) window.resetPlayingState();
             }
             modal.style.display = 'none';
         }
@@ -237,12 +231,14 @@
             catalogPlayer.addEventListener('play', () => {
                 if (audioInitialized && !bgAudio.paused && !bgAudio.muted) bgAudio.pause();
                 if (currentPlayingItem) {
+                    currentPlayingItem.classList.add('playing');
                     currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-pause';
                 }
             });
             catalogPlayer.addEventListener('pause', () => {
                 if (audioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play();
                 if (currentPlayingItem) {
+                    // Non rimuovere la classe playing, serve a sapere qual è il brano attivo
                     currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
                 }
             });
@@ -251,22 +247,32 @@
                 window.resetPlayingState();
             });
         }
-
+        
+        // =========================================================================================
+        // ===== MODIFICA #1: LOGICA DI RIPRODUZIONE RESA PIÙ ROBUSTA PER IL MOBILE              =====
+        // =========================================================================================
         function addEventListenersToSongs() {
             document.querySelectorAll('.song-item').forEach(item => {
                 item.addEventListener('click', () => {
-                    const isPlayingThisItem = item.classList.contains('playing');
-                    if (isPlayingThisItem) {
-                        if (catalogPlayer.paused) {
-                            catalogPlayer.play();
-                        } else {
-                            catalogPlayer.pause();
-                        }
+                    const songSrc = item.dataset.src;
+                    // Controlla se il player sta suonando PROPRIO QUESTO BRANO
+                    const isPlayingThisSong = !catalogPlayer.paused && catalogPlayer.currentSrc === songSrc;
+
+                    if (isPlayingThisSong) {
+                        // Se sta suonando, mettilo in pausa.
+                        catalogPlayer.pause();
                     } else {
+                        // Altrimenti, avvia la riproduzione di questo brano.
+                        // Prima, resetta l'interfaccia di qualsiasi altro brano.
                         window.resetPlayingState();
+                        
+                        // Imposta questo come brano corrente.
                         currentPlayingItem = item;
-                        item.classList.add('playing');
-                        catalogPlayer.src = item.dataset.src;
+                        
+                        // Se è un brano nuovo, cambia la sorgente. Altrimenti, riprendi.
+                        if (catalogPlayer.currentSrc !== songSrc) {
+                           catalogPlayer.src = songSrc;
+                        }
                         catalogPlayer.play();
                     }
                 });
@@ -279,9 +285,6 @@
         const formResult = document.getElementById('form-result');
         form.addEventListener('submit', function(e) { e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio in corso..."; fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).then(response => response.json()).then(data => { if (data.success) { formResult.innerHTML = "Messaggio inviato con successo!"; form.reset(); } else { formResult.innerHTML = `Errore: ${data.message}`; } }).catch(() => formResult.innerHTML = "Si è verificato un errore."); });
     
-        // =========================================================================================
-        // ===== MODIFICA #2: AGGIORNAMENTO LISTA AFORISMI                                       =====
-        // =========================================================================================
         const aphorisms = [
             "La musica è la vera lingua universale.",
             "Dove le parole finiscono, inizia la musica.",
@@ -326,7 +329,7 @@
                 .chatbot-close-btn {position: absolute; top: 10px; right: 15px; font-size: 2.2em; color: white; cursor: pointer; line-height: 1; font-weight: 300;}
                 
                 /* ========================================================================================= */
-                /* ===== MODIFICA #3: AGGIUNTA IMMAGINE DI SFONDO ALLA CHAT                            ===== */
+                /* ===== MODIFICA #2: STILI CHATBOT AGGIORNATI                                           ===== */
                 /* ========================================================================================= */
                 .chatbot-messages {
                     flex-grow:1;
@@ -334,16 +337,17 @@
                     overflow-y:auto;
                     display:flex;
                     flex-direction:column;
-                    background-image: linear-gradient(rgba(249, 247, 243, 0.85), rgba(249, 247, 243, 0.85)), url('https://github.com/Rickym2025/fausto-fusetti-links/blob/main/sfondo_chat.jpg?raw=true');
+                    background-image: linear-gradient(rgba(249, 247, 243, 0.7), rgba(249, 247, 243, 0.7)), url('https://github.com/Rickym2025/fausto-fusetti-links/blob/main/sfondo_chat.jpg?raw=true');
                     background-size: cover;
                     background-position: center;
                 }
 
                 .message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}
                 .message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0}
-                .message-text{padding:10px 15px;border-radius:18px;line-height:1.4;overflow-wrap: break-word; word-break: break-word;text-align: left;}
-                .message.user .message-text{background-color:#eef2f5;color:#333;border-bottom-right-radius:4px}
-                .message.bot .message-text{background-color:var(--primary-color);color:#fff;border-bottom-left-radius:4px}
+                .message-text{padding:10px 15px;border-radius:18px;line-height:1.4;overflow-wrap: break-word; word-break: break-word;text-align: left; box-shadow: 0 2px 5px rgba(0,0,0,0.1);}
+                .message.user .message-text{background-color: rgba(238, 242, 245, 0.9); color:#333;border-bottom-right-radius:4px}
+                .message.bot .message-text{background-color: rgba(6, 147, 227, 0.95); color:#fff;border-bottom-left-radius:4px}
+                
                 .chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}
                 .chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid var(--primary-color)}
                 .chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}
@@ -424,27 +428,19 @@
                     inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
                 }
                 
-                // =========================================================================================
-                // ===== MODIFICA #4: RIPRISTINO LOGICA APERTURA PC / CHIUSO MOBILE                    =====
-                // =========================================================================================
-
-                // Mostra il messaggio "Cosa ascoltiamo?" dopo 3 secondi se la chat non è aperta
                 if (welcomeMessage) {
                     setTimeout(() => {
                         if (!windowWrapper.classList.contains('open')) {
                             welcomeMessage.classList.add('visible');
                         }
                     }, 3000);
-                    // Nascondi lo stesso messaggio dopo 10 secondi totali
                     setTimeout(() => {
                         welcomeMessage.classList.remove('visible');
                     }, 10000);
                 }
                 
-                // Apri la chat in automatico SOLO su schermi grandi (PC)
                 if (window.innerWidth > 768) {
                     setTimeout(() => {
-                        // Controlla di nuovo che non sia già stata aperta dall'utente
                         if (!windowWrapper.classList.contains('open')) {
                             toggleChat();
                         }
