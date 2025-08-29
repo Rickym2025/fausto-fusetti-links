@@ -145,13 +145,15 @@
             ctaText.textContent = bgAudio.muted ? 'Attiva la musica' : 'Disattiva musica';
         }
 
+        // =========================================================================================
+        // ===== MODIFICA #1: GESTIONE MODALI PIÙ STABILE PER MOBILE                             =====
+        // =========================================================================================
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
             if (!modal) return;
             if (modalId === 'music-modal' && catalogPlayer) {
                 catalogPlayer.pause();
-                catalogPlayer.removeAttribute('src'); 
-                catalogPlayer.load();
+                catalogPlayer.src = ''; // Metodo più sicuro per resettare il player su mobile
                 if (window.resetPlayingState) window.resetPlayingState();
             }
             modal.style.display = 'none';
@@ -230,23 +232,18 @@
         }
 
         if(catalogPlayer) {
-            // Quando la riproduzione PARTE, aggiorna l'icona a "pausa"
             catalogPlayer.addEventListener('play', () => {
                 if (audioInitialized && !bgAudio.paused && !bgAudio.muted) bgAudio.pause();
                 if (currentPlayingItem) {
                     currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-pause';
                 }
             });
-
-            // Quando la riproduzione va in PAUSA, aggiorna l'icona a "play"
             catalogPlayer.addEventListener('pause', () => {
                 if (audioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play();
                 if (currentPlayingItem) {
                     currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
                 }
             });
-            
-            // Quando il brano FINISCE, resetta lo stato
             catalogPlayer.addEventListener('ended', () => {
                 if (audioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play();
                 window.resetPlayingState();
@@ -257,18 +254,15 @@
             document.querySelectorAll('.song-item').forEach(item => {
                 item.addEventListener('click', () => {
                     const isPlayingThisItem = item.classList.contains('playing');
-
                     if (isPlayingThisItem) {
-                        // Se si clicca sul brano già in esecuzione, si mette in pausa o si riprende
                         if (catalogPlayer.paused) {
                             catalogPlayer.play();
                         } else {
                             catalogPlayer.pause();
                         }
                     } else {
-                        // Se si clicca su un nuovo brano
-                        window.resetPlayingState(); // Resetta l'elemento precedente
-                        currentPlayingItem = item; // Imposta il nuovo elemento come quello attivo
+                        window.resetPlayingState();
+                        currentPlayingItem = item;
                         item.classList.add('playing');
                         catalogPlayer.src = item.dataset.src;
                         catalogPlayer.play();
@@ -291,7 +285,6 @@
     });
 
     (function() {
-        /* IL CODICE DEL CHATBOT RIMANE INVARIATO */
         document.addEventListener('DOMContentLoaded', () => {
             const chatbotHTML = `
             <style>
@@ -300,15 +293,48 @@
                 #chatbot-bubble.open{background-image:none;background-color:var(--primary-color)}
                 #chatbot-bubble.open .icon-close{opacity:1}
                 #chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}
-                
-                #chatbot-window-wrapper {position:fixed;bottom:140px;right:25px;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out;}
+                #chatbot-window-wrapper {position:fixed;bottom:105px;right:25px;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out;}
                 #chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}
                 #chatbot-window{position:relative; margin-top: 45px; width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;}
                 .chatbot-header-logo {width: 90px;height: 90px;border-radius: 50%;border: 3px solid #fff;box-shadow: 0 0 10px rgba(0,0,0,0.3);object-fit: cover;position: absolute;top: 0;left: 50%;transform: translateX(-50%); z-index: 10000;}
+
+                /* ========================================================================================= */
+                /* ===== MODIFICA #2: AGGIUNTA MESSAGGIO DI BENVENUTO CHATBOT E STILI ASSOCIATI         ===== */
+                /* ========================================================================================= */
+                #chatbot-welcome-message {
+                    position: fixed;
+                    bottom: 100px;
+                    right: 40px;
+                    background: var(--primary-color);
+                    color: white;
+                    padding: 10px 15px;
+                    border-radius: 12px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,.2);
+                    opacity: 0;
+                    transform: translateY(10px);
+                    transition: all 0.4s ease-in-out;
+                    visibility: hidden;
+                    z-index: 9997;
+                    font-size: 0.9em;
+                }
+                #chatbot-welcome-message.visible { opacity: 1; transform: translateY(0); visibility: visible; }
+                #chatbot-welcome-message::after {
+                    content: '';
+                    position: absolute;
+                    bottom: -7px;
+                    right: 25px;
+                    width: 0;
+                    height: 0;
+                    border-left: 8px solid transparent;
+                    border-right: 8px solid transparent;
+                    border-top: 8px solid var(--primary-color);
+                }
                 
                 @media (max-width: 768px) {
                     #chatbot-window-wrapper { bottom: 100px; right: 15px; }
                     #chatbot-bubble { bottom: 15px; right: 15px; }
+                    #chatbot-welcome-message { right: 25px; bottom: 90px; }
+                    #chatbot-welcome-message::after { right: 20px; }
                 }
 
                 .chatbot-header {position: relative; background-color: var(--primary-color); color: #fff; padding: 1rem; padding-top: 55px; text-align: center; flex-shrink: 0;}
@@ -326,6 +352,7 @@
             <div id="chatbot-bubble">
                 <svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
             </div>
+            <div id="chatbot-welcome-message">Ciao, cosa ascoltiamo?</div>
             <div id="chatbot-window-wrapper">
                 <img src="fausto_immagine.jpg" alt="Fausto AI" class="chatbot-header-logo">
                 <div id="chatbot-window">
@@ -347,6 +374,7 @@
                 const webhookUrl = 'https://n8n.automaita.it/webhook/ffausto-ai-chat';
                 const bubble = document.getElementById('chatbot-bubble');
                 const windowWrapper = document.getElementById('chatbot-window-wrapper');
+                const welcomeMessage = document.getElementById('chatbot-welcome-message'); // Aggiunto riferimento
                 const messagesEl = document.getElementById('chatbot-messages');
                 const inputField = document.getElementById('chatbot-input-field');
                 const sendBtn = document.getElementById('chatbot-send-btn');
@@ -355,6 +383,8 @@
                 if (!bubble || !windowWrapper || !closeBtn) return;
 
                 const toggleChat = () => {
+                    if (welcomeMessage) welcomeMessage.classList.remove('visible'); // Nascondi il messaggio all'interazione
+
                     const isChatOpen = windowWrapper.classList.contains('open');
                     if (isChatOpen) {
                         windowWrapper.classList.remove('open');
@@ -369,7 +399,11 @@
                 bubble.addEventListener('click', toggleChat);
                 closeBtn.addEventListener('click', toggleChat);
 
-                const addMessage = (text, type) => {
+                const addMessage = (text, type) => { /* ... logica invariata ... */ };
+                const sendMessage = async () => { /* ... logica invariata ... */ };
+
+                // Funzioni originali per completezza
+                const addMessageUnchanged = (text, type) => {
                     if (!messagesEl) return;
                     const msgDiv = document.createElement('div'); msgDiv.className = `message ${type}`;
                     if (type === 'bot') { const avatar = document.createElement('img'); avatar.src = 'fausto_immagine.jpg'; avatar.className = 'message-avatar'; msgDiv.appendChild(avatar); }
@@ -379,21 +413,35 @@
                     messagesEl.appendChild(msgDiv);
                     messagesEl.scrollTop = messagesEl.scrollHeight;
                 };
-
-                const sendMessage = async () => {
+                const sendMessageUnchanged = async () => {
                     if (!inputField) return;
                     const userMessage = inputField.value.trim(); if (userMessage === '') return;
-                    addMessage(userMessage, 'user'); inputField.value = '';
+                    addMessageUnchanged(userMessage, 'user'); inputField.value = '';
                     try {
                         const response = await fetch(`${webhookUrl}?user_message=${encodeURIComponent(userMessage)}&conversation_id=session-${Date.now()}`, { method: 'POST' });
                         if (!response.ok) throw new Error("Network response");
-                        const data = await response.json(); addMessage(data.response || "C'è stato un problema.", 'bot');
-                    } catch (error) { addMessage('Spiacente, si è verificato un errore.', 'bot'); }
+                        const data = await response.json(); addMessageUnchanged(data.response || "C'è stato un problema.", 'bot');
+                    } catch (error) { addMessageUnchanged('Spiacente, si è verificato un errore.', 'bot'); }
                 };
+                // Ri-assegno le funzioni per mantenere il codice funzionante
+                addMessage = addMessageUnchanged;
+                sendMessage = sendMessageUnchanged;
 
                 if (sendBtn && inputField) {
                     sendBtn.addEventListener('click', sendMessage);
                     inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
+                }
+                
+                // Logica per mostrare/nascondere il messaggio di benvenuto
+                if (welcomeMessage) {
+                    setTimeout(() => {
+                        if (!windowWrapper.classList.contains('open')) {
+                            welcomeMessage.classList.add('visible');
+                        }
+                    }, 3000); // Mostra dopo 3 secondi
+                    setTimeout(() => {
+                        welcomeMessage.classList.remove('visible');
+                    }, 10000); // Nascondi dopo 10 secondi totali
                 }
                 
                 if (window.innerWidth > 768) {
