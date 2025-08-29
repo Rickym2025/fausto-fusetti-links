@@ -99,17 +99,18 @@
   <div id="services-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="services-modal">&times;</span><h2><i class="fas fa-heart" style="color: var(--secondary-color); margin-right: 10px;"></i>Canzoni Personalizzate</h2><div style="text-align: left; line-height: 1.6; margin-bottom: 20px;"><h3 style="color: var(--primary-color); margin-bottom: 10px;">✨ Servizi Esclusivi:</h3><ul style="list-style: none; padding-left: 0;"><li style="margin-bottom: 10px;"><i class="fas fa-heart" style="color: #e74c3c; margin-right: 8px;"></i> <strong>Canzoni per Coppie</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-ring" style="color: #f39c12; margin-right: 8px;"></i> <strong>Anniversari e Matrimoni</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-gift" style="color: #9b59b6; margin-right: 8px;"></i> <strong>Testi Personalizzati</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-birthday-cake" style="color: #e67e22; margin-right: 8px;"></i> <strong>Eventi Speciali</strong></li></ul><div style="background: rgba(6, 147, 227, 0.1); border-left: 4px solid var(--primary-color); padding: 15px; margin: 20px 0; border-radius: 5px;"><p><strong>💡 Come funziona:</strong> Raccontami la tua storia, i tuoi ricordi. Creerò una canzone unica che rappresenti le tue emozioni.</p></div></div><button id="contact-for-custom-song" class="button collabora">Richiedi la Tua Canzone</button></div></div>
   <div id="contact-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="contact-modal">&times;</span><h2>Contattami per il tuo Progetto</h2><form id="contact-form" class="contact-form" autocomplete="on"><input type="hidden" name="access_key" value="9013a8d5-0901-42a0-b9e6-4c45553f960d"/><input type="text" name="name" placeholder="Il tuo Nome" required autocomplete="name"/><input type="email" name="email" placeholder="La tua Email" required autocomplete="email"/><input type="tel" name="phone" placeholder="Il tuo Telefono (Opzionale)" autocomplete="tel"/><select name="service_type"><option value="">Seleziona il tipo di servizio</option><option value="canzone_personalizzata">Canzone Personalizzata</option><option value="composizione_artista">Composizione per Artista</option><option value="intrattenimento_live">Intrattenimento Live</option><option value="altro">Altro</option></select><textarea name="message" rows="4" placeholder="Descrivi la tua idea o richiesta..." required></textarea><button type="submit" class="button collabora">Invia Messaggio</button></form><div id="form-result"></div></div></div>
   
-  <!-- Contenitore del Chatbot -->
   <div id="chatbot-container"></div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+  
+  <!-- SCRIPT PRINCIPALE (MODALI, CATALOGO, AUDIO, ECC.) -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
         
         const sheetApiUrl = 'https://script.google.com/macros/s/AKfycbyyvfsSlgx6J-dIeLaIi3Crd6eqG029DDsGzF3Wy8u1VIfwhTMDZJdTPS_ubYszUyFR/exec';
 
-        // --- GESTIONE AUDIO DEFINITIVA ---
+        // --- GESTIONE AUDIO ---
         const bgAudio = document.getElementById('background-audio');
         const audioCta = document.getElementById('audio-cta');
         const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i');
@@ -152,7 +153,7 @@
             ctaText.textContent = bgAudio.muted ? 'Attiva la musica' : 'Disattiva musica';
         }
 
-        // --- GESTIONE MODALI CORRETTA ---
+        // --- GESTIONE MODALI ---
         document.getElementById('open-music-modal').addEventListener('click', () => document.getElementById('music-modal').style.display = 'flex');
         document.getElementById('open-video-modal').addEventListener('click', () => document.getElementById('video-modal').style.display = 'flex');
         document.getElementById('open-services-modal').addEventListener('click', () => document.getElementById('services-modal').style.display = 'flex');
@@ -235,6 +236,7 @@
             addEventListenersToSongs();
         }
         
+        // Funzione globale per resettare lo stato di riproduzione
         window.resetPlayingState = function() {
             if (currentPlayingItem) {
                 currentPlayingItem.classList.remove('playing');
@@ -242,7 +244,7 @@
                 currentPlayingItem = null;
             }
             const player = document.getElementById('catalog-audio-player');
-            if(player) {
+            if(player && !player.paused) {
               player.pause();
               player.currentTime = 0;
             }
@@ -256,11 +258,19 @@
             document.querySelectorAll('.song-item').forEach(item => {
                 item.addEventListener('click', () => {
                     const isCurrentlyPlaying = item.classList.contains('playing');
+                    
                     if (isCurrentlyPlaying) {
-                        if (catalogPlayer.paused) { catalogPlayer.play(); } else { catalogPlayer.pause(); }
-                        item.querySelector('.play-btn i').className = catalogPlayer.paused ? 'fas fa-play' : 'fas fa-pause';
+                        // Se clicco sullo stesso brano, metto in pausa o riprendo
+                        if (catalogPlayer.paused) { 
+                            catalogPlayer.play(); 
+                            item.querySelector('.play-btn i').className = 'fas fa-pause';
+                        } else { 
+                            catalogPlayer.pause(); 
+                            item.querySelector('.play-btn i').className = 'fas fa-play';
+                        }
                     } else {
-                        window.resetPlayingState();
+                        // Se clicco su un nuovo brano
+                        window.resetPlayingState(); // Resetto lo stato precedente
                         currentPlayingItem = item;
                         item.classList.add('playing');
                         catalogPlayer.src = item.dataset.src;
@@ -273,18 +283,22 @@
         
         loadMusicFromApi();
 
+        // --- FORM DI CONTATTO ---
         const form = document.getElementById('contact-form');
         const formResult = document.getElementById('form-result');
         form.addEventListener('submit', function(e) { e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio in corso..."; fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).then(response => response.json()).then(data => { if (data.success) { formResult.innerHTML = "Messaggio inviato con successo!"; form.reset(); } else { formResult.innerHTML = `Errore: ${data.message}`; } }).catch(() => formResult.innerHTML = "Si è verificato un errore."); });
     
+        // --- AFORISMI ---
         const aphorisms = [ "La musica è la vera lingua universale.", "Dove le parole finiscono, inizia la musica.", "La vita è come un pianoforte, ciò che ne esce dipende da come la suoni.", "La musica esprime ciò che non può essere detto e su cui è impossibile rimanere in silenzio.", "Senza musica, la vita sarebbe un errore." ];
         const aphorismContainer = document.getElementById('aphorism-container');
         const mainContainer = document.querySelector('.container');
         function showRandomAphorism() { const rect = mainContainer.getBoundingClientRect(); const postit = document.createElement('div'); postit.className = 'aphorism-postit'; postit.textContent = aphorisms[Math.floor(Math.random() * aphorisms.length)]; let top, left; do { top = Math.random() * window.innerHeight; left = Math.random() * window.innerWidth; } while ( top > rect.top - 50 && top < rect.bottom + 50 && left > rect.left - 50 && left < rect.right + 50 ); postit.style.top = `${top}px`; postit.style.left = `${left}px`; const rotation = `rotate(${Math.random() * 20 - 10}deg)`; postit.style.setProperty('--transform-start', `${rotation} translateY(20px)`); postit.style.setProperty('--transform-end', `${rotation} translateY(0)`); aphorismContainer.appendChild(postit); setTimeout(() => { postit.remove(); }, 10000); }
         setInterval(showRandomAphorism, 12000);
     });
+  </script>
 
-    // --- SCRIPT CHATBOT (SENZA SESSIONSTORAGE E CON LIBRERIA SICURA) ---
+  <!-- SCRIPT DEL CHATBOT (ISOLATO PER SICUREZZA) -->
+  <script>
     (function() {
         document.addEventListener('DOMContentLoaded', () => {
             const chatbotHTML = `
@@ -296,21 +310,20 @@
                 #chatbot-bubble.open .icon-close{opacity:1}
                 #chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}
                 
-                #chatbot-window-wrapper {position:fixed;bottom:100px;right:25px;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out;}
+                /* ========================================================================= */
+                /* ===== MODIFICA #1: Posizione del chatbot alzata (sia PC che Mobile) ===== */
+                /* ========================================================================= */
+                #chatbot-window-wrapper {position:fixed;bottom:140px;right:25px;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out;}
+                
                 #chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}
                 #chatbot-window{position:relative; margin-top: 45px; width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;}
                 .chatbot-header-logo {width: 90px;height: 90px;border-radius: 50%;border: 3px solid #fff;box-shadow: 0 0 10px rgba(0,0,0,0.3);object-fit: cover;position: absolute;top: 0;left: 50%;transform: translateX(-50%); z-index: 10000;}
                 
-                /* ========================================================================= */
-                /* ===== MODIFICA #1: Stili per rendere il chatbot più piccolo su mobile ===== */
-                /* ========================================================================= */
                 @media (max-width: 768px) {
                     #chatbot-window-wrapper {
-                        width: calc(100vw - 20px); /* Larghezza quasi totale ma con un po' di margine */
-                        height: 75vh; /* Altezza ridotta */
-                        max-height: 80vh;
-                        bottom: 85px; /* Alzato per non sovrapporre la bolla */
-                        right: 10px;
+                        bottom: 100px; /* Alzato anche su mobile */
+                        right: 15px;
+                        width: calc(100vw - 30px);
                     }
                     #chatbot-bubble {
                         bottom: 15px;
@@ -318,42 +331,19 @@
                     }
                 }
 
-                /* ========================================================================= */
-                /* ===== MODIFICA #2: Stili per il nuovo pulsante di chiusura          ===== */
-                /* ========================================================================= */
-                .chatbot-header {
-                    position: relative; /* Necessario per posizionare il pulsante di chiusura */
-                    background-color: var(--primary-color);
-                    color: #fff;
-                    padding: 1rem;
-                    padding-top: 55px;
-                    text-align: center;
-                    flex-shrink: 0;
-                }
-                .chatbot-close-btn {
-                    position: absolute;
-                    top: 10px;
-                    right: 15px;
-                    font-size: 2.2em;
-                    color: white;
-                    cursor: pointer;
-                    line-height: 1;
-                    font-weight: 300;
-                }
-
+                .chatbot-header {position: relative; background-color: var(--primary-color); color: #fff; padding: 1rem; padding-top: 55px; text-align: center; flex-shrink: 0;}
+                .chatbot-close-btn {position: absolute; top: 10px; right: 15px; font-size: 2.2em; color: white; cursor: pointer; line-height: 1; font-weight: 300;}
                 .chatbot-messages{flex-grow:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column}
                 .message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}
                 .message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0}
                 .message-text{padding:10px 15px;border-radius:18px;line-height:1.4;overflow-wrap: break-word; word-break: break-word;text-align: left;}
                 .message.user .message-text{background-color:#eef2f5;color:#333;border-bottom-right-radius:4px}
                 .message.bot .message-text{background-color:var(--primary-color);color:#fff;border-bottom-left-radius:4px}
-                
                 .message-text ul { list-style: none; padding: 0; margin: 0; }
                 .message-text li { margin-bottom: 8px; }
                 .message-text a.chatbot-song-link { color: #fff; font-weight: 500; text-decoration: none; cursor: pointer; display: inline-block; padding: 2px 0; border-bottom: 1px dotted #fff;}
                 .message-text a.chatbot-song-link:hover { color: var(--secondary-color); border-bottom-color: var(--secondary-color); }
                 .message-text a.chatbot-song-link.playing { color: var(--secondary-color); font-weight: bold; border-bottom: 1px solid var(--secondary-color); }
-
                 .chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}
                 .chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid var(--primary-color)}
                 .chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}
@@ -366,9 +356,6 @@
                 <div id="chatbot-window">
                     <div class="chatbot-header">
                         <div><h3>Fausto AI</h3><small>Assistente Virtuale</small></div>
-                        <!-- =============================================================== -->
-                        <!-- ===== MODIFICA #3: Aggiunto il pulsante di chiusura (la X)  ===== -->
-                        <!-- =============================================================== -->
                         <span class="chatbot-close-btn">&times;</span>
                     </div>
                     <div class="chatbot-messages" id="chatbot-messages"></div>
@@ -389,12 +376,7 @@
             const messagesEl = document.getElementById('chatbot-messages');
             const inputField = document.getElementById('chatbot-input-field');
             const sendBtn = document.getElementById('chatbot-send-btn');
-            
-            // =========================================================================
-            // ===== MODIFICA #4: Selettore per il nuovo pulsante di chiusura        =====
-            // =========================================================================
             const closeBtn = document.querySelector('.chatbot-close-btn');
-
             const converter = new showdown.Converter();
             let currentChatPlayingLink = null;
 
@@ -402,21 +384,18 @@
                 windowWrapper.classList.toggle('open');
                 bubble.classList.toggle('open');
                 if (windowWrapper.classList.contains('open')) {
-                    setTimeout(() => inputField.focus(), 300); // Aggiunto un piccolo ritardo per la transizione
+                    setTimeout(() => inputField.focus(), 300);
                 }
             };
 
             const addMessage = (text, type) => {
                 const msgDiv = document.createElement('div');
                 msgDiv.className = `message ${type}`;
-                
                 if (type === 'bot') {
                     const avatar = document.createElement('img'); avatar.className = 'message-avatar'; avatar.src = 'fausto_immagine.jpg'; msgDiv.appendChild(avatar);
                 }
-                
                 const textDiv = document.createElement('div'); textDiv.className = 'message-text';
                 textDiv.innerHTML = DOMPurify.sanitize(text, { ADD_ATTR: ['data-src', 'class', 'data-original-text'], ADD_TAGS: ['a', 'ul', 'li'] });
-                
                 msgDiv.appendChild(textDiv);
                 messagesEl.appendChild(msgDiv);
                 messagesEl.scrollTop = messagesEl.scrollHeight;
@@ -426,27 +405,21 @@
                     const originalText = link.textContent;
                     link.textContent = `▶️ ${originalText}`;
                     link.dataset.originalText = originalText;
-
                     link.addEventListener('click', (event) => {
                         event.preventDefault();
                         const songUrl = link.dataset.src;
                         if (!songUrl) return;
-                        
                         const catalogPlayer = document.getElementById('catalog-audio-player');
-                        
                         if (currentChatPlayingLink === link) {
                             catalogPlayer.pause();
                         } else {
                             if (typeof window.resetPlayingState === 'function') window.resetPlayingState();
-                            
                             catalogPlayer.src = songUrl;
                             catalogPlayer.play();
-                            
                             if (currentChatPlayingLink) {
                                 currentChatPlayingLink.textContent = `▶️ ${currentChatPlayingLink.dataset.originalText}`;
                                 currentChatPlayingLink.classList.remove('playing');
                             }
-                            
                             link.textContent = `❚❚ In Riproduzione...`;
                             link.classList.add('playing');
                             currentChatPlayingLink = link;
@@ -463,8 +436,10 @@
                     currentChatPlayingLink = null;
                 }
             };
-            mainPlayer.addEventListener('pause', resetChatLink);
-            mainPlayer.addEventListener('ended', resetChatLink);
+            if(mainPlayer){
+                mainPlayer.addEventListener('pause', resetChatLink);
+                mainPlayer.addEventListener('ended', resetChatLink);
+            }
 
             const sendMessage = async () => {
                 const userMessage = inputField.value.trim(); if (userMessage === '') return;
@@ -479,19 +454,10 @@
             };
             
             bubble.addEventListener('click', toggleChat);
-            // =========================================================================
-            // ===== MODIFICA #5: Aggiunto l'evento di click al nuovo pulsante       =====
-            // =========================================================================
-            if(closeBtn) {
-                closeBtn.addEventListener('click', toggleChat);
-            }
-
+            if(closeBtn) { closeBtn.addEventListener('click', toggleChat); }
             sendBtn.addEventListener('click', sendMessage);
             inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
 
-            // ==================================================================================
-            // ===== MODIFICA #6: Il chatbot si apre solo su desktop, rimane chiuso su mobile =====
-            // ==================================================================================
             const isMobile = window.innerWidth <= 768;
             if (!isMobile) {
                  setTimeout(() => {
@@ -504,7 +470,7 @@
             addMessage("Ciao! Sono Fausto AI, assistente virtuale. Sono qui per aiutarti a trovare il tuo brano ideale. Cosa stai cercando?", 'bot');
         }
     });
-})();
+  })();
   </script>
 </body>
 </html>
