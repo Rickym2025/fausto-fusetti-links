@@ -225,7 +225,9 @@
         catalogPlayer.addEventListener('ended', () => { resetPlayingState(); resumeBgAudioIfNeeded(); });
 
         // --- SEZIONE: CARICAMENTO DATI E FILTRI ---
-        const addEventListenersToSongs = () => document.querySelectorAll('.song-item').forEach(item => item.addEventListener('click', () => playSong(item)));
+        const addEventListenersToSongs = () => {
+            document.querySelectorAll('.song-item').forEach(item => item.addEventListener('click', () => playSong(item)));
+        };
         
         const filterAndDisplaySongs = () => {
             const filteredSongs = allSongs.filter(song => Object.keys(currentFilters).every(key => currentFilters[key] === 'all' || song[key] === currentFilters[key]));
@@ -253,7 +255,8 @@
             try {
                 const response = await fetch(sheetApiUrl);
                 if (!response.ok) throw new Error(`Errore di rete`);
-                allSongs = await response.json();
+                const data = await response.json();
+                allSongs = data.error ? [] : data;
                 createFilterButtons(allSongs);
                 filterAndDisplaySongs();
             } catch (error) {
