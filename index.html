@@ -116,27 +116,8 @@
         const startAudioBtn = document.getElementById('start-audio-btn');
         let audioInitialized = false;
 
-        function initializeAudio() {
-            const playPromise = bgAudio.play();
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    audioInitialized = true;
-                    bgAudio.muted = false;
-                    audioStartOverlay.style.display = 'none';
-                    audioCta.style.visibility = 'visible';
-                    updateMuteButton();
-                }).catch(e => {
-                    console.error("L'avvio automatico dell'audio è stato bloccato dal browser.", e);
-                    audioStartOverlay.style.display = 'flex';
-                });
-            }
-        }
-
-        function updateMuteButton() {
-            muteBtnIcon.className = bgAudio.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
-            ctaText.textContent = bgAudio.muted ? 'Attiva la musica' : 'Disattiva musica';
-        }
-
+        function initializeAudio() { const playPromise = bgAudio.play(); if (playPromise !== undefined) { playPromise.then(() => { audioInitialized = true; bgAudio.muted = false; audioStartOverlay.style.display = 'none'; audioCta.style.visibility = 'visible'; updateMuteButton(); }).catch(e => { console.error("L'avvio automatico dell'audio è stato bloccato dal browser.", e); audioStartOverlay.style.display = 'flex'; }); } }
+        function updateMuteButton() { muteBtnIcon.className = bgAudio.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up'; ctaText.textContent = bgAudio.muted ? 'Attiva la musica' : 'Disattiva musica'; }
         startAudioBtn.addEventListener('click', initializeAudio);
         audioStartOverlay.style.display = 'flex';
         audioCta.addEventListener('click', () => { if (!audioInitialized) { initializeAudio(); } else { bgAudio.muted = !bgAudio.muted; updateMuteButton(); } });
@@ -234,14 +215,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const chatbotHTML = `
             <style>
-                @keyframes rhythmic-bounce {
-                    0%, 100% { transform: translateY(0); }
-                    10%, 30% { transform: translateY(0); }
-                    20% { transform: translateY(-15px); }
-                    25% { transform: translateY(0); }
-                    35% { transform: translateY(-15px); }
-                    40% { transform: translateY(0); }
-                }
+                @keyframes rhythmic-bounce { 0%, 100% { transform: translateY(0); } 10%, 30% { transform: translateY(0); } 20% { transform: translateY(-15px); } 25% { transform: translateY(0); } 35% { transform: translateY(-15px); } 40% { transform: translateY(0); } }
                 #chatbot-bubble{ position:fixed; bottom:25px; right:25px; width:65px; height:65px; border-radius:50%; box-shadow:0 4px 12px rgba(0,0,0,.2); cursor:pointer; display:flex; align-items:center; justify-content:center; transition: all .3s ease; background-image:url(fausto_immagine.jpg); background-size:cover; background-position:center; border:3px solid var(--primary-color); z-index:9999; }
                 #chatbot-bubble.bouncing { animation: rhythmic-bounce 2.5s ease-in-out; }
                 #chatbot-bubble:hover{ transform:scale(1.1); }
@@ -262,11 +236,11 @@
                 .message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}
                 .message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0}
                 /* ========================================================================================= */
-                /* ===== MODIFICA #2: AUMENTATA TRASPARENZA MESSAGGI                                     ===== */
+                /* ===== MODIFICA #3: AUMENTATA TRASPARENZA MESSAGGI                                     ===== */
                 /* ========================================================================================= */
                 .message-text{padding:10px 15px;border-radius:18px;line-height:1.4;overflow-wrap: break-word; word-break: break-word;text-align: left; box-shadow: 0 2px 5px rgba(0,0,0,0.1);}
-                .message.user .message-text{background-color: rgba(238, 242, 245, 0.8); color:#333;border-bottom-right-radius:4px}
-                .message.bot .message-text{background-color: rgba(6, 147, 227, 0.85); color:#fff;border-bottom-left-radius:4px}
+                .message.user .message-text{background-color: rgba(238, 242, 245, 0.75); color:#333;border-bottom-right-radius:4px}
+                .message.bot .message-text{background-color: rgba(6, 147, 227, 0.8); color:#fff;border-bottom-left-radius:4px}
                 .chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}
                 .chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid var(--primary-color)}
                 .chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}
@@ -308,14 +282,12 @@
                     }, 3000);
                 }
                 
-                // Animazione bounce a intervalli
                 setInterval(() => {
                     if (!bubble.classList.contains('open')) {
                         bubble.classList.add('bouncing');
-                        // Rimuovi la classe alla fine dell'animazione per poterla ri-eseguire
                         setTimeout(() => bubble.classList.remove('bouncing'), 2500); 
                     }
-                }, 10000); // Intervallo di 10 secondi
+                }, 10000);
 
                 if (window.innerWidth > 768) {
                     setTimeout(() => { if (!windowWrapper.classList.contains('open')) { toggleChat(); } }, 1500);
