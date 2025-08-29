@@ -104,7 +104,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
   
-  <script>
+   <script>
     document.addEventListener('DOMContentLoaded', function() {
         // --- SEZIONE: DOM & STATO GLOBALE ---
         const bgAudio = document.getElementById('background-audio');
@@ -128,19 +128,24 @@
         // --- SEZIONE: LOGICA AUDIO PRINCIPALE E INIZIALIZZAZIONE ---
         const startExperience = () => {
             if (isAudioContextUnlocked) return;
+            // 1. Rimuovi l'overlay immediatamente per dare un feedback visivo.
             audioStartOverlay.style.display = 'none';
+            // 2. Segna l'interazione come avvenuta. Questo sblocca l'audio per azioni future.
             isAudioContextUnlocked = true;
 
+            // 3. Prova a far partire la musica.
             bgAudio.muted = false;
             const playPromise = bgAudio.play();
 
             if (playPromise !== undefined) {
                 playPromise.then(() => {
+                    // Successo: la musica parte.
                     audioCta.style.visibility = 'visible';
                     updateMuteButtonUI();
                 }).catch(error => {
-                    console.warn("Autoplay bloccato dal browser, l'audio partirà alla prossima interazione.", error);
-                    bgAudio.muted = true;
+                    // Fallimento (normale su alcuni browser): l'utente dovrà interagire di nuovo (es. click su Mute/Unmute).
+                    console.warn("Autoplay bloccato dal browser. L'audio è sbloccato per interazioni future.", error);
+                    bgAudio.muted = true; // Assicura che sia muto se non è partito.
                     audioCta.style.visibility = 'visible';
                     updateMuteButtonUI();
                 });
@@ -198,7 +203,7 @@
         };
 
         const playSong = async (item) => {
-            if (!isAudioContextUnlocked) return; // Non fa nulla se l'utente non ha mai cliccato "Avvia"
+            if (!isAudioContextUnlocked) return;
             const isSameSong = (currentPlayingItem === item);
 
             if (isSameSong) {
