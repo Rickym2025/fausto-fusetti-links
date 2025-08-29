@@ -104,9 +104,6 @@
         let audioInitialized = false;
         let isAudioBusy = false; 
 
-        // =========================================================================================
-        // ===== MODIFICA #1: GESTIONE ROBUSTA DELL'INTERAZIONE INIZIALE E DEL MUTE          =====
-        // =========================================================================================
         function updateMuteButtonUI() {
             if (bgAudio.muted) {
                 muteBtnIcon.className = 'fas fa-volume-mute';
@@ -127,7 +124,6 @@
             if (hasInteracted) return;
             hasInteracted = true;
             
-            // Prova a sbloccare l'audio in background
             const playPromise = bgAudio.play();
             if (playPromise !== undefined) {
                 playPromise.then(() => {
@@ -136,12 +132,9 @@
                     audioCta.style.visibility = 'visible';
                     updateMuteButtonUI();
                 }).catch(error => {
-                    // Se fallisce, significa che l'utente deve interagire con un pulsante esplicito.
-                    // Il codice non farà nulla, l'audio rimarrà sbloccabile tramite i pulsanti.
                     console.log("Prima interazione non ha avviato l'audio, necessario click esplicito.");
                 });
             }
-            
             document.removeEventListener('click', handleFirstInteraction);
             document.removeEventListener('touchend', handleFirstInteraction);
         }
@@ -149,16 +142,16 @@
         document.addEventListener('click', handleFirstInteraction);
         document.addEventListener('touchend', handleFirstInteraction);
 
-        audioCta.addEventListener('click', () => {
+        audioCta.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (!hasInteracted) handleFirstInteraction();
+            
             bgAudio.muted = !bgAudio.muted;
             updateMuteButtonUI();
-            if (!bgAudio.muted) {
-                if(!audioInitialized){
-                    audioInitialized = true;
-                    audioCta.style.visibility = 'visible';
-                }
+
+            if (!bgAudio.muted && bgAudio.paused) {
                 bgAudio.play().catch(e => {});
-            } else {
+            } else if (bgAudio.muted) {
                 bgAudio.pause();
             }
         });
@@ -179,10 +172,19 @@
             modal.style.display = 'none';
         }
         
+        document.querySelectorAll('.button').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const modalId = `open-${e.currentTarget.id.split('-')[1]}-modal`;
+                const targetModal = document.getElementById(e.currentTarget.id.replace('open-', ''));
+                if (targetModal) targetModal.style.display = 'flex';
+            });
+        });
+
         document.getElementById('open-music-modal').addEventListener('click', () => document.getElementById('music-modal').style.display = 'flex');
         document.getElementById('open-video-modal').addEventListener('click', () => document.getElementById('video-modal').style.display = 'flex');
         document.getElementById('open-services-modal').addEventListener('click', () => document.getElementById('services-modal').style.display = 'flex');
         document.getElementById('open-contact-modal').addEventListener('click', () => document.getElementById('contact-modal').style.display = 'flex');
+
         document.getElementById('contact-for-custom-song').addEventListener('click', () => { 
             closeModal('services-modal'); 
             document.getElementById('contact-modal').style.display = 'flex'; 
@@ -201,10 +203,6 @@
         const filterContainer = document.getElementById('filter-container');
         let allSongs = [], currentPlayingItem = null, currentFilters = { genre: 'all', category: 'all', argomento: 'all' };
 
-        async function loadMusicFromApi() { /* ... */ }
-        function createFilterButtons(songs) { /* ... */ }
-        function filterAndDisplaySongs() { /* ... */ }
-        
         async function loadMusicFromApi() {
             try {
                 const response = await fetch(sheetApiUrl);
@@ -273,8 +271,12 @@
             } else {
                 if (currentPlayingItem) {
                     catalogPlayer.pause();
-                    // Attendiamo la conferma della pausa
-                    await new Promise(resolve => setTimeout(resolve, 150)); 
+                    await new Promise(resolve => {
+                        catalogPlayer.onpause = () => {
+                            catalogPlayer.onpause = null;
+                            resolve();
+                        };
+                    });
                 }
                 
                 window.resetPlayingState();
@@ -283,7 +285,6 @@
                 item.querySelector('.play-btn i').className = 'fas fa-spinner fa-spin';
 
                 catalogPlayer.src = item.dataset.src;
-                catalogPlayer.load();
                 
                 try {
                     await catalogPlayer.play();
@@ -346,7 +347,10 @@
         document.addEventListener('DOMContentLoaded', () => {
             const chatbotHTML = `
             <style>
-                #chatbot-bubble{position:fixed;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(fausto_immagine.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:9999}
+                /* ========================================================================================= */
+                /* ===== MODIFICA #4: Z-INDEX AUMENTATO PER STARE SOPRA LE MODALI                  ===== */
+                /* ========================================================================================= */
+                #chatbot-bubble{position:fixed;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(fausto_immagine.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:10001}
                 #chatbot-bubble:hover{transform:scale(1.1)}
                 #chatbot-bubble.open{background-image:none;background-color:var(--primary-color)}
                 #chatbot-bubble.open .icon-close{opacity:1}
@@ -383,16 +387,16 @@
                     visibility: hidden;
                 }
 
-                #chatbot-window-wrapper {position:fixed;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out;}
+                #chatbot-window-wrapper {position:fixed;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:10000;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out;}
                 #chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}
                 #chatbot-window{position:relative; margin-top: 45px; width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;}
                 .chatbot-header-logo {width: 90px;height: 90px;border-radius: 50%;border: 3px solid #fff;box-shadow: 0 0 10px rgba(0,0,0,0.3);object-fit: cover;position: absolute;top: 0;left: 50%;transform: translateX(-50%); z-index: 10000;}
                 
                 /* ========================================================================================= */
-                /* ===== MODIFICA #3: POSIZIONE CHAT ALZATA E TOOLTIP VISIBILE SU MOBILE           ===== */
+                /* ===== MODIFICA #3: RIPRISTINO POSIZIONE PC E AUMENTO SPAZIO MOBILE              ===== */
                 /* ========================================================================================= */
                 #chatbot-window-wrapper { bottom: 140px; right: 25px; }
-                #chatbot-bubble { bottom: 40px; right: 25px; }
+                #chatbot-bubble { bottom: 30px; right: 25px; }
 
                 @media (max-width: 768px) {
                     #chatbot-window-wrapper { bottom: 130px; right: 15px; }
