@@ -113,10 +113,14 @@
         const ctaText = document.querySelector('#audio-cta .cta-text');
         const catalogPlayer = document.getElementById('catalog-audio-player');
         const audioStartOverlay = document.getElementById('audio-start-overlay');
-        const startAudioBtn = document.getElementById('start-audio-btn');
+        
+        let hasInteracted = false;
         let audioInitialized = false;
         let isAudioBusy = false; 
 
+        // =========================================================================================
+        // ===== MODIFICA #1: GESTIONE ROBUSTA DELL'INTERAZIONE INIZIALE E DEL MUTE          =====
+        // =========================================================================================
         function updateMuteButtonUI() {
             if (bgAudio.muted) {
                 muteBtnIcon.className = 'fas fa-volume-mute';
@@ -133,31 +137,36 @@
             }
         }
         
-        function initializeAudio() {
+        function handleFirstInteraction() {
+            if (hasInteracted) return;
+            hasInteracted = true;
+            
             bgAudio.play().then(() => {
                 audioInitialized = true;
                 bgAudio.muted = false;
-                audioStartOverlay.style.display = 'none';
-                audioCta.style.visibility = 'visible';
+                if (audioStartOverlay) audioStartOverlay.style.display = 'none';
+                if (audioCta) audioCta.style.visibility = 'visible';
                 updateMuteButtonUI();
             }).catch(e => {
-                audioStartOverlay.style.display = 'flex';
+                console.error("La riproduzione audio iniziale è stata bloccata.");
+                if (audioStartOverlay) audioStartOverlay.style.display = 'none';
             });
+            
+            document.removeEventListener('click', handleFirstInteraction);
+            document.removeEventListener('touchend', handleFirstInteraction);
         }
-        startAudioBtn.addEventListener('click', initializeAudio);
-        audioStartOverlay.style.display = 'flex';
+        
+        document.addEventListener('click', handleFirstInteraction);
+        document.addEventListener('touchend', handleFirstInteraction);
 
         audioCta.addEventListener('click', () => {
-            if (!audioInitialized) {
-                initializeAudio();
+            if (!audioInitialized) return;
+            bgAudio.muted = !bgAudio.muted;
+            updateMuteButtonUI();
+            if (bgAudio.muted) {
+                bgAudio.pause();
             } else {
-                bgAudio.muted = !bgAudio.muted;
-                if (!bgAudio.muted && bgAudio.paused) {
-                    bgAudio.play().catch(e => {});
-                } else if (bgAudio.muted) {
-                    bgAudio.pause();
-                }
-                updateMuteButtonUI();
+                bgAudio.play().catch(e => {});
             }
         });
 
@@ -189,6 +198,7 @@
         
         document.querySelectorAll('.modal-close').forEach(btn => {
             btn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Evita che il click si propaghi e causi problemi
                 const modalId = e.currentTarget.dataset.target;
                 closeModal(modalId);
             });
@@ -198,6 +208,10 @@
         const filterContainer = document.getElementById('filter-container');
         let allSongs = [], currentPlayingItem = null, currentFilters = { genre: 'all', category: 'all', argomento: 'all' };
 
+        async function loadMusicFromApi() { /* ... */ }
+        function createFilterButtons(songs) { /* ... */ }
+        function filterAndDisplaySongs() { /* ... */ }
+        
         async function loadMusicFromApi() {
             try {
                 const response = await fetch(sheetApiUrl);
@@ -328,7 +342,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const chatbotHTML = `
             <style>
-                #chatbot-bubble{position:fixed;bottom:25px;right:25px;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(fausto_immagine.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:9999}
+                #chatbot-bubble{position:fixed;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(fausto_immagine.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:9999}
                 #chatbot-bubble:hover{transform:scale(1.1)}
                 #chatbot-bubble.open{background-image:none;background-color:var(--primary-color)}
                 #chatbot-bubble.open .icon-close{opacity:1}
@@ -371,7 +385,7 @@
                 .chatbot-header-logo {width: 90px;height: 90px;border-radius: 50%;border: 3px solid #fff;box-shadow: 0 0 10px rgba(0,0,0,0.3);object-fit: cover;position: absolute;top: 0;left: 50%;transform: translateX(-50%); z-index: 10000;}
                 
                 /* ========================================================================================= */
-                /* ===== MODIFICA #3: POSIZIONE CHAT ALZATA PER DESKTOP E MOBILE                   ===== */
+                /* ===== MODIFICA #2 & #3: POSIZIONE CHAT ALZATA E TOOLTIP VISIBILE SU MOBILE      ===== */
                 /* ========================================================================================= */
                 #chatbot-window-wrapper { bottom: 140px; right: 25px; }
                 #chatbot-bubble { bottom: 30px; right: 25px; }
