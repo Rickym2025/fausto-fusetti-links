@@ -101,7 +101,7 @@
   
   <div id="chatbot-container"></div>
 
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
   
   <script>
@@ -122,14 +122,24 @@
         audioStartOverlay.style.display = 'flex';
         audioCta.addEventListener('click', () => { if (!audioInitialized) { initializeAudio(); } else { bgAudio.muted = !bgAudio.muted; updateMuteButton(); } });
 
+        // =========================================================================================
+        // ===== MODIFICA FINALE ANTI-CRASH: LOGICA DI CHIUSURA MODALE SUPER-ROBUSTA           =====
+        // =========================================================================================
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
             if (!modal) return;
+
             if (modalId === 'music-modal') {
-                if (catalogPlayer && !catalogPlayer.paused) {
+                // Eseguiamo SEMPRE la pulizia del player del catalogo quando il modale viene chiuso.
+                // Questo è fondamentale per prevenire crash su mobile.
+                if (catalogPlayer) {
                     catalogPlayer.pause();
-                    catalogPlayer.src = ""; // Svuota la sorgente per fermare completamente il caricamento
+                    catalogPlayer.src = ''; // Svuota la sorgente per fermare il buffering.
+                    catalogPlayer.load();   // Forza il reset completo dello stato del player.
+                    resetPlayingState();    // Resetta anche lo stato visivo della lista.
                 }
+
+                // Riprende la musica di sottofondo solo se era stata messa in pausa dal player del catalogo.
                 if (audioInitialized && bgAudio.paused && !bgAudio.muted) {
                     bgAudio.play();
                 }
@@ -160,13 +170,9 @@
             }
         }
 
-        // =========================================================================================
-        // ===== MODIFICA ANTI-CRASH MOBILE: GESTORI EVENTI AUDIO PIÙ ROBUSTI                  =====
-        // =========================================================================================
         if(catalogPlayer) {
             catalogPlayer.addEventListener('play', () => {
                 if (audioInitialized && !bgAudio.paused && !bgAudio.muted) bgAudio.pause();
-                // Controllo di sicurezza: aggiorna l'UI solo se l'elemento corrente corrisponde alla traccia nel player
                 if (currentPlayingItem && catalogPlayer.src === currentPlayingItem.dataset.src) {
                     currentPlayingItem.classList.add('playing');
                     currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-pause';
@@ -174,7 +180,6 @@
             });
 
             catalogPlayer.addEventListener('pause', () => {
-                // Controllo di sicurezza: aggiorna l'UI solo se l'elemento corrente corrisponde alla traccia nel player
                 if (currentPlayingItem && catalogPlayer.src === currentPlayingItem.dataset.src) {
                     currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
                 }
@@ -189,11 +194,7 @@
                     const isPlayingThisItem = item === currentPlayingItem;
                     
                     if (isPlayingThisItem) {
-                        if (catalogPlayer.paused) {
-                            catalogPlayer.play();
-                        } else {
-                            catalogPlayer.pause();
-                        }
+                        if (catalogPlayer.paused) { catalogPlayer.play(); } else { catalogPlayer.pause(); }
                     } else {
                         resetPlayingState();
                         currentPlayingItem = item;
