@@ -116,9 +116,6 @@
         const startAudioBtn = document.getElementById('start-audio-btn');
         let audioInitialized = false;
 
-        // =========================================================================================
-        // ===== MODIFICA #1: RIPRISTINO FUNZIONI PER SBLOCCARE LA PAGINA                        =====
-        // =========================================================================================
         function initializeAudio() {
             const playPromise = bgAudio.play();
             if (playPromise !== undefined) {
@@ -130,7 +127,7 @@
                     updateMuteButton();
                 }).catch(e => {
                     console.error("L'avvio automatico dell'audio è stato bloccato dal browser.", e);
-                    audioStartOverlay.style.display = 'flex'; // Mostra comunque l'overlay se c'è un errore
+                    audioStartOverlay.style.display = 'flex';
                 });
             }
         }
@@ -144,11 +141,20 @@
         audioStartOverlay.style.display = 'flex';
         audioCta.addEventListener('click', () => { if (!audioInitialized) { initializeAudio(); } else { bgAudio.muted = !bgAudio.muted; updateMuteButton(); } });
 
+        // =========================================================================================
+        // ===== MODIFICA #1: LOGICA DI CHIUSURA MODALE ANTI-CRASH (DEFINITIVA)                  =====
+        // =========================================================================================
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
             if (!modal) return;
-            if (modalId === 'music-modal' && catalogPlayer && !catalogPlayer.paused) {
-                catalogPlayer.pause();
+            if (modalId === 'music-modal') {
+                if (catalogPlayer && !catalogPlayer.paused) {
+                    catalogPlayer.pause();
+                }
+                // Logica sicura per riprendere la musica di sottofondo: solo se non è in pausa per scelta dell'utente
+                if (audioInitialized && bgAudio.paused && !bgAudio.muted) {
+                    bgAudio.play();
+                }
             }
             modal.style.display = 'none';
         }
@@ -186,21 +192,12 @@
             });
 
             catalogPlayer.addEventListener('pause', () => {
-                // =========================================================================================
-                // ===== MODIFICA #2: ANTI-CRASH MOBILE. LA RIPRESA PARTE SOLO SU SCHERMI GRANDI (PC)    =====
-                // =========================================================================================
-                if (window.innerWidth > 768) { // Questa condizione previene il crash su mobile
-                    if (audioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play();
-                }
                 if(currentPlayingItem) {
                     currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
                 }
             });
 
             catalogPlayer.addEventListener('ended', () => {
-                if (window.innerWidth > 768) { // Stessa condizione di sicurezza
-                    if (audioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play();
-                }
                 window.resetPlayingState();
             });
         }
@@ -237,9 +234,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             const chatbotHTML = `
             <style>
-                /* ========================================================================================= */
-                /* ===== MODIFICA #3: NUOVA ANIMAZIONE BOUNCE E STILI CHATBOT AGGIORNATI                 ===== */
-                /* ========================================================================================= */
                 @keyframes rhythmic-bounce {
                     0%, 100% { transform: translateY(0); }
                     10%, 30% { transform: translateY(0); }
@@ -250,7 +244,7 @@
                 }
                 #chatbot-bubble{ position:fixed; bottom:25px; right:25px; width:65px; height:65px; border-radius:50%; box-shadow:0 4px 12px rgba(0,0,0,.2); cursor:pointer; display:flex; align-items:center; justify-content:center; transition: all .3s ease; background-image:url(fausto_immagine.jpg); background-size:cover; background-position:center; border:3px solid var(--primary-color); z-index:9999; }
                 #chatbot-bubble.bouncing { animation: rhythmic-bounce 2.5s ease-in-out; }
-                #chatbot-bubble:hover{ transform:scale(1.1); animation-play-state: paused; }
+                #chatbot-bubble:hover{ transform:scale(1.1); }
                 #chatbot-bubble.open{ background-image:none; background-color:var(--primary-color); animation: none; }
                 #chatbot-bubble.open .icon-close{opacity:1}
                 #chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}
@@ -267,9 +261,12 @@
                 .chatbot-messages { flex-grow:1; padding:1rem; overflow-y:auto; display:flex; flex-direction:column; background-image: linear-gradient(rgba(249, 247, 243, 0.7), rgba(249, 247, 243, 0.7)), url('https://github.com/Rickym2025/fausto-fusetti-links/blob/main/sfondo_chat.jpg?raw=true'); background-size: cover; background-position: center; }
                 .message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}
                 .message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0}
+                /* ========================================================================================= */
+                /* ===== MODIFICA #2: AUMENTATA TRASPARENZA MESSAGGI                                     ===== */
+                /* ========================================================================================= */
                 .message-text{padding:10px 15px;border-radius:18px;line-height:1.4;overflow-wrap: break-word; word-break: break-word;text-align: left; box-shadow: 0 2px 5px rgba(0,0,0,0.1);}
-                .message.user .message-text{background-color: rgba(238, 242, 245, 0.85); color:#333;border-bottom-right-radius:4px}
-                .message.bot .message-text{background-color: rgba(6, 147, 227, 0.9); color:#fff;border-bottom-left-radius:4px}
+                .message.user .message-text{background-color: rgba(238, 242, 245, 0.8); color:#333;border-bottom-right-radius:4px}
+                .message.bot .message-text{background-color: rgba(6, 147, 227, 0.85); color:#fff;border-bottom-left-radius:4px}
                 .chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}
                 .chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid var(--primary-color)}
                 .chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}
@@ -313,9 +310,10 @@
                 
                 // Animazione bounce a intervalli
                 setInterval(() => {
-                    if (!bubble.classList.contains('open') && !bubble.classList.contains('bouncing')) {
+                    if (!bubble.classList.contains('open')) {
                         bubble.classList.add('bouncing');
-                        setTimeout(() => bubble.classList.remove('bouncing'), 2500); // Rimuovi la classe alla fine dell'animazione
+                        // Rimuovi la classe alla fine dell'animazione per poterla ri-eseguire
+                        setTimeout(() => bubble.classList.remove('bouncing'), 2500); 
                     }
                 }, 10000); // Intervallo di 10 secondi
 
