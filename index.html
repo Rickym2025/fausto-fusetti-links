@@ -101,7 +101,7 @@
   
   <div id="chatbot-container"></div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
   
   <script>
@@ -115,11 +115,8 @@
         const audioStartOverlay = document.getElementById('audio-start-overlay');
         const startAudioBtn = document.getElementById('start-audio-btn');
         let audioInitialized = false;
-        let allSongs = []; // Definisci qui per averla a disposizione globalmente
+        let allSongs = [];
 
-        // =========================================================================================
-        // ===== MODIFICA #1: FUNZIONE CENTRALIZZATA PER METTERE IN PAUSA L'AUDIO              =====
-        // =========================================================================================
         window.pauseAllAudio = function(exceptThisOne = null) {
             if (bgAudio !== exceptThisOne && !bgAudio.paused) bgAudio.pause();
             if (catalogPlayer !== exceptThisOne && !catalogPlayer.paused) catalogPlayer.pause();
@@ -168,7 +165,7 @@
             if (!modal) return;
             if (modalId === 'music-modal') {
                 if (catalogPlayer) {
-                    window.pauseAllAudio(); // Usa la funzione centralizzata
+                    window.pauseAllAudio();
                     catalogPlayer.src = '';
                     catalogPlayer.load();
                     resetPlayingState();
@@ -180,13 +177,8 @@
             modal.style.display = 'none';
         }
         
-        // =========================================================================================
-        // ===== MODIFICA #2: LOGICA ANTI-CRASH ALL'APERTURA DEL CATALOGO                    =====
-        // =========================================================================================
         document.getElementById('open-music-modal').addEventListener('click', () => {
             document.getElementById('music-modal').style.display = 'flex';
-            // Forza il rendering della lista ogni volta che si apre il modale
-            // per garantire che gli event listener siano sempre attivi e corretti.
             if (allSongs.length > 0) {
                 filterAndDisplaySongs();
             }
@@ -248,7 +240,6 @@
         
         loadMusicFromApi();
 
-        // Logica form e aforismi (invariata)
         const form = document.getElementById('contact-form');
         const formResult = document.getElementById('form-result');
         form.addEventListener('submit', function(e) { e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio in corso..."; fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).then(response => response.json()).then(data => { if (data.success) { formResult.innerHTML = "Messaggio inviato con successo!"; form.reset(); } else { formResult.innerHTML = `Errore: ${data.message}`; } }).catch(() => formResult.innerHTML = "Si è verificato un errore."); });
@@ -259,9 +250,6 @@
         setInterval(showRandomAphorism, 12000);
     });
 
-    // =========================================================================================
-    // ===== MODIFICA #3: LOGICA E STILE CHATBOT AGGIORNATI                             =====
-    // =========================================================================================
     (function() {
         document.addEventListener('DOMContentLoaded', () => {
             const chatbotHTML = `
@@ -273,14 +261,24 @@
                 #chatbot-bubble.open{ background-image:none; background-color:var(--primary-color); animation: none; }
                 #chatbot-bubble.open .icon-close{opacity:1}
                 #chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}
-                #chatbot-window-wrapper { position:fixed; bottom:105px; right:25px; width:400px; max-width:calc(100vw - 30px); height:70vh; max-height:600px; z-index:9998; transform:translateY(20px) scale(.95); opacity:0; visibility:hidden; transition:all .3s ease-in-out; }
+                
+                /* ===== MODIFICA #1: SPOSTATA FINESTRA CHATBOT PIÙ IN ALTO ===== */
+                #chatbot-window-wrapper { position:fixed; bottom: 130px; right:25px; width:400px; max-width:calc(100vw - 30px); height:70vh; max-height:600px; z-index:9998; transform:translateY(20px) scale(.95); opacity:0; visibility:hidden; transition:all .3s ease-in-out; }
                 #chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}
+                
                 #chatbot-window{position:relative; margin-top: 45px; width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;}
                 .chatbot-header-logo {width: 90px;height: 90px;border-radius: 50%;border: 3px solid #fff;box-shadow: 0 0 10px rgba(0,0,0,0.3);object-fit: cover;position: absolute;top: 0;left: 50%;transform: translateX(-50%); z-index: 10000;}
                 #chatbot-welcome-message { position: fixed; bottom: 100px; right: 40px; background: var(--primary-color); color: white; padding: 10px 15px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,.2); opacity: 0; transform: translateY(10px); transition: all 0.4s ease-in-out; visibility: hidden; z-index: 9997; font-size: 0.9em; }
                 #chatbot-welcome-message.visible { opacity: 1; transform: translateY(0); visibility: visible; }
                 #chatbot-welcome-message::after { content: ''; position: absolute; bottom: -7px; right: 25px; width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 8px solid var(--primary-color); }
-                @media (max-width: 768px) { #chatbot-window-wrapper { bottom: 95px; right: 15px; } #chatbot-bubble { bottom: 15px; right: 15px; } #chatbot-welcome-message { right: 25px; bottom: 90px; } #chatbot-welcome-message::after { right: 20px; } }
+                
+                @media (max-width: 768px) { 
+                    #chatbot-window-wrapper { bottom: 110px; right: 15px; } 
+                    #chatbot-bubble { bottom: 15px; right: 15px; } 
+                    #chatbot-welcome-message { right: 25px; bottom: 90px; } 
+                    #chatbot-welcome-message::after { right: 20px; } 
+                }
+
                 .chatbot-header {position: relative; background-color: var(--primary-color); color: #fff; padding: 1rem; padding-top: 55px; text-align: center; flex-shrink: 0;}
                 .chatbot-close-btn {position: absolute; top: 10px; right: 15px; font-size: 2.2em; color: white; cursor: pointer; line-height: 1; font-weight: 300;}
                 .chatbot-messages { flex-grow:1; padding:1rem; overflow-y:auto; display:flex; flex-direction:column; background-image: linear-gradient(rgba(249, 247, 243, 0.7), rgba(249, 247, 243, 0.7)), url('https://github.com/Rickym2025/fausto-fusetti-links/blob/main/sfondo_chat.jpg?raw=true'); background-size: cover; background-position: center; }
@@ -289,10 +287,8 @@
                 .message-text{padding:10px 15px;border-radius:18px;line-height:1.4;overflow-wrap: break-word; word-break: break-word;text-align: left; box-shadow: 0 2px 5px rgba(0,0,0,0.1);}
                 .message.user .message-text{background-color: rgba(238, 242, 245, 0.75); color:#333;border-bottom-right-radius:4px}
                 .message.bot .message-text{background-color: rgba(6, 147, 227, 0.8); color:#fff;border-bottom-left-radius:4px}
-                /* Correzione per Bullet Points */
                 .message-text ul, .message-text ol { padding-left: 22px; margin: 8px 0; }
                 .message-text li { margin-bottom: 5px; }
-                /* Stile per il nuovo player audio nel chatbot */
                 .chatbot-player-container { margin-top: 10px; background-color: rgba(0,0,0,0.1); border-radius: 8px; padding: 8px; }
                 .chatbot-player-title { font-weight: bold; font-size: 0.9em; margin-bottom: 5px; }
                 .chatbot-audio-player { width: 100%; height: 40px; }
@@ -320,7 +316,8 @@
                 bubble.addEventListener('click', toggleChat);
                 closeBtn.addEventListener('click', toggleChat);
 
-                const addMessage = (text, type) => {
+                // ===== MODIFICA #2: LOGICA PLAYER RIPRISTINATA E MIGLIORATA =====
+                const addMessage = (htmlText, type) => {
                     if (!messagesEl) return;
                     const msgDiv = document.createElement('div');
                     msgDiv.className = `message ${type}`;
@@ -333,24 +330,44 @@
                     const textDiv = document.createElement('div');
                     textDiv.className = 'message-text';
                     
-                    // Regex per trovare e sostituire il link del player
+                    let processedHtml = htmlText;
+
+                    // 1. Cerca la sintassi [PLAY:...] e la converte nel player
                     const playerRegex = /\[PLAY:(.*?)\]\((.*?)\)/g;
-                    let processedText = text.replace(playerRegex, (match, title, url) => {
-                        return `<div class="chatbot-player-container">
+                    processedHtml = processedHtml.replace(playerRegex, (match, title, url) => {
+                         return `<div class="chatbot-player-container">
                                     <div class="chatbot-player-title">${title}</div>
                                     <audio class="chatbot-audio-player" src="${url}" controls controlsList="nodownload"></audio>
                                 </div>`;
                     });
+                    
+                    // 2. Cerca i link diretti a file audio e li converte nel player (logica ripristinata)
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = processedHtml;
+                    const audioLinks = tempDiv.querySelectorAll('a[href$=".mp3"], a[href$=".wav"], a[href$=".ogg"], a[href$=".m4a"]');
+                    audioLinks.forEach(link => {
+                        const url = link.href;
+                        let title = link.textContent;
+                        if (!title || title === url) {
+                             try {
+                                const fileName = url.substring(url.lastIndexOf('/') + 1);
+                                title = decodeURIComponent(fileName.substring(0, fileName.lastIndexOf('.')) || fileName).replace(/[_-]/g, ' ');
+                            } catch (e) { title = "Traccia Audio"; }
+                        }
+                        const playerHTML = `<div class="chatbot-player-container">
+                                                <div class="chatbot-player-title">${title}</div>
+                                                <audio class="chatbot-audio-player" src="${url}" controls controlsList="nodownload"></audio>
+                                            </div>`;
+                        link.outerHTML = playerHTML;
+                    });
+                    processedHtml = tempDiv.innerHTML;
 
-                    textDiv.innerHTML = DOMPurify.sanitize(processedText, { ADD_TAGS: ['audio'], ADD_ATTR: ['controls', 'controlslist', 'src'] });
+                    textDiv.innerHTML = DOMPurify.sanitize(processedHtml, { ADD_TAGS: ['audio'], ADD_ATTR: ['controls', 'controlslist', 'src'] });
                     msgDiv.appendChild(textDiv);
                     messagesEl.appendChild(msgDiv);
                     
-                    // Aggiungi event listener al nuovo player
                     msgDiv.querySelectorAll('.chatbot-audio-player').forEach(player => {
-                        player.addEventListener('play', (e) => {
-                            window.pauseAllAudio(e.target);
-                        });
+                        player.addEventListener('play', (e) => window.pauseAllAudio(e.target));
                     });
 
                     messagesEl.scrollTop = messagesEl.scrollHeight;
