@@ -105,8 +105,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
   
   <script>
-    try {
-        document.addEventListener('DOMContentLoaded', function() {
+    // =========================================================================================
+    // ===== SCRIPT UNIFICATO E STABILE                                                      =====
+    // =========================================================================================
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- FUNZIONI PRINCIPALI ---
+        function main() {
             const sheetApiUrl = 'https://script.google.com/macros/s/AKfycbyyvfsSlgx6J-dIeLaIi3Crd6eqG029DDsGzF3Wy8u1VIfwhTMDZJdTPS_ubYszUyFR/exec';
             const bgAudio = document.getElementById('background-audio');
             const audioCta = document.getElementById('audio-cta');
@@ -262,124 +266,130 @@
                 function showRandomAphorism() { if(!mainContainer) return; const rect = mainContainer.getBoundingClientRect(); const postit = document.createElement('div'); postit.className = 'aphorism-postit'; postit.textContent = aphorisms[Math.floor(Math.random() * aphorisms.length)]; let top, left; do { top = Math.random() * window.innerHeight; left = Math.random() * window.innerWidth; } while ( top > rect.top - 50 && top < rect.bottom + 50 && left > rect.left - 50 && left < rect.right + 50 ); postit.style.top = `${top}px`; postit.style.left = `${left}px`; const rotation = `rotate(${Math.random() * 20 - 10}deg)`; postit.style.setProperty('--transform-start', `${rotation} translateY(20px)`); postit.style.setProperty('--transform-end', `${rotation} translateY(0)`); aphorismContainer.appendChild(postit); setTimeout(() => { postit.remove(); }, 10000); }
                 setInterval(showRandomAphorism, 12000);
             }
+        }
+        
+        // --- LOGICA DEL CHATBOT (CARICAMENTO SU RICHIESTA) ---
+        function initializeChatbot() {
+            const chatbotContainer = document.getElementById('chatbot-container');
+            if (!chatbotContainer) return;
+            
+            let isChatbotLoaded = false;
 
-            // --- LOGICA DEL CHATBOT (STABILE E CARICAMENTO DIFFERITO) ---
-            (function() {
-                const chatbotContainer = document.getElementById('chatbot-container');
-                if (!chatbotContainer) return;
+            const initialBubbleHTML = `<style>#chatbot-bubble-placeholder{position:fixed;bottom:25px;right:25px;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(fausto_immagine.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:9999} #chatbot-bubble-placeholder:hover{transform:scale(1.1)} @media (max-width: 768px){ #chatbot-bubble-placeholder { bottom: 15px; right: 15px; }}</style><div id="chatbot-bubble-placeholder"></div>`;
+            chatbotContainer.innerHTML = initialBubbleHTML;
+
+            const placeholder = document.getElementById('chatbot-bubble-placeholder');
+            if (placeholder) {
+                placeholder.addEventListener('click', loadAndOpenChatbot, { once: true });
+            }
+
+            function loadAndOpenChatbot() {
+                if (isChatbotLoaded) return;
+                isChatbotLoaded = true;
                 
-                let isChatbotLoaded = false;
+                const chatbotHTML = `
+                <style>
+                    #chatbot-bubble{position:fixed;bottom:25px;right:25px;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(fausto_immagine.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:9999}
+                    #chatbot-bubble:hover{transform:scale(1.1)}
+                    #chatbot-bubble.open{background-image:none;background-color:var(--primary-color)}
+                    #chatbot-bubble.open .icon-close{opacity:1}
+                    #chatbot-bubble .icon-close{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}
+                    @keyframes fadeInBounce { 0% { opacity: 0; transform: translateY(10px) scale(0.9); } 70% { opacity: 1; transform: translateY(-5px) scale(1.05); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+                    #chatbot-notification { position: fixed; bottom: 100px; right: 25px; background: #fff; color: #333; padding: 8px 15px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,.2); z-index: 9998; font-size: 0.9em; opacity: 0; animation: fadeInBounce 1s ease-in-out 3s forwards; }
+                    #chatbot-notification::after { content: ''; position: absolute; bottom: -8px; right: 20px; width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 8px solid #fff; }
+                    #chatbot-window-wrapper {position:fixed;bottom:140px;right:25px;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out;}
+                    #chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}
+                    #chatbot-window{position:relative; margin-top: 45px; width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;}
+                    .chatbot-header-logo {width: 90px;height: 90px;border-radius: 50%;border: 3px solid #fff;box-shadow: 0 0 10px rgba(0,0,0,0.3);object-fit: cover;position: absolute;top: 0;left: 50%;transform: translateX(-50%); z-index: 10000;}
+                    @media (max-width: 768px) { #chatbot-window-wrapper { bottom: 100px; right: 15px; width: calc(100vw - 30px); } #chatbot-bubble { bottom: 15px; right: 15px; } #chatbot-notification { right: 15px; bottom: 90px; } #chatbot-notification::after { right: 25px; } }
+                    .chatbot-header {position: relative; background-color: var(--primary-color); color: #fff; padding: 1rem; padding-top: 55px; text-align: center; flex-shrink: 0;}
+                    .chatbot-close-btn {position: absolute; top: 10px; right: 15px; font-size: 2.2em; color: white; cursor: pointer; line-height: 1; font-weight: 300;}
+                    .chatbot-messages{flex-grow:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column}
+                    .message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}
+                    .message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0}
+                    .message-text{padding:10px 15px;border-radius:18px;line-height:1.4;overflow-wrap: break-word; word-break: break-word;text-align: left;}
+                    .message.user .message-text{background-color:#eef2f5;color:#333;border-bottom-right-radius:4px}
+                    .message.bot .message-text{background-color:var(--primary-color);color:#fff;border-bottom-left-radius:4px}
+                    .chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}
+                    .chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid var(--primary-color)}
+                    .chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}
+                </style>
+                <div id="chatbot-notification">Ciao! Hai domande?</div>
+                <div id="chatbot-bubble"><svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg></div>
+                <div id="chatbot-window-wrapper"><img src="fausto_immagine.jpg" alt="Fausto AI" class="chatbot-header-logo"><div id="chatbot-window"><div class="chatbot-header"><div><h3>Fausto AI</h3><small>Assistente Virtuale</small></div><span class="chatbot-close-btn">&times;</span></div><div class="chatbot-messages" id="chatbot-messages"></div><div class="chatbot-input"><input type="text" id="chatbot-input-field" name="chatbot_message" autocomplete="off" placeholder="Scrivi un messaggio..."><button id="chatbot-send-btn"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg></button></div></div></div>`;
+                
+                chatbotContainer.innerHTML = chatbotHTML;
+                
+                const webhookUrl = 'https://n8n.automaita.it/webhook/ffausto-ai-chat';
+                const bubble = document.getElementById('chatbot-bubble');
+                const windowWrapper = document.getElementById('chatbot-window-wrapper');
+                const messagesEl = document.getElementById('chatbot-messages');
+                const inputField = document.getElementById('chatbot-input-field');
+                const sendBtn = document.getElementById('chatbot-send-btn');
+                const closeBtn = document.querySelector('.chatbot-close-btn');
+                const notification = document.getElementById('chatbot-notification');
 
-                const initialBubbleHTML = `<style>#chatbot-bubble-placeholder{position:fixed;bottom:25px;right:25px;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(fausto_immagine.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:9999} #chatbot-bubble-placeholder:hover{transform:scale(1.1)} @media (max-width: 768px){ #chatbot-bubble-placeholder { bottom: 15px; right: 15px; }}</style><div id="chatbot-bubble-placeholder"></div>`;
-                chatbotContainer.innerHTML = initialBubbleHTML;
+                if (!bubble || !windowWrapper || !closeBtn) return;
 
-                const placeholder = document.getElementById('chatbot-bubble-placeholder');
-                if (placeholder) {
-                    placeholder.addEventListener('click', loadAndOpenChatbot, { once: true });
-                }
-
-                function loadAndOpenChatbot() {
-                    if (isChatbotLoaded) return;
-                    isChatbotLoaded = true;
-                    
-                    const chatbotHTML = `
-                    <style>
-                        #chatbot-bubble{position:fixed;bottom:25px;right:25px;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(fausto_immagine.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:9999}
-                        #chatbot-bubble:hover{transform:scale(1.1)}
-                        #chatbot-bubble.open{background-image:none;background-color:var(--primary-color)}
-                        #chatbot-bubble.open .icon-close{opacity:1}
-                        #chatbot-bubble .icon-close{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}
-                        @keyframes fadeInBounce { 0% { opacity: 0; transform: translateY(10px) scale(0.9); } 70% { opacity: 1; transform: translateY(-5px) scale(1.05); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
-                        #chatbot-notification { position: fixed; bottom: 100px; right: 25px; background: #fff; color: #333; padding: 8px 15px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,.2); z-index: 9998; font-size: 0.9em; opacity: 0; animation: fadeInBounce 1s ease-in-out 3s forwards; }
-                        #chatbot-notification::after { content: ''; position: absolute; bottom: -8px; right: 20px; width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 8px solid #fff; }
-                        #chatbot-window-wrapper {position:fixed;bottom:140px;right:25px;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out;}
-                        #chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}
-                        #chatbot-window{position:relative; margin-top: 45px; width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;}
-                        .chatbot-header-logo {width: 90px;height: 90px;border-radius: 50%;border: 3px solid #fff;box-shadow: 0 0 10px rgba(0,0,0,0.3);object-fit: cover;position: absolute;top: 0;left: 50%;transform: translateX(-50%); z-index: 10000;}
-                        @media (max-width: 768px) { #chatbot-window-wrapper { bottom: 100px; right: 15px; width: calc(100vw - 30px); } #chatbot-bubble { bottom: 15px; right: 15px; } #chatbot-notification { right: 15px; bottom: 90px; } #chatbot-notification::after { right: 25px; } }
-                        .chatbot-header {position: relative; background-color: var(--primary-color); color: #fff; padding: 1rem; padding-top: 55px; text-align: center; flex-shrink: 0;}
-                        .chatbot-close-btn {position: absolute; top: 10px; right: 15px; font-size: 2.2em; color: white; cursor: pointer; line-height: 1; font-weight: 300;}
-                        .chatbot-messages{flex-grow:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column}
-                        .message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}
-                        .message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0}
-                        .message-text{padding:10px 15px;border-radius:18px;line-height:1.4;overflow-wrap: break-word; word-break: break-word;text-align: left;}
-                        .message.user .message-text{background-color:#eef2f5;color:#333;border-bottom-right-radius:4px}
-                        .message.bot .message-text{background-color:var(--primary-color);color:#fff;border-bottom-left-radius:4px}
-                        .chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}
-                        .chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid var(--primary-color)}
-                        .chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}
-                    </style>
-                    <div id="chatbot-notification">Ciao! Hai domande?</div>
-                    <div id="chatbot-bubble"><svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg></div>
-                    <div id="chatbot-window-wrapper"><img src="fausto_immagine.jpg" alt="Fausto AI" class="chatbot-header-logo"><div id="chatbot-window"><div class="chatbot-header"><div><h3>Fausto AI</h3><small>Assistente Virtuale</small></div><span class="chatbot-close-btn">&times;</span></div><div class="chatbot-messages" id="chatbot-messages"></div><div class="chatbot-input"><input type="text" id="chatbot-input-field" name="chatbot_message" autocomplete="off" placeholder="Scrivi un messaggio..."><button id="chatbot-send-btn"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg></button></div></div></div>`;
-                    
-                    chatbotContainer.innerHTML = chatbotHTML;
-                    
-                    const webhookUrl = 'https://n8n.automaita.it/webhook/ffausto-ai-chat';
-                    const bubble = document.getElementById('chatbot-bubble');
-                    const windowWrapper = document.getElementById('chatbot-window-wrapper');
-                    const messagesEl = document.getElementById('chatbot-messages');
-                    const inputField = document.getElementById('chatbot-input-field');
-                    const sendBtn = document.getElementById('chatbot-send-btn');
-                    const closeBtn = document.querySelector('.chatbot-close-btn');
-                    const notification = document.getElementById('chatbot-notification');
-
-                    const toggleChat = () => {
-                        const isChatOpen = windowWrapper.classList.contains('open');
-                        if(notification) notification.style.display = 'none'; 
-                        if (isChatOpen) {
-                            windowWrapper.classList.remove('open');
-                            bubble.classList.remove('open');
-                            bubble.style.display = 'flex';
-                        } else {
-                            windowWrapper.classList.add('open');
-                            bubble.classList.add('open');
-                            bubble.style.display = 'none';
-                            if (inputField) setTimeout(() => inputField.focus(), 350);
-                        }
-                    };
-                    
-                    bubble.addEventListener('click', toggleChat);
-                    closeBtn.addEventListener('click', toggleChat);
-
-                    const addMessage = (text, type) => {
-                        if (!messagesEl) return;
-                        const msgDiv = document.createElement('div'); msgDiv.className = `message ${type}`;
-                        if (type === 'bot') { const avatar = document.createElement('img'); avatar.src = 'fausto_immagine.jpg'; avatar.className = 'message-avatar'; msgDiv.appendChild(avatar); }
-                        const textDiv = document.createElement('div'); textDiv.className = 'message-text';
-                        textDiv.innerHTML = DOMPurify.sanitize(text);
-                        msgDiv.appendChild(textDiv);
-                        messagesEl.appendChild(msgDiv);
-                        messagesEl.scrollTop = messagesEl.scrollHeight;
-                    };
-
-                    const sendMessage = async () => {
-                        if(!inputField) return;
-                        const userMessage = inputField.value.trim(); if (userMessage === '') return;
-                        addMessage(userMessage, 'user'); inputField.value = '';
-                        try {
-                            const response = await fetch(`${webhookUrl}?user_message=${encodeURIComponent(userMessage)}&conversation_id=session-${Date.now()}`, { method: 'POST' });
-                            if (!response.ok) throw new Error("Network response");
-                            const data = await response.json(); addMessage(data.response || "C'è stato un problema.", 'bot');
-                        } catch (error) { addMessage('Spiacente, si è verificato un errore.', 'bot'); }
-                    };
-
-                    if (sendBtn && inputField) {
-                        sendBtn.addEventListener('click', sendMessage);
-                        inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
+                const toggleChat = () => {
+                    const isChatOpen = windowWrapper.classList.contains('open');
+                    if(notification) notification.style.display = 'none'; 
+                    if (isChatOpen) {
+                        windowWrapper.classList.remove('open');
+                        bubble.classList.remove('open');
+                        bubble.style.display = 'flex';
+                    } else {
+                        windowWrapper.classList.add('open');
+                        bubble.classList.add('open');
+                        bubble.style.display = 'none';
+                        if (inputField) setTimeout(() => inputField.focus(), 350);
                     }
-                    
-                    addMessage("Ciao! Sono Fausto AI, il tuo assistente virtuale. Come posso aiutarti a trovare il brano perfetto per te?", 'bot');
-                    
-                    // Apri la chat automaticamente dopo averla caricata
-                    setTimeout(toggleChat, 100);
+                };
+                
+                bubble.addEventListener('click', toggleChat);
+                closeBtn.addEventListener('click', toggleChat);
+
+                const addMessage = (text, type) => {
+                    if (!messagesEl) return;
+                    const msgDiv = document.createElement('div'); msgDiv.className = `message ${type}`;
+                    if (type === 'bot') { const avatar = document.createElement('img'); avatar.src = 'fausto_immagine.jpg'; avatar.className = 'message-avatar'; msgDiv.appendChild(avatar); }
+                    const textDiv = document.createElement('div'); textDiv.className = 'message-text';
+                    textDiv.innerHTML = DOMPurify.sanitize(text);
+                    msgDiv.appendChild(textDiv);
+                    messagesEl.appendChild(msgDiv);
+                    messagesEl.scrollTop = messagesEl.scrollHeight;
+                };
+
+                const sendMessage = async () => {
+                    if(!inputField) return;
+                    const userMessage = inputField.value.trim(); if (userMessage === '') return;
+                    addMessage(userMessage, 'user'); inputField.value = '';
+                    try {
+                        const response = await fetch(`${webhookUrl}?user_message=${encodeURIComponent(userMessage)}&conversation_id=session-${Date.now()}`, { method: 'POST' });
+                        if (!response.ok) throw new Error("Network response");
+                        const data = await response.json(); addMessage(data.response || "C'è stato un problema.", 'bot');
+                    } catch (error) { addMessage('Spiacente, si è verificato un errore.', 'bot'); }
+                };
+
+                if (sendBtn && inputField) {
+                    sendBtn.addEventListener('click', sendMessage);
+                    inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
                 }
-            })();
-        });
+                
+                addMessage("Ciao! Sono Fausto AI, il tuo assistente virtuale. Come posso aiutarti a trovare il brano perfetto per te?", 'bot');
+                
+                setTimeout(toggleChat, 100);
+            }
+        }
+
+        // --- ESECUZIONE ---
+        main();
+        initializeChatbot();
+    });
     } catch (e) {
         console.error("ERRORE CRITICO NELLO SCRIPT:", e);
         document.body.innerHTML = "Si è verificato un errore critico. Per favore, ricarica la pagina.";
     }
   </script>
 </body>
-</html>
+</html>```
