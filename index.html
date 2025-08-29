@@ -99,18 +99,20 @@
   <div id="services-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="services-modal">&times;</span><h2><i class="fas fa-heart" style="color: var(--secondary-color); margin-right: 10px;"></i>Canzoni Personalizzate</h2><div style="text-align: left; line-height: 1.6; margin-bottom: 20px;"><h3 style="color: var(--primary-color); margin-bottom: 10px;">✨ Servizi Esclusivi:</h3><ul style="list-style: none; padding-left: 0;"><li style="margin-bottom: 10px;"><i class="fas fa-heart" style="color: #e74c3c; margin-right: 8px;"></i> <strong>Canzoni per Coppie</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-ring" style="color: #f39c12; margin-right: 8px;"></i> <strong>Anniversari e Matrimoni</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-gift" style="color: #9b59b6; margin-right: 8px;"></i> <strong>Testi Personalizzati</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-birthday-cake" style="color: #e67e22; margin-right: 8px;"></i> <strong>Eventi Speciali</strong></li></ul><div style="background: rgba(6, 147, 227, 0.1); border-left: 4px solid var(--primary-color); padding: 15px; margin: 20px 0; border-radius: 5px;"><p><strong>💡 Come funziona:</strong> Raccontami la tua storia, i tuoi ricordi. Creerò una canzone unica che rappresenti le tue emozioni.</p></div></div><button id="contact-for-custom-song" class="button collabora">Richiedi la Tua Canzone</button></div></div>
   <div id="contact-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="contact-modal">&times;</span><h2>Contattami per il tuo Progetto</h2><form id="contact-form" class="contact-form" autocomplete="on"><input type="hidden" name="access_key" value="9013a8d5-0901-42a0-b9e6-4c45553f960d"/><input type="text" name="name" placeholder="Il tuo Nome" required autocomplete="name"/><input type="email" name="email" placeholder="La tua Email" required autocomplete="email"/><input type="tel" name="phone" placeholder="Il tuo Telefono (Opzionale)" autocomplete="tel"/><select name="service_type"><option value="">Seleziona il tipo di servizio</option><option value="canzone_personalizzata">Canzone Personalizzata</option><option value="composizione_artista">Composizione per Artista</option><option value="intrattenimento_live">Intrattenimento Live</option><option value="altro">Altro</option></select><textarea name="message" rows="4" placeholder="Descrivi la tua idea o richiesta..." required></textarea><button type="submit" class="button collabora">Invia Messaggio</button></form><div id="form-result"></div></div></div>
   
+  <!-- Contenitore del Chatbot -->
   <div id="chatbot-container"></div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
-  
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // --- SCRIPT PRINCIPALE E STABILE ---
+        
         const sheetApiUrl = 'https://script.google.com/macros/s/AKfycbyyvfsSlgx6J-dIeLaIi3Crd6eqG029DDsGzF3Wy8u1VIfwhTMDZJdTPS_ubYszUyFR/exec';
+
+        // --- GESTIONE AUDIO DEFINITIVA ---
         const bgAudio = document.getElementById('background-audio');
         const audioCta = document.getElementById('audio-cta');
-        const muteBtnIcon = document.getElementById('mute-btn-icon');
+        const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i');
         const ctaText = document.querySelector('#audio-cta .cta-text');
         const catalogPlayer = document.getElementById('catalog-audio-player');
         const audioStartOverlay = document.getElementById('audio-start-overlay');
@@ -118,95 +120,92 @@
         let audioInitialized = false;
 
         function initializeAudio() {
-            if (!bgAudio) return;
-            bgAudio.play().then(() => {
-                audioInitialized = true;
-                bgAudio.muted = false;
-                if(audioStartOverlay) audioStartOverlay.style.display = 'none';
-                if(audioCta) audioCta.style.visibility = 'visible';
-                updateMuteButton();
-            }).catch(() => { if(audioStartOverlay) audioStartOverlay.style.display = 'flex'; });
+            const playPromise = bgAudio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    audioInitialized = true;
+                    bgAudio.muted = false;
+                    audioStartOverlay.style.display = 'none';
+                    audioCta.style.visibility = 'visible';
+                    updateMuteButton();
+                }).catch(e => {
+                    console.error("L'avvio automatico dell'audio è stato bloccato dal browser.", e);
+                    audioStartOverlay.style.display = 'flex';
+                });
+            }
         }
+
+        startAudioBtn.addEventListener('click', initializeAudio);
+        audioStartOverlay.style.display = 'flex'; 
+        
+        audioCta.addEventListener('click', () => {
+            if (!audioInitialized) {
+                initializeAudio();
+            } else {
+                bgAudio.muted = !bgAudio.muted;
+                updateMuteButton();
+            }
+        });
 
         function updateMuteButton() {
-            if (muteBtnIcon && ctaText) {
-                muteBtnIcon.querySelector('i').className = bgAudio.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
-                ctaText.textContent = bgAudio.muted ? 'Attiva la musica' : 'Disattiva musica';
-            }
+            muteBtnIcon.className = bgAudio.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
+            ctaText.textContent = bgAudio.muted ? 'Attiva la musica' : 'Disattiva musica';
         }
 
-        if (startAudioBtn) startAudioBtn.addEventListener('click', initializeAudio);
-        if (audioStartOverlay) audioStartOverlay.style.display = 'flex';
-        if (audioCta) audioCta.addEventListener('click', () => {
-            if (!audioInitialized) { initializeAudio(); } 
-            else { bgAudio.muted = !bgAudio.muted; updateMuteButton(); }
+        // --- GESTIONE MODALI CORRETTA ---
+        document.getElementById('open-music-modal').addEventListener('click', () => document.getElementById('music-modal').style.display = 'flex');
+        document.getElementById('open-video-modal').addEventListener('click', () => document.getElementById('video-modal').style.display = 'flex');
+        document.getElementById('open-services-modal').addEventListener('click', () => document.getElementById('services-modal').style.display = 'flex');
+        document.getElementById('open-contact-modal').addEventListener('click', () => document.getElementById('contact-modal').style.display = 'flex');
+        document.getElementById('contact-for-custom-song').addEventListener('click', () => { 
+            document.getElementById('services-modal').style.display = 'none'; 
+            document.getElementById('contact-modal').style.display = 'flex'; 
+            document.querySelector('#contact-modal select[name="service_type"]').value = 'canzone_personalizzata'; 
         });
+        document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', e => document.getElementById(e.currentTarget.dataset.target).style.display = 'none'));
 
-        function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (!modal) return;
-            if (modalId === 'music-modal' && catalogPlayer) {
-                catalogPlayer.pause();
-                catalogPlayer.removeAttribute('src'); 
-                catalogPlayer.load();
-                if (window.resetPlayingState) window.resetPlayingState();
-            }
-            modal.style.display = 'none';
-        }
-
-        document.querySelectorAll('[id^="open-"]').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const modalId = btn.id.replace('open-', '') + '-modal';
-                const modal = document.getElementById(modalId);
-                if(modal) modal.style.display = 'flex';
-            });
-        });
-        document.querySelectorAll('.modal-close').forEach(btn => {
-            btn.addEventListener('click', () => closeModal(btn.dataset.target));
-        });
-        
-        const customSongBtn = document.getElementById('contact-for-custom-song');
-        if(customSongBtn){
-            customSongBtn.addEventListener('click', () => { 
-                closeModal('services-modal');
-                const contactModal = document.getElementById('contact-modal');
-                if(contactModal) {
-                    contactModal.style.display = 'flex';
-                    const select = contactModal.querySelector('select[name="service_type"]');
-                    if(select) select.value = 'canzone_personalizzata';
-                }
-            });
-        }
-
+        // --- LOGICA CATALOGO MUSICALE ---
         const songListContainer = document.getElementById('song-list-container');
         const filterContainer = document.getElementById('filter-container');
-        let allSongs = [], currentPlayingItem = null, currentFilters = { genre: 'all', category: 'all', argomento: 'all' };
+        let allSongs = [];
+        let currentPlayingItem = null;
+        let currentFilters = { genre: 'all', category: 'all', argomento: 'all' };
 
         async function loadMusicFromApi() {
             try {
                 const response = await fetch(sheetApiUrl);
-                if (!response.ok) throw new Error(`Network Error`);
-                allSongs = await response.json();
+                if (!response.ok) throw new Error(`Errore di rete`);
+                const songs = await response.json();
+                if (songs.error) throw new Error(songs.error);
+                if (!songs || songs.length === 0) throw new Error('Nessun brano trovato.');
+                
+                allSongs = songs;
                 createFilterButtons(allSongs);
                 filterAndDisplaySongs();
-            } catch (error) { if(songListContainer) songListContainer.innerHTML = `<p style="color: #f44336;">Error: ${error.message}</p>`; }
+            } catch (error) {
+                songListContainer.innerHTML = `<p style="color: #f44336;">Errore caricamento: ${error.message}</p>`;
+            }
         }
 
         function createFilterButtons(songs) {
-            if (!filterContainer || !songs) return;
-            const filters = { 'Genere': [...new Set(songs.map(s => s.genre))], 'Categoria': [...new Set(songs.map(s => s.category))], 'Argomento': [...new Set(songs.map(s => s.argomento))] };
+            const filters = {
+                'Genere': [...new Set(songs.map(s => s.genre))],
+                'Categoria': [...new Set(songs.map(s => s.category))],
+                'Argomento': [...new Set(songs.map(s => s.argomento))]
+            };
             filterContainer.innerHTML = '';
             for (const key in filters) {
                 const filterKey = key === 'Genere' ? 'genre' : (key === 'Categoria' ? 'category' : 'argomento');
                 let buttonsHtml = `<div class="filter-group"><div class="filter-label">${key}</div><div class="filter-buttons">`;
                 buttonsHtml += `<button class="filter-btn active" data-filter-key="${filterKey}" data-filter-value="all">Tutti</button>`;
-                filters[key].forEach(value => { if(value) buttonsHtml += `<button class="filter-btn" data-filter-key="${filterKey}" data-filter-value="${value}">${value}</button>`; });
+                filters[key].forEach(value => { buttonsHtml += `<button class="filter-btn" data-filter-key="${filterKey}" data-filter-value="${value}">${value}</button>`; });
                 buttonsHtml += `</div></div>`;
                 filterContainer.innerHTML += buttonsHtml;
             }
             document.querySelectorAll('.filter-btn').forEach(button => {
                 button.addEventListener('click', (e) => {
-                    const key = e.target.dataset.filterKey, value = e.target.dataset.filterValue;
+                    const key = e.target.dataset.filterKey;
+                    const value = e.target.dataset.filterValue;
                     currentFilters[key] = value;
                     e.target.parentElement.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
                     e.target.classList.add('active');
@@ -214,32 +213,54 @@
                 });
             });
         }
-
+        
         function filterAndDisplaySongs() {
-            if (!songListContainer) return;
-            const filteredSongs = allSongs.filter(s => s && (currentFilters.genre === 'all' || s.genre === currentFilters.genre) && (currentFilters.category === 'all' || s.category === currentFilters.category) && (currentFilters.argomento === 'all' || s.argomento === currentFilters.argomento));
-            songListContainer.innerHTML = filteredSongs.length > 0 ? filteredSongs.map(s => `<div class="song-item" data-src="${s.url}" data-title="${s.title}"><span class="title">${s.title}</span><button class="play-btn"><i class="fas fa-play"></i></button></div>`).join('') : '<p>Nessun brano corrisponde ai filtri.</p>';
+            const filteredSongs = allSongs.filter(song => {
+                return (currentFilters.genre === 'all' || song.genre === currentFilters.genre) &&
+                       (currentFilters.category === 'all' || song.category === currentFilters.category) &&
+                       (currentFilters.argomento === 'all' || song.argomento === currentFilters.argomento);
+            });
+            songListContainer.innerHTML = '';
+            if (filteredSongs.length > 0) {
+                filteredSongs.forEach(song => {
+                    songListContainer.innerHTML += `
+                        <div class="song-item" data-src="${song.url}" data-title="${song.title}">
+                            <span class="title">${song.title}</span>
+                            <button class="play-btn"><i class="fas fa-play"></i></button>
+                        </div>`;
+                });
+            } else {
+                songListContainer.innerHTML = '<p>Nessun brano corrisponde ai filtri.</p>';
+            }
             addEventListenersToSongs();
         }
-
-        window.resetPlayingState = function() { if (currentPlayingItem) { currentPlayingItem.classList.remove('playing'); currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play'; currentPlayingItem = null; } }
-
-        if(catalogPlayer) {
-            catalogPlayer.addEventListener('play', () => { if (audioInitialized && bgAudio && !bgAudio.paused && !bgAudio.muted) bgAudio.pause(); });
-            catalogPlayer.addEventListener('pause', () => { if (audioInitialized && bgAudio && bgAudio.paused && !bgAudio.muted) bgAudio.play(); window.resetPlayingState(); });
-            catalogPlayer.addEventListener('ended', () => { if (audioInitialized && bgAudio && bgAudio.paused && !bgAudio.muted) bgAudio.play(); window.resetPlayingState(); });
+        
+        window.resetPlayingState = function() {
+            if (currentPlayingItem) {
+                currentPlayingItem.classList.remove('playing');
+                currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
+                currentPlayingItem = null;
+            }
+            const player = document.getElementById('catalog-audio-player');
+            if(player) {
+              player.pause();
+              player.currentTime = 0;
+            }
         }
-
+        
+        catalogPlayer.addEventListener('play', () => { if (audioInitialized && !bgAudio.paused && !bgAudio.muted) bgAudio.pause(); });
+        catalogPlayer.addEventListener('pause', () => { if (audioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play(); window.resetPlayingState(); });
+        catalogPlayer.addEventListener('ended', () => { if (audioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play(); window.resetPlayingState(); });
+        
         function addEventListenersToSongs() {
             document.querySelectorAll('.song-item').forEach(item => {
                 item.addEventListener('click', () => {
-                    if(!catalogPlayer) return;
                     const isCurrentlyPlaying = item.classList.contains('playing');
                     if (isCurrentlyPlaying) {
-                        if (catalogPlayer.paused) { catalogPlayer.play(); item.querySelector('.play-btn i').className = 'fas fa-pause'; } 
-                        else { catalogPlayer.pause(); item.querySelector('.play-btn i').className = 'fas fa-play'; }
+                        if (catalogPlayer.paused) { catalogPlayer.play(); } else { catalogPlayer.pause(); }
+                        item.querySelector('.play-btn i').className = catalogPlayer.paused ? 'fas fa-play' : 'fas fa-pause';
                     } else {
-                        window.resetPlayingState(); 
+                        window.resetPlayingState();
                         currentPlayingItem = item;
                         item.classList.add('playing');
                         catalogPlayer.src = item.dataset.src;
@@ -249,139 +270,241 @@
                 });
             });
         }
-
-        if(songListContainer) loadMusicFromApi();
+        
+        loadMusicFromApi();
 
         const form = document.getElementById('contact-form');
-        if(form){
-            const formResult = document.getElementById('form-result');
-            form.addEventListener('submit', function(e) { e.preventDefault(); const formData = new FormData(form); if(formResult) formResult.innerHTML = "Invio..."; fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).then(r => r.json()).then(d => { if(formResult){ if (d.success) { formResult.innerHTML = "Messaggio inviato!"; form.reset(); } else { formResult.innerHTML = `Errore: ${d.message}`; } }}).catch(() => {if(formResult) formResult.innerHTML = "Errore.";}); });
-        }
-
+        const formResult = document.getElementById('form-result');
+        form.addEventListener('submit', function(e) { e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio in corso..."; fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).then(response => response.json()).then(data => { if (data.success) { formResult.innerHTML = "Messaggio inviato con successo!"; form.reset(); } else { formResult.innerHTML = `Errore: ${data.message}`; } }).catch(() => formResult.innerHTML = "Si è verificato un errore."); });
+    
+        const aphorisms = [ "La musica è la vera lingua universale.", "Dove le parole finiscono, inizia la musica.", "La vita è come un pianoforte, ciò che ne esce dipende da come la suoni.", "La musica esprime ciò che non può essere detto e su cui è impossibile rimanere in silenzio.", "Senza musica, la vita sarebbe un errore." ];
         const aphorismContainer = document.getElementById('aphorism-container');
-        if(aphorismContainer){
-            const aphorisms = [ "La musica è la vera lingua universale.", "Dove le parole finiscono, inizia la musica.", "La vita è come un pianoforte, ciò che ne esce dipende da come la suoni." ];
-            const mainContainer = document.querySelector('.container');
-            function showRandomAphorism() { if(!mainContainer) return; const rect = mainContainer.getBoundingClientRect(); const postit = document.createElement('div'); postit.className = 'aphorism-postit'; postit.textContent = aphorisms[Math.floor(Math.random() * aphorisms.length)]; let top, left; do { top = Math.random() * window.innerHeight; left = Math.random() * window.innerWidth; } while ( top > rect.top - 50 && top < rect.bottom + 50 && left > rect.left - 50 && left < rect.right + 50 ); postit.style.top = `${top}px`; postit.style.left = `${left}px`; const rotation = `rotate(${Math.random() * 20 - 10}deg)`; postit.style.setProperty('--transform-start', `${rotation} translateY(20px)`); postit.style.setProperty('--transform-end', `${rotation} translateY(0)`); aphorismContainer.appendChild(postit); setTimeout(() => { postit.remove(); }, 10000); }
-            setInterval(showRandomAphorism, 12000);
-        }
+        const mainContainer = document.querySelector('.container');
+        function showRandomAphorism() { const rect = mainContainer.getBoundingClientRect(); const postit = document.createElement('div'); postit.className = 'aphorism-postit'; postit.textContent = aphorisms[Math.floor(Math.random() * aphorisms.length)]; let top, left; do { top = Math.random() * window.innerHeight; left = Math.random() * window.innerWidth; } while ( top > rect.top - 50 && top < rect.bottom + 50 && left > rect.left - 50 && left < rect.right + 50 ); postit.style.top = `${top}px`; postit.style.left = `${left}px`; const rotation = `rotate(${Math.random() * 20 - 10}deg)`; postit.style.setProperty('--transform-start', `${rotation} translateY(20px)`); postit.style.setProperty('--transform-end', `${rotation} translateY(0)`); aphorismContainer.appendChild(postit); setTimeout(() => { postit.remove(); }, 10000); }
+        setInterval(showRandomAphorism, 12000);
     });
 
-    // --- SCRIPT CHATBOT (CARICATO SU RICHIESTA PER STABILITÀ) ---
-    function initializeChatbot() {
-        const chatbotContainer = document.getElementById('chatbot-container');
-        if (!chatbotContainer) return;
-        
-        let isChatbotLoaded = false;
-
-        const initialBubbleHTML = `<style>#chatbot-bubble-placeholder{position:fixed;bottom:25px;right:25px;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(fausto_immagine.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:9999} #chatbot-bubble-placeholder:hover{transform:scale(1.1)} @media (max-width: 768px){ #chatbot-bubble-placeholder { bottom: 15px; right: 15px; }}</style><div id="chatbot-bubble-placeholder"></div>`;
-        chatbotContainer.innerHTML = initialBubbleHTML;
-
-        const placeholder = document.getElementById('chatbot-bubble-placeholder');
-        if (placeholder) {
-            placeholder.addEventListener('click', loadAndOpenChatbot, { once: true });
-        }
-
-        function loadAndOpenChatbot() {
-            if (isChatbotLoaded) return;
-            isChatbotLoaded = true;
-            
+    // --- SCRIPT CHATBOT (SENZA SESSIONSTORAGE E CON LIBRERIA SICURA) ---
+    (function() {
+        document.addEventListener('DOMContentLoaded', () => {
             const chatbotHTML = `
             <style>
+                :root{--primary-color:#0693e3}
                 #chatbot-bubble{position:fixed;bottom:25px;right:25px;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(fausto_immagine.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:9999}
                 #chatbot-bubble:hover{transform:scale(1.1)}
                 #chatbot-bubble.open{background-image:none;background-color:var(--primary-color)}
                 #chatbot-bubble.open .icon-close{opacity:1}
-                #chatbot-bubble .icon-close{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}
-                @keyframes fadeInBounce { 0% { opacity: 0; transform: translateY(10px) scale(0.9); } 70% { opacity: 1; transform: translateY(-5px) scale(1.05); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
-                #chatbot-notification { position: fixed; bottom: 100px; right: 25px; background: #fff; color: #333; padding: 8px 15px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,.2); z-index: 9998; font-size: 0.9em; opacity: 0; animation: fadeInBounce 1s ease-in-out 3s forwards; }
-                #chatbot-notification::after { content: ''; position: absolute; bottom: -8px; right: 20px; width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 8px solid #fff; }
-                #chatbot-window-wrapper {position:fixed;bottom:140px;right:25px;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out;}
+                #chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}
+                
+                #chatbot-window-wrapper {position:fixed;bottom:100px;right:25px;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out;}
                 #chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}
                 #chatbot-window{position:relative; margin-top: 45px; width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;}
                 .chatbot-header-logo {width: 90px;height: 90px;border-radius: 50%;border: 3px solid #fff;box-shadow: 0 0 10px rgba(0,0,0,0.3);object-fit: cover;position: absolute;top: 0;left: 50%;transform: translateX(-50%); z-index: 10000;}
-                @media (max-width: 768px) { #chatbot-window-wrapper { bottom: 100px; right: 15px; width: calc(100vw - 30px); } #chatbot-bubble { bottom: 15px; right: 15px; } #chatbot-notification { right: 15px; bottom: 90px; } #chatbot-notification::after { right: 25px; } }
-                .chatbot-header {position: relative; background-color: var(--primary-color); color: #fff; padding: 1rem; padding-top: 55px; text-align: center; flex-shrink: 0;}
-                .chatbot-close-btn {position: absolute; top: 10px; right: 15px; font-size: 2.2em; color: white; cursor: pointer; line-height: 1; font-weight: 300;}
+                
+                /* ========================================================================= */
+                /* ===== MODIFICA #1: Stili per rendere il chatbot più piccolo su mobile ===== */
+                /* ========================================================================= */
+                @media (max-width: 768px) {
+                    #chatbot-window-wrapper {
+                        width: calc(100vw - 20px); /* Larghezza quasi totale ma con un po' di margine */
+                        height: 75vh; /* Altezza ridotta */
+                        max-height: 80vh;
+                        bottom: 85px; /* Alzato per non sovrapporre la bolla */
+                        right: 10px;
+                    }
+                    #chatbot-bubble {
+                        bottom: 15px;
+                        right: 15px;
+                    }
+                }
+
+                /* ========================================================================= */
+                /* ===== MODIFICA #2: Stili per il nuovo pulsante di chiusura          ===== */
+                /* ========================================================================= */
+                .chatbot-header {
+                    position: relative; /* Necessario per posizionare il pulsante di chiusura */
+                    background-color: var(--primary-color);
+                    color: #fff;
+                    padding: 1rem;
+                    padding-top: 55px;
+                    text-align: center;
+                    flex-shrink: 0;
+                }
+                .chatbot-close-btn {
+                    position: absolute;
+                    top: 10px;
+                    right: 15px;
+                    font-size: 2.2em;
+                    color: white;
+                    cursor: pointer;
+                    line-height: 1;
+                    font-weight: 300;
+                }
+
                 .chatbot-messages{flex-grow:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column}
                 .message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}
                 .message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0}
                 .message-text{padding:10px 15px;border-radius:18px;line-height:1.4;overflow-wrap: break-word; word-break: break-word;text-align: left;}
                 .message.user .message-text{background-color:#eef2f5;color:#333;border-bottom-right-radius:4px}
                 .message.bot .message-text{background-color:var(--primary-color);color:#fff;border-bottom-left-radius:4px}
+                
+                .message-text ul { list-style: none; padding: 0; margin: 0; }
+                .message-text li { margin-bottom: 8px; }
+                .message-text a.chatbot-song-link { color: #fff; font-weight: 500; text-decoration: none; cursor: pointer; display: inline-block; padding: 2px 0; border-bottom: 1px dotted #fff;}
+                .message-text a.chatbot-song-link:hover { color: var(--secondary-color); border-bottom-color: var(--secondary-color); }
+                .message-text a.chatbot-song-link.playing { color: var(--secondary-color); font-weight: bold; border-bottom: 1px solid var(--secondary-color); }
+
                 .chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}
                 .chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid var(--primary-color)}
                 .chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}
             </style>
-            <div id="chatbot-notification">Ciao! Hai domande?</div>
-            <div id="chatbot-bubble"><svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg></div>
-            <div id="chatbot-window-wrapper"><img src="fausto_immagine.jpg" alt="Fausto AI" class="chatbot-header-logo"><div id="chatbot-window"><div class="chatbot-header"><div><h3>Fausto AI</h3><small>Assistente Virtuale</small></div><span class="chatbot-close-btn">&times;</span></div><div class="chatbot-messages" id="chatbot-messages"></div><div class="chatbot-input"><input type="text" id="chatbot-input-field" name="chatbot_message" autocomplete="off" placeholder="Scrivi un messaggio..."><button id="chatbot-send-btn"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg></button></div></div></div>`;
-            
-            chatbotContainer.innerHTML = chatbotHTML;
-            
+            <div id="chatbot-bubble">
+                <svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
+            </div>
+            <div id="chatbot-window-wrapper">
+                <img src="fausto_immagine.jpg" alt="Fausto AI" class="chatbot-header-logo">
+                <div id="chatbot-window">
+                    <div class="chatbot-header">
+                        <div><h3>Fausto AI</h3><small>Assistente Virtuale</small></div>
+                        <!-- =============================================================== -->
+                        <!-- ===== MODIFICA #3: Aggiunto il pulsante di chiusura (la X)  ===== -->
+                        <!-- =============================================================== -->
+                        <span class="chatbot-close-btn">&times;</span>
+                    </div>
+                    <div class="chatbot-messages" id="chatbot-messages"></div>
+                    <div class="chatbot-input">
+                        <input type="text" id="chatbot-input-field" name="chatbot_message" autocomplete="off" placeholder="Scrivi un messaggio...">
+                        <button id="chatbot-send-btn"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg></button>
+                    </div>
+                </div>
+            </div>
+        `;
+    
+        const container = document.getElementById('chatbot-container');
+        if (container) {
+            container.innerHTML = chatbotHTML;
             const webhookUrl = 'https://n8n.automaita.it/webhook/ffausto-ai-chat';
             const bubble = document.getElementById('chatbot-bubble');
             const windowWrapper = document.getElementById('chatbot-window-wrapper');
             const messagesEl = document.getElementById('chatbot-messages');
             const inputField = document.getElementById('chatbot-input-field');
             const sendBtn = document.getElementById('chatbot-send-btn');
+            
+            // =========================================================================
+            // ===== MODIFICA #4: Selettore per il nuovo pulsante di chiusura        =====
+            // =========================================================================
             const closeBtn = document.querySelector('.chatbot-close-btn');
-            const notification = document.getElementById('chatbot-notification');
 
-            if (!bubble || !windowWrapper || !closeBtn) return;
+            const converter = new showdown.Converter();
+            let currentChatPlayingLink = null;
 
             const toggleChat = () => {
-                const isChatOpen = windowWrapper.classList.contains('open');
-                if(notification) notification.style.display = 'none'; 
-                if (isChatOpen) {
-                    windowWrapper.classList.remove('open');
-                    bubble.classList.remove('open');
-                    bubble.style.display = 'flex';
-                } else {
-                    windowWrapper.classList.add('open');
-                    bubble.classList.add('open');
-                    bubble.style.display = 'none';
-                    if (inputField) setTimeout(() => inputField.focus(), 350);
+                windowWrapper.classList.toggle('open');
+                bubble.classList.toggle('open');
+                if (windowWrapper.classList.contains('open')) {
+                    setTimeout(() => inputField.focus(), 300); // Aggiunto un piccolo ritardo per la transizione
                 }
             };
-            
-            bubble.addEventListener('click', toggleChat);
-            closeBtn.addEventListener('click', toggleChat);
 
             const addMessage = (text, type) => {
-                if (!messagesEl) return;
-                const msgDiv = document.createElement('div'); msgDiv.className = `message ${type}`;
-                if (type === 'bot') { const avatar = document.createElement('img'); avatar.src = 'fausto_immagine.jpg'; avatar.className = 'message-avatar'; msgDiv.appendChild(avatar); }
+                const msgDiv = document.createElement('div');
+                msgDiv.className = `message ${type}`;
+                
+                if (type === 'bot') {
+                    const avatar = document.createElement('img'); avatar.className = 'message-avatar'; avatar.src = 'fausto_immagine.jpg'; msgDiv.appendChild(avatar);
+                }
+                
                 const textDiv = document.createElement('div'); textDiv.className = 'message-text';
-                textDiv.innerHTML = DOMPurify.sanitize(text);
+                textDiv.innerHTML = DOMPurify.sanitize(text, { ADD_ATTR: ['data-src', 'class', 'data-original-text'], ADD_TAGS: ['a', 'ul', 'li'] });
+                
                 msgDiv.appendChild(textDiv);
                 messagesEl.appendChild(msgDiv);
                 messagesEl.scrollTop = messagesEl.scrollHeight;
+
+                const songLinks = textDiv.querySelectorAll('.chatbot-song-link');
+                songLinks.forEach(link => {
+                    const originalText = link.textContent;
+                    link.textContent = `▶️ ${originalText}`;
+                    link.dataset.originalText = originalText;
+
+                    link.addEventListener('click', (event) => {
+                        event.preventDefault();
+                        const songUrl = link.dataset.src;
+                        if (!songUrl) return;
+                        
+                        const catalogPlayer = document.getElementById('catalog-audio-player');
+                        
+                        if (currentChatPlayingLink === link) {
+                            catalogPlayer.pause();
+                        } else {
+                            if (typeof window.resetPlayingState === 'function') window.resetPlayingState();
+                            
+                            catalogPlayer.src = songUrl;
+                            catalogPlayer.play();
+                            
+                            if (currentChatPlayingLink) {
+                                currentChatPlayingLink.textContent = `▶️ ${currentChatPlayingLink.dataset.originalText}`;
+                                currentChatPlayingLink.classList.remove('playing');
+                            }
+                            
+                            link.textContent = `❚❚ In Riproduzione...`;
+                            link.classList.add('playing');
+                            currentChatPlayingLink = link;
+                        }
+                    });
+                });
             };
+            
+            const mainPlayer = document.getElementById('catalog-audio-player');
+            const resetChatLink = () => {
+                if (currentChatPlayingLink) {
+                    currentChatPlayingLink.textContent = `▶️ ${currentChatPlayingLink.dataset.originalText}`;
+                    currentChatPlayingLink.classList.remove('playing');
+                    currentChatPlayingLink = null;
+                }
+            };
+            mainPlayer.addEventListener('pause', resetChatLink);
+            mainPlayer.addEventListener('ended', resetChatLink);
 
             const sendMessage = async () => {
-                if(!inputField) return;
                 const userMessage = inputField.value.trim(); if (userMessage === '') return;
                 addMessage(userMessage, 'user'); inputField.value = '';
                 try {
-                    const response = await fetch(`${webhookUrl}?user_message=${encodeURIComponent(userMessage)}&conversation_id=session-${Date.now()}`, { method: 'POST' });
+                    if (webhookUrl.includes('INCOLLA_QUI')) { addMessage("Il chatbot non è configurato.", 'bot'); return; }
+                    const conversationId = 'session-' + Date.now(); 
+                    const response = await fetch(`${webhookUrl}?user_message=${encodeURIComponent(userMessage)}&conversation_id=${conversationId}`, { method: 'POST' });
                     if (!response.ok) throw new Error("Network response");
                     const data = await response.json(); addMessage(data.response || "C'è stato un problema.", 'bot');
                 } catch (error) { addMessage('Spiacente, si è verificato un errore.', 'bot'); }
             };
+            
+            bubble.addEventListener('click', toggleChat);
+            // =========================================================================
+            // ===== MODIFICA #5: Aggiunto l'evento di click al nuovo pulsante       =====
+            // =========================================================================
+            if(closeBtn) {
+                closeBtn.addEventListener('click', toggleChat);
+            }
 
-            if (sendBtn && inputField) {
-                sendBtn.addEventListener('click', sendMessage);
-                inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
+            sendBtn.addEventListener('click', sendMessage);
+            inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
+
+            // ==================================================================================
+            // ===== MODIFICA #6: Il chatbot si apre solo su desktop, rimane chiuso su mobile =====
+            // ==================================================================================
+            const isMobile = window.innerWidth <= 768;
+            if (!isMobile) {
+                 setTimeout(() => {
+                    if(!windowWrapper.classList.contains('open')) {
+                        toggleChat();
+                    }
+                }, 1500);
             }
             
-            addMessage("Ciao! Sono Fausto AI, il tuo assistente virtuale. Come posso aiutarti a trovare il brano perfetto per te?", 'bot');
-            
-            setTimeout(toggleChat, 100);
+            addMessage("Ciao! Sono Fausto AI, assistente virtuale. Sono qui per aiutarti a trovare il tuo brano ideale. Cosa stai cercando?", 'bot');
         }
-
-        initializeChatbot();
     });
+})();
   </script>
 </body>
 </html>
