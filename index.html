@@ -163,7 +163,23 @@
             document.getElementById('contact-modal').style.display = 'flex'; 
             document.querySelector('#contact-modal select[name="service_type"]').value = 'canzone_personalizzata'; 
         });
-        document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', e => document.getElementById(e.currentTarget.dataset.target).style.display = 'none'));
+
+        // =========================================================================================================
+        // ===== MODIFICA #1: Correzione per la chiusura del modale su mobile (aggiunto evento 'touchend') =====
+        // =========================================================================================================
+        const closeModal = (event) => {
+            event.preventDefault(); // Previene eventi "fantasma" come il click dopo il tocco
+            const targetModalId = event.currentTarget.dataset.target;
+            if (targetModalId) {
+                document.getElementById(targetModalId).style.display = 'none';
+            }
+        };
+
+        document.querySelectorAll('.modal-close').forEach(btn => {
+            btn.addEventListener('click', closeModal);
+            btn.addEventListener('touchend', closeModal); // Aggiunto listener per il tocco
+        });
+
 
         // --- LOGICA CATALOGO MUSICALE ---
         const songListContainer = document.getElementById('song-list-container');
@@ -236,7 +252,6 @@
             addEventListenersToSongs();
         }
         
-        // Funzione globale per resettare lo stato di riproduzione
         window.resetPlayingState = function() {
             if (currentPlayingItem) {
                 currentPlayingItem.classList.remove('playing');
@@ -258,9 +273,7 @@
             document.querySelectorAll('.song-item').forEach(item => {
                 item.addEventListener('click', () => {
                     const isCurrentlyPlaying = item.classList.contains('playing');
-                    
                     if (isCurrentlyPlaying) {
-                        // Se clicco sullo stesso brano, metto in pausa o riprendo
                         if (catalogPlayer.paused) { 
                             catalogPlayer.play(); 
                             item.querySelector('.play-btn i').className = 'fas fa-pause';
@@ -269,8 +282,7 @@
                             item.querySelector('.play-btn i').className = 'fas fa-play';
                         }
                     } else {
-                        // Se clicco su un nuovo brano
-                        window.resetPlayingState(); // Resetto lo stato precedente
+                        window.resetPlayingState(); 
                         currentPlayingItem = item;
                         item.classList.add('playing');
                         catalogPlayer.src = item.dataset.src;
@@ -283,12 +295,10 @@
         
         loadMusicFromApi();
 
-        // --- FORM DI CONTATTO ---
         const form = document.getElementById('contact-form');
         const formResult = document.getElementById('form-result');
         form.addEventListener('submit', function(e) { e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio in corso..."; fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).then(response => response.json()).then(data => { if (data.success) { formResult.innerHTML = "Messaggio inviato con successo!"; form.reset(); } else { formResult.innerHTML = `Errore: ${data.message}`; } }).catch(() => formResult.innerHTML = "Si è verificato un errore."); });
     
-        // --- AFORISMI ---
         const aphorisms = [ "La musica è la vera lingua universale.", "Dove le parole finiscono, inizia la musica.", "La vita è come un pianoforte, ciò che ne esce dipende da come la suoni.", "La musica esprime ciò che non può essere detto e su cui è impossibile rimanere in silenzio.", "Senza musica, la vita sarebbe un errore." ];
         const aphorismContainer = document.getElementById('aphorism-container');
         const mainContainer = document.querySelector('.container');
@@ -297,7 +307,7 @@
     });
   </script>
 
-  <!-- SCRIPT DEL CHATBOT (ISOLATO PER SICUREZZA) -->
+  <!-- SCRIPT DEL CHATBOT (ISOLATO) -->
   <script>
     (function() {
         document.addEventListener('DOMContentLoaded', () => {
@@ -309,28 +319,14 @@
                 #chatbot-bubble.open{background-image:none;background-color:var(--primary-color)}
                 #chatbot-bubble.open .icon-close{opacity:1}
                 #chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}
-                
-                /* ========================================================================= */
-                /* ===== MODIFICA #1: Posizione del chatbot alzata (sia PC che Mobile) ===== */
-                /* ========================================================================= */
                 #chatbot-window-wrapper {position:fixed;bottom:140px;right:25px;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out;}
-                
                 #chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}
                 #chatbot-window{position:relative; margin-top: 45px; width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;}
                 .chatbot-header-logo {width: 90px;height: 90px;border-radius: 50%;border: 3px solid #fff;box-shadow: 0 0 10px rgba(0,0,0,0.3);object-fit: cover;position: absolute;top: 0;left: 50%;transform: translateX(-50%); z-index: 10000;}
-                
                 @media (max-width: 768px) {
-                    #chatbot-window-wrapper {
-                        bottom: 100px; /* Alzato anche su mobile */
-                        right: 15px;
-                        width: calc(100vw - 30px);
-                    }
-                    #chatbot-bubble {
-                        bottom: 15px;
-                        right: 15px;
-                    }
+                    #chatbot-window-wrapper { bottom: 100px; right: 15px; width: calc(100vw - 30px); }
+                    #chatbot-bubble { bottom: 15px; right: 15px; }
                 }
-
                 .chatbot-header {position: relative; background-color: var(--primary-color); color: #fff; padding: 1rem; padding-top: 55px; text-align: center; flex-shrink: 0;}
                 .chatbot-close-btn {position: absolute; top: 10px; right: 15px; font-size: 2.2em; color: white; cursor: pointer; line-height: 1; font-weight: 300;}
                 .chatbot-messages{flex-grow:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column}
@@ -383,7 +379,14 @@
             const toggleChat = () => {
                 windowWrapper.classList.toggle('open');
                 bubble.classList.toggle('open');
-                if (windowWrapper.classList.contains('open')) {
+                
+                // =========================================================================================================
+                // ===== MODIFICA #2: Nasconde la bolla quando la chat è aperta e la mostra quando è chiusa             =====
+                // =========================================================================================================
+                const isChatOpen = windowWrapper.classList.contains('open');
+                bubble.style.display = isChatOpen ? 'none' : 'flex';
+
+                if (isChatOpen) {
                     setTimeout(() => inputField.focus(), 300);
                 }
             };
