@@ -100,7 +100,6 @@
   <div id="contact-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="contact-modal">&times;</span><h2>Contattami per il tuo Progetto</h2><form id="contact-form" class="contact-form" autocomplete="on"><input type="hidden" name="access_key" value="9013a8d5-0901-42a0-b9e6-4c45553f960d"/><input type="text" name="name" placeholder="Il tuo Nome" required autocomplete="name"/><input type="email" name="email" placeholder="La tua Email" required autocomplete="email"/><input type="tel" name="phone" placeholder="Il tuo Telefono (Opzionale)" autocomplete="tel"/><select name="service_type"><option value="">Seleziona il tipo di servizio</option><option value="canzone_personalizzata">Canzone Personalizzata</option><option value="composizione_artista">Composizione per Artista</option><option value="intrattenimento_live">Intrattenimento Live</option><option value="altro">Altro</option></select><textarea name="message" rows="4" placeholder="Descrivi la tua idea o richiesta..." required></textarea><button type="submit" class="button collabora">Invia Messaggio</button></form><div id="form-result"></div></div></div>
   
   <div id="chatbot-container"></div>
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
   
@@ -161,7 +160,7 @@
             if (!modal) return;
             if (modalId === 'music-modal') {
                 if (catalogPlayer) {
-                    window.pauseAllAudio();
+                    catalogPlayer.pause();
                     catalogPlayer.src = '';
                     catalogPlayer.load();
                     window.resetPlayingState();
@@ -196,7 +195,7 @@
 
         window.resetPlayingState = function() {
             if (currentPlayingItem) {
-                currentPlayingitem.classList.remove('playing');
+                currentPlayingItem.classList.remove('playing');
                 currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
                 currentPlayingItem = null;
             }
@@ -204,14 +203,14 @@
 
         if(catalogPlayer) {
             catalogPlayer.addEventListener('play', () => {
-                window.pauseAllAudio(catalogPlayer);
                 if (currentPlayingItem && catalogPlayer.src === currentPlayingItem.dataset.src) {
                     currentPlayingItem.classList.add('playing');
                     currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-pause';
                 }
             });
             catalogPlayer.addEventListener('pause', () => {
-                if (currentPlayingItem && catalogPlayer.src === currentPlayingItem.dataset.src) {
+                if (currentPlayingItem) {
+                    currentPlayingItem.classList.remove('playing');
                     currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
                 }
             });
@@ -225,7 +224,7 @@
                     if (isPlayingThisItem) {
                         if (catalogPlayer.paused) { catalogPlayer.play(); } else { catalogPlayer.pause(); }
                     } else {
-                        window.resetPlayingState();
+                        window.resetPlayingState(); // Resetta lo stato precedente
                         currentPlayingItem = item;
                         catalogPlayer.src = item.dataset.src;
                         catalogPlayer.play();
@@ -246,7 +245,7 @@
         setInterval(showRandomAphorism, 12000);
     });
 
-    // --- LOGICA CHATBOT (CON PLAYER ORIGINALE RIPRISTINATO E LAYOUT CORRETTO) ---
+    // --- LOGICA CHATBOT (CON PLAYER ORIGINALE INTEGRATO CORRETTAMENTE) ---
     (function() {
         document.addEventListener('DOMContentLoaded', () => {
             const chatbotHTML = `
@@ -259,7 +258,7 @@
                 #chatbot-bubble.open .icon-close{opacity:1}
                 #chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}
                 
-                /* ===== POSIZIONE FINESTRA CHATBOT CORRETTA ===== */
+                /* POSIZIONE FINESTRA CHATBOT CORRETTA */
                 #chatbot-window-wrapper { position:fixed; bottom: 150px; right:25px; width:400px; max-width:calc(100vw - 30px); height:70vh; max-height:600px; z-index:9998; transform:translateY(20px) scale(.95); opacity:0; visibility:hidden; transition:all .3s ease-in-out; }
                 #chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}
                 
@@ -287,9 +286,11 @@
                 .chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}
                 .chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid var(--primary-color)}
                 .chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}
-                /* Stile per il link-player */
-                .message-text a.chatbot-song-link { color: #fff; text-decoration: underline; font-weight: bold; cursor: pointer; }
-                .message-text a.chatbot-song-link.playing { color: #e3a006; font-style: italic; }
+                
+                /* STILE PER IL LINK-PLAYER DEL VECCHIO CODICE */
+                .message-text a.chatbot-song-link { color: #fff; font-weight: 500; text-decoration: none; cursor: pointer; display: inline-block; padding: 2px 0; border-bottom: 1px dotted #fff;}
+                .message-text a.chatbot-song-link:hover { color: #e3a006; border-bottom-color: #e3a006; }
+                .message-text a.chatbot-song-link.playing { color: #e3a006; font-weight: bold; border-bottom: 1px solid #e3a006; }
             </style>
             <div id="chatbot-bubble"> <svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg> </div> <div id="chatbot-window-wrapper"> <img src="fausto_immagine.jpg" alt="Fausto AI" class="chatbot-header-logo"> <div id="chatbot-window"> <div class="chatbot-header"> <div><h3>Fausto AI</h3><small>Assistente Virtuale</small></div> <span class="chatbot-close-btn">&times;</span> </div> <div class="chatbot-messages" id="chatbot-messages"></div> <div class="chatbot-input"> <input type="text" id="chatbot-input-field" name="chatbot_message" autocomplete="off" placeholder="Scrivi un messaggio..."> <button id="chatbot-send-btn"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg></button> </div> </div> </div>
             `;
@@ -315,8 +316,7 @@
                         setTimeout(() => inputField.focus(), 300);
                     }
                 };
-                
-                // Funzione per resettare lo stato del link nella chat
+
                 const resetChatLinkState = () => {
                     if (currentChatPlayingLink) {
                         currentChatPlayingLink.textContent = `▶️ ${currentChatPlayingLink.dataset.originalText}`;
@@ -324,19 +324,24 @@
                         currentChatPlayingLink = null;
                     }
                 };
-
-                // Collega la funzione di reset agli eventi del player principale
-                if (mainPlayer) {
-                    mainPlayer.addEventListener('pause', resetChatLinkState);
-                    mainPlayer.addEventListener('ended', resetChatLinkState);
-                }
-
-                // Sovrascrivi la funzione resetPlayingState globale per includere anche il reset del link della chat
-                const originalResetPlayingState = window.resetPlayingState;
+                
+                // Sovrascrivi la funzione globale per resettare tutto
+                const originalReset = window.resetPlayingState;
                 window.resetPlayingState = function() {
-                    originalResetPlayingState(); // Esegue la logica originale per il catalogo
-                    resetChatLinkState(); // Esegue la logica per la chat
+                    if (originalReset) originalReset();
+                    resetChatLinkState();
                 };
+
+                // Ascolta gli eventi del player per sincronizzare lo stato
+                if (mainPlayer) {
+                    mainPlayer.addEventListener('pause', () => {
+                        // Se la pausa non è dovuta alla fine del brano, resetta lo stato
+                        if (!mainPlayer.ended) {
+                           window.resetPlayingState();
+                        }
+                    });
+                    mainPlayer.addEventListener('ended', window.resetPlayingState);
+                }
                 
                 const addMessage = (rawText, type) => {
                     const msgDiv = document.createElement('div');
@@ -346,32 +351,35 @@
                         const avatar = document.createElement('img'); avatar.className = 'message-avatar'; avatar.src = 'fausto_immagine.jpg'; msgDiv.appendChild(avatar);
                     }
                     
-                    const textDiv = document.createElement('div');
-                    textDiv.className = 'message-text';
+                    const textDiv = document.createElement('div'); textDiv.className = 'message-text';
                     
-                    // Converte il testo (che può contenere markdown) in HTML
-                    const htmlText = new showdown.Converter().makeHtml(rawText);
-                    textDiv.innerHTML = DOMPurify.sanitize(htmlText, { ADD_ATTR: ['href', 'target'], ADD_TAGS: ['a', 'ul', 'li', 'strong', 'br', 'p'] });
+                    // Sanifica l'input permettendo gli attributi necessari per il player
+                    // Questa è la chiave per far funzionare il vecchio codice
+                    textDiv.innerHTML = DOMPurify.sanitize(rawText, { 
+                        ADD_TAGS: ['a', 'ul', 'li', 'strong'],
+                        ADD_ATTR: ['data-src', 'class', 'data-original-text', 'href', 'target'] 
+                    });
                     
                     msgDiv.appendChild(textDiv);
                     messagesEl.appendChild(msgDiv);
 
-                    // Trova tutti i link che puntano a file audio e li rende interattivi
-                    textDiv.querySelectorAll('a[href$=".mp3"], a[href$=".wav"], a[href$=".ogg"], a[href$=".m4a"]').forEach(link => {
+                    // Cerca i link specifici per le canzoni, come nel vecchio codice
+                    textDiv.querySelectorAll('.chatbot-song-link').forEach(link => {
                         const originalText = link.textContent;
-                        link.dataset.originalText = originalText;
                         link.textContent = `▶️ ${originalText}`;
-                        link.classList.add('chatbot-song-link');
+                        link.dataset.originalText = originalText;
 
                         link.addEventListener('click', (event) => {
                             event.preventDefault();
-                            
+                            const songUrl = link.dataset.src;
+                            if (!songUrl) return;
+
                             if (currentChatPlayingLink === link) {
                                 mainPlayer.pause();
                             } else {
-                                window.resetPlayingState(); // Resetta lo stato di qualsiasi cosa stia suonando
+                                window.resetPlayingState();
                                 
-                                mainPlayer.src = link.href;
+                                mainPlayer.src = songUrl;
                                 mainPlayer.play();
                                 
                                 link.textContent = `❚❚ In Riproduzione...`;
@@ -408,10 +416,11 @@
                     }, 1500);
                 }
                 
-                addMessage("Ciao! Sono Fausto AI, il tuo assistente virtuale. Sono qui per aiutarti a trovare il tuo brano ideale. Cosa stai cercando?", 'bot');
+                addMessage("Ciao! Sono Fausto AI, assistente virtuale. Sono qui per aiutarti a trovare il tuo brano ideale. Cosa stai cercando?", 'bot');
             }
         });
     })();
   </script>
+
 </body>
 </html>
