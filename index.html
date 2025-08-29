@@ -153,6 +153,9 @@
                 catalogPlayer.removeAttribute('src'); 
                 catalogPlayer.load();
                 if (window.resetPlayingState) window.resetPlayingState();
+                if (audioInitialized && !bgAudio.muted && bgAudio.paused) {
+                    bgAudio.play().catch(e => console.error("Errore nel riavviare l'audio di sottofondo alla chiusura del modale", e));
+                }
             }
             modal.style.display = 'none';
         }
@@ -177,6 +180,7 @@
         const songListContainer = document.getElementById('song-list-container');
         const filterContainer = document.getElementById('filter-container');
         let allSongs = [], currentPlayingItem = null, currentFilters = { genre: 'all', category: 'all', argomento: 'all' };
+        let isAudioTransitioning = false; // Flag per prevenire doppi click e crash
 
         async function loadMusicFromApi() {
             try {
@@ -219,6 +223,7 @@
             } else { songListContainer.innerHTML = '<p>Nessun brano corrisponde ai filtri.</p>'; }
             addEventListenersToSongs();
         }
+        
         window.resetPlayingState = function() {
             if (currentPlayingItem) {
                 currentPlayingItem.classList.remove('playing');
@@ -228,66 +233,65 @@
         }
 
         // =========================================================================================
-        // ===== CODICE PLAYER AUDIO ROBUSTO PER DESKTOP E MOBILE                          =====
+        // ===== NUOVA LOGICA PLAYER AUDIO ROBUSTA (ANTI-CRASH MOBILE)                     =====
         // =========================================================================================
         if(catalogPlayer) {
-            // Quando una canzone del catalogo finisce, ripristina lo stato e fai ripartire la musica di sottofondo
-            catalogPlayer.addEventListener('ended', () => { 
-                if (audioInitialized && !bgAudio.muted) {
-                    bgAudio.play();
+            catalogPlayer.addEventListener('play', () => {
+                if (audioInitialized) bgAudio.pause();
+                if (currentPlayingItem) currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-pause';
+            });
+
+            catalogPlayer.addEventListener('pause', () => {
+                if (currentPlayingItem) currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
+                if (document.getElementById('music-modal').style.display === 'flex' && audioInitialized && !bgAudio.muted) {
+                    bgAudio.play().catch(e => console.error("BG audio restart failed on pause:", e));
                 }
+            });
+
+            catalogPlayer.addEventListener('ended', () => { 
                 window.resetPlayingState(); 
+                if (audioInitialized && !bgAudio.muted) {
+                    bgAudio.play().catch(e => console.error("BG audio restart failed on end:", e));
+                }
             });
         }
         
         function addEventListenersToSongs() {
             document.querySelectorAll('.song-item').forEach(item => {
-                // Usiamo una funzione `async` per poter attendere (`await`) la conferma della riproduzione
-                item.addEventListener('click', async () => {
-                    const isCurrentlyPlayingItem = item.classList.contains('playing');
-                    const icon = item.querySelector('.play-btn i');
+                item.addEventListener('click', () => {
+                    if (isAudioTransitioning) return; // Se un'operazione è in corso, blocca il click
+
+                    const isCurrentlyPlayingItem = item === currentPlayingItem;
 
                     if (isCurrentlyPlayingItem) {
-                        // Logica per il brano GIÀ attivo (play/pausa)
                         if (catalogPlayer.paused) {
-                            try {
-                                if (audioInitialized) bgAudio.pause(); // Metti in pausa il sottofondo prima di riprendere
-                                await catalogPlayer.play();
-                                icon.className = 'fas fa-pause';
-                            } catch (err) {
-                                console.error("La ripresa della riproduzione è fallita:", err);
-                                if (audioInitialized && !bgAudio.muted) bgAudio.play(); // Se fallisce, ripristina il sottofondo
-                            }
+                            catalogPlayer.play();
                         } else {
                             catalogPlayer.pause();
-                            icon.className = 'fas fa-play';
-                            if (audioInitialized && !bgAudio.muted) bgAudio.play(); // Riprendi il sottofondo
                         }
                     } else {
-                        // Logica per un NUOVO brano
-                        window.resetPlayingState(); // Resetta l'interfaccia del brano precedente
-
-                        if (audioInitialized) {
-                            bgAudio.pause(); // Metti in pausa il sottofondo
-                        }
-
-                        currentPlayingItem = item;
-                        catalogPlayer.src = item.dataset.src;
+                        isAudioTransitioning = true;
+                        catalogPlayer.pause();
+                        window.resetPlayingState();
                         
-                        try {
-                            // Tenta di avviare la riproduzione e attendi il risultato
-                            await catalogPlayer.play();
-                            
-                            // Se la riproduzione parte con successo:
-                            item.classList.add('playing');
-                            icon.className = 'fas fa-pause';
-                        } catch (err) {
-                            console.error("L'avvio della riproduzione è fallito:", err);
-                            // Se fallisce (bloccato dal browser, ecc.), resetta tutto a uno stato pulito
-                            window.resetPlayingState(); 
-                            if (audioInitialized && !bgAudio.muted) {
-                                bgAudio.play(); // Fai ripartire la musica di sottofondo
-                            }
+                        currentPlayingItem = item;
+                        item.classList.add('playing');
+                        item.querySelector('.play-btn i').className = 'fas fa-spinner fa-spin'; // Spinner di caricamento
+
+                        catalogPlayer.src = item.dataset.src;
+                        const playPromise = catalogPlayer.play();
+
+                        if (playPromise !== undefined) {
+                            playPromise.then(() => {
+                                isAudioTransitioning = false; // Transizione completata
+                            }).catch(error => {
+                                console.error("La riproduzione è stata bloccata dal browser:", error);
+                                window.resetPlayingState();
+                                if (audioInitialized && !bgAudio.muted) {
+                                    bgAudio.play();
+                                }
+                                isAudioTransitioning = false; // Transizione fallita, sblocca
+                            });
                         }
                     }
                 });
