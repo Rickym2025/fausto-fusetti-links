@@ -53,7 +53,6 @@
     #aphorism-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; pointer-events: none; }
     @keyframes fadeInOut { 0% { opacity: 0; transform: var(--transform-start); } 15% { opacity: 1; transform: var(--transform-end); } 85% { opacity: 1; transform: var(--transform-end); } 100% { opacity: 0; transform: var(--transform-start); } }
     .aphorism-postit { position: absolute; background-color: #fefabc; color: #333; padding: 15px; border-radius: 5px; box-shadow: 5px 5px 15px rgba(0,0,0,0.3); max-width: 250px; font-family: 'Georgia', serif; animation: fadeInOut 10s ease-in-out forwards; }
-    
     #audio-start-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.9); display: flex; align-items: center; justify-content: center; z-index: 100000; backdrop-filter: blur(10px); }
     #audio-start-content { background: rgba(6, 147, 227, 0.1); border: 2px solid var(--primary-color); padding: 40px; border-radius: 20px; text-align: center; max-width: 500px; margin: 20px; }
     #audio-start-content h2 { color: var(--primary-color); margin-bottom: 15px; font-size: 1.8em; }
@@ -63,7 +62,6 @@
   </style>
 </head>
 <body>
-
   <div id="audio-start-overlay">
     <div id="audio-start-content">
       <h2><i class="fas fa-music"></i> Benvenuto!</h2>
@@ -71,28 +69,23 @@
       <button id="start-audio-btn">Avvia l'Esperienza Musicale</button>
     </div>
   </div>
-
-  <video autoplay muted loop playsinline preload="auto" id="background-video" poster="immagine_sfondo.png"><source src="video_sfondo_compressed.mp4" type="video/mp4" /></video>
-  <audio loop preload="auto" id="background-audio"><source src="7a-Controtempo-compresso.mp3" type="audio/mpeg" /></audio>
+<video autoplay muted loop playsinline preload="auto" id="background-video" poster="immagine_sfondo.png"><source src="video_sfondo_compressed.mp4" type="video/mp4" /></video>
+<audio loop preload="auto" id="background-audio"><source src="7a-Controtempo-compresso.mp3" type="audio/mpeg" /></audio>
   <div id="aphorism-container"></div>
-  
   <div class="container-wrapper">
     <div class="container">
       <div id="audio-cta"><span class="cta-text">Attiva la musica</span><div id="mute-btn-icon"><i class="fas fa-volume-mute"></i></div></div>
       <img src="logo6.jpg" alt="Logo FF Musica" class="profile-logo">
       <h1>Fausto Fusetti</h1>
       <p class="bio">Con 40 anni di esperienza come musicista, compositore e autore, trasformo emozioni in musica. La mia versatilità mi permette di spaziare tra ogni genere: dal liscio al moderno, dal jazz alle colonne sonore per la pubblicità.<br><br>Come polistrumentista (pianoforte, chitarra, tromba, chitarra basso e voce), offro un servizio completo per la creazione di canzoni personalizzate. Se sei un'orchestra, un cantante o un editore in cerca di un brano inedito e su misura, sei nel posto giusto, ti posso fornire: base con tracce aperte, musica con spartito e parole.</p>
-      
-      <button id="open-music-modal" class="button"><i class="fas fa-music"></i>Catalogo Musicale</button>
-      <button id="open-video-modal" class="button"><i class="fas fa-video"></i>Guarda i Video</button>
-      <button id="open-services-modal" class="button service-highlight"><i class="fas fa-heart"></i>Canzoni Personalizzate</button>
-      <button id="open-contact-modal" class="button collabora"><i class="fas fa-pencil-alt"></i>Contattami per un Progetto</button>
-      <div class="social-icons"><a href="https://www.instagram.com/faustofusetti/" target="_blank"><i class="fa-brands fa-instagram"></i></a><a href="https://www.facebook.com/fausto.fusetti.9" target="_blank"><i class="fa-brands fa-facebook"></i></a><a href="https://www.youtube.com/@faustofusetti5859" target="_blank"><i class="fa-brands fa-youtube"></i></a></div>
-    </div>
+<button id="open-music-modal" class="button"><i class="fas fa-music"></i>Catalogo Musicale</button>
+  <button id="open-video-modal" class="button"><i class="fas fa-video"></i>Guarda i Video</button>
+  <button id="open-services-modal" class="button service-highlight"><i class="fas fa-heart"></i>Canzoni Personalizzate</button>
+  <button id="open-contact-modal" class="button collabora"><i class="fas fa-pencil-alt"></i>Contattami per un Progetto</button>
+  <div class="social-icons"><a href="https://www.instagram.com/faustofusetti/" target="_blank"><i class="fa-brands fa-instagram"></i></a><a href="https://www.facebook.com/fausto.fusetti.9" target="_blank"><i class="fa-brands fa-facebook"></i></a><a href="https://www.youtube.com/@faustofusetti5859" target="_blank"><i class="fa-brands fa-youtube"></i></a></div>
+</div>
   </div>
-
   <div id="video-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="video-modal">&times;</span><h2>Video Selezionati</h2><a href="https://www.youtube.com/watch?v=7s3-7DV38IA" target="_blank" class="button">Produzioni Varie</a><a href="https://www.youtube.com/watch?v=Y8YqyCT7h5E" target="_blank" class="button">Ascolta "Noi"</a><a href="https://www.youtube.com/watch?v=igexCZ24Twg" target="_blank" class="button">Ascolta "Per Te"</a></div></div>
-  
   <div id="music-modal" class="modal-overlay">
     <div class="modal-content music-catalog">
       <span class="modal-close" data-target="music-modal">&times;</span>
@@ -103,12 +96,12 @@
       <audio id="catalog-audio-player"></audio>
     </div>
   </div>
-
   <div id="services-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="services-modal">&times;</span><h2><i class="fas fa-heart" style="color: var(--secondary-color); margin-right: 10px;"></i>Canzoni Personalizzate</h2><div style="text-align: left; line-height: 1.6; margin-bottom: 20px;"><h3 style="color: var(--primary-color); margin-bottom: 10px;">✨ Servizi Esclusivi:</h3><ul style="list-style: none; padding-left: 0;"><li style="margin-bottom: 10px;"><i class="fas fa-heart" style="color: #e74c3c; margin-right: 8px;"></i> <strong>Canzoni per Coppie</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-ring" style="color: #f39c12; margin-right: 8px;"></i> <strong>Anniversari e Matrimoni</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-gift" style="color: #9b59b6; margin-right: 8px;"></i> <strong>Testi Personalizzati</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-birthday-cake" style="color: #e67e22; margin-right: 8px;"></i> <strong>Eventi Speciali</strong></li></ul><div style="background: rgba(6, 147, 227, 0.1); border-left: 4px solid var(--primary-color); padding: 15px; margin: 20px 0; border-radius: 5px;"><p><strong>💡 Come funziona:</strong> Raccontami la tua storia, i tuoi ricordi. Creerò una canzone unica che rappresenti le tue emozioni.</p></div></div><button id="contact-for-custom-song" class="button collabora">Richiedi la Tua Canzone</button></div></div>
   <div id="contact-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="contact-modal">&times;</span><h2>Contattami per il tuo Progetto</h2><form id="contact-form" class="contact-form" autocomplete="on"><input type="hidden" name="access_key" value="9013a8d5-0901-42a0-b9e6-4c45553f960d"/><input type="text" name="name" placeholder="Il tuo Nome" required autocomplete="name"/><input type="email" name="email" placeholder="La tua Email" required autocomplete="email"/><input type="tel" name="phone" placeholder="Il tuo Telefono (Opzionale)" autocomplete="tel"/><select name="service_type"><option value="">Seleziona il tipo di servizio</option><option value="canzone_personalizzata">Canzone Personalizzata</option><option value="composizione_artista">Composizione per Artista</option><option value="intrattenimento_live">Intrattenimento Live</option><option value="altro">Altro</option></select><textarea name="message" rows="4" placeholder="Descrivi la tua idea o richiesta..." required></textarea><button type="submit" class="button collabora">Invia Messaggio</button></form><div id="form-result"></div></div></div>
   
+  <!-- Contenitore del Chatbot -->
   <div id="chatbot-container"></div>
-  
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
   <script>
@@ -242,16 +235,12 @@
             addEventListenersToSongs();
         }
         
-        // =========================================================================
-        // ===== MODIFICA #1: La funzione resetPlayingState diventa globale      =====
-        // =========================================================================
         window.resetPlayingState = function() {
             if (currentPlayingItem) {
                 currentPlayingItem.classList.remove('playing');
                 currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
                 currentPlayingItem = null;
             }
-            // Ferma anche il player del catalogo per sicurezza
             const player = document.getElementById('catalog-audio-player');
             if(player) {
               player.pause();
@@ -259,7 +248,6 @@
             }
         }
         
-        // Collegamento degli eventi del player alla funzione di reset globale
         catalogPlayer.addEventListener('play', () => { if (audioInitialized && !bgAudio.paused && !bgAudio.muted) bgAudio.pause(); });
         catalogPlayer.addEventListener('pause', () => { if (audioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play(); window.resetPlayingState(); });
         catalogPlayer.addEventListener('ended', () => { if (audioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play(); window.resetPlayingState(); });
@@ -272,7 +260,7 @@
                         if (catalogPlayer.paused) { catalogPlayer.play(); } else { catalogPlayer.pause(); }
                         item.querySelector('.play-btn i').className = catalogPlayer.paused ? 'fas fa-play' : 'fas fa-pause';
                     } else {
-                        window.resetPlayingState(); // Usiamo la versione globale
+                        window.resetPlayingState();
                         currentPlayingItem = item;
                         item.classList.add('playing');
                         catalogPlayer.src = item.dataset.src;
@@ -308,13 +296,51 @@
                 #chatbot-bubble.open .icon-close{opacity:1}
                 #chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}
                 
-                #chatbot-window-wrapper {position:fixed;bottom:140px;right:25px;width:500px;max-width:95vw;height:80vh;max-height:700px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease;}
+                #chatbot-window-wrapper {position:fixed;bottom:100px;right:25px;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out;}
                 #chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}
                 #chatbot-window{position:relative; margin-top: 45px; width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;}
                 .chatbot-header-logo {width: 90px;height: 90px;border-radius: 50%;border: 3px solid #fff;box-shadow: 0 0 10px rgba(0,0,0,0.3);object-fit: cover;position: absolute;top: 0;left: 50%;transform: translateX(-50%); z-index: 10000;}
                 
-                @media (max-width:920px){#chatbot-window-wrapper{width:100vw;height:100vh;max-height:100vh;bottom:0;right:0;top:0;left:0;border-radius:0;} #chatbot-bubble{bottom:10px;right:10px}}
-                .chatbot-header{background-color:var(--primary-color);color:#fff;padding:1rem; padding-top: 55px; text-align:center;flex-shrink:0}
+                /* ========================================================================= */
+                /* ===== MODIFICA #1: Stili per rendere il chatbot più piccolo su mobile ===== */
+                /* ========================================================================= */
+                @media (max-width: 768px) {
+                    #chatbot-window-wrapper {
+                        width: calc(100vw - 20px); /* Larghezza quasi totale ma con un po' di margine */
+                        height: 75vh; /* Altezza ridotta */
+                        max-height: 80vh;
+                        bottom: 85px; /* Alzato per non sovrapporre la bolla */
+                        right: 10px;
+                    }
+                    #chatbot-bubble {
+                        bottom: 15px;
+                        right: 15px;
+                    }
+                }
+
+                /* ========================================================================= */
+                /* ===== MODIFICA #2: Stili per il nuovo pulsante di chiusura          ===== */
+                /* ========================================================================= */
+                .chatbot-header {
+                    position: relative; /* Necessario per posizionare il pulsante di chiusura */
+                    background-color: var(--primary-color);
+                    color: #fff;
+                    padding: 1rem;
+                    padding-top: 55px;
+                    text-align: center;
+                    flex-shrink: 0;
+                }
+                .chatbot-close-btn {
+                    position: absolute;
+                    top: 10px;
+                    right: 15px;
+                    font-size: 2.2em;
+                    color: white;
+                    cursor: pointer;
+                    line-height: 1;
+                    font-weight: 300;
+                }
+
                 .chatbot-messages{flex-grow:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column}
                 .message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}
                 .message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0}
@@ -322,7 +348,6 @@
                 .message.user .message-text{background-color:#eef2f5;color:#333;border-bottom-right-radius:4px}
                 .message.bot .message-text{background-color:var(--primary-color);color:#fff;border-bottom-left-radius:4px}
                 
-                /* ===== MODIFICA #2: Stili per i bullet points e i link ===== */
                 .message-text ul { list-style: none; padding: 0; margin: 0; }
                 .message-text li { margin-bottom: 8px; }
                 .message-text a.chatbot-song-link { color: #fff; font-weight: 500; text-decoration: none; cursor: pointer; display: inline-block; padding: 2px 0; border-bottom: 1px dotted #fff;}
@@ -341,6 +366,10 @@
                 <div id="chatbot-window">
                     <div class="chatbot-header">
                         <div><h3>Fausto AI</h3><small>Assistente Virtuale</small></div>
+                        <!-- =============================================================== -->
+                        <!-- ===== MODIFICA #3: Aggiunto il pulsante di chiusura (la X)  ===== -->
+                        <!-- =============================================================== -->
+                        <span class="chatbot-close-btn">&times;</span>
                     </div>
                     <div class="chatbot-messages" id="chatbot-messages"></div>
                     <div class="chatbot-input">
@@ -350,120 +379,132 @@
                 </div>
             </div>
         `;
-        
-            const container = document.getElementById('chatbot-container');
-            if (container) {
-                container.innerHTML = chatbotHTML;
-                const webhookUrl = 'https://n8n.automaita.it/webhook/ffausto-ai-chat';
-                const bubble = document.getElementById('chatbot-bubble'), windowWrapper = document.getElementById('chatbot-window-wrapper'), messagesEl = document.getElementById('chatbot-messages'), inputField = document.getElementById('chatbot-input-field'), sendBtn = document.getElementById('chatbot-send-btn');
-                const converter = new showdown.Converter();
+    
+        const container = document.getElementById('chatbot-container');
+        if (container) {
+            container.innerHTML = chatbotHTML;
+            const webhookUrl = 'https://n8n.automaita.it/webhook/ffausto-ai-chat';
+            const bubble = document.getElementById('chatbot-bubble');
+            const windowWrapper = document.getElementById('chatbot-window-wrapper');
+            const messagesEl = document.getElementById('chatbot-messages');
+            const inputField = document.getElementById('chatbot-input-field');
+            const sendBtn = document.getElementById('chatbot-send-btn');
+            
+            // =========================================================================
+            // ===== MODIFICA #4: Selettore per il nuovo pulsante di chiusura        =====
+            // =========================================================================
+            const closeBtn = document.querySelector('.chatbot-close-btn');
+
+            const converter = new showdown.Converter();
+            let currentChatPlayingLink = null;
+
+            const toggleChat = () => {
+                windowWrapper.classList.toggle('open');
+                bubble.classList.toggle('open');
+                if (windowWrapper.classList.contains('open')) {
+                    setTimeout(() => inputField.focus(), 300); // Aggiunto un piccolo ritardo per la transizione
+                }
+            };
+
+            const addMessage = (text, type) => {
+                const msgDiv = document.createElement('div');
+                msgDiv.className = `message ${type}`;
                 
-                // ===== MODIFICA #3: Variabile per tracciare il link della canzone in riproduzione nella chat =====
-                let currentChatPlayingLink = null;
+                if (type === 'bot') {
+                    const avatar = document.createElement('img'); avatar.className = 'message-avatar'; avatar.src = 'fausto_immagine.jpg'; msgDiv.appendChild(avatar);
+                }
+                
+                const textDiv = document.createElement('div'); textDiv.className = 'message-text';
+                textDiv.innerHTML = DOMPurify.sanitize(text, { ADD_ATTR: ['data-src', 'class', 'data-original-text'], ADD_TAGS: ['a', 'ul', 'li'] });
+                
+                msgDiv.appendChild(textDiv);
+                messagesEl.appendChild(msgDiv);
+                messagesEl.scrollTop = messagesEl.scrollHeight;
 
-                const toggleChat = () => {
-                    windowWrapper.classList.toggle('open');
-                    bubble.classList.toggle('open');
-                    if (windowWrapper.classList.contains('open')) inputField.focus();
-                };
+                const songLinks = textDiv.querySelectorAll('.chatbot-song-link');
+                songLinks.forEach(link => {
+                    const originalText = link.textContent;
+                    link.textContent = `▶️ ${originalText}`;
+                    link.dataset.originalText = originalText;
 
-                // ===== MODIFICA #4: Funzione addMessage potenziata con gestione dello stato di riproduzione =====
-                const addMessage = (text, type) => {
-                    const msgDiv = document.createElement('div');
-                    msgDiv.className = `message ${type}`;
-                    
-                    if (type === 'bot') {
-                        const avatar = document.createElement('img'); avatar.className = 'message-avatar'; avatar.src = 'fausto_immagine.jpg'; msgDiv.appendChild(avatar);
-                    }
-                    
-                    const textDiv = document.createElement('div'); textDiv.className = 'message-text';
-                    textDiv.innerHTML = DOMPurify.sanitize(text, { ADD_ATTR: ['data-src', 'class'], ADD_TAGS: ['a', 'ul', 'li'] });
-                    
-                    msgDiv.appendChild(textDiv);
-                    messagesEl.appendChild(msgDiv);
-                    messagesEl.scrollTop = messagesEl.scrollHeight;
-
-                    const songLinks = textDiv.querySelectorAll('.chatbot-song-link');
-                    songLinks.forEach(link => {
-                        const originalText = link.textContent;
-                        link.textContent = `▶️ ${originalText}`;
-
-                        link.addEventListener('click', (event) => {
-                            event.preventDefault();
-                            const songUrl = link.dataset.src;
-                            if (!songUrl) return;
+                    link.addEventListener('click', (event) => {
+                        event.preventDefault();
+                        const songUrl = link.dataset.src;
+                        if (!songUrl) return;
+                        
+                        const catalogPlayer = document.getElementById('catalog-audio-player');
+                        
+                        if (currentChatPlayingLink === link) {
+                            catalogPlayer.pause();
+                        } else {
+                            if (typeof window.resetPlayingState === 'function') window.resetPlayingState();
                             
-                            const catalogPlayer = document.getElementById('catalog-audio-player');
+                            catalogPlayer.src = songUrl;
+                            catalogPlayer.play();
                             
-                            // Caso 1: Clicco sullo stesso link che è già in riproduzione per fermarlo
-                            if (currentChatPlayingLink === link) {
-                                catalogPlayer.pause();
-                                link.textContent = `▶️ ${originalText}`;
-                                link.classList.remove('playing');
-                                currentChatPlayingLink = null;
-                            } 
-                            // Caso 2: Clicco su un nuovo link
-                            else {
-                                // Resetta il link precedente se ce n'era uno
-                                if (currentChatPlayingLink) {
-                                    currentChatPlayingLink.textContent = `▶️ ${currentChatPlayingLink.dataset.originalText}`;
-                                    currentChatPlayingLink.classList.remove('playing');
-                                }
-                                
-                                // Ferma qualsiasi altra musica (sia del catalogo che del chatbot)
-                                if (typeof window.resetPlayingState === 'function') window.resetPlayingState();
-                                
-                                catalogPlayer.src = songUrl;
-                                catalogPlayer.play();
-                                
-                                // Aggiorna il nuovo link
-                                link.dataset.originalText = originalText;
-                                link.textContent = `❚❚ In Riproduzione...`;
-                                link.classList.add('playing');
-                                currentChatPlayingLink = link;
+                            if (currentChatPlayingLink) {
+                                currentChatPlayingLink.textContent = `▶️ ${currentChatPlayingLink.dataset.originalText}`;
+                                currentChatPlayingLink.classList.remove('playing');
                             }
-                        });
+                            
+                            link.textContent = `❚❚ In Riproduzione...`;
+                            link.classList.add('playing');
+                            currentChatPlayingLink = link;
+                        }
                     });
-                };
-                
-                // ===== MODIFICA #5: Listener per resettare l'icona quando la musica finisce o va in pausa =====
-                const mainPlayer = document.getElementById('catalog-audio-player');
-                const resetChatLink = () => {
-                    if (currentChatPlayingLink) {
-                        currentChatPlayingLink.textContent = `▶️ ${currentChatPlayingLink.dataset.originalText}`;
-                        currentChatPlayingLink.classList.remove('playing');
-                        currentChatPlayingLink = null;
-                    }
-                };
-                mainPlayer.addEventListener('pause', resetChatLink);
-                mainPlayer.addEventListener('ended', resetChatLink);
+                });
+            };
+            
+            const mainPlayer = document.getElementById('catalog-audio-player');
+            const resetChatLink = () => {
+                if (currentChatPlayingLink) {
+                    currentChatPlayingLink.textContent = `▶️ ${currentChatPlayingLink.dataset.originalText}`;
+                    currentChatPlayingLink.classList.remove('playing');
+                    currentChatPlayingLink = null;
+                }
+            };
+            mainPlayer.addEventListener('pause', resetChatLink);
+            mainPlayer.addEventListener('ended', resetChatLink);
 
+            const sendMessage = async () => {
+                const userMessage = inputField.value.trim(); if (userMessage === '') return;
+                addMessage(userMessage, 'user'); inputField.value = '';
+                try {
+                    if (webhookUrl.includes('INCOLLA_QUI')) { addMessage("Il chatbot non è configurato.", 'bot'); return; }
+                    const conversationId = 'session-' + Date.now(); 
+                    const response = await fetch(`${webhookUrl}?user_message=${encodeURIComponent(userMessage)}&conversation_id=${conversationId}`, { method: 'POST' });
+                    if (!response.ok) throw new Error("Network response");
+                    const data = await response.json(); addMessage(data.response || "C'è stato un problema.", 'bot');
+                } catch (error) { addMessage('Spiacente, si è verificato un errore.', 'bot'); }
+            };
+            
+            bubble.addEventListener('click', toggleChat);
+            // =========================================================================
+            // ===== MODIFICA #5: Aggiunto l'evento di click al nuovo pulsante       =====
+            // =========================================================================
+            if(closeBtn) {
+                closeBtn.addEventListener('click', toggleChat);
+            }
 
-                const sendMessage = async () => {
-                    const userMessage = inputField.value.trim(); if (userMessage === '') return;
-                    addMessage(userMessage, 'user'); inputField.value = '';
-                    try {
-                        if (webhookUrl.includes('INCOLLA_QUI')) { addMessage("Il chatbot non è configurato.", 'bot'); return; }
-                        const conversationId = 'session-' + Date.now(); 
-                        const response = await fetch(`${webhookUrl}?user_message=${encodeURIComponent(userMessage)}&conversation_id=${conversationId}`, { method: 'POST' });
-                        if (!response.ok) throw new Error("Network response");
-                        const data = await response.json(); addMessage(data.response || "C'è stato un problema.", 'bot');
-                    } catch (error) { addMessage('Spiacente, si è verificato un errore.', 'bot'); }
-                };
-                
-                bubble.addEventListener('click', toggleChat);
-                sendBtn.addEventListener('click', sendMessage);
-                inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
+            sendBtn.addEventListener('click', sendMessage);
+            inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
 
-                setTimeout(() => {
+            // ==================================================================================
+            // ===== MODIFICA #6: Il chatbot si apre solo su desktop, rimane chiuso su mobile =====
+            // ==================================================================================
+            const isMobile = window.innerWidth <= 768;
+            if (!isMobile) {
+                 setTimeout(() => {
                     if(!windowWrapper.classList.contains('open')) {
                         toggleChat();
                     }
                 }, 1500);
-                addMessage("Ciao! Sono Fausto AI, assistente virtuale. Sono qui per aiutarti a trovare il tuo brano ideale. Cosa stai cercando?", 'bot');
             }
-        });
-    })();
+            
+            addMessage("Ciao! Sono Fausto AI, assistente virtuale. Sono qui per aiutarti a trovare il tuo brano ideale. Cosa stai cercando?", 'bot');
+        }
+    });
+})();
   </script>
 </body>
 </html>
