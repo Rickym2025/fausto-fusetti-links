@@ -108,8 +108,6 @@
     document.addEventListener('DOMContentLoaded', function() {
         
         const sheetApiUrl = 'https://script.google.com/macros/s/AKfycbyyvfsSlgx6J-dIeLaIi3Crd6eqG029DDsGzF3Wy8u1VIfwhTMDZJdTPS_ubYszUyFR/exec';
-
-        // --- GESTIONE AUDIO ---
         const bgAudio = document.getElementById('background-audio');
         const audioCta = document.getElementById('audio-cta');
         const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i');
@@ -129,7 +127,7 @@
                     audioCta.style.visibility = 'visible';
                     updateMuteButton();
                 }).catch(e => {
-                    console.error("L'avvio automatico è stato bloccato dal browser.", e);
+                    console.error("Audio auto-play was blocked by the browser.", e);
                     audioStartOverlay.style.display = 'flex';
                 });
             }
@@ -145,73 +143,61 @@
             ctaText.textContent = bgAudio.muted ? 'Attiva la musica' : 'Disattiva musica';
         }
 
-        // --- GESTIONE MODALI (STABILE E SICURA) ---
-
+        // --- GESTIONE MODALI (STABILE E ANTI-CRASH) ---
+        
         // =========================================================================================================
-        // ===== MODIFICA #1: NUOVA FUNZIONE DI CHIUSURA MODALE PER EVITARE I CRASH                            =====
-        // Questa funzione viene chiamata da tutti i pulsanti di chiusura 'X'.
-        // La sua responsabilità è fermare l'audio PRIMA di chiudere la finestra.
+        // ===== MODIFICA #1: FUNZIONE DI CHIUSURA MODALE DEFINITIVA PER EVITARE I CRASH                         =====
+        // Questa funzione ora spegne completamente il lettore audio del catalogo prima di chiudere la finestra.
         // =========================================================================================================
         function closeModal(modalId) {
-            if (!modalId) return;
             const modal = document.getElementById(modalId);
             if (!modal) return;
 
-            // Azione critica: se sto chiudendo il catalogo, fermo l'audio.
             if (modalId === 'music-modal') {
-                const player = document.getElementById('catalog-audio-player');
-                if (player && !player.paused) {
-                    player.pause();
-                    player.currentTime = 0; // Resetta la traccia
+                if (catalogPlayer) {
+                    catalogPlayer.pause();
+                    catalogPlayer.src = ''; // Azione CRITICA: Rimuove la sorgente audio, prevenendo il crash.
                 }
-                // Resetta anche lo stato visuale della canzone nella lista
                 if (window.resetPlayingState) {
-                    window.resetPlayingState();
+                    window.resetPlayingState(); // Resetta lo stato visuale.
                 }
             }
             
-            // Azione finale: nasconde la finestra
             modal.style.display = 'none';
         }
 
-        // Assegnazione degli eventi per APRIRE i modali
         document.getElementById('open-music-modal').addEventListener('click', () => document.getElementById('music-modal').style.display = 'flex');
         document.getElementById('open-video-modal').addEventListener('click', () => document.getElementById('video-modal').style.display = 'flex');
         document.getElementById('open-services-modal').addEventListener('click', () => document.getElementById('services-modal').style.display = 'flex');
         document.getElementById('open-contact-modal').addEventListener('click', () => document.getElementById('contact-modal').style.display = 'flex');
         document.getElementById('contact-for-custom-song').addEventListener('click', () => { 
-            closeModal('services-modal'); // Chiude il modale attuale
+            closeModal('services-modal');
             document.getElementById('contact-modal').style.display = 'flex'; 
             document.querySelector('#contact-modal select[name="service_type"]').value = 'canzone_personalizzata'; 
         });
 
-        // Assegnazione degli eventi per CHIUDERE i modali usando la nuova funzione sicura
         document.querySelectorAll('.modal-close').forEach(btn => {
             btn.addEventListener('click', () => {
                 closeModal(btn.dataset.target);
             });
         });
 
-
         // --- LOGICA CATALOGO MUSICALE ---
         const songListContainer = document.getElementById('song-list-container');
         const filterContainer = document.getElementById('filter-container');
-        let allSongs = [];
-        let currentPlayingItem = null;
-        let currentFilters = { genre: 'all', category: 'all', argomento: 'all' };
+        let allSongs = [], currentPlayingItem = null, currentFilters = { genre: 'all', category: 'all', argomento: 'all' };
 
         async function loadMusicFromApi() {
             try {
                 const response = await fetch(sheetApiUrl);
-                if (!response.ok) throw new Error(`Errore di rete`);
+                if (!response.ok) throw new Error(`Network Error`);
                 const songs = await response.json();
                 if (songs.error) throw new Error(songs.error);
-                if (!songs || songs.length === 0) throw new Error('Nessun brano trovato.');
                 allSongs = songs;
                 createFilterButtons(allSongs);
                 filterAndDisplaySongs();
             } catch (error) {
-                songListContainer.innerHTML = `<p style="color: #f44336;">Errore caricamento: ${error.message}</p>`;
+                songListContainer.innerHTML = `<p style="color: #f44336;">Error loading catalog: ${error.message}</p>`;
             }
         }
         function createFilterButtons(songs) {
@@ -231,8 +217,7 @@
             }
             document.querySelectorAll('.filter-btn').forEach(button => {
                 button.addEventListener('click', (e) => {
-                    const key = e.target.dataset.filterKey;
-                    const value = e.target.dataset.filterValue;
+                    const key = e.target.dataset.filterKey, value = e.target.dataset.filterValue;
                     currentFilters[key] = value;
                     e.target.parentElement.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
                     e.target.classList.add('active');
@@ -241,15 +226,10 @@
             });
         }
         function filterAndDisplaySongs() {
-            const filteredSongs = allSongs.filter(song => (currentFilters.genre === 'all' || song.genre === currentFilters.genre) && (currentFilters.category === 'all' || song.category === currentFilters.category) && (currentFilters.argomento === 'all' || song.argomento === currentFilters.argomento));
-            songListContainer.innerHTML = '';
-            if (filteredSongs.length > 0) {
-                filteredSongs.forEach(song => {
-                    songListContainer.innerHTML += `<div class="song-item" data-src="${song.url}" data-title="${song.title}"><span class="title">${song.title}</span><button class="play-btn"><i class="fas fa-play"></i></button></div>`;
-                });
-            } else {
-                songListContainer.innerHTML = '<p>Nessun brano corrisponde ai filtri.</p>';
-            }
+            const filteredSongs = allSongs.filter(s => (currentFilters.genre === 'all' || s.genre === currentFilters.genre) && (currentFilters.category === 'all' || s.category === currentFilters.category) && (currentFilters.argomento === 'all' || s.argomento === currentFilters.argomento));
+            songListContainer.innerHTML = filteredSongs.length > 0 
+                ? filteredSongs.map(s => `<div class="song-item" data-src="${s.url}" data-title="${s.title}"><span class="title">${s.title}</span><button class="play-btn"><i class="fas fa-play"></i></button></div>`).join('')
+                : '<p>Nessun brano corrisponde ai filtri.</p>';
             addEventListenersToSongs();
         }
         window.resetPlayingState = function() {
@@ -262,6 +242,7 @@
         catalogPlayer.addEventListener('play', () => { if (audioInitialized && !bgAudio.paused && !bgAudio.muted) bgAudio.pause(); });
         catalogPlayer.addEventListener('pause', () => { if (audioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play(); window.resetPlayingState(); });
         catalogPlayer.addEventListener('ended', () => { if (audioInitialized && bgAudio.paused && !bgAudio.muted) bgAudio.play(); window.resetPlayingState(); });
+        
         function addEventListenersToSongs() {
             document.querySelectorAll('.song-item').forEach(item => {
                 item.addEventListener('click', () => {
@@ -284,7 +265,7 @@
 
         const form = document.getElementById('contact-form');
         const formResult = document.getElementById('form-result');
-        form.addEventListener('submit', function(e) { e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio in corso..."; fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).then(r => r.json()).then(d => { if (d.success) { formResult.innerHTML = "Messaggio inviato!"; form.reset(); } else { formResult.innerHTML = `Errore: ${d.message}`; } }).catch(() => formResult.innerHTML = "Errore."); });
+        form.addEventListener('submit', function(e) { e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio..."; fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).then(r => r.json()).then(d => { if (d.success) { formResult.innerHTML = "Messaggio inviato!"; form.reset(); } else { formResult.innerHTML = `Errore: ${d.message}`; } }).catch(() => formResult.innerHTML = "Errore."); });
     
         const aphorisms = [ "La musica è la vera lingua universale.", "Dove le parole finiscono, inizia la musica.", "La vita è come un pianoforte, ciò che ne esce dipende da come la suoni.", "La musica esprime ciò che non può essere detto e su cui è impossibile rimanere in silenzio.", "Senza musica, la vita sarebbe un errore." ];
         const aphorismContainer = document.getElementById('aphorism-container');
@@ -303,6 +284,9 @@
                 :root{--primary-color:#0693e3}
                 #chatbot-bubble{position:fixed;bottom:25px;right:25px;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(fausto_immagine.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:9999}
                 #chatbot-bubble:hover{transform:scale(1.1)}
+                #chatbot-bubble.open{background-image:none;background-color:var(--primary-color)}
+                #chatbot-bubble.open .icon-close{opacity:1}
+                #chatbot-bubble .icon-close{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}
                 #chatbot-window-wrapper {position:fixed;bottom:140px;right:25px;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out;}
                 #chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}
                 #chatbot-window{position:relative; margin-top: 45px; width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;}
@@ -319,13 +303,16 @@
                 .message-text{padding:10px 15px;border-radius:18px;line-height:1.4;overflow-wrap: break-word; word-break: break-word;text-align: left;}
                 .message.user .message-text{background-color:#eef2f5;color:#333;border-bottom-right-radius:4px}
                 .message.bot .message-text{background-color:var(--primary-color);color:#fff;border-bottom-left-radius:4px}
-                .message-text a.chatbot-song-link { color: #fff; font-weight: 500; text-decoration: none; cursor: pointer; display: inline-block; padding: 2px 0; border-bottom: 1px dotted #fff;}
+                .message-text a.chatbot-song-link { color: #fff; font-weight: 500; text-decoration: none; cursor: pointer; }
                 .chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}
                 .chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid var(--primary-color)}
                 .chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}
             </style>
+            <!-- ============================================================================================== -->
+            <!-- ===== MODIFICA #2: RIPRISTINATA ICONA ORIGINALE (la "X" al posto del punto esclamativo) ===== -->
+            <!-- ============================================================================================== -->
             <div id="chatbot-bubble">
-                 <svg class="icon-close" style="opacity:1" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><path fill="currentColor" d="M256 0C114.6 0 0 114.6 0 256s114.6 256 256 256s256-114.6 256-256S399.4 0 256 0zM232 152C232 138.8 242.8 128 256 128s24 10.75 24 24v128c0 13.25-10.75 24-24 24S232 293.3 232 280V152zM256 400c-17.36 0-31.44-14.08-31.44-31.44c0-17.36 14.07-31.44 31.44-31.44s31.44 14.08 31.44 31.44C287.4 385.9 273.4 400 256 400z"/></svg>
+                <svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
             </div>
             <div id="chatbot-window-wrapper">
                 <img src="fausto_immagine.jpg" alt="Fausto AI" class="chatbot-header-logo">
@@ -358,6 +345,7 @@
             const toggleChat = () => {
                 const isOpening = !windowWrapper.classList.contains('open');
                 windowWrapper.classList.toggle('open');
+                bubble.classList.toggle('open');
                 if (isOpening) {
                     bubble.style.display = 'none';
                     setTimeout(() => inputField.focus(), 300);
@@ -370,7 +358,7 @@
                 const msgDiv = document.createElement('div');
                 msgDiv.className = `message ${type}`;
                 if (type === 'bot') {
-                    const avatar = document.createElement('img'); avatar.className = 'message-avatar'; avatar.src = 'fausto_immagine.jpg'; msgDiv.appendChild(avatar);
+                    const avatar = document.createElement('img'); avatar.src = 'fausto_immagine.jpg'; avatar.className = 'message-avatar'; msgDiv.appendChild(avatar);
                 }
                 const textDiv = document.createElement('div'); textDiv.className = 'message-text';
                 textDiv.innerHTML = DOMPurify.sanitize(text, { ADD_ATTR: ['data-src', 'class', 'data-original-text'], ADD_TAGS: ['a', 'ul', 'li'] });
@@ -434,16 +422,11 @@
             sendBtn.addEventListener('click', sendMessage);
             inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
 
-            const isMobile = window.innerWidth <= 768;
-            if (!isMobile) {
-                 setTimeout(() => {
-                    if(!windowWrapper.classList.contains('open')) {
-                        toggleChat();
-                    }
-                }, 1500);
+            if (window.innerWidth > 768) {
+                 setTimeout(() => { if(!windowWrapper.classList.contains('open')) { toggleChat(); } }, 1500);
             }
             
-            addMessage("Ciao! Sono Fausto AI, assistente virtuale. Sono qui per aiutarti a trovare il tuo brano ideale. Cosa stai cercando?", 'bot');
+            addMessage("Ciao! Sono Fausto AI, il tuo assistente virtuale. Come posso aiutarti a trovare il brano perfetto per te?", 'bot');
         }
     });
   })();
