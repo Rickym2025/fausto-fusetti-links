@@ -78,13 +78,29 @@
       <img src="logo6.jpg" alt="Logo FF Musica" class="profile-logo">
       <h1>Fausto Fusetti</h1>
       <p class="bio">Con 40 anni di esperienza come musicista, compositore e autore, trasformo emozioni in musica. La mia versatilità mi permette di spaziare tra ogni genere: dal liscio al moderno, dal jazz alle colonne sonore per la pubblicità.<br><br>Come polistrumentista (pianoforte, chitarra, tromba, chitarra basso e voce), offro un servizio completo per la creazione di canzoni personalizzate. Se sei un'orchestra, un cantante o un editore in cerca di un brano inedito e su misura, sei nel posto giusto, ti posso fornire: base con tracce aperte, musica con spartito e parole.</p>
-<button id="open-music-modal" class="button"><i class="fas fa-music"></i>Catalogo Musicale</button>
-  <button id="open-video-modal" class="button"><i class="fas fa-video"></i>Guarda i Video</button>
-  <button id="open-services-modal" class="button service-highlight"><i class="fas fa-heart"></i>Canzoni Personalizzate</button>
-  <button id="open-contact-modal" class="button collabora"><i class="fas fa-pencil-alt"></i>Contattami per un Progetto</button>
-  <div class="social-icons"><a href="https://www.instagram.com/faustofusetti/" target="_blank"><i class="fa-brands fa-instagram"></i></a><a href="https://www.facebook.com/fausto.fusetti.9" target="_blank"><i class="fa-brands fa-facebook"></i></a><a href="https://www.youtube.com/@faustofusetti5859" target="_blank"><i class="fa-brands fa-youtube"></i></a></div>
-</div>
+        <button id="open-music-modal" class="button"><i class="fas fa-music"></i>Catalogo Musicale</button>
+        <button id="open-video-modal" class="button"><i class="fas fa-video"></i>Guarda i Video</button>
+        <!-- NUOVO PULSANTE SHOP AGGIUNTO QUI -->
+        <button id="open-shop-modal" class="button"><i class="fas fa-shopping-cart"></i>Shop</button>
+        <button id="open-services-modal" class="button service-highlight"><i class="fas fa-heart"></i>Canzoni Personalizzate</button>
+        <button id="open-contact-modal" class="button collabora"><i class="fas fa-pencil-alt"></i>Contattami per un Progetto</button>
+        <div class="social-icons"><a href="https://www.instagram.com/faustofusetti/" target="_blank"><i class="fa-brands fa-instagram"></i></a><a href="https://www.facebook.com/fausto.fusetti.9" target="_blank"><i class="fa-brands fa-facebook"></i></a><a href="https://www.youtube.com/@faustofusetti5859" target="_blank"><i class="fa-brands fa-youtube"></i></a></div>
+    </div>
   </div>
+  
+  <!-- NUOVA FINESTRA MODALE PER LO SHOP -->
+  <div id="shop-modal" class="modal-overlay">
+      <div class="modal-content">
+          <span class="modal-close" data-target="shop-modal">&times;</span>
+          <h2><i class="fas fa-shopping-cart" style="color: var(--primary-color); margin-right: 10px;"></i> Shop / Supportami</h2>
+          <p style="margin: 15px 0; font-size: 0.9em; color: #ccc;">
+              <i>In qualità di Affiliato Amazon, ricevo un guadagno per gli acquisti idonei. Acquistando tramite questi link supporti il mio lavoro, senza alcun costo aggiuntivo per te. Grazie!</i>
+          </p>
+          <a href="#" target="_blank" class="button"><i class="fab fa-amazon"></i> La mia Attrezzatura</a>
+          <a href="#" target="_blank" class="button"><i class="fas fa-music"></i> Prova Amazon Music Unlimited</a>
+      </div>
+  </div>
+
   <div id="video-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="video-modal">&times;</span><h2>Video Selezionati</h2><a href="https://www.youtube.com/watch?v=7s3-7DV38IA" target="_blank" class="button">Produzioni Varie</a><a href="https://www.youtube.com/watch?v=Y8YqyCT7h5E" target="_blank" class="button">Ascolta "Noi"</a><a href="https://www.youtube.com/watch?v=igexCZ24Twg" target="_blank" class="button">Ascolta "Per Te"</a></div></div>
   <div id="music-modal" class="modal-overlay">
     <div class="modal-content music-catalog">
@@ -179,6 +195,11 @@
             }
         });
         
+        // NUOVO EVENT LISTENER PER IL MODAL DELLO SHOP
+        document.getElementById('open-shop-modal').addEventListener('click', () => {
+            document.getElementById('shop-modal').style.display = 'flex';
+        });
+
         document.getElementById('open-video-modal').addEventListener('click', () => document.getElementById('video-modal').style.display = 'flex');
         document.getElementById('open-services-modal').addEventListener('click', () => document.getElementById('services-modal').style.display = 'flex');
         document.getElementById('open-contact-modal').addEventListener('click', () => document.getElementById('contact-modal').style.display = 'flex');
@@ -246,6 +267,7 @@
     });
 
     // --- LOGICA CHATBOT (CON PLAYER ORIGINALE INTEGRATO CORRETTAMENTE) ---
+    // ... il resto del tuo codice per il chatbot rimane invariato ...
     (function() {
         document.addEventListener('DOMContentLoaded', () => {
             const chatbotHTML = `
@@ -353,8 +375,6 @@
                     
                     const textDiv = document.createElement('div'); textDiv.className = 'message-text';
                     
-                    // Sanifica l'input permettendo gli attributi necessari per il player
-                    // Questa è la chiave per far funzionare il vecchio codice
                     textDiv.innerHTML = DOMPurify.sanitize(rawText, { 
                         ADD_TAGS: ['a', 'ul', 'li', 'strong'],
                         ADD_ATTR: ['data-src', 'class', 'data-original-text', 'href', 'target'] 
@@ -363,7 +383,6 @@
                     msgDiv.appendChild(textDiv);
                     messagesEl.appendChild(msgDiv);
 
-                    // Cerca i link specifici per le canzoni, come nel vecchio codice
                     textDiv.querySelectorAll('.chatbot-song-link').forEach(link => {
                         const originalText = link.textContent;
                         link.textContent = `▶️ ${originalText}`;
