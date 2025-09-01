@@ -123,7 +123,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
   
   <script>
-    // ...TUTTO IL TUO CODICE JAVASCRIPT RIMANE IDENTICO...
     document.addEventListener('DOMContentLoaded', function() {
         // --- LOGICA PAGINA PRINCIPALE (STABILE E INVARIATA) ---
         const sheetApiUrl = 'https://script.google.com/macros/s/AKfycbyyvfsSlgx6J-dIeLaIi3Crd6eqG029DDsGzF3Wy8u1VIfwhTMDZJdTPS_ubYszUyFR/exec';
@@ -271,62 +270,6 @@
 
     // --- LOGICA CHATBOT ---
     (function() {
-        // ... (il codice del chatbot non è stato modificato)
-    })();
-  </script>
-
-</body>
-</html>
-Opzione 2: Blocchi di Codice da Sostituire Manualmente
-Se preferisci, puoi fare le modifiche a mano.
-1. Sostituisci il blocco dei pulsanti principali:
-Trova questo blocco nel tuo HTML:
-code
-Html
-<button id="open-music-modal" class="button"><i class="fas fa-music"></i>Catalogo Musicale</button>
-        <button id="open-video-modal" class="button"><i class="fas fa-video"></i>Guarda i Video</button>
-        <!-- NUOVO PULSANTE SHOP AGGIUNTO QUI -->
-        <button id="open-shop-modal" class="button"><i class="fas fa-shopping-cart"></i>Shop</button>
-        <button id="open-services-modal" class="button service-highlight"><i class="fas fa-heart"></i>Canzoni Personalizzate</button>
-        <button id="open-contact-modal" class="button collabora"><i class="fas fa-pencil-alt"></i>Contattami per un Progetto</button>
-E sostituiscilo con questo (ho riordinato i pulsanti):
-code
-Html
-<!-- ORDINE PULSANTI AGGIORNATO -->
-        <button id="open-music-modal" class="button"><i class="fas fa-music"></i>Catalogo Musicale</button>
-        <button id="open-video-modal" class="button"><i class="fas fa-video"></i>Guarda i Video</button>
-        <button id="open-services-modal" class="button service-highlight"><i class="fas fa-heart"></i>Canzoni Personalizzate</button>
-        <button id="open-contact-modal" class="button collabora"><i class="fas fa-pencil-alt"></i>Contattami per un Progetto</button>
-        <button id="open-shop-modal" class="button"><i class="fas fa-shopping-cart"></i>Shop</button>
-2. Sostituisci il blocco della finestra "Shop":
-Trova questo blocco:
-code
-Html
-<!-- NUOVA FINESTRA MODALE PER LO SHOP (CON LINK CORRETTI) -->
-  <div id="shop-modal" class="modal-overlay">
-      ...
-  </div>
-E sostituiscilo con questo (ho aggiunto il terzo pulsante):
-code
-Html
-<!-- FINESTRA MODALE SHOP AGGIORNATA CON TERZO PULSANTE -->
-  <div id="shop-modal" class="modal-overlay">
-      <div class="modal-content">
-          <span class="modal-close" data-target="shop-modal">&times;</span>
-          <h2><i class="fas fa-shopping-cart" style="color: var(--primary-color); margin-right: 10px;"></i> Shop / Supportami</h2>
-          <p style="margin: 15px 0; font-size: 0.9em; color: #ccc;">
-              <i>In qualità di Affiliato Amazon, ricevo un guadagno per gli acquisti idonei. Acquistando tramite questi link supporti il mio lavoro, senza alcun costo aggiuntivo per te. Grazie!</i>
-          </p>
-          <a href="https://www.amazon.it/hz/wishlist/ls/282CA0XU81D3C?tag=zero100store-21" target="_blank" class="button"><i class="fab fa-amazon"></i> La mia Attrezzatura</a>
-          <a href="https://www.amazon.it/gp/dmusic/promotions/AmazonMusicUnlimited?tag=zero100store-21" target="_blank" class="button"><i class="fas fa-music"></i> Prova Amazon Music Unlimited</a>
-          <a href="https://ff-music-store.printify.me/" target="_blank" class="button"><i class="fas fa-tshirt"></i> Merchandising Ufficiale</a>
-      </div>
-  </div>
-Una volta aggiornato il codice, la pagina sarà esattamente come la desideri. Ora sei prontissimo per rispondere ad Amazon
-
-    // --- LOGICA CHATBOT (CON PLAYER ORIGINALE INTEGRATO CORRETTAMENTE) ---
-    // ... il resto del tuo codice per il chatbot rimane invariato ...
-    (function() {
         document.addEventListener('DOMContentLoaded', () => {
             const chatbotHTML = `
             <style>
@@ -338,7 +281,6 @@ Una volta aggiornato il codice, la pagina sarà esattamente come la desideri. Or
                 #chatbot-bubble.open .icon-close{opacity:1}
                 #chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}
                 
-                /* POSIZIONE FINESTRA CHATBOT CORRETTA */
                 #chatbot-window-wrapper { position:fixed; bottom: 150px; right:25px; width:400px; max-width:calc(100vw - 30px); height:70vh; max-height:600px; z-index:9998; transform:translateY(20px) scale(.95); opacity:0; visibility:hidden; transition:all .3s ease-in-out; }
                 #chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}
                 
@@ -367,7 +309,6 @@ Una volta aggiornato il codice, la pagina sarà esattamente come la desideri. Or
                 .chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid var(--primary-color)}
                 .chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}
                 
-                /* STILE PER IL LINK-PLAYER DEL VECCHIO CODICE */
                 .message-text a.chatbot-song-link { color: #fff; font-weight: 500; text-decoration: none; cursor: pointer; display: inline-block; padding: 2px 0; border-bottom: 1px dotted #fff;}
                 .message-text a.chatbot-song-link:hover { color: #e3a006; border-bottom-color: #e3a006; }
                 .message-text a.chatbot-song-link.playing { color: #e3a006; font-weight: bold; border-bottom: 1px solid #e3a006; }
@@ -405,17 +346,14 @@ Una volta aggiornato il codice, la pagina sarà esattamente come la desideri. Or
                     }
                 };
                 
-                // Sovrascrivi la funzione globale per resettare tutto
                 const originalReset = window.resetPlayingState;
                 window.resetPlayingState = function() {
                     if (originalReset) originalReset();
                     resetChatLinkState();
                 };
 
-                // Ascolta gli eventi del player per sincronizzare lo stato
                 if (mainPlayer) {
                     mainPlayer.addEventListener('pause', () => {
-                        // Se la pausa non è dovuta alla fine del brano, resetta lo stato
                         if (!mainPlayer.ended) {
                            window.resetPlayingState();
                         }
