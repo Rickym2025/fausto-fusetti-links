@@ -78,17 +78,19 @@
       <img src="logo6.jpg" alt="Logo FF Musica" class="profile-logo">
       <h1>Fausto Fusetti</h1>
       <p class="bio">Con 40 anni di esperienza come musicista, compositore e autore, trasformo emozioni in musica. La mia versatilità mi permette di spaziare tra ogni genere: dal liscio al moderno, dal jazz alle colonne sonore per la pubblicità.<br><br>Come polistrumentista (pianoforte, chitarra, tromba, chitarra basso e voce), offro un servizio completo per la creazione di canzoni personalizzate. Se sei un'orchestra, un cantante o un editore in cerca di un brano inedito e su misura, sei nel posto giusto, ti posso fornire: base con tracce aperte, musica con spartito e parole.</p>
+        
+        <!-- ORDINE PULSANTI AGGIORNATO -->
         <button id="open-music-modal" class="button"><i class="fas fa-music"></i>Catalogo Musicale</button>
         <button id="open-video-modal" class="button"><i class="fas fa-video"></i>Guarda i Video</button>
-        <!-- NUOVO PULSANTE SHOP AGGIUNTO QUI -->
-        <button id="open-shop-modal" class="button"><i class="fas fa-shopping-cart"></i>Shop</button>
         <button id="open-services-modal" class="button service-highlight"><i class="fas fa-heart"></i>Canzoni Personalizzate</button>
         <button id="open-contact-modal" class="button collabora"><i class="fas fa-pencil-alt"></i>Contattami per un Progetto</button>
+        <button id="open-shop-modal" class="button"><i class="fas fa-shopping-cart"></i>Shop</button>
+        
         <div class="social-icons"><a href="https://www.instagram.com/faustofusetti/" target="_blank"><i class="fa-brands fa-instagram"></i></a><a href="https://www.facebook.com/fausto.fusetti.9" target="_blank"><i class="fa-brands fa-facebook"></i></a><a href="https://www.youtube.com/@faustofusetti5859" target="_blank"><i class="fa-brands fa-youtube"></i></a></div>
     </div>
   </div>
   
-  <!-- NUOVA FINESTRA MODALE PER LO SHOP -->
+  <!-- FINESTRA MODALE SHOP AGGIORNATA CON TERZO PULSANTE -->
   <div id="shop-modal" class="modal-overlay">
       <div class="modal-content">
           <span class="modal-close" data-target="shop-modal">&times;</span>
@@ -98,6 +100,7 @@
           </p>
           <a href="https://www.amazon.it/hz/wishlist/ls/282CA0XU81D3C?tag=zero100store-21" target="_blank" class="button"><i class="fab fa-amazon"></i> La mia Attrezzatura</a>
           <a href="https://www.amazon.it/gp/dmusic/promotions/AmazonMusicUnlimited?tag=zero100store-21" target="_blank" class="button"><i class="fas fa-music"></i> Prova Amazon Music Unlimited</a>
+          <a href="https://ff-music-store.printify.me/" target="_blank" class="button"><i class="fas fa-tshirt"></i> Merchandising Ufficiale</a>
       </div>
   </div>
 
@@ -120,6 +123,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
   
   <script>
+    // ...TUTTO IL TUO CODICE JAVASCRIPT RIMANE IDENTICO...
     document.addEventListener('DOMContentLoaded', function() {
         // --- LOGICA PAGINA PRINCIPALE (STABILE E INVARIATA) ---
         const sheetApiUrl = 'https://script.google.com/macros/s/AKfycbyyvfsSlgx6J-dIeLaIi3Crd6eqG029DDsGzF3Wy8u1VIfwhTMDZJdTPS_ubYszUyFR/exec';
@@ -195,7 +199,6 @@
             }
         });
         
-        // NUOVO EVENT LISTENER PER IL MODAL DELLO SHOP
         document.getElementById('open-shop-modal').addEventListener('click', () => {
             document.getElementById('shop-modal').style.display = 'flex';
         });
@@ -245,7 +248,7 @@
                     if (isPlayingThisItem) {
                         if (catalogPlayer.paused) { catalogPlayer.play(); } else { catalogPlayer.pause(); }
                     } else {
-                        window.resetPlayingState(); // Resetta lo stato precedente
+                        window.resetPlayingState(); 
                         currentPlayingItem = item;
                         catalogPlayer.src = item.dataset.src;
                         catalogPlayer.play();
@@ -265,6 +268,61 @@
         function showRandomAphorism() { const rect = mainContainer.getBoundingClientRect(); const postit = document.createElement('div'); postit.className = 'aphorism-postit'; postit.textContent = aphorisms[Math.floor(Math.random() * aphorisms.length)]; let top, left; do { top = Math.random() * window.innerHeight; left = Math.random() * window.innerWidth; } while ( top > rect.top - 50 && top < rect.bottom + 50 && left > rect.left - 50 && left < rect.right + 50 ); postit.style.top = `${top}px`; postit.style.left = `${left}px`; const rotation = `rotate(${Math.random() * 20 - 10}deg)`; postit.style.setProperty('--transform-start', `${rotation} translateY(20px)`); postit.style.setProperty('--transform-end', `${rotation} translateY(0)`); aphorismContainer.appendChild(postit); setTimeout(() => { postit.remove(); }, 10000); }
         setInterval(showRandomAphorism, 12000);
     });
+
+    // --- LOGICA CHATBOT ---
+    (function() {
+        // ... (il codice del chatbot non è stato modificato)
+    })();
+  </script>
+
+</body>
+</html>
+Opzione 2: Blocchi di Codice da Sostituire Manualmente
+Se preferisci, puoi fare le modifiche a mano.
+1. Sostituisci il blocco dei pulsanti principali:
+Trova questo blocco nel tuo HTML:
+code
+Html
+<button id="open-music-modal" class="button"><i class="fas fa-music"></i>Catalogo Musicale</button>
+        <button id="open-video-modal" class="button"><i class="fas fa-video"></i>Guarda i Video</button>
+        <!-- NUOVO PULSANTE SHOP AGGIUNTO QUI -->
+        <button id="open-shop-modal" class="button"><i class="fas fa-shopping-cart"></i>Shop</button>
+        <button id="open-services-modal" class="button service-highlight"><i class="fas fa-heart"></i>Canzoni Personalizzate</button>
+        <button id="open-contact-modal" class="button collabora"><i class="fas fa-pencil-alt"></i>Contattami per un Progetto</button>
+E sostituiscilo con questo (ho riordinato i pulsanti):
+code
+Html
+<!-- ORDINE PULSANTI AGGIORNATO -->
+        <button id="open-music-modal" class="button"><i class="fas fa-music"></i>Catalogo Musicale</button>
+        <button id="open-video-modal" class="button"><i class="fas fa-video"></i>Guarda i Video</button>
+        <button id="open-services-modal" class="button service-highlight"><i class="fas fa-heart"></i>Canzoni Personalizzate</button>
+        <button id="open-contact-modal" class="button collabora"><i class="fas fa-pencil-alt"></i>Contattami per un Progetto</button>
+        <button id="open-shop-modal" class="button"><i class="fas fa-shopping-cart"></i>Shop</button>
+2. Sostituisci il blocco della finestra "Shop":
+Trova questo blocco:
+code
+Html
+<!-- NUOVA FINESTRA MODALE PER LO SHOP (CON LINK CORRETTI) -->
+  <div id="shop-modal" class="modal-overlay">
+      ...
+  </div>
+E sostituiscilo con questo (ho aggiunto il terzo pulsante):
+code
+Html
+<!-- FINESTRA MODALE SHOP AGGIORNATA CON TERZO PULSANTE -->
+  <div id="shop-modal" class="modal-overlay">
+      <div class="modal-content">
+          <span class="modal-close" data-target="shop-modal">&times;</span>
+          <h2><i class="fas fa-shopping-cart" style="color: var(--primary-color); margin-right: 10px;"></i> Shop / Supportami</h2>
+          <p style="margin: 15px 0; font-size: 0.9em; color: #ccc;">
+              <i>In qualità di Affiliato Amazon, ricevo un guadagno per gli acquisti idonei. Acquistando tramite questi link supporti il mio lavoro, senza alcun costo aggiuntivo per te. Grazie!</i>
+          </p>
+          <a href="https://www.amazon.it/hz/wishlist/ls/282CA0XU81D3C?tag=zero100store-21" target="_blank" class="button"><i class="fab fa-amazon"></i> La mia Attrezzatura</a>
+          <a href="https://www.amazon.it/gp/dmusic/promotions/AmazonMusicUnlimited?tag=zero100store-21" target="_blank" class="button"><i class="fas fa-music"></i> Prova Amazon Music Unlimited</a>
+          <a href="https://ff-music-store.printify.me/" target="_blank" class="button"><i class="fas fa-tshirt"></i> Merchandising Ufficiale</a>
+      </div>
+  </div>
+Una volta aggiornato il codice, la pagina sarà esattamente come la desideri. Ora sei prontissimo per rispondere ad Amazon
 
     // --- LOGICA CHATBOT (CON PLAYER ORIGINALE INTEGRATO CORRETTAMENTE) ---
     // ... il resto del tuo codice per il chatbot rimane invariato ...
