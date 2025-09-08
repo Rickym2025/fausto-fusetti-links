@@ -121,8 +121,11 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
   
   <script>
+    // Questo script viene eseguito quando il DOM (la struttura della pagina) è pronto.
     document.addEventListener('DOMContentLoaded', function() {
-        // --- ELEMENTI DOM PRINCIPALI ---
+        
+        // --- SELEZIONE DEGLI ELEMENTI HTML ---
+        // Selezioniamo tutti gli elementi con cui interagiremo una sola volta all'inizio.
         const sheetApiUrl = 'https://script.google.com/macros/s/AKfycbw666DGD4BlSHuJwmVYcRLF9_qMJX2LXy_r6gCGVbjR_dXQDngQU-JttofSKOwUkIJZ/exec?source=catalogo';
         const bgAudio = document.getElementById('background-audio');
         const audioCta = document.getElementById('audio-cta');
@@ -139,13 +142,16 @@
         const mainContainer = document.querySelector('.container');
         
         // --- VARIABILI DI STATO GLOBALI ---
+        // Variabili che tengono traccia dello stato della pagina.
         let audioInitialized = false;
         let allSongs = [];
         let currentPlayingItem = null;
         let currentFilters = { genre: 'all', category: 'all', argomento: 'all' };
-        let isAudioBusy = false; // "Lock" per prevenire crash su mobile
+        let isAudioBusy = false; // "Semaforo" per prevenire crash del player su mobile.
 
-        // --- 1. GESTIONE AUDIO DI SOTTOFONDO E AVVIO PAGINA ---
+        // --- FUNZIONI PRINCIPALI ---
+
+        // 1. GESTIONE AUDIO DI SOTTOFONDO E AVVIO PAGINA
         function initializeAudio() {
             const playPromise = bgAudio.play();
             if (playPromise !== undefined) {
@@ -167,26 +173,10 @@
             ctaText.textContent = bgAudio.muted ? 'Attiva la musica' : 'Disattiva musica';
         }
 
-        startAudioBtn.addEventListener('click', initializeAudio);
-        audioStartOverlay.style.display = 'flex'; // Mostra il popup di avvio all'inizio
-
-        audioCta.addEventListener('click', () => {
-            if (!audioInitialized) {
-                initializeAudio();
-            } else {
-                bgAudio.muted = !bgAudio.muted;
-                if (!bgAudio.muted && bgAudio.paused) {
-                  bgAudio.play().catch(e => console.error("Errore nel riprodurre l'audio di sottofondo:", e));
-                }
-                updateMuteButton();
-            }
-        });
-
-        // --- 2. GESTIONE FINESTRE MODALI ---
+        // 2. GESTIONE FINESTRE MODALI
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
             if (!modal) return;
-            // Ferma la musica del catalogo quando la modale si chiude
             if (modalId === 'music-modal') {
                 if (catalogPlayer && !catalogPlayer.paused) {
                     catalogPlayer.pause();
@@ -198,7 +188,6 @@
                         isAudioBusy = false; // Rilascia il lock alla chiusura
                     }
                 }
-                // Fa ripartire la musica di sottofondo se era attiva
                 if (audioInitialized && !bgAudio.muted) {
                     bgAudio.play().catch(e => console.error("Errore nel riprendere l'audio di sottofondo:", e));
                 }
@@ -206,32 +195,11 @@
             modal.style.display = 'none';
         }
         
-        document.getElementById('open-music-modal').addEventListener('click', () => {
-            document.getElementById('music-modal').style.display = 'flex';
-            if (allSongs.length === 0) { // Carica il catalogo solo la prima volta
-                 loadMusicFromApi();
-            }
-        });
-        
-        document.getElementById('open-shop-modal').addEventListener('click', () => { document.getElementById('shop-modal').style.display = 'flex'; });
-        document.getElementById('open-video-modal').addEventListener('click', () => document.getElementById('video-modal').style.display = 'flex');
-        document.getElementById('open-services-modal').addEventListener('click', () => document.getElementById('services-modal').style.display = 'flex');
-        document.getElementById('open-contact-modal').addEventListener('click', () => document.getElementById('contact-modal').style.display = 'flex');
-        document.getElementById('contact-for-custom-song').addEventListener('click', () => { 
-            closeModal('services-modal'); 
-            document.getElementById('contact-modal').style.display = 'flex'; 
-            document.querySelector('#contact-modal select[name="service_type"]').value = 'canzone_personalizzata'; 
-        });
-        document.querySelectorAll('.modal-close').forEach(btn => { 
-            btn.addEventListener('click', (e) => { closeModal(e.currentTarget.dataset.target); }); 
-        });
-
-        // --- 3. LOGICA CATALOGO MUSICALE (CON FIX PER CRASH MOBILE) ---
+        // 3. LOGICA CATALOGO MUSICALE
         async function loadMusicFromApi() {
-            songListContainer.innerHTML = '<p>Caricamento catalogo...</p>';
             try {
                 const response = await fetch(sheetApiUrl);
-                if (!response.ok) throw new Error(`Errore di rete: ${response.statusText}`);
+                if (!response.ok) throw new Error(`Errore di rete (${response.status})`);
                 const songs = await response.json();
                 if (songs.error || !Array.isArray(songs)) {
                     throw new Error(songs.message || 'Formato dati non valido.');
@@ -240,7 +208,8 @@
                 createFilterButtons(allSongs);
                 filterAndDisplaySongs();
             } catch (error) {
-                songListContainer.innerHTML = `<p style="color: #f44336;">Errore caricamento: ${error.message}</p>`;
+                console.error("Fallimento caricamento API:", error);
+                songListContainer.innerHTML = `<p style="color: #ffc107;">Spiacente, non è stato possibile caricare il catalogo. Riprova più tardi.</p>`;
             }
         }
 
@@ -297,23 +266,20 @@
         }
 
         function handleSongClick(item) {
-            if (isAudioBusy) { return; } // Ignora il click se un'operazione è in corso
-            isAudioBusy = true; // Attiva il "lock"
+            if (isAudioBusy) { return; }
+            isAudioBusy = true;
 
             const isPlayingThisItem = (item === currentPlayingItem);
             
-            if (bgAudio && !bgAudio.paused) bgAudio.pause(); // Mette in pausa la musica di sottofondo
+            if (bgAudio && !bgAudio.paused) bgAudio.pause();
             
             if (isPlayingThisItem) {
-                // CASO: PAUSA
                 catalogPlayer.pause();
                 item.classList.remove('playing');
                 item.querySelector('.play-btn i').className = 'fas fa-play';
                 currentPlayingItem = null;
-                isAudioBusy = false; // Rilascia il lock
+                isAudioBusy = false;
             } else {
-                // CASO: PLAY
-                // Resetta l'interfaccia di un altro brano eventualmente in play
                 if (currentPlayingItem) {
                     currentPlayingItem.classList.remove('playing');
                     currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
@@ -324,12 +290,10 @@
                 const playPromise = catalogPlayer.play();
                 if (playPromise !== undefined) {
                     playPromise.then(() => {
-                        // Successo: aggiorna UI e rilascia il lock
                         item.classList.add('playing');
                         item.querySelector('.play-btn i').className = 'fas fa-pause';
                         isAudioBusy = false;
                     }).catch(error => {
-                        // Errore: resetta UI e rilascia il lock
                         console.error("Errore durante la riproduzione:", error);
                         item.classList.remove('playing');
                         item.querySelector('.play-btn i').className = 'fas fa-play';
@@ -337,21 +301,60 @@
                         isAudioBusy = false;
                     });
                 } else {
-                    isAudioBusy = false; // Fallback per browser molto vecchi
+                    isAudioBusy = false;
                 }
             }
         }
         
+        // --- GESTIONE DEGLI EVENTI (EVENT LISTENERS) ---
+
+        // Avvio Audio e Overlay iniziale
+        startAudioBtn.addEventListener('click', initializeAudio);
+        audioStartOverlay.style.display = 'flex';
+
+        // Pulsante Muto/Attiva musica di sottofondo
+        audioCta.addEventListener('click', () => {
+            if (!audioInitialized) {
+                initializeAudio();
+            } else {
+                bgAudio.muted = !bgAudio.muted;
+                if (!bgAudio.muted && bgAudio.paused) {
+                  bgAudio.play().catch(e => console.error("Errore nel riprodurre l'audio di sottofondo:", e));
+                }
+                updateMuteButton();
+            }
+        });
+
+        // Apertura delle finestre modali
+        document.getElementById('open-music-modal').addEventListener('click', () => { document.getElementById('music-modal').style.display = 'flex'; });
+        document.getElementById('open-shop-modal').addEventListener('click', () => { document.getElementById('shop-modal').style.display = 'flex'; });
+        document.getElementById('open-video-modal').addEventListener('click', () => document.getElementById('video-modal').style.display = 'flex';
+        document.getElementById('open-services-modal').addEventListener('click', () => document.getElementById('services-modal').style.display = 'flex';
+        document.getElementById('open-contact-modal').addEventListener('click', () => document.getElementById('contact-modal').style.display = 'flex';
+        
+        // Pulsante per richiedere canzone personalizzata
+        document.getElementById('contact-for-custom-song').addEventListener('click', () => { 
+            closeModal('services-modal'); 
+            document.getElementById('contact-modal').style.display = 'flex'; 
+            document.querySelector('#contact-modal select[name="service_type"]').value = 'canzone_personalizzata'; 
+        });
+
+        // Pulsanti di chiusura per tutte le modali
+        document.querySelectorAll('.modal-close').forEach(btn => { 
+            btn.addEventListener('click', (e) => { closeModal(e.currentTarget.dataset.target); }); 
+        });
+
+        // Fine naturale di una traccia del catalogo
         catalogPlayer.addEventListener('ended', () => {
             if (currentPlayingItem) {
                 currentPlayingItem.classList.remove('playing');
                 currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
                 currentPlayingItem = null;
             }
-            isAudioBusy = false; // Rilascia il lock a fine traccia
+            isAudioBusy = false;
         });
 
-        // --- 4. FORM DI CONTATTO E AFORISMI ---
+        // Invio del form di contatto
         form.addEventListener('submit', function(e) { 
             e.preventDefault(); 
             const formData = new FormData(form); 
@@ -359,143 +362,71 @@
             fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData })
                 .then(response => response.json())
                 .then(data => { 
-                    if (data.success) { 
-                        formResult.innerHTML = "Messaggio inviato con successo!"; 
-                        form.reset(); 
-                    } else { 
-                        formResult.innerHTML = `Errore: ${data.message}`; 
-                    } 
+                    formResult.innerHTML = data.success ? "Messaggio inviato con successo!" : `Errore: ${data.message}`;
+                    if(data.success) form.reset();
                 })
-                .catch(() => formResult.innerHTML = "Si è verificato un errore."); 
+                .catch(() => formResult.innerHTML = "Si è verificato un errore di rete."); 
         });
-        
+
+        // --- FUNZIONI SECONDARIE E CHATBOT ---
+
+        // Aforismi
         const aphorisms = [ "La musica è la vera lingua universale.", "Dove le parole finiscono, inizia la musica.", "La vita è come un pianoforte, ciò che ne esce dipende da come la suoni.", "La musica può cambiare il mondo perché può cambiare le persone.", "Ogni nota suonata è un'emozione che prende vita.", "La musica è il silenzio che ha trovato la sua voce." ];
         function showRandomAphorism() { 
             const rect = mainContainer.getBoundingClientRect(); 
-            const postit = document.createElement('div'); 
-            postit.className = 'aphorism-postit'; 
+            const postit = document.createElement('div'); postit.className = 'aphorism-postit'; 
             postit.textContent = aphorisms[Math.floor(Math.random() * aphorisms.length)]; 
             let top, left; 
-            do { 
-                top = Math.random() * window.innerHeight; 
-                left = Math.random() * window.innerWidth; 
-            } while ( top > rect.top - 50 && top < rect.bottom + 50 && left > rect.left - 50 && left < rect.right + 50 ); 
-            postit.style.top = `${top}px`; 
-            postit.style.left = `${left}px`; 
+            do { top = Math.random() * window.innerHeight; left = Math.random() * window.innerWidth; } while ( top > rect.top - 50 && top < rect.bottom + 50 && left > rect.left - 50 && left < rect.right + 50 ); 
+            postit.style.top = `${top}px`; postit.style.left = `${left}px`; 
             const rotation = `rotate(${Math.random() * 20 - 10}deg)`; 
-            postit.style.setProperty('--transform-start', `${rotation} translateY(20px)`); 
-            postit.style.setProperty('--transform-end', `${rotation} translateY(0)`); 
+            postit.style.setProperty('--transform-start', `${rotation} translateY(20px)`); postit.style.setProperty('--transform-end', `${rotation} translateY(0)`); 
             aphorismContainer.appendChild(postit); 
             setTimeout(() => { postit.remove(); }, 10000); 
         }
-        setInterval(showRandomAphorism, 12000);
 
-        // --- 5. INIZIALIZZAZIONE CHATBOT ---
-        function initializeChatbot() {
+        // Chatbot (codice auto-eseguibile, non necessita di modifiche)
+        (function() {
+            const chatbotContainer = document.getElementById('chatbot-container');
+            if(!chatbotContainer) return;
+
             const chatbotHTML = `
             <style>
                 @keyframes rhythmic-bounce { 0%, 100% { transform: translateY(0); } 10%, 30% { transform: translateY(0); } 20% { transform: translateY(-15px); } 25% { transform: translateY(0); } 35% { transform: translateY(-15px); } 40% { transform: translateY(0); } }
                 #chatbot-bubble{ position:fixed; bottom:25px; right:25px; width:65px; height:65px; border-radius:50%; box-shadow:0 4px 12px rgba(0,0,0,.2); cursor:pointer; display:flex; align-items:center; justify-content:center; transition: all .3s ease; background-image:url(fausto_immagine.jpg); background-size:cover; background-position:center; border:3px solid var(--primary-color); z-index:9999; }
-                #chatbot-bubble.bouncing { animation: rhythmic-bounce 2.5s ease-in-out; }
-                #chatbot-bubble:hover{ transform:scale(1.1); }
-                #chatbot-bubble.open{ background-image:none; background-color:var(--primary-color); animation: none; }
-                #chatbot-bubble.open .icon-close{opacity:1}
-                #chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}
-                
+                #chatbot-bubble.bouncing { animation: rhythmic-bounce 2.5s ease-in-out; } #chatbot-bubble:hover{ transform:scale(1.1); } #chatbot-bubble.open{ background-image:none; background-color:var(--primary-color); animation: none; } #chatbot-bubble.open .icon-close{opacity:1} #chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}
                 #chatbot-window-wrapper { position:fixed; bottom: 100px; right:25px; width:400px; max-width:calc(100vw - 30px); height:70vh; max-height:600px; z-index:9998; transform:translateY(20px) scale(.95); opacity:0; visibility:hidden; transition:all .3s ease-in-out; }
                 #chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}
-                
                 #chatbot-window{position:relative; margin-top: 45px; width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;}
                 .chatbot-header-logo {width: 90px;height: 90px;border-radius: 50%;border: 3px solid #fff;box-shadow: 0 0 10px rgba(0,0,0,0.3);object-fit: cover;position: absolute;top: 0;left: 50%;transform: translateX(-50%); z-index: 10000;}
-                
-                @media (max-width: 768px) { 
-                    #chatbot-window-wrapper { bottom: 95px; right: 15px; } 
-                    #chatbot-bubble { bottom: 15px; right: 15px; } 
-                }
-
-                .chatbot-header {position: relative; background-color: var(--primary-color); color: #fff; padding: 1rem; padding-top: 55px; text-align: center; flex-shrink: 0;}
-                .chatbot-close-btn {position: absolute; top: 10px; right: 15px; font-size: 2.2em; color: white; cursor: pointer; line-height: 1; font-weight: 300;}
+                @media (max-width: 768px) { #chatbot-window-wrapper { bottom: 95px; right: 15px; } #chatbot-bubble { bottom: 15px; right: 15px; } }
+                .chatbot-header {position: relative; background-color: var(--primary-color); color: #fff; padding: 1rem; padding-top: 55px; text-align: center; flex-shrink: 0;} .chatbot-close-btn {position: absolute; top: 10px; right: 15px; font-size: 2.2em; color: white; cursor: pointer; line-height: 1; font-weight: 300;}
                 .chatbot-messages { flex-grow:1; padding:1rem; overflow-y:auto; display:flex; flex-direction:column; background-image: linear-gradient(rgba(249, 247, 243, 0.7), rgba(249, 247, 243, 0.7)), url('https://github.com/Rickym2025/fausto-fusetti-links/blob/main/sfondo_chat.jpg?raw=true'); background-size: cover; background-position: center; }
-                .message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}
-                .message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0; align-self: flex-start;}
+                .message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start} .message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0; align-self: flex-start;}
                 .message-text{padding:10px 15px;border-radius:18px;line-height:1.4;overflow-wrap: break-word; word-break: break-word;text-align: left; box-shadow: 0 2px 5px rgba(0,0,0,0.1);}
-                .message.user .message-text{background-color: rgba(238, 242, 245, 0.75); color:#333;border-bottom-right-radius:4px}
-                .message.bot .message-text{background-color: rgba(6, 147, 227, 0.8); color:#fff;border-bottom-left-radius:4px}
-                .chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}
-                .chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid var(--primary-color)}
-                .chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}
-                .message-text a.chatbot-song-link { color: #fff; font-weight: 500; text-decoration: none; cursor: pointer; display: inline-block; padding: 2px 0; border-bottom: 1px dotted #fff;}
+                .message.user .message-text{background-color: rgba(238, 242, 245, 0.75); color:#333;border-bottom-right-radius:4px} .message.bot .message-text{background-color: rgba(6, 147, 227, 0.8); color:#fff;border-bottom-left-radius:4px}
+                .chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0} .chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem} .chatbot-input input:focus-visible{outline:2px solid var(--primary-color)} .chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}
             </style>
             <div id="chatbot-bubble"> <svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg> </div> <div id="chatbot-window-wrapper"> <img src="fausto_immagine.jpg" alt="Fausto AI" class="chatbot-header-logo"> <div id="chatbot-window"> <div class="chatbot-header"> <div><h3>Fausto AI</h3><small>Assistente Virtuale</small></div> <span class="chatbot-close-btn">&times;</span> </div> <div class="chatbot-messages" id="chatbot-messages"></div> <div class="chatbot-input"> <input type="text" id="chatbot-input-field" name="chatbot_message" autocomplete="off" placeholder="Scrivi un messaggio..."> <button id="chatbot-send-btn"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg></button> </div> </div> </div>`;
-            
-            const container = document.getElementById('chatbot-container');
-            container.innerHTML = chatbotHTML;
-            
-            const webhookUrl = 'https://n8n.automaita.it/webhook/ffausto-ai-chat';
-            const bubble = document.getElementById('chatbot-bubble');
-            const windowWrapper = document.getElementById('chatbot-window-wrapper');
-            const messagesEl = document.getElementById('chatbot-messages');
-            const inputField = document.getElementById('chatbot-input-field');
-            const sendBtn = document.getElementById('chatbot-send-btn');
-            const closeBtn = document.querySelector('.chatbot-close-btn');
+            chatbotContainer.innerHTML = chatbotHTML;
+            const webhookUrl = 'https://n8n.automaita.it/webhook/ffausto-ai-chat', bubble = document.getElementById('chatbot-bubble'), windowWrapper = document.getElementById('chatbot-window-wrapper'), messagesEl = document.getElementById('chatbot-messages'), inputField = document.getElementById('chatbot-input-field'), sendBtn = document.getElementById('chatbot-send-btn'), closeBtn = document.querySelector('.chatbot-close-btn');
+            const toggleChat = () => { windowWrapper.classList.toggle('open'); bubble.classList.toggle('open'); if (windowWrapper.classList.contains('open')) setTimeout(() => inputField.focus(), 300); };
+            const addMessage = (rawText, type) => { const msgDiv = document.createElement('div'); msgDiv.className = `message ${type}`; if (type === 'bot') { const avatar = document.createElement('img'); avatar.src = 'fausto_immagine.jpg'; avatar.className = 'message-avatar'; msgDiv.appendChild(avatar); } const textDiv = document.createElement('div'); textDiv.className = 'message-text'; textDiv.innerHTML = DOMPurify.sanitize(rawText, { ADD_TAGS: ['a', 'ul', 'li', 'strong'], ADD_ATTR: ['href', 'target'] }); msgDiv.appendChild(textDiv); messagesEl.appendChild(msgDiv); messagesEl.scrollTop = messagesEl.scrollHeight; };
+            const sendMessage = async () => { const userMessage = inputField.value.trim(); if (userMessage === '') return; addMessage(userMessage, 'user'); inputField.value = ''; try { const response = await fetch(`${webhookUrl}?user_message=${encodeURIComponent(userMessage)}&conversation_id=session-${Date.now()}`, { method: 'POST' }); if (!response.ok) throw new Error("Network response"); const data = await response.json(); addMessage(data.response || "C'è stato un problema.", 'bot'); } catch (error) { addMessage('Spiacente, si è verificato un errore.', 'bot'); } };
+            bubble.addEventListener('click', toggleChat); closeBtn.addEventListener('click', toggleChat); sendBtn.addEventListener('click', sendMessage); inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
+            if (window.innerWidth > 768) setTimeout(() => { if (!windowWrapper.classList.contains('open')) toggleChat(); }, 2500);
+            addMessage("Ciao! Sono Fausto AI, assistente virtuale. Sono qui per aiutarti a trovare il tuo brano ideale. Cosa stai cercando?", 'bot');
+        })();
 
-            const toggleChat = () => {
-                windowWrapper.classList.toggle('open');
-                bubble.classList.toggle('open');
-                if (windowWrapper.classList.contains('open')) {
-                    setTimeout(() => inputField.focus(), 300);
-                }
-            };
+        // --- ESECUZIONE CODICE ALL'AVVIO ---
+        
+        // **NUOVA LOGICA**: Pre-carica il catalogo in background per velocità e affidabilità.
+        loadMusicFromApi(); 
 
-            const addMessage = (rawText, type) => {
-                const msgDiv = document.createElement('div');
-                msgDiv.className = `message ${type}`;
-                if (type === 'bot') {
-                    const avatar = document.createElement('img'); avatar.className = 'message-avatar'; avatar.src = 'fausto_immagine.jpg'; msgDiv.appendChild(avatar);
-                }
-                const textDiv = document.createElement('div');
-                textDiv.className = 'message-text';
-                textDiv.innerHTML = DOMPurify.sanitize(rawText, { ADD_TAGS: ['a', 'ul', 'li', 'strong'], ADD_ATTR: ['href', 'target'] });
-                msgDiv.appendChild(textDiv);
-                messagesEl.appendChild(msgDiv);
-                messagesEl.scrollTop = messagesEl.scrollHeight;
-            };
+        // Avvia l'animazione degli aforismi
+        setInterval(showRandomAphorism, 12000);
 
-            const sendMessage = async () => {
-                const userMessage = inputField.value.trim();
-                if (userMessage === '') return;
-                addMessage(userMessage, 'user');
-                inputField.value = '';
-                try {
-                    const response = await fetch(`${webhookUrl}?user_message=${encodeURIComponent(userMessage)}&conversation_id=session-${Date.now()}`, { method: 'POST' });
-                    if (!response.ok) throw new Error("Network response");
-                    const data = await response.json();
-                    addMessage(data.response || "C'è stato un problema.", 'bot');
-                } catch (error) {
-                    addMessage('Spiacente, si è verificato un errore.', 'bot');
-                }
-            };
-            
-            bubble.addEventListener('click', toggleChat);
-            closeBtn.addEventListener('click', toggleChat);
-            sendBtn.addEventListener('click', sendMessage);
-            inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
-
-            const isMobile = window.innerWidth <= 768;
-            if (!isMobile) {
-                 setTimeout(() => {
-                    if(!windowWrapper.classList.contains('open')) {
-                        toggleChat();
-                    }
-                }, 2500);
-            }
-            
-            addMessage("Ciao! Sono Fausto AI, il tuo assistente virtuale. Sono qui per aiutarti a trovare il brano ideale. Cosa stai cercando?", 'bot');
-        }
-
-        initializeChatbot(); // Avvia il chatbot
-
-    }); // <-- Chiusura del DOMContentLoaded principale
+    }); // --- Fine dello script principale ---
   </script>
 
 </body>
