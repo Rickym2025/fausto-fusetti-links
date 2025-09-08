@@ -208,17 +208,24 @@
         document.getElementById('contact-for-custom-song').addEventListener('click', () => { closeModal('services-modal'); document.getElementById('contact-modal').style.display = 'flex'; document.querySelector('#contact-modal select[name="service_type"]').value = 'canzone_personalizzata'; });
         document.querySelectorAll('.modal-close').forEach(btn => { btn.addEventListener('click', (e) => { closeModal(e.currentTarget.dataset.target); }); });
 
+        // --- INIZIO BLOCCO DA SOSTITUIRE ---
+
         const songListContainer = document.getElementById('song-list-container');
         const filterContainer = document.getElementById('filter-container');
+        
         let currentPlayingItem = null;
+        let allSongs = [];
         let currentFilters = { genre: 'all', category: 'all', argomento: 'all' };
+        
+        // La variabile "LOCK" per prevenire i crash
+        let isAudioBusy = false;
 
         async function loadMusicFromApi() {
             try {
                 const response = await fetch(sheetApiUrl);
                 if (!response.ok) throw new Error(`Errore di rete`);
                 const songs = await response.json();
-                if (songs.error || !Array.isArray(songs)) { // Aggiunto controllo se non è un array
+                if (songs.error || !Array.isArray(songs)) {
                     throw new Error(songs.message || 'Formato dati non valido dallo script.');
                 }
                 allSongs = songs;
@@ -241,7 +248,7 @@
                 let buttonsHtml = `<div class="filter-group"><div class="filter-label">${key}</div><div class="filter-buttons">`;
                 buttonsHtml += `<button class="filter-btn active" data-filter-key="${filterKey}" data-filter-value="all">Tutti</button>`;
                 filters[key].forEach(value => {
-                    if(value) buttonsHtml += `<button class="filter-btn" data-filter-key="${filterKey}" data-filter-value="${value}">${value}</button>`;
+                    if (value) buttonsHtml += `<button class="filter-btn" data-filter-key="${filterKey}" data-filter-value="${value}">${value}</button>`;
                 });
                 buttonsHtml += `</div></div>`;
                 filterContainer.innerHTML += buttonsHtml;
@@ -277,77 +284,88 @@
 
         function addEventListenersToSongs() {
             document.querySelectorAll('.song-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    handleSongClick(item);
-                });
+                item.addEventListener('click', () => handleSongClick(item));
             });
         }
 
-        // --- INIZIO BLOCCO DA SOSTITUIRE ---
-
         function handleSongClick(item) {
-            const isPlayingThisItem = item.classList.contains('playing');
+            // 1. Controlla il "semaforo". Se è rosso (busy), ignora il click.
+            if (isAudioBusy) {
+                return;
+            }
+            // 2. Il semaforo diventa rosso.
+            isAudioBusy = true;
+
+            const isPlayingThisItem = item === currentPlayingItem;
             const bgAudio = document.getElementById('background-audio');
 
-            // Pausa l'audio di sottofondo se è attivo
-            if (bgAudio && !bgAudio.paused) {
-                bgAudio.pause();
-            }
-
-            // Resetta l'interfaccia di tutti gli altri brani
-            document.querySelectorAll('.song-item').forEach(otherItem => {
-                if (otherItem !== item) {
-                    otherItem.classList.remove('playing');
-                    otherItem.querySelector('.play-btn i').className = 'fas fa-play';
-                }
-            });
-
+            // Pausa l'audio di sottofondo se necessario
+            if (bgAudio && !bgAudio.paused) bgAudio.pause();
+            
             if (isPlayingThisItem) {
-                // --- CASO 1: L'utente sta mettendo in PAUSA il brano corrente ---
+                // --- CASO 1: PAUSA del brano corrente ---
                 catalogPlayer.pause();
-                // **LA PARTE CHIAVE DELLA SOLUZIONE**: Scolleghiamo la sorgente per resettare il player
-                catalogPlayer.src = ''; 
+                
+                // Aggiorna l'interfaccia
                 item.classList.remove('playing');
                 item.querySelector('.play-btn i').className = 'fas fa-play';
                 currentPlayingItem = null;
+                
+                // 3. Il semaforo torna verde. La pausa è un'operazione sicura e sincrona.
+                isAudioBusy = false;
 
             } else {
-                // --- CASO 2: L'utente sta AVVIANDO un brano (nuovo o lo stesso da fermo) ---
+                // --- CASO 2: PLAY di un nuovo brano (o dello stesso brano da fermo) ---
+                
+                // Resetta l'interfaccia di un eventuale altro brano che era selezionato
+                if (currentPlayingItem) {
+                    currentPlayingItem.classList.remove('playing');
+                    currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
+                }
+
                 currentPlayingItem = item;
                 catalogPlayer.src = item.dataset.src;
                 
                 const playPromise = catalogPlayer.play();
-                
+
                 if (playPromise !== undefined) {
                     playPromise.then(() => {
                         // Successo: aggiorna l'interfaccia
                         item.classList.add('playing');
                         item.querySelector('.play-btn i').className = 'fas fa-pause';
+                        
+                        // 3. Il semaforo torna verde ORA che il play è andato a buon fine.
+                        isAudioBusy = false;
                     }).catch(error => {
                         console.error("Errore durante la riproduzione:", error);
-                        // In caso di errore, resetta tutto
-                        catalogPlayer.pause();
-                        catalogPlayer.src = '';
+                        // Errore: resetta tutto
                         item.classList.remove('playing');
                         item.querySelector('.play-btn i').className = 'fas fa-play';
                         currentPlayingItem = null;
+
+                        // 3. Il semaforo torna verde anche in caso di errore.
+                        isAudioBusy = false;
                     });
+                } else {
+                    // Fallback per browser che non supportano le promise sull'audio
+                    isAudioBusy = false;
                 }
             }
         }
-       
-        // Manteniamo solo l'evento 'ended' per gestire la fine naturale di un brano
+        
+        // Gestisce la fine naturale della traccia
         catalogPlayer.addEventListener('ended', () => {
             if (currentPlayingItem) {
                 currentPlayingItem.classList.remove('playing');
                 currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
                 currentPlayingItem = null;
             }
+            isAudioBusy = false; // Assicuriamoci che il lock sia rilasciato
         });
 
-        // --- FINE BLOCCO DA SOSTITUIRE ---
-
         loadMusicFromApi();
+        
+        // --- FINE BLOCCO DA SOSTITUIRE ---
 
         const form = document.getElementById('contact-form');
         const formResult = document.getElementById('form-result');
