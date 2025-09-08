@@ -283,95 +283,69 @@
             });
         }
 
-        // --- START: REPLACE THIS ENTIRE BLOCK ---
+        // --- INIZIO BLOCCO DA SOSTITUIRE ---
 
         function handleSongClick(item) {
-            const isSameSong = (currentPlayingItem === item);
+            const isPlayingThisItem = item.classList.contains('playing');
             const bgAudio = document.getElementById('background-audio');
 
-            if (isSameSong) {
-                // CASE 1: The user clicked the SAME song again.
-                // We just toggle between play and pause without reloading.
-                if (catalogPlayer.paused) {
-                    // Ensure background audio is paused before resuming.
-                    if (bgAudio && !bgAudio.paused) bgAudio.pause();
-                    catalogPlayer.play();
-                } else {
-                    catalogPlayer.pause();
-                }
-            } else {
-                // CASE 2: The user clicked a NEW song.
-                // Here we must change the source and load it.
-                
-                // Pause background audio.
-                if (bgAudio && !bgAudio.paused) bgAudio.pause();
+            // Pausa l'audio di sottofondo se è attivo
+            if (bgAudio && !bgAudio.paused) {
+                bgAudio.pause();
+            }
 
-                // Update the global reference to the new item.
+            // Resetta l'interfaccia di tutti gli altri brani
+            document.querySelectorAll('.song-item').forEach(otherItem => {
+                if (otherItem !== item) {
+                    otherItem.classList.remove('playing');
+                    otherItem.querySelector('.play-btn i').className = 'fas fa-play';
+                }
+            });
+
+            if (isPlayingThisItem) {
+                // --- CASO 1: L'utente sta mettendo in PAUSA il brano corrente ---
+                catalogPlayer.pause();
+                // **LA PARTE CHIAVE DELLA SOLUZIONE**: Scolleghiamo la sorgente per resettare il player
+                catalogPlayer.src = ''; 
+                item.classList.remove('playing');
+                item.querySelector('.play-btn i').className = 'fas fa-play';
+                currentPlayingItem = null;
+
+            } else {
+                // --- CASO 2: L'utente sta AVVIANDO un brano (nuovo o lo stesso da fermo) ---
                 currentPlayingItem = item;
-                
-                // Set the new source, load it, and play it.
                 catalogPlayer.src = item.dataset.src;
-                catalogPlayer.load(); // Necessary for a new source.
                 
                 const playPromise = catalogPlayer.play();
+                
                 if (playPromise !== undefined) {
-                    playPromise.catch(error => {
-                        console.error("Error attempting to play new song:", error);
-                        // If playback fails, visually reset the item.
-                        if (currentPlayingItem) {
-                            currentPlayingItem.classList.remove('playing');
-                            currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
-                        }
+                    playPromise.then(() => {
+                        // Successo: aggiorna l'interfaccia
+                        item.classList.add('playing');
+                        item.querySelector('.play-btn i').className = 'fas fa-pause';
+                    }).catch(error => {
+                        console.error("Errore durante la riproduzione:", error);
+                        // In caso di errore, resetta tutto
+                        catalogPlayer.pause();
+                        catalogPlayer.src = '';
+                        item.classList.remove('playing');
+                        item.querySelector('.play-btn i').className = 'fas fa-play';
+                        currentPlayingItem = null;
                     });
                 }
             }
         }
-
-        // These event listeners now correctly manage the UI for all states.
-        catalogPlayer.addEventListener('play', () => {
-            if (currentPlayingItem) {
-                // When play starts, ensure ALL OTHER song items are reset.
-                // This prevents visual bugs if the user clicks very fast.
-                document.querySelectorAll('.song-item').forEach(item => {
-                    if (item !== currentPlayingItem) {
-                        item.classList.remove('playing');
-                        item.querySelector('.play-btn i').className = 'fas fa-play';
-                    }
-                });
-                // Then, set the active state on the current one.
-                currentPlayingItem.classList.add('playing');
-                currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-pause';
-            }
-        });
-
-        catalogPlayer.addEventListener('pause', () => {
-            // This correctly handles pausing and also the implicit pause
-            // that happens when a new song's source is loaded.
-            if (currentPlayingItem) {
-                currentPlayingItem.classList.remove('playing');
-                currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
-            }
-        });
-
-        catalogPlayer.addEventListener('ended', () => {
-            // When a song finishes, reset its UI and clear the state.
-            if (currentPlayingItem) {
-                currentPlayingItem.classList.remove('playing');
-                currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
-                currentPlayingItem = null; // Clear the reference.
-            }
-        });
-
-        // --- END: REPLACE THIS ENTIRE BLOCK ---
-
-        // Event listener to reset the state completely when the song finishes
+       
+        // Manteniamo solo l'evento 'ended' per gestire la fine naturale di un brano
         catalogPlayer.addEventListener('ended', () => {
             if (currentPlayingItem) {
                 currentPlayingItem.classList.remove('playing');
                 currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
-                currentPlayingItem = null; // Reset completely
+                currentPlayingItem = null;
             }
         });
+
+        // --- FINE BLOCCO DA SOSTITUIRE ---
 
         loadMusicFromApi();
 
