@@ -100,7 +100,6 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
         
-        // --- FASE 1: AVVIO MINIMO E SICURO ---
         const startAudioBtn = document.getElementById('start-audio-btn');
         const audioStartOverlay = document.getElementById('audio-start-overlay');
         const bgAudio = document.getElementById('background-audio');
@@ -121,9 +120,7 @@
         startAudioBtn.addEventListener('click', initializeExperience);
         audioStartOverlay.style.display = 'flex';
 
-        // --- FASE 2: INIZIALIZZAZIONE COMPLETA ---
         function initializeFullFunctionality() {
-            // --- VARIABILI GLOBALI ---
             const sheetApiUrl = 'https://script.google.com/macros/s/AKfycbw666DGD4BlSHuJwmVYcRLF9_qMJX2LXy_r6gCGVbjR_dXQDngQU-JttofSKOwUkIJZ/exec?source=catalogo';
             const audioCta = document.getElementById('audio-cta');
             const catalogPlayer = document.getElementById('catalog-audio-player');
@@ -135,7 +132,7 @@
             let currentPlayingItem = null;
             let currentFilters = { genre: 'all', category: 'all', argomento: 'all' };
 
-            // --- DEBOUNCER PER PLAYER AUDIO (ANTI-CRASH) ---
+            // --- FUNZIONE DEBOUNCE (ANTI-CRASH PER PLAYER) ---
             let debounceTimer;
             function debounce(func, delay) {
                 return function(...args) {
@@ -143,13 +140,13 @@
                     debounceTimer = setTimeout(() => func.apply(this, args), delay);
                 };
             }
-
+            
             async function playOrPauseSong(item, song) {
                 const isSameSong = (item === currentPlayingItem);
                 try {
                     if (isSameSong) {
-                        if (catalogPlayer.paused) { await catalogPlayer.play(); }
-                        else { catalogPlayer.pause(); }
+                        if (catalogPlayer.paused) await catalogPlayer.play();
+                        else catalogPlayer.pause();
                     } else {
                         if (currentPlayingItem) {
                             currentPlayingItem.classList.remove('playing');
@@ -175,7 +172,6 @@
             catalogPlayer.addEventListener('pause', () => { if (currentPlayingItem) { currentPlayingItem.classList.remove('playing'); currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play'; } });
             catalogPlayer.addEventListener('ended', () => { if (currentPlayingItem) { currentPlayingItem.classList.remove('playing'); currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play'; currentPlayingItem = null; } });
 
-            // --- CARICAMENTO DATI ---
             async function loadMusicFromApi() {
                 songListContainer.innerHTML = `<p>Caricamento catalogo...</p>`;
                 try {
@@ -225,62 +221,9 @@
                     songListContainer.innerHTML = '<p>Nessun brano corrisponde ai filtri.</p>';
                 }
             }
-
-            // --- MODALI E ALTRI EVENTI ---
-            function closeModal(modalId) {
-                const modal = document.getElementById(modalId);
-                if (!modal) return;
-                if (modalId === 'music-modal' && catalogPlayer && !catalogPlayer.paused) {
-                    catalogPlayer.pause();
-                    catalogPlayer.src = '';
-                    if (currentPlayingItem) {
-                        currentPlayingItem.classList.remove('playing');
-                        currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
-                    }
-                    currentPlayingItem = null;
-                }
-                if (!bgAudio.muted) { bgAudio.play().catch(e => console.error("Errore nel riprendere l'audio:", e)); }
-                modal.style.display = 'none';
-            }
             
-            function updateMuteButton() {
-                const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i');
-                const ctaText = document.querySelector('#audio-cta .cta-text');
-                muteBtnIcon.className = bgAudio.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
-                ctaText.textContent = bgAudio.muted ? 'Attiva la musica' : 'Disattiva musica';
-            }
-            updateMuteButton();
-            audioCta.style.visibility = 'visible';
-            audioCta.addEventListener('click', () => {
-                bgAudio.muted = !bgAudio.muted;
-                if (!bgAudio.muted && bgAudio.paused) bgAudio.play();
-                updateMuteButton();
-            });
-
-            document.getElementById('open-music-modal').addEventListener('click', () => { document.getElementById('music-modal').style.display = 'flex'; });
-            document.getElementById('open-video-modal').addEventListener('click', () => { document.getElementById('video-modal').style.display = 'flex'; });
-            document.getElementById('open-services-modal').addEventListener('click', () => { document.getElementById('services-modal').style.display = 'flex'; });
-            document.getElementById('open-contact-modal').addEventListener('click', () => { document.getElementById('contact-modal').style.display = 'flex'; });
-            document.getElementById('open-shop-modal').addEventListener('click', () => { document.getElementById('shop-modal').style.display = 'flex'; });
-            
-            document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', (e) => closeModal(e.currentTarget.dataset.target)));
-            document.getElementById('contact-for-custom-song').addEventListener('click', () => { 
-                closeModal('services-modal'); 
-                document.getElementById('contact-modal').style.display = 'flex'; 
-                document.querySelector('#contact-modal select[name="service_type"]').value = 'canzone_personalizzata'; 
-            });
-
-            form.addEventListener('submit', function(e) { 
-                e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio in corso..."; 
-                fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData })
-                    .then(r => r.json()).then(d => { formResult.innerHTML = d.success ? "Messaggio inviato!" : `Errore: ${d.message}`; if(d.success) form.reset(); })
-                    .catch(() => formResult.innerHTML = "Errore di rete."); 
-            });
-
-            // --- FUNZIONALITÀ SECONDARIE (ISOLATE E SICURE) ---
-            (function setupSecondaryFeatures() {
+            function setupSecondaryFeatures() {
                 try {
-                    // Aforismi
                     const aphorismContainer = document.getElementById('aphorism-container');
                     const mainContainer = document.querySelector('.container');
                     const aphorisms = [ "La musica è la vera lingua universale.", "Dove le parole finiscono, inizia la musica.", "La vita è come un pianoforte."];
@@ -294,7 +237,6 @@
                     }
                     setInterval(showRandomAphorism, 12000);
 
-                    // Chatbot con State Lock
                     const chatbotContainer = document.getElementById('chatbot-container');
                     if(chatbotContainer) {
                         chatbotContainer.innerHTML = `<style>@keyframes rhythmic-bounce{0%,100%{transform:translateY(0)}10%,30%{transform:translateY(0)}20%{transform:translateY(-15px)}25%{transform:translateY(0)}35%{transform:translateY(-15px)}40%{transform:translateY(0)}}#chatbot-bubble{position:fixed;bottom:25px;right:25px;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(fausto_immagine.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:9999}#chatbot-bubble.bouncing{animation:rhythmic-bounce 2.5s ease-in-out}#chatbot-bubble:hover{transform:scale(1.1)}#chatbot-bubble.open{background-image:none;background-color:var(--primary-color);animation:none}#chatbot-bubble.open .icon-close{opacity:1}#chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}#chatbot-window-wrapper{position:fixed;bottom:100px;right:25px;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out}#chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}#chatbot-window{position:relative;margin-top:45px;width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden}.chatbot-header-logo{width:90px;height:90px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 10px rgba(0,0,0,0.3);object-fit:cover;position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:10000}#chatbot-welcome-message{position:fixed;bottom:100px;right:40px;background:var(--primary-color);color:white;padding:10px 15px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.2);opacity:0;transform:translateY(10px);transition:all .4s ease-in-out;visibility:hidden;z-index:9997;font-size:.9em}#chatbot-welcome-message.visible{opacity:1;transform:translateY(0);visibility:visible}#chatbot-welcome-message::after{content:'';position:absolute;bottom:-7px;right:25px;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid var(--primary-color)}@media (max-width:768px){#chatbot-window-wrapper{bottom:95px;right:15px}#chatbot-bubble{bottom:15px;right:15px}#chatbot-welcome-message{right:25px;bottom:90px}#chatbot-welcome-message::after{right:20px}}.chatbot-header{position:relative;background-color:var(--primary-color);color:#fff;padding:1rem;padding-top:55px;text-align:center;flex-shrink:0}.chatbot-close-btn{position:absolute;top:10px;right:15px;font-size:2.2em;color:white;cursor:pointer;line-height:1;font-weight:300}.chatbot-messages{flex-grow:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column;background-image:linear-gradient(rgba(249,247,243,.7),rgba(249,247,243,.7)),url(https://github.com/Rickym2025/fausto-fusetti-links/blob/main/sfondo_chat.jpg?raw=true);background-size:cover;background-position:center}.message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}.message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0;align-self:flex-start}.message-text{padding:10px 15px;border-radius:18px;line-height:1.4;overflow-wrap:break-word;word-break:break-word;text-align:left;box-shadow:0 2px 5px rgba(0,0,0,.1)}.message.user .message-text{background-color:rgba(238,242,245,.75);color:#333;border-bottom-right-radius:4px}.message.bot .message-text{background-color:rgba(6,147,227,.8);color:#fff;border-bottom-left-radius:4px}.chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}.chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid var(--primary-color)}.chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}</style>
@@ -323,6 +265,56 @@
                     console.error("Errore nell'inizializzazione delle funzionalità secondarie:", error);
                 }
             }
+            
+            function updateMuteButton() {
+                const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i');
+                const ctaText = document.querySelector('#audio-cta .cta-text');
+                muteBtnIcon.className = bgAudio.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
+                ctaText.textContent = bgAudio.muted ? 'Attiva la musica' : 'Disattiva musica';
+            }
+            updateMuteButton();
+            audioCta.style.visibility = 'visible';
+            audioCta.addEventListener('click', () => {
+                bgAudio.muted = !bgAudio.muted;
+                if (!bgAudio.muted && bgAudio.paused) bgAudio.play();
+                updateMuteButton();
+            });
+
+            function closeModal(modalId) {
+                const modal = document.getElementById(modalId);
+                if (!modal) return;
+                if (modalId === 'music-modal' && catalogPlayer && !catalogPlayer.paused) {
+                    catalogPlayer.pause();
+                    catalogPlayer.src = '';
+                    if (currentPlayingItem) {
+                        currentPlayingItem.classList.remove('playing');
+                        currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
+                    }
+                    currentPlayingItem = null;
+                }
+                if (!bgAudio.muted) { bgAudio.play().catch(e => console.error("Errore nel riprendere l'audio:", e)); }
+                modal.style.display = 'none';
+            }
+
+            document.getElementById('open-music-modal').addEventListener('click', () => { document.getElementById('music-modal').style.display = 'flex'; });
+            document.getElementById('open-video-modal').addEventListener('click', () => { document.getElementById('video-modal').style.display = 'flex'; });
+            document.getElementById('open-services-modal').addEventListener('click', () => { document.getElementById('services-modal').style.display = 'flex'; });
+            document.getElementById('open-contact-modal').addEventListener('click', () => { document.getElementById('contact-modal').style.display = 'flex'; });
+            document.getElementById('open-shop-modal').addEventListener('click', () => { document.getElementById('shop-modal').style.display = 'flex'; });
+            
+            document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', (e) => closeModal(e.currentTarget.dataset.target)));
+            document.getElementById('contact-for-custom-song').addEventListener('click', () => { 
+                closeModal('services-modal'); 
+                document.getElementById('contact-modal').style.display = 'flex'; 
+                document.querySelector('#contact-modal select[name="service_type"]').value = 'canzone_personalizzata'; 
+            });
+
+            form.addEventListener('submit', function(e) { 
+                e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio in corso..."; 
+                fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData })
+                    .then(r => r.json()).then(d => { formResult.innerHTML = d.success ? "Messaggio inviato!" : `Errore: ${d.message}`; if(d.success) form.reset(); })
+                    .catch(() => formResult.innerHTML = "Errore di rete."); 
+            });
             
             loadMusicFromApi();
             setupSecondaryFeatures();
