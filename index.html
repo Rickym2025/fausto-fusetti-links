@@ -40,7 +40,7 @@
     .song-list-container { max-height: 40vh; overflow-y: auto; margin-top: 20px; }
     .song-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #333; transition: background-color 0.3s ease; border-radius: 5px; }
     .song-item:last-child { border-bottom: none; }
-    .song-item .title { flex-grow: 1; text-align: left; }
+    .song-item .title { flex-grow: 1; text-align: left; pointer-events: none; }
     .song-item .play-btn { background: none; border: 2px solid var(--primary-color); color: var(--primary-color); border-radius: 50%; width: 40px; height: 40px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; margin-left: 10px; cursor: pointer; }
     .song-item:hover { background-color: rgba(255,255,255,0.05); }
     .song-item.playing { background-color: rgba(6, 147, 227, 0.2); }
@@ -99,8 +99,7 @@
   
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-        
-        // --- FASE 1: AVVIO MINIMO E SICURO ---
+        // --- FASE 1: AVVIO MINIMO ---
         const startAudioBtn = document.getElementById('start-audio-btn');
         const audioStartOverlay = document.getElementById('audio-start-overlay');
         const bgAudio = document.getElementById('background-audio');
@@ -109,27 +108,21 @@
         function initializeExperience() {
             if (hasExperienceStarted) return;
             hasExperienceStarted = true;
-
-            const playPromise = bgAudio.play();
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    bgAudio.muted = false;
-                    audioStartOverlay.style.display = 'none';
-                    initializeFullFunctionality();
-                }).catch(error => {
-                    console.error("Riproduzione audio iniziale bloccata:", error);
-                    hasExperienceStarted = false; // Permette all'utente di riprovare
-                });
-            } else {
-                initializeFullFunctionality(); // Fallback per browser molto vecchi
-            }
+            bgAudio.play().then(() => {
+                bgAudio.muted = false;
+                audioStartOverlay.style.display = 'none';
+                initializeFullFunctionality();
+            }).catch(error => {
+                console.error("Audio bloccato dal browser:", error);
+                hasExperienceStarted = false;
+            });
         }
         startAudioBtn.addEventListener('click', initializeExperience);
         audioStartOverlay.style.display = 'flex';
 
-        // --- FASE 2: INIZIALIZZAZIONE COMPLETA ---
+        // --- FASE 2: INIZIALIZZAZIONE COMPLETA E STABILE ---
         function initializeFullFunctionality() {
-            // Unico "cervello" per lo stato dell'applicazione
+            // "Cervello" centrale per lo stato
             const appState = {
                 isAudioBusy: false,
                 isChatAnimating: false,
@@ -137,7 +130,7 @@
                 currentPlayingItem: null,
                 currentFilters: { genre: 'all', category: 'all', argomento: 'all' },
             };
-
+            
             // Selettori elementi DOM
             const sheetApiUrl = 'https://script.google.com/macros/s/AKfycbw666DGD4BlSHuJwmVYcRLF9_qMJX2LXy_r6gCGVbjR_dXQDngQU-JttofSKOwUkIJZ/exec?source=catalogo';
             const audioCta = document.getElementById('audio-cta');
@@ -147,7 +140,7 @@
             const form = document.getElementById('contact-form');
             const formResult = document.getElementById('form-result');
 
-            // --- PLAYER AUDIO CON LOCK ASINCRONO (ANTI-CRASH) ---
+            // --- PLAYER AUDIO CON LOCK ASINCRONO ---
             async function handleSongClick(item, song) {
                 if (appState.isAudioBusy) return;
                 appState.isAudioBusy = true;
@@ -155,8 +148,8 @@
                 const isSameSong = (item === appState.currentPlayingItem);
                 try {
                     if (isSameSong) {
-                        if (catalogPlayer.paused) { await catalogPlayer.play(); } 
-                        else { catalogPlayer.pause(); }
+                        if (catalogPlayer.paused) await catalogPlayer.play();
+                        else catalogPlayer.pause();
                     } else {
                         if (appState.currentPlayingItem) {
                             appState.currentPlayingItem.classList.remove('playing');
@@ -169,21 +162,18 @@
                     }
                 } catch (error) {
                     console.error("Errore player:", error);
-                    if (appState.currentPlayingItem) {
-                        appState.currentPlayingItem.classList.remove('playing');
-                        appState.currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
-                    }
+                    if (appState.currentPlayingItem) appState.currentPlayingItem.classList.remove('playing');
                     appState.currentPlayingItem = null;
                 } finally {
                     appState.isAudioBusy = false;
                 }
             }
-
+            
             catalogPlayer.addEventListener('play', () => { if (appState.currentPlayingItem) { appState.currentPlayingItem.classList.add('playing'); appState.currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-pause'; } });
             catalogPlayer.addEventListener('pause', () => { if (appState.currentPlayingItem) { appState.currentPlayingItem.classList.remove('playing'); appState.currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play'; } });
             catalogPlayer.addEventListener('ended', () => { if (appState.currentPlayingItem) { appState.currentPlayingItem.classList.remove('playing'); appState.currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play'; appState.currentPlayingItem = null; } });
             
-            // --- GESTIONE DATI E UI CATALOGO ---
+            // --- CARICAMENTO DATI E UI ---
             async function loadMusicFromApi() {
                 songListContainer.innerHTML = `<p>Caricamento catalogo...</p>`;
                 try {
@@ -192,7 +182,7 @@
                     appState.allSongs = await response.json();
                     if (!Array.isArray(appState.allSongs)) throw new Error('Dati non validi');
                     createFilterButtons();
-                    filterAndDisplaySongs();
+                    renderSongs();
                 } catch (error) {
                     songListContainer.innerHTML = `<p style="color: #ffc107;">Spiacente, impossibile caricare il catalogo.</p>`;
                 }
@@ -209,45 +199,37 @@
                     buttonsHtml += `</div></div>`;
                     filterContainer.innerHTML += buttonsHtml;
                 }
-                document.querySelectorAll('.filter-btn').forEach(button => button.addEventListener('click', (e) => {
-                    const { filterKey, filterValue } = e.target.dataset;
-                    appState.currentFilters[filterKey] = filterValue;
-                    e.target.parentElement.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-                    e.target.classList.add('active');
-                    filterAndDisplaySongs();
-                }));
             }
 
-            function filterAndDisplaySongs() {
+            function renderSongs() {
                 const filteredSongs = appState.allSongs.filter(song => (appState.currentFilters.genre === 'all' || song.genre === appState.currentFilters.genre) && (appState.currentFilters.category === 'all' || song.category === appState.currentFilters.category) && (appState.currentFilters.argomento === 'all' || song.argomento === appState.currentFilters.argomento));
                 songListContainer.innerHTML = '';
                 if (filteredSongs.length > 0) {
-                    filteredSongs.forEach(song => {
+                    filteredSongs.forEach((song, index) => {
                         const item = document.createElement('div');
                         item.className = 'song-item';
+                        item.dataset.index = index; // Usiamo l'indice per recuperare i dati completi
                         item.innerHTML = `<span class="title">${song.title}</span><div class="play-btn"><i class="fas fa-play"></i></div>`;
-                        item.querySelector('.play-btn').addEventListener('click', () => handleSongClick(item, song));
                         songListContainer.appendChild(item);
                     });
                 } else {
                     songListContainer.innerHTML = '<p>Nessun brano corrisponde ai filtri.</p>';
                 }
             }
-
-            // --- GESTIONE MODALI E EVENTI GENERALI ---
+            
+            // --- MODALI E EVENTI GENERALI ---
             function closeModal(modalId) {
                 const modal = document.getElementById(modalId);
                 if (!modal) return;
                 if (modalId === 'music-modal' && catalogPlayer && !catalogPlayer.paused) {
-                    catalogPlayer.pause();
-                    catalogPlayer.src = '';
+                    catalogPlayer.pause(); catalogPlayer.src = '';
                     if (appState.currentPlayingItem) {
                         appState.currentPlayingItem.classList.remove('playing');
                         appState.currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
                     }
                     appState.currentPlayingItem = null;
                 }
-                if (!bgAudio.muted) { bgAudio.play().catch(e => console.error("Errore nel riprendere l'audio:", e)); }
+                if (!bgAudio.muted) bgAudio.play().catch(e => console.error("Errore:", e));
                 modal.style.display = 'none';
             }
 
@@ -264,27 +246,42 @@
                 if (!bgAudio.muted && bgAudio.paused) bgAudio.play();
                 updateMuteButton();
             });
-
-            document.getElementById('open-music-modal').addEventListener('click', () => { document.getElementById('music-modal').style.display = 'flex'; });
-            document.getElementById('open-video-modal').addEventListener('click', () => { document.getElementById('video-modal').style.display = 'flex'; });
-            document.getElementById('open-services-modal').addEventListener('click', () => { document.getElementById('services-modal').style.display = 'flex'; });
-            document.getElementById('open-contact-modal').addEventListener('click', () => { document.getElementById('contact-modal').style.display = 'flex'; });
-            document.getElementById('open-shop-modal').addEventListener('click', () => { document.getElementById('shop-modal').style.display = 'flex'; });
             
+            document.querySelectorAll('button[id^="open-"]').forEach(btn => btn.addEventListener('click', (e) => {
+                document.getElementById(e.currentTarget.id.replace('open-', '') + '-modal').style.display = 'flex';
+            }));
             document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', (e) => closeModal(e.currentTarget.dataset.target)));
             document.getElementById('contact-for-custom-song').addEventListener('click', () => { 
-                closeModal('services-modal'); 
-                document.getElementById('contact-modal').style.display = 'flex'; 
+                closeModal('services-modal'); document.getElementById('contact-modal').style.display = 'flex';
                 document.querySelector('#contact-modal select[name="service_type"]').value = 'canzone_personalizzata'; 
             });
-
             form.addEventListener('submit', function(e) { 
-                e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio in corso..."; 
+                e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio..."; 
                 fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData })
                     .then(r => r.json()).then(d => { formResult.innerHTML = d.success ? "Messaggio inviato!" : `Errore: ${d.message}`; if(d.success) form.reset(); })
                     .catch(() => formResult.innerHTML = "Errore di rete."); 
             });
             
+            // --- EVENT DELEGATION PER CATALOGO E FILTRI ---
+            filterContainer.addEventListener('click', (e) => {
+                if(e.target.classList.contains('filter-btn')) {
+                    const { filterKey, filterValue } = e.target.dataset;
+                    appState.currentFilters[filterKey] = filterValue;
+                    e.target.parentElement.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    renderSongs();
+                }
+            });
+            songListContainer.addEventListener('click', (e) => {
+                const item = e.target.closest('.song-item');
+                if(item) {
+                    const songIndex = parseInt(item.dataset.index, 10);
+                    const filteredSongs = appState.allSongs.filter(song => (appState.currentFilters.genre === 'all' || song.genre === appState.currentFilters.genre) && (appState.currentFilters.category === 'all' || song.category === appState.currentFilters.category) && (appState.currentFilters.argomento === 'all' || song.argomento === appState.currentFilters.argomento));
+                    const song = filteredSongs[songIndex];
+                    if(song) handleSongClick(item, song);
+                }
+            });
+
             // --- FUNZIONALITÀ SECONDARIE (CHATBOT, AFORISMI) ---
             (function setupSecondaryFeatures() {
                 try {
@@ -307,17 +304,19 @@
                         <div id="chatbot-bubble"><svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg></div>
                         <div id="chatbot-window-wrapper"><img src="fausto_immagine.jpg" alt="Fausto AI" class="chatbot-header-logo"><div id="chatbot-window"><div class="chatbot-header"><div><h3>Fausto AI</h3><small>Assistente Virtuale</small></div><span class="chatbot-close-btn">&times;</span></div><div class="chatbot-messages" id="chatbot-messages"></div><div class="chatbot-input"><input type="text" id="chatbot-input-field" name="chatbot_message" autocomplete="off" placeholder="Scrivi un messaggio..."><button id="chatbot-send-btn"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg></button></div></div></div>`;
                         const webhookUrl = 'https://n8n.automaita.it/webhook/ffausto-ai-chat', bubble = document.getElementById('chatbot-bubble'), windowWrapper = document.getElementById('chatbot-window-wrapper'), messagesEl = document.getElementById('chatbot-messages'), inputField = document.getElementById('chatbot-input-field'), sendBtn = document.getElementById('chatbot-send-btn'), closeBtn = document.querySelector('.chatbot-close-btn');
-                        let isChatAnimating = false; // State Lock
+                        
                         const toggleChat = () => {
-                            if (isChatAnimating) return;
-                            isChatAnimating = true;
+                            if (appState.isChatAnimating) return;
+                            appState.isChatAnimating = true;
                             windowWrapper.classList.toggle('open');
                             bubble.classList.toggle('open');
                             if (windowWrapper.classList.contains('open')) setTimeout(() => inputField.focus(), 300);
-                            setTimeout(() => { isChatAnimating = false; }, 300); // Sblocca dopo l'animazione
+                            setTimeout(() => { appState.isChatAnimating = false; }, 300);
                         };
+
                         const addMessage = (rawText, type) => { const msgDiv = document.createElement('div'); msgDiv.className = `message ${type}`; if (type === 'bot') { const avatar = document.createElement('img'); avatar.src = 'fausto_immagine.jpg'; avatar.className = 'message-avatar'; msgDiv.appendChild(avatar); } const textDiv = document.createElement('div'); textDiv.className = 'message-text'; textDiv.innerHTML = DOMPurify.sanitize(rawText, { ADD_TAGS: ['a', 'ul', 'li', 'strong'], ADD_ATTR: ['href', 'target'] }); msgDiv.appendChild(textDiv); messagesEl.appendChild(msgDiv); messagesEl.scrollTop = messagesEl.scrollHeight; };
                         const sendMessage = async () => { const userMessage = inputField.value.trim(); if (userMessage === '') return; addMessage(userMessage, 'user'); inputField.value = ''; try { const response = await fetch(`${webhookUrl}?user_message=${encodeURIComponent(userMessage)}`, { method: 'POST' }); if (!response.ok) throw new Error("Network response"); const data = await response.json(); addMessage(data.response || "C'è stato un problema.", 'bot'); } catch (error) { addMessage('Spiacente, si è verificato un errore.', 'bot'); } };
+                        
                         bubble.addEventListener('click', toggleChat);
                         closeBtn.addEventListener('click', toggleChat);
                         sendBtn.addEventListener('click', sendMessage);
@@ -329,56 +328,6 @@
                     console.error("Errore nell'inizializzazione delle funzionalità secondarie:", error);
                 }
             }
-            
-            function updateMuteButton() {
-                const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i');
-                const ctaText = document.querySelector('#audio-cta .cta-text');
-                muteBtnIcon.className = bgAudio.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
-                ctaText.textContent = bgAudio.muted ? 'Attiva la musica' : 'Disattiva musica';
-            }
-            updateMuteButton();
-            audioCta.style.visibility = 'visible';
-            audioCta.addEventListener('click', () => {
-                bgAudio.muted = !bgAudio.muted;
-                if (!bgAudio.muted && bgAudio.paused) bgAudio.play();
-                updateMuteButton();
-            });
-
-            function closeModal(modalId) {
-                const modal = document.getElementById(modalId);
-                if (!modal) return;
-                if (modalId === 'music-modal' && catalogPlayer && !catalogPlayer.paused) {
-                    catalogPlayer.pause();
-                    catalogPlayer.src = '';
-                    if (currentPlayingItem) {
-                        currentPlayingItem.classList.remove('playing');
-                        currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
-                    }
-                    currentPlayingItem = null;
-                }
-                if (!bgAudio.muted) { bgAudio.play().catch(e => console.error("Errore nel riprendere l'audio:", e)); }
-                modal.style.display = 'none';
-            }
-
-            document.getElementById('open-music-modal').addEventListener('click', () => { document.getElementById('music-modal').style.display = 'flex'; });
-            document.getElementById('open-video-modal').addEventListener('click', () => { document.getElementById('video-modal').style.display = 'flex'; });
-            document.getElementById('open-services-modal').addEventListener('click', () => { document.getElementById('services-modal').style.display = 'flex'; });
-            document.getElementById('open-contact-modal').addEventListener('click', () => { document.getElementById('contact-modal').style.display = 'flex'; });
-            document.getElementById('open-shop-modal').addEventListener('click', () => { document.getElementById('shop-modal').style.display = 'flex'; });
-            
-            document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', (e) => closeModal(e.currentTarget.dataset.target)));
-            document.getElementById('contact-for-custom-song').addEventListener('click', () => { 
-                closeModal('services-modal'); 
-                document.getElementById('contact-modal').style.display = 'flex'; 
-                document.querySelector('#contact-modal select[name="service_type"]').value = 'canzone_personalizzata'; 
-            });
-
-            form.addEventListener('submit', function(e) { 
-                e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio in corso..."; 
-                fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData })
-                    .then(r => r.json()).then(d => { formResult.innerHTML = d.success ? "Messaggio inviato!" : `Errore: ${d.message}`; if(d.success) form.reset(); })
-                    .catch(() => formResult.innerHTML = "Errore di rete."); 
-            });
             
             loadMusicFromApi();
             setupSecondaryFeatures();
