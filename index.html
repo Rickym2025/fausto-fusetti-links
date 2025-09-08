@@ -40,7 +40,7 @@
     .song-list-container { max-height: 40vh; overflow-y: auto; margin-top: 20px; }
     .song-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #333; transition: background-color 0.3s ease; border-radius: 5px; }
     .song-item:last-child { border-bottom: none; }
-    .song-item .title { flex-grow: 1; text-align: left; pointer-events: none; }
+    .song-item .title { flex-grow: 1; text-align: left; }
     .song-item .play-btn { background: none; border: 2px solid var(--primary-color); color: var(--primary-color); border-radius: 50%; width: 40px; height: 40px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; margin-left: 10px; cursor: pointer; }
     .song-item:hover { background-color: rgba(255,255,255,0.05); }
     .song-item.playing { background-color: rgba(6, 147, 227, 0.2); }
@@ -99,7 +99,7 @@
   
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // --- FASE 1: AVVIO MINIMO ---
+        
         const startAudioBtn = document.getElementById('start-audio-btn');
         const audioStartOverlay = document.getElementById('audio-start-overlay');
         const bgAudio = document.getElementById('background-audio');
@@ -108,19 +108,28 @@
         function initializeExperience() {
             if (hasExperienceStarted) return;
             hasExperienceStarted = true;
-            bgAudio.play().then(() => {
+            
+            const playPromise = bgAudio.play();
+            if (playPromise !== undefined) {
+                 playPromise.then(() => {
+                    bgAudio.muted = false;
+                    audioStartOverlay.style.display = 'none';
+                    initializeFullFunctionality();
+                }).catch(error => {
+                    console.error("Audio bloccato dal browser:", error);
+                    hasExperienceStarted = false;
+                });
+            } else {
+                // Fallback per browser molto vecchi senza promise
+                bgAudio.play();
                 bgAudio.muted = false;
                 audioStartOverlay.style.display = 'none';
                 initializeFullFunctionality();
-            }).catch(error => {
-                console.error("Audio bloccato dal browser:", error);
-                hasExperienceStarted = false;
-            });
+            }
         }
         startAudioBtn.addEventListener('click', initializeExperience);
         audioStartOverlay.style.display = 'flex';
 
-        // --- FASE 2: INIZIALIZZAZIONE COMPLETA E STABILE ---
         function initializeFullFunctionality() {
             // "Cervello" centrale per lo stato
             const appState = {
@@ -131,7 +140,6 @@
                 currentFilters: { genre: 'all', category: 'all', argomento: 'all' },
             };
             
-            // Selettori elementi DOM
             const sheetApiUrl = 'https://script.google.com/macros/s/AKfycbw666DGD4BlSHuJwmVYcRLF9_qMJX2LXy_r6gCGVbjR_dXQDngQU-JttofSKOwUkIJZ/exec?source=catalogo';
             const audioCta = document.getElementById('audio-cta');
             const catalogPlayer = document.getElementById('catalog-audio-player');
@@ -173,7 +181,6 @@
             catalogPlayer.addEventListener('pause', () => { if (appState.currentPlayingItem) { appState.currentPlayingItem.classList.remove('playing'); appState.currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play'; } });
             catalogPlayer.addEventListener('ended', () => { if (appState.currentPlayingItem) { appState.currentPlayingItem.classList.remove('playing'); appState.currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play'; appState.currentPlayingItem = null; } });
             
-            // --- CARICAMENTO DATI E UI ---
             async function loadMusicFromApi() {
                 songListContainer.innerHTML = `<p>Caricamento catalogo...</p>`;
                 try {
@@ -205,19 +212,18 @@
                 const filteredSongs = appState.allSongs.filter(song => (appState.currentFilters.genre === 'all' || song.genre === appState.currentFilters.genre) && (appState.currentFilters.category === 'all' || song.category === appState.currentFilters.category) && (appState.currentFilters.argomento === 'all' || song.argomento === appState.currentFilters.argomento));
                 songListContainer.innerHTML = '';
                 if (filteredSongs.length > 0) {
-                    filteredSongs.forEach((song, index) => {
+                    filteredSongs.forEach((song) => {
                         const item = document.createElement('div');
                         item.className = 'song-item';
-                        item.dataset.index = index; // Usiamo l'indice per recuperare i dati completi
                         item.innerHTML = `<span class="title">${song.title}</span><div class="play-btn"><i class="fas fa-play"></i></div>`;
+                        item.querySelector('.play-btn').addEventListener('click', () => handleSongClick(item, song));
                         songListContainer.appendChild(item);
                     });
                 } else {
                     songListContainer.innerHTML = '<p>Nessun brano corrisponde ai filtri.</p>';
                 }
             }
-            
-            // --- MODALI E EVENTI GENERALI ---
+
             function closeModal(modalId) {
                 const modal = document.getElementById(modalId);
                 if (!modal) return;
@@ -247,14 +253,18 @@
                 updateMuteButton();
             });
             
-            document.querySelectorAll('button[id^="open-"]').forEach(btn => btn.addEventListener('click', (e) => {
-                document.getElementById(e.currentTarget.id.replace('open-', '') + '-modal').style.display = 'flex';
-            }));
+            document.getElementById('open-music-modal').addEventListener('click', () => { document.getElementById('music-modal').style.display = 'flex'; });
+            document.getElementById('open-video-modal').addEventListener('click', () => { document.getElementById('video-modal').style.display = 'flex'; });
+            document.getElementById('open-services-modal').addEventListener('click', () => { document.getElementById('services-modal').style.display = 'flex'; });
+            document.getElementById('open-contact-modal').addEventListener('click', () => { document.getElementById('contact-modal').style.display = 'flex'; });
+            document.getElementById('open-shop-modal').addEventListener('click', () => { document.getElementById('shop-modal').style.display = 'flex'; });
+            
             document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', (e) => closeModal(e.currentTarget.dataset.target)));
             document.getElementById('contact-for-custom-song').addEventListener('click', () => { 
                 closeModal('services-modal'); document.getElementById('contact-modal').style.display = 'flex';
                 document.querySelector('#contact-modal select[name="service_type"]').value = 'canzone_personalizzata'; 
             });
+
             form.addEventListener('submit', function(e) { 
                 e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio..."; 
                 fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData })
@@ -262,7 +272,6 @@
                     .catch(() => formResult.innerHTML = "Errore di rete."); 
             });
             
-            // --- EVENT DELEGATION PER CATALOGO E FILTRI ---
             filterContainer.addEventListener('click', (e) => {
                 if(e.target.classList.contains('filter-btn')) {
                     const { filterKey, filterValue } = e.target.dataset;
@@ -272,17 +281,7 @@
                     renderSongs();
                 }
             });
-            songListContainer.addEventListener('click', (e) => {
-                const item = e.target.closest('.song-item');
-                if(item) {
-                    const songIndex = parseInt(item.dataset.index, 10);
-                    const filteredSongs = appState.allSongs.filter(song => (appState.currentFilters.genre === 'all' || song.genre === appState.currentFilters.genre) && (appState.currentFilters.category === 'all' || song.category === appState.currentFilters.category) && (appState.currentFilters.argomento === 'all' || song.argomento === appState.currentFilters.argomento));
-                    const song = filteredSongs[songIndex];
-                    if(song) handleSongClick(item, song);
-                }
-            });
 
-            // --- FUNZIONALITÀ SECONDARIE (CHATBOT, AFORISMI) ---
             (function setupSecondaryFeatures() {
                 try {
                     const aphorismContainer = document.getElementById('aphorism-container');
