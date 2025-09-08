@@ -210,52 +210,131 @@
 
         const songListContainer = document.getElementById('song-list-container');
         const filterContainer = document.getElementById('filter-container');
-        let currentPlayingItem = null, currentFilters = { genre: 'all', category: 'all', argomento: 'all' };
+        let currentPlayingItem = null;
+        let currentFilters = { genre: 'all', category: 'all', argomento: 'all' };
 
-        async function loadMusicFromApi() { try { const response = await fetch(sheetApiUrl); if (!response.ok) throw new Error(`Errore di rete`); const songs = await response.json(); if (songs.error) throw new Error(songs.error); allSongs = songs; createFilterButtons(allSongs); filterAndDisplaySongs(); } catch (error) { if(songListContainer) songListContainer.innerHTML = `<p style="color: #f44336;">Errore caricamento: ${error.message}</p>`; } }
-        function createFilterButtons(songs) { const filters = { 'Genere': [...new Set(songs.map(s => s.genre))], 'Categoria': [...new Set(songs.map(s => s.category))], 'Argomento': [...new Set(songs.map(s => s.argomento))] }; filterContainer.innerHTML = ''; for (const key in filters) { const filterKey = key === 'Genere' ? 'genre' : (key === 'Categoria' ? 'category' : 'argomento'); let buttonsHtml = `<div class="filter-group"><div class="filter-label">${key}</div><div class="filter-buttons">`; buttonsHtml += `<button class="filter-btn active" data-filter-key="${filterKey}" data-filter-value="all">Tutti</button>`; filters[key].forEach(value => { buttonsHtml += `<button class="filter-btn" data-filter-key="${filterKey}" data-filter-value="${value}">${value}</button>`; }); buttonsHtml += `</div></div>`; filterContainer.innerHTML += buttonsHtml; } document.querySelectorAll('.filter-btn').forEach(button => { button.addEventListener('click', (e) => { const key = e.target.dataset.filterKey; const value = e.target.dataset.filterValue; currentFilters[key] = value; e.target.parentElement.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active')); e.target.classList.add('active'); filterAndDisplaySongs(); }); }); };
-        function filterAndDisplaySongs() { const filteredSongs = allSongs.filter(song => (currentFilters.genre === 'all' || song.genre === currentFilters.genre) && (currentFilters.category === 'all' || song.category === currentFilters.category) && (currentFilters.argomento === 'all' || song.argomento === currentFilters.argomento)); songListContainer.innerHTML = ''; if (filteredSongs.length > 0) { filteredSongs.forEach(song => { songListContainer.innerHTML += `<div class="song-item" data-src="${song.url}" data-title="${song.title}"><span class="title">${song.title}</span><button class="play-btn"><i class="fas fa-play"></i></button></div>`; }); } else { songListContainer.innerHTML = '<p>Nessun brano corrisponde ai filtri.</p>'; } addEventListenersToSongs(); };
-
-        window.resetPlayingState = function() {
-            if (currentPlayingItem) {
-                currentPlayingItem.classList.remove('playing');
-                currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
-                currentPlayingItem = null;
+        async function loadMusicFromApi() {
+            try {
+                const response = await fetch(sheetApiUrl);
+                if (!response.ok) throw new Error(`Errore di rete`);
+                const songs = await response.json();
+                if (songs.error || !Array.isArray(songs)) { // Aggiunto controllo se non è un array
+                    throw new Error(songs.message || 'Formato dati non valido dallo script.');
+                }
+                allSongs = songs;
+                createFilterButtons(allSongs);
+                filterAndDisplaySongs();
+            } catch (error) {
+                if (songListContainer) songListContainer.innerHTML = `<p style="color: #f44336;">Errore caricamento: ${error.message}</p>`;
             }
         }
 
-        if(catalogPlayer) {
-            catalogPlayer.addEventListener('play', () => {
-                if (currentPlayingItem && catalogPlayer.src === currentPlayingItem.dataset.src) {
-                    currentPlayingItem.classList.add('playing');
-                    currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-pause';
-                }
+        function createFilterButtons(songs) {
+            const filters = {
+                'Genere': [...new Set(songs.map(s => s.genre).filter(Boolean))],
+                'Categoria': [...new Set(songs.map(s => s.category).filter(Boolean))],
+                'Argomento': [...new Set(songs.map(s => s.argomento).filter(Boolean))]
+            };
+            filterContainer.innerHTML = '';
+            for (const key in filters) {
+                const filterKey = key === 'Genere' ? 'genre' : (key === 'Categoria' ? 'category' : 'argomento');
+                let buttonsHtml = `<div class="filter-group"><div class="filter-label">${key}</div><div class="filter-buttons">`;
+                buttonsHtml += `<button class="filter-btn active" data-filter-key="${filterKey}" data-filter-value="all">Tutti</button>`;
+                filters[key].forEach(value => {
+                    if(value) buttonsHtml += `<button class="filter-btn" data-filter-key="${filterKey}" data-filter-value="${value}">${value}</button>`;
+                });
+                buttonsHtml += `</div></div>`;
+                filterContainer.innerHTML += buttonsHtml;
+            }
+            document.querySelectorAll('.filter-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const key = e.target.dataset.filterKey;
+                    const value = e.target.dataset.filterValue;
+                    currentFilters[key] = value;
+                    e.target.parentElement.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    filterAndDisplaySongs();
+                });
             });
-            catalogPlayer.addEventListener('pause', () => {
+        }
+
+        function filterAndDisplaySongs() {
+            const filteredSongs = allSongs.filter(song =>
+                (currentFilters.genre === 'all' || song.genre === currentFilters.genre) &&
+                (currentFilters.category === 'all' || song.category === currentFilters.category) &&
+                (currentFilters.argomento === 'all' || song.argomento === currentFilters.argomento)
+            );
+            songListContainer.innerHTML = '';
+            if (filteredSongs.length > 0) {
+                filteredSongs.forEach(song => {
+                    songListContainer.innerHTML += `<div class="song-item" data-src="${song.url}" data-title="${song.title}"><span class="title">${song.title}</span><button class="play-btn"><i class="fas fa-play"></i></button></div>`;
+                });
+            } else {
+                songListContainer.innerHTML = '<p>Nessun brano corrisponde ai filtri.</p>';
+            }
+            addEventListenersToSongs();
+        }
+
+        function addEventListenersToSongs() {
+            document.querySelectorAll('.song-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    handleSongClick(item);
+                });
+            });
+        }
+
+        function handleSongClick(item) {
+            const isPlayingThisItem = item === currentPlayingItem;
+
+            if (isPlayingThisItem) {
+                // Se sto cliccando sullo stesso brano, gestisco solo play/pausa
+                if (catalogPlayer.paused) {
+                    catalogPlayer.play();
+                } else {
+                    catalogPlayer.pause();
+                }
+            } else {
+                // Se sto cliccando su un nuovo brano, resetto lo stato precedente e avvio
                 if (currentPlayingItem) {
                     currentPlayingItem.classList.remove('playing');
                     currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
                 }
-            });
-            catalogPlayer.addEventListener('ended', window.resetPlayingState);
+                
+                // Metti in pausa l'audio di background
+                const bgAudio = document.getElementById('background-audio');
+                if (bgAudio && !bgAudio.paused) {
+                    bgAudio.pause();
+                }
+
+                currentPlayingItem = item;
+                catalogPlayer.src = item.dataset.src;
+                catalogPlayer.play();
+            }
         }
         
-        function addEventListenersToSongs() {
-            document.querySelectorAll('.song-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    const isPlayingThisItem = item === currentPlayingItem;
-                    if (isPlayingThisItem) {
-                        if (catalogPlayer.paused) { catalogPlayer.play(); } else { catalogPlayer.pause(); }
-                    } else {
-                        window.resetPlayingState(); 
-                        currentPlayingItem = item;
-                        catalogPlayer.src = item.dataset.src;
-                        catalogPlayer.play();
-                    }
-                });
-            });
-        }
-        
+        // Event listener per aggiornare l'interfaccia in base allo stato del player
+        catalogPlayer.addEventListener('play', () => {
+            if (currentPlayingItem) {
+                currentPlayingItem.classList.add('playing');
+                currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-pause';
+            }
+        });
+
+        catalogPlayer.addEventListener('pause', () => {
+            if (currentPlayingItem) {
+                currentPlayingItem.classList.remove('playing');
+                currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
+            }
+        });
+
+        catalogPlayer.addEventListener('ended', () => {
+            if (currentPlayingItem) {
+                currentPlayingItem.classList.remove('playing');
+                currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
+                currentPlayingItem = null; // Resetta completamente lo stato
+            }
+        });
+
         loadMusicFromApi();
 
         const form = document.getElementById('contact-form');
