@@ -195,43 +195,50 @@ document.addEventListener('DOMContentLoaded', function() {
         modal.style.display = 'none';
     }
 
-    // --- SOLUZIONE FINALE AL CRASH PLAY-PAUSE-PLAY ---
+    // --- SOLUZIONE DEFINITIVA E ROBUSTA AL CRASH PLAY-PAUSE-PLAY ---
     async function handleSongClick(item, song) {
+        // Se il lock è attivo, ignora completamente questo click.
         if (appState.isAudioBusy) {
             return;
         }
+        // Attiva il lock immediatamente.
         appState.isAudioBusy = true;
 
         const isSameSong = (item === appState.currentPlayingItem);
         try {
             if (isSameSong) {
                 if (catalogPlayer.paused) {
+                    // L'operazione di play è asincrona, quindi 'await' funziona come previsto.
                     await catalogPlayer.play();
                 } else {
-                    catalogPlayer.pause(); // Comando sincrono, il vero colpevole
+                    // L'operazione di pausa è sincrona.
+                    catalogPlayer.pause();
+                    // FORZIAMO un'attesa artificiale per garantire che il browser completi
+                    // l'operazione prima di rilasciare il lock. Questo è il fix cruciale.
+                    await new Promise(resolve => setTimeout(resolve, 150));
                 }
             } else {
+                // Logica per cambiare brano
                 if (appState.currentPlayingItem) {
                     appState.currentPlayingItem.classList.remove('playing');
                     appState.currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
                 }
                 if (!bgAudio.paused) bgAudio.pause();
+                
                 appState.currentPlayingItem = item;
                 catalogPlayer.src = song.url;
                 await catalogPlayer.play();
             }
         } catch (error) {
-            console.error("Errore player:", error);
+            console.error("Errore critico del player:", error);
             if (appState.currentPlayingItem) {
                 appState.currentPlayingItem.classList.remove('playing');
             }
             appState.currentPlayingItem = null;
         } finally {
-            // Rilascia il lock dopo un cooldown per dare tempo al browser di processare l'input,
-            // specialmente dopo un comando sincrono come .pause().
-            setTimeout(() => {
-                appState.isAudioBusy = false;
-            }, 200);
+            // Rilascia il lock. Ora questo è sicuro perché abbiamo atteso
+            // sia per .play() (naturalmente) sia per .pause() (artificialmente).
+            appState.isAudioBusy = false;
         }
     }
     
