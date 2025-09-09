@@ -102,77 +102,157 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Stato globale dell'applicazione
     const appState = {
-        isPlayerThrottled: false,
         isChatAnimating: false,
         allSongs: [],
         currentPlayingItem: null,
         currentFilters: { genre: 'all', category: 'all', argomento: 'all' },
+        backgroundMusicSrc: document.getElementById('background-audio')?.querySelector('source')?.src || '', // Salva la sorgente del bg
     };
 
     // Riferimenti agli elementi DOM
-    const bgAudio = document.getElementById('background-audio');
+    const bgAudio = document.getElementById('background-audio'); // Usato solo per l'avvio
     const audioStartOverlay = document.getElementById('audio-start-overlay');
     const startAudioBtn = document.getElementById('start-audio-btn');
     const audioCta = document.getElementById('audio-cta');
-    const catalogPlayer = document.getElementById('catalog-audio-player');
+    
+    // *** UNICO PLAYER PER TUTTO ***
+    const mainPlayer = document.getElementById('catalog-audio-player'); 
+    mainPlayer.loop = true; // Imposta il loop per la musica di sottofondo
+    
     const songListContainer = document.getElementById('song-list-container');
     const filterContainer = document.getElementById('filter-container');
     const form = document.getElementById('contact-form');
     const formResult = document.getElementById('form-result');
     
     function initializeCoreFunctionality() {
-        document.getElementById('open-music-modal').addEventListener('click', () => { document.getElementById('music-modal').style.display = 'flex'; });
-        document.getElementById('open-video-modal').addEventListener('click', () => { document.getElementById('video-modal').style.display = 'flex'; });
-        document.getElementById('open-services-modal').addEventListener('click', () => { document.getElementById('services-modal').style.display = 'flex'; });
-        document.getElementById('open-contact-modal').addEventListener('click', () => { document.getElementById('contact-modal').style.display = 'flex'; });
-        document.getElementById('open-shop-modal').addEventListener('click', () => { document.getElementById('shop-modal').style.display = 'flex'; });
+        // Usa una funzione centralizzata per aprire i modal
+        document.getElementById('open-music-modal').addEventListener('click', () => openModal('music-modal'));
+        document.getElementById('open-video-modal').addEventListener('click', () => openModal('video-modal'));
+        document.getElementById('open-services-modal').addEventListener('click', () => openModal('services-modal'));
+        document.getElementById('open-contact-modal').addEventListener('click', () => openModal('contact-modal'));
+        document.getElementById('open-shop-modal').addEventListener('click', () => openModal('shop-modal'));
+        
         document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', (e) => closeModal(e.currentTarget.dataset.target)));
         document.getElementById('contact-for-custom-song').addEventListener('click', () => { 
-            closeModal('services-modal'); document.getElementById('contact-modal').style.display = 'flex';
+            closeModal('services-modal'); 
+            openModal('contact-modal');
             document.querySelector('#contact-modal select[name="service_type"]').value = 'canzone_personalizzata'; 
         });
 
         startAudioBtn.addEventListener('click', handleStartAudioClick);
         form.addEventListener('submit', handleFormSubmit);
         filterContainer.addEventListener('click', handleFilterClick);
-        
-        songListContainer.addEventListener('click', handleSongListClickWithThrottle);
+        songListContainer.addEventListener('click', handleSongListClick);
         
         setupBackgroundVideo();
         loadMusicFromApi();
         setupSecondaryFeatures();
     }
 
-    async function attemptAutoplay() { try { await bgAudio.play(); bgAudio.muted = false; } catch (error) { console.warn("Autoplay audio bloccato. Mostro l'overlay."); audioStartOverlay.style.display = 'flex'; } finally { updateMuteButton(); } }
+    // --- NUOVA GESTIONE AUDIO CENTRALIZZATA ---
+
+    function openModal(modalId) {
+        mainPlayer.pause(); // Ferma qualsiasi cosa stia suonando
+        if (modalId !== 'music-modal') {
+             mainPlayer.src = ''; // Resetta se non è il modale musica
+        }
+        document.getElementById(modalId).style.display = 'flex';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+        // Quando un modale si chiude, ripristina la musica di sottofondo
+        playBackgroundMusic();
+    }
+
+    async function playBackgroundMusic() {
+        if (!appState.isBgMusicMuted && appState.backgroundMusicSrc) {
+            mainPlayer.src = appState.backgroundMusicSrc;
+            mainPlayer.loop = true;
+            try {
+                await mainPlayer.play();
+            } catch (error) { console.error("Impossibile riprendere la musica di sottofondo:", error); }
+        }
+    }
+
+    async function handleStartAudioClick() {
+        audioStartOverlay.style.display = 'none';
+        appState.isBgMusicMuted = false;
+        bgAudio.play().catch(()=>{}); // Tenta di sbloccare l'audio
+        bgAudio.pause();
+        updateMuteButton();
+        playBackgroundMusic();
+    }
+    
+    // --- GESTORI EVENTI E LOGICA (MODIFICATI PER IL PLAYER UNICO) ---
+
+    async function handleSongClick(item, song) {
+        const isSameSong = (item === appState.currentPlayingItem);
+        
+        try {
+            if (isSameSong && !mainPlayer.paused && mainPlayer.src.includes(song.url)) {
+                mainPlayer.pause();
+                mainPlayer.src = '';
+            } else {
+                if (appState.currentPlayingItem && appState.currentPlayingItem !== item) {
+                    appState.currentPlayingItem.classList.remove('playing');
+                }
+                appState.currentPlayingItem = item;
+                mainPlayer.src = song.url;
+                mainPlayer.loop = false; // Le canzoni del catalogo non vanno in loop
+                await mainPlayer.play();
+            }
+        } catch (error) {
+            console.error("Errore Player:", error);
+            if (appState.currentPlayingItem) appState.currentPlayingItem.classList.remove('playing');
+            appState.currentPlayingItem = null;
+        }
+    }
+    
+    mainPlayer.addEventListener('play', () => {
+        setTimeout(() => {
+            if (appState.currentPlayingItem && !mainPlayer.loop) {
+                 appState.currentPlayingItem.classList.add('playing');
+            }
+        }, 0);
+    });
+
+    mainPlayer.addEventListener('pause', () => {
+        setTimeout(() => {
+            if (appState.currentPlayingItem) {
+                appState.currentPlayingItem.classList.remove('playing');
+            }
+        }, 0);
+    });
+    
+    mainPlayer.addEventListener('ended', () => {
+        setTimeout(() => {
+            if (appState.currentPlayingItem) {
+                appState.currentPlayingItem.classList.remove('playing');
+                appState.currentPlayingItem = null;
+            }
+        }, 0);
+    });
+
+    // --- CODICE PRECEDENTE (INVARIATO DOVE CORRETTO) ---
     
     function setupBackgroundVideo() { if (window.innerWidth <= 768) { const videoElement = document.getElementById('background-video'); const videoSource = videoElement.querySelector('source'); if (videoSource) { videoSource.src = 'https://raw.githubusercontent.com/Rickym2025/fausto-fusetti-links/main/video%20sax.mp4'; videoElement.load(); } } }
-
-    async function handleStartAudioClick() { audioStartOverlay.style.display = 'none'; try { await bgAudio.play(); bgAudio.muted = false; updateMuteButton(); } catch (error) { console.error("Impossibile avviare l'audio dopo il click:", error); } }
     
     function handleFormSubmit(e) { e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio..."; fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).then(r => r.json()).then(d => { formResult.innerHTML = d.success ? "Messaggio inviato!" : `Errore: ${d.message}`; if (d.success) form.reset(); }).catch(() => formResult.innerHTML = "Errore di rete."); }
 
-    function handleSongListClickWithThrottle(e) { if (appState.isPlayerThrottled) return; appState.isPlayerThrottled = true; setTimeout(() => { appState.isPlayerThrottled = false; }, 300); const item = e.target.closest('.song-item'); if (item) { const titleToFind = item.querySelector('.title').textContent; const filteredSongs = appState.allSongs.filter(song => (appState.currentFilters.genre === 'all' || song.genre === appState.currentFilters.genre) && (appState.currentFilters.category === 'all' || song.category === appState.currentFilters.category) && (appState.currentFilters.argomento === 'all' || song.argomento === appState.currentFilters.argomento)); const song = filteredSongs.find(s => s.title === titleToFind); if (song) handleSongClick(item, song); } }
+    function handleSongListClick(e) { const item = e.target.closest('.song-item'); if (item) { const titleToFind = item.querySelector('.title').textContent; const filteredSongs = appState.allSongs.filter(song => (appState.currentFilters.genre === 'all' || song.genre === appState.currentFilters.genre) && (appState.currentFilters.category === 'all' || song.category === appState.currentFilters.category) && (appState.currentFilters.argomento === 'all' || song.argomento === appState.currentFilters.argomento)); const song = filteredSongs.find(s => s.title === titleToFind); if (song) handleSongClick(item, song); } }
     
-    audioCta.addEventListener('click', () => { bgAudio.muted = !bgAudio.muted; if (!bgAudio.muted && bgAudio.paused) { bgAudio.play().catch(e => console.error("Errore nel riprendere l'audio:", e)); } updateMuteButton(); });
+    audioCta.addEventListener('click', () => { appState.isBgMusicMuted = !appState.isBgMusicMuted; if (appState.isBgMusicMuted) { mainPlayer.pause(); } else { playBackgroundMusic(); } updateMuteButton(); });
 
-    function updateMuteButton() { const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i'); const ctaText = document.querySelector('#audio-cta .cta-text'); muteBtnIcon.className = bgAudio.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up'; ctaText.textContent = bgAudio.muted ? 'Attiva la musica' : 'Disattiva musica'; audioCta.style.visibility = 'visible'; }
+    function updateMuteButton() { const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i'); const ctaText = document.querySelector('#audio-cta .cta-text'); muteBtnIcon.className = appState.isBgMusicMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up'; ctaText.textContent = appState.isBgMusicMuted ? 'Attiva la musica' : 'Disattiva musica'; audioCta.style.visibility = 'visible'; }
 
-    function closeModal(modalId) { const modal = document.getElementById(modalId); if (!modal) return; if (modalId === 'music-modal' && catalogPlayer && !catalogPlayer.paused) { catalogPlayer.pause(); catalogPlayer.src = ''; } if (!bgAudio.muted && bgAudio.paused) { bgAudio.play().catch(e => console.error("Errore nel riprendere l'audio di sottofondo:", e)); } modal.style.display = 'none'; }
-
-    async function handleSongClick(item, song) { const isSameSong = (item === appState.currentPlayingItem); try { if (isSameSong && !catalogPlayer.paused && catalogPlayer.src) { catalogPlayer.pause(); catalogPlayer.src = ''; } else { if (appState.currentPlayingItem && appState.currentPlayingItem !== item) { appState.currentPlayingItem.classList.remove('playing'); appState.currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play'; } if (!bgAudio.paused) bgAudio.pause(); appState.currentPlayingItem = item; catalogPlayer.src = song.url; await catalogPlayer.play(); } } catch (error) { console.error("Errore Player:", error); if (appState.currentPlayingItem) appState.currentPlayingItem.classList.remove('playing'); appState.currentPlayingItem = null; } }
-    
-    catalogPlayer.addEventListener('play', () => { setTimeout(() => { if (appState.currentPlayingItem) { appState.currentPlayingItem.classList.add('playing'); appState.currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-pause'; } }, 0); });
-    catalogPlayer.addEventListener('pause', () => { setTimeout(() => { if (appState.currentPlayingItem) { appState.currentPlayingItem.classList.remove('playing'); appState.currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play'; } }, 0); });
-    catalogPlayer.addEventListener('ended', () => { setTimeout(() => { if (appState.currentPlayingItem) { appState.currentPlayingItem.classList.remove('playing'); appState.currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play'; appState.currentPlayingItem = null; } }, 0); });
-    
     async function loadMusicFromApi() { songListContainer.innerHTML = `<p>Caricamento catalogo...</p>`; try { const response = await fetch('https://script.google.com/macros/s/AKfycbw666DGD4BlSHuJwmVYcRLF9_qMJX2LXy_r6gCGVbjR_dXQDngQU-JttofSKOwUkIJZ/exec?source=catalogo'); if (!response.ok) throw new Error(`Errore di rete`); appState.allSongs = await response.json(); if (!Array.isArray(appState.allSongs)) throw new Error('Dati non validi'); createFilterButtons(); renderSongs(); } catch (error) { songListContainer.innerHTML = `<p style="color: #ffc107;">Spiacente, impossibile caricare il catalogo.</p>`; } }
 
     function createFilterButtons() { const filters = { 'Genere': [...new Set(appState.allSongs.map(s => s.genre).filter(Boolean))], 'Categoria': [...new Set(appState.allSongs.map(s => s.category).filter(Boolean))], 'Argomento': [...new Set(appState.allSongs.map(s => s.argomento).filter(Boolean))] }; filterContainer.innerHTML = ''; for (const key in filters) { const filterKey = key === 'Genere' ? 'genre' : (key === 'Categoria' ? 'category' : 'argomento'); let buttonsHtml = `<div class="filter-group"><div class="filter-label">${key}</div><div class="filter-buttons">`; buttonsHtml += `<button class="filter-btn active" data-filter-key="${filterKey}" data-filter-value="all">Tutti</button>`; filters[key].forEach(value => { buttonsHtml += `<button class="filter-btn" data-filter-key="${filterKey}" data-filter-value="${value}">${value}</button>`; }); buttonsHtml += `</div></div>`; filterContainer.innerHTML += buttonsHtml; } }
 
-    function renderSongs() { const filteredSongs = appState.allSongs.filter(song => (appState.currentFilters.genre === 'all' || song.genre === appState.currentFilters.genre) && (appState.currentFilters.category === 'all' || song.category === appState.currentFilters.category) && (appState.currentFilters.argomento === 'all' || song.argomento === appState.currentFilters.argomento)); songListContainer.innerHTML = ''; if (filteredSongs.length > 0) { filteredSongs.forEach(song => { const item = document.createElement('div'); item.className = 'song-item'; item.innerHTML = `<span class="title">${song.title}</span><div class="play-btn"><i class="fas fa-play"></i></div>`; songListContainer.appendChild(item); }); } else { songListContainer.innerHTML = '<p>Nessun brano corrisponde ai filtri.</p>'; } }
+    function renderSongs() { songListContainer.innerHTML = ''; const filteredSongs = appState.allSongs.filter(song => (appState.currentFilters.genre === 'all' || song.genre === appState.currentFilters.genre) && (appState.currentFilters.category === 'all' || song.category === appState.currentFilters.category) && (appState.currentFilters.argomento === 'all' || song.argomento === appState.currentFilters.argomento)); if (filteredSongs.length > 0) { filteredSongs.forEach(song => { const item = document.createElement('div'); item.className = 'song-item'; item.innerHTML = `<span class="title">${song.title}</span><div class="play-btn"><i class="fas fa-play"></i></div>`; songListContainer.appendChild(item); }); } else { songListContainer.innerHTML = '<p>Nessun brano corrisponde ai filtri.</p>'; } }
     
     function handleFilterClick(e) { if (e.target.classList.contains('filter-btn')) { const { filterKey, filterValue } = e.target.dataset; appState.currentFilters[filterKey] = filterValue; e.target.parentElement.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active')); e.target.classList.add('active'); renderSongs(); } }
-    
     function setupSecondaryFeatures() {
         try {
             const aphorismContainer = document.getElementById('aphorism-container');
