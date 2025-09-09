@@ -107,11 +107,11 @@ document.addEventListener('DOMContentLoaded', function() {
         currentPlayingItem: null,
         currentFilters: { genre: 'all', category: 'all', argomento: 'all' },
         backgroundMusicSrc: document.getElementById('background-audio')?.querySelector('source')?.src || '',
-        isBgMusicMuted: true,
+        isBgMusicMuted: true, // La musica parte muta
     };
 
     // Riferimenti agli elementi DOM
-    const bgAudio = document.getElementById('background-audio');
+    const bgAudio = document.getElementById('background-audio'); // Usato SOLO per sbloccare l'audio context
     const audioStartOverlay = document.getElementById('audio-start-overlay');
     const startAudioBtn = document.getElementById('start-audio-btn');
     const audioCta = document.getElementById('audio-cta');
@@ -155,6 +155,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function closeModal(modalId) {
         document.getElementById(modalId).style.display = 'none';
+        // Quando un modale si chiude, ripristina la musica di sottofondo
         playBackgroundMusic();
     }
 
@@ -165,14 +166,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             mainPlayer.loop = true;
             try { await mainPlayer.play(); } 
-            catch (error) { console.error("Impossibile riprendere la musica di sottofondo:", error); }
+            catch (error) { console.warn("Impossibile riprendere la musica di sottofondo:", error); }
         }
     }
 
     async function handleStartAudioClick() {
         audioStartOverlay.style.display = 'none';
         appState.isBgMusicMuted = false;
-        bgAudio.play().catch(()=>{}); // Sblocca l'audio context
+        // La prima interazione utente sblocca la possibilità di usare l'audio.
+        // Tentiamo di far partire il player principale direttamente.
+        bgAudio.play().catch(()=>{}); // Sblocca l'audio context in background
         bgAudio.pause();
         updateMuteButton();
         playBackgroundMusic();
@@ -226,7 +229,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 const webhookUrl = 'https://n8n.automaita.it/webhook/ffausto-ai-chat', bubble = document.getElementById('chatbot-bubble'), windowWrapper = document.getElementById('chatbot-window-wrapper'), messagesEl = document.getElementById('chatbot-messages'), inputField = document.getElementById('chatbot-input-field'), sendBtn = document.getElementById('chatbot-send-btn'), closeBtn = document.querySelector('.chatbot-close-btn'), welcomeMessage = document.getElementById('chatbot-welcome-message');
                 let reEngagementTimer = null;
 
-                // --- FIX DEFINITIVO CRASH CHATBOT MOBILE (SENZA EVENT LISTENER ACCUMULATI) ---
                 const toggleChat = () => {
                     if (appState.isChatAnimating) return;
                     appState.isChatAnimating = true;
@@ -241,7 +243,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     if (isOpening) { setTimeout(() => inputField.focus(), 300); }
 
-                    // Blocco temporale a prova di bomba
                     setTimeout(() => {
                         appState.isChatAnimating = false;
                         if (!isOpening) {
@@ -253,7 +254,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 }
                             }, 15000);
                         }
-                    }, 350); // 300ms animazione + 50ms sicurezza
+                    }, 350);
                 };
 
                 const addMessage = (rawText, type) => { const msgDiv = document.createElement('div'); msgDiv.className = `message ${type}`; if (type === 'bot') { const avatar = document.createElement('img'); avatar.src = 'fausto_immagine.jpg'; avatar.className = 'message-avatar'; msgDiv.appendChild(avatar); } const textDiv = document.createElement('div'); textDiv.className = 'message-text'; textDiv.innerHTML = DOMPurify.sanitize(rawText, { ADD_TAGS: ['a', 'ul', 'li', 'strong'], ADD_ATTR: ['href', 'target'] }); msgDiv.appendChild(textDiv); messagesEl.appendChild(msgDiv); messagesEl.scrollTop = messagesEl.scrollHeight; };
@@ -273,7 +274,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- PUNTO D'INGRESSO ---
     initializeCoreFunctionality();
-    // Non chiamiamo più attemptAutoplay, la logica è gestita dal click sull'overlay.
     audioStartOverlay.style.display = 'flex';
 });
   </script>
