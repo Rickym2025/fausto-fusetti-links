@@ -100,9 +100,9 @@
   <script>
 document.addEventListener('DOMContentLoaded', function() {
     
-    // Stato globale dell'applicazione
+    // Stato globale dell'applicazione (rimosso isAudioBusy)
     const appState = {
-        isAudioBusy: false,
+        isPlayerThrottled: false, // Nuovo stato per il throttling
         isChatAnimating: false,
         allSongs: [],
         currentPlayingItem: null,
@@ -137,8 +137,37 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(r => r.json()).then(d => { formResult.innerHTML = d.success ? "Messaggio inviato!" : `Errore: ${d.message}`; if(d.success) form.reset(); })
                 .catch(() => formResult.innerHTML = "Errore di rete."); 
         });
+        
+        // Listener per i filtri (invariato)
         filterContainer.addEventListener('click', handleFilterClick);
-        songListContainer.addEventListener('click', handleSongListClick);
+        
+        // --- SOLUZIONE FINALE: THROTTLING SULL'INPUT UTENTE ---
+        songListContainer.addEventListener('click', (e) => {
+            // 1. Se un'azione è già in corso (periodo di cooldown), ignora questo click.
+            if (appState.isPlayerThrottled) {
+                return;
+            }
+            // 2. Attiva il blocco immediatamente.
+            appState.isPlayerThrottled = true;
+
+            // 3. Imposta un timer per sbloccare dopo un periodo di cooldown.
+            //    400ms è impercettibile ma sicuro per il browser.
+            setTimeout(() => {
+                appState.isPlayerThrottled = false;
+            }, 400);
+            
+            // 4. Esegui la logica solo se il click è valido.
+            const item = e.target.closest('.song-item');
+            if (item) {
+                const titleToFind = item.querySelector('.title').textContent;
+                const filteredSongs = appState.allSongs.filter(song => (appState.currentFilters.genre === 'all' || song.genre === appState.currentFilters.genre) && (appState.currentFilters.category === 'all' || song.category === appState.currentFilters.category) && (appState.currentFilters.argomento === 'all' || song.argomento === appState.currentFilters.argomento));
+                const song = filteredSongs.find(s => s.title === titleToFind);
+                if (song) {
+                    handleSongClick(item, song); // Chiama la funzione di logica, ora più semplice
+                }
+            }
+        });
+
         loadMusicFromApi();
         setupSecondaryFeatures();
     }
@@ -195,50 +224,32 @@ document.addEventListener('DOMContentLoaded', function() {
         modal.style.display = 'none';
     }
 
-    // --- SOLUZIONE DEFINITIVA E ROBUSTA AL CRASH PLAY-PAUSE-PLAY ---
+    // --- Funzione di logica semplificata (non ha più bisogno del lock interno) ---
     async function handleSongClick(item, song) {
-        // Se il lock è attivo, ignora completamente questo click.
-        if (appState.isAudioBusy) {
-            return;
-        }
-        // Attiva il lock immediatamente.
-        appState.isAudioBusy = true;
-
         const isSameSong = (item === appState.currentPlayingItem);
         try {
             if (isSameSong) {
                 if (catalogPlayer.paused) {
-                    // L'operazione di play è asincrona, quindi 'await' funziona come previsto.
                     await catalogPlayer.play();
                 } else {
-                    // L'operazione di pausa è sincrona.
                     catalogPlayer.pause();
-                    // FORZIAMO un'attesa artificiale per garantire che il browser completi
-                    // l'operazione prima di rilasciare il lock. Questo è il fix cruciale.
-                    await new Promise(resolve => setTimeout(resolve, 150));
                 }
             } else {
-                // Logica per cambiare brano
                 if (appState.currentPlayingItem) {
                     appState.currentPlayingItem.classList.remove('playing');
                     appState.currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
                 }
                 if (!bgAudio.paused) bgAudio.pause();
-                
                 appState.currentPlayingItem = item;
                 catalogPlayer.src = song.url;
                 await catalogPlayer.play();
             }
         } catch (error) {
-            console.error("Errore critico del player:", error);
+            console.error("Errore player:", error);
             if (appState.currentPlayingItem) {
                 appState.currentPlayingItem.classList.remove('playing');
             }
             appState.currentPlayingItem = null;
-        } finally {
-            // Rilascia il lock. Ora questo è sicuro perché abbiamo atteso
-            // sia per .play() (naturalmente) sia per .pause() (artificialmente).
-            appState.isAudioBusy = false;
         }
     }
     
@@ -298,16 +309,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    function handleSongListClick(e) {
-        const item = e.target.closest('.song-item');
-        if (item) {
-            const titleToFind = item.querySelector('.title').textContent;
-            const filteredSongs = appState.allSongs.filter(song => (appState.currentFilters.genre === 'all' || song.genre === appState.currentFilters.genre) && (appState.currentFilters.category === 'all' || song.category === appState.currentFilters.category) && (appState.currentFilters.argomento === 'all' || song.argomento === appState.currentFilters.argomento));
-            const song = filteredSongs.find(s => s.title === titleToFind);
-            if (song) handleSongClick(item, song);
-        }
-    }
-
     function setupSecondaryFeatures() {
         try {
             const aphorismContainer = document.getElementById('aphorism-container');
