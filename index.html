@@ -98,41 +98,43 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
   
   <script>
-  document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
     
     const startAudioBtn = document.getElementById('start-audio-btn');
     const audioStartOverlay = document.getElementById('audio-start-overlay');
     const bgAudio = document.getElementById('background-audio');
     let hasExperienceStarted = false;
 
-    function initializeExperience() {
+    // --- SOLUZIONE AL BLOCCO DELLA HOMEPAGE ---
+    async function initializeExperience() {
         if (hasExperienceStarted) return;
         hasExperienceStarted = true;
-        
-        // Gestione robusta della promise di play()
-        const playPromise = bgAudio.play();
-        if (playPromise !== undefined) {
-             playPromise.then(() => {
-                bgAudio.muted = false;
-                audioStartOverlay.style.display = 'none';
-                initializeFullFunctionality();
-            }).catch(error => {
-                // Se l'autoplay fallisce, l'utente dovrà interagire di nuovo, ma la pagina non si blocca
-                console.error("Audio bloccato dal browser all'avvio:", error);
-                audioStartOverlay.style.display = 'none'; // Nascondi comunque l'overlay
-                initializeFullFunctionality(); // Inizializza il resto
-            });
+
+        // 1. Dai un feedback visivo immediato all'utente nascondendo l'overlay.
+        audioStartOverlay.style.display = 'none';
+
+        try {
+            // 2. Tenta di avviare l'audio. await assicura che attendiamo il tentativo.
+            await bgAudio.play();
+            bgAudio.muted = false; // Se riesce, attiva l'audio.
+        } catch (error) {
+            // 3. Se il browser blocca l'audio, registra l'errore ma non bloccare l'app.
+            console.error("Audio di sottofondo non avviato automaticamente:", error);
+            // L'app funzionerà senza audio, l'utente potrà attivarlo dal CTA.
+        } finally {
+            // 4. ESEGUI SEMPRE: che l'audio sia partito o no, inizializza il resto.
+            initializeFullFunctionality();
         }
     }
-    startAudioBtn.addEventListener('click', initializeExperience);
     
-    // Mostra l'overlay all'inizio
+    startAudioBtn.addEventListener('click', initializeExperience);
     audioStartOverlay.style.display = 'flex';
 
+    // Il resto del codice rimane uguale
     function initializeFullFunctionality() {
         const appState = {
-            isAudioBusy: false,      // LOCK PER IL PLAYER AUDIO
-            isChatAnimating: false,  // LOCK PER LA UI DEL CHATBOT
+            isAudioBusy: false,
+            isChatAnimating: false,
             allSongs: [],
             currentPlayingItem: null,
             currentFilters: { genre: 'all', category: 'all', argomento: 'all' },
@@ -146,14 +148,12 @@
         const form = document.getElementById('contact-form');
         const formResult = document.getElementById('form-result');
 
-        // --- SOLUZIONE 1: LOCK ASINCRONO ROBUSTO ---
         async function handleSongClick(item, song) {
-            // Se un'operazione audio è già in corso, ignora questo click.
             if (appState.isAudioBusy) {
                 console.warn("Operazione audio ignorata: player occupato.");
                 return;
             }
-            appState.isAudioBusy = true; // Attiva il lock
+            appState.isAudioBusy = true;
 
             const isSameSong = (item === appState.currentPlayingItem);
             
@@ -169,22 +169,18 @@
                         appState.currentPlayingItem.classList.remove('playing');
                         appState.currentPlayingItem.querySelector('.play-btn i').className = 'fas fa-play';
                     }
-                    
                     if (!bgAudio.paused) bgAudio.pause();
-                    
                     appState.currentPlayingItem = item;
                     catalogPlayer.src = song.url;
-                    await catalogPlayer.play(); // Attendi che la riproduzione inizi
+                    await catalogPlayer.play();
                 }
             } catch (error) {
                 console.error("Errore durante la gestione dell'audio:", error);
-                // Resetta lo stato in caso di errore
                 if (appState.currentPlayingItem) {
                    appState.currentPlayingItem.classList.remove('playing');
                 }
                 appState.currentPlayingItem = null;
             } finally {
-                // Rilascia il lock solo quando l'operazione è terminata (successo o fallimento)
                 appState.isAudioBusy = false;
             }
         }
@@ -289,12 +285,9 @@
             }
         });
         
-        // --- SOLUZIONE 3: EVENT DELEGATION ---
         songListContainer.addEventListener('click', (e) => {
-            // Risali al .song-item più vicino, che sia stato cliccato il div, il titolo o il pulsante
             const item = e.target.closest('.song-item');
             if (item) {
-                // Trova la canzone corrispondente nell'array dei dati filtrati
                 const titleToFind = item.querySelector('.title').textContent;
                 const filteredSongs = appState.allSongs.filter(song => (appState.currentFilters.genre === 'all' || song.genre === appState.currentFilters.genre) && (appState.currentFilters.category === 'all' || song.category === appState.currentFilters.category) && (appState.currentFilters.argomento === 'all' || song.argomento === appState.currentFilters.argomento));
                 const song = filteredSongs.find(s => s.title === titleToFind);
@@ -304,7 +297,6 @@
 
         (function setupSecondaryFeatures() {
             try {
-                // (Il codice degli aforismi rimane invariato)
                 const aphorismContainer = document.getElementById('aphorism-container');
                 const mainContainer = document.querySelector('.container');
                 const aphorisms = [ "La musica è la vera lingua universale.", "Dove le parole finiscono, inizia la musica.", "La vita è come un pianoforte."];
@@ -325,20 +317,14 @@
                     <div id="chatbot-window-wrapper"><img src="fausto_immagine.jpg" alt="Fausto AI" class="chatbot-header-logo"><div id="chatbot-window"><div class="chatbot-header"><div><h3>Fausto AI</h3><small>Assistente Virtuale</small></div><span class="chatbot-close-btn">&times;</span></div><div class="chatbot-messages" id="chatbot-messages"></div><div class="chatbot-input"><input type="text" id="chatbot-input-field" name="chatbot_message" autocomplete="off" placeholder="Scrivi un messaggio..."><button id="chatbot-send-btn"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg></button></div></div></div>`;
                     const webhookUrl = 'https://n8n.automaita.it/webhook/ffausto-ai-chat', bubble = document.getElementById('chatbot-bubble'), windowWrapper = document.getElementById('chatbot-window-wrapper'), messagesEl = document.getElementById('chatbot-messages'), inputField = document.getElementById('chatbot-input-field'), sendBtn = document.getElementById('chatbot-send-btn'), closeBtn = document.querySelector('.chatbot-close-btn');
                     
-                    // --- SOLUZIONE 2: STATE LOCK PER ANIMAZIONE UI ---
                     const toggleChat = () => {
-                        // Se l'animazione è in corso, ignora il click
                         if (appState.isChatAnimating) return;
-                        appState.isChatAnimating = true; // Attiva il lock
-                        
+                        appState.isChatAnimating = true;
                         windowWrapper.classList.toggle('open');
                         bubble.classList.toggle('open');
-                        
                         if (windowWrapper.classList.contains('open')) {
                            setTimeout(() => inputField.focus(), 300);
                         }
-                        
-                        // Rilascia il lock solo dopo che l'animazione CSS (300ms) è terminata
                         setTimeout(() => {
                             appState.isChatAnimating = false;
                         }, 300);
