@@ -139,6 +139,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Difesa Livello 1: Throttling sull'input dell'utente
         songListContainer.addEventListener('click', handleSongListClickWithThrottle);
+        
+        // **NUOVO: Imposta il video di sfondo corretto per mobile/desktop**
+        setupBackgroundVideo();
 
         loadMusicFromApi();
         setupSecondaryFeatures();
@@ -153,6 +156,19 @@ document.addEventListener('DOMContentLoaded', function() {
             audioStartOverlay.style.display = 'flex';
         } finally {
             updateMuteButton();
+        }
+    }
+    
+    // --- NUOVA FUNZIONE PER VIDEO MOBILE ---
+    function setupBackgroundVideo() {
+        if (window.innerWidth <= 768) { // Controlla se è un dispositivo mobile
+            const videoElement = document.getElementById('background-video');
+            const videoSource = videoElement.querySelector('source');
+            if (videoSource) {
+                // Usa il link diretto al file raw
+                videoSource.src = 'https://raw.githubusercontent.com/Rickym2025/fausto-fusetti-links/main/video%20sax.mp4';
+                videoElement.load(); // Dice al player di caricare la nuova sorgente
+            }
         }
     }
 
@@ -335,7 +351,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // --- FUNZIONALITÀ SECONDARIE (AFORISMI E CHATBOT) ---
     function setupSecondaryFeatures() {
         // Setup Aforismi
         try {
@@ -359,8 +374,17 @@ document.addEventListener('DOMContentLoaded', function() {
             const chatbotContainer = document.getElementById('chatbot-container');
             if(chatbotContainer) {
                 chatbotContainer.innerHTML = `<style>
-                .chatbot-close-btn{position:absolute;top:10px;left:15px;font-size:2.2em;color:white;cursor:pointer;line-height:1;font-weight:300}
-                @keyframes rhythmic-bounce{0%,100%{transform:translateY(0)}10%,30%{transform:translateY(0)}20%{transform:translateY(-15px)}25%{transform:translateY(0)}35%{transform:translateY(-15px)}40%{transform:translateY(0)}}#chatbot-bubble{position:fixed;bottom:25px;right:25px;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(fausto_immagine.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:9999}#chatbot-bubble.bouncing{animation:rhythmic-bounce 2.5s ease-in-out}#chatbot-bubble:hover{transform:scale(1.1)}#chatbot-bubble.open{background-image:none;background-color:var(--primary-color);animation:none}#chatbot-bubble.open .icon-close{opacity:1}#chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}#chatbot-window-wrapper{position:fixed;bottom:100px;right:25px;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out}#chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}#chatbot-window{position:relative;margin-top:45px;width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden}.chatbot-header-logo{width:90px;height:90px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 10px rgba(0,0,0,0.3);object-fit:cover;position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:10000}@media (max-width:768px){#chatbot-window-wrapper{bottom:95px;right:15px}#chatbot-bubble{bottom:15px;right:15px}}.chatbot-header{position:relative;background-color:var(--primary-color);color:#fff;padding:1rem;padding-top:55px;text-align:center;flex-shrink:0}.chatbot-messages{flex-grow:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column;background-image:linear-gradient(rgba(249,247,243,.7),rgba(249,247,243,.7)),url(https://github.com/Rickym2025/fausto-fusetti-links/blob/main/sfondo_chat.jpg?raw=true);background-size:cover;background-position:center}.message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}.message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0;align-self:flex-start}.message-text{padding:10px 15px;border-radius:18px;line-height:1.4;overflow-wrap:break-word;word-break:break-word;text-align:left;box-shadow:0 2px 5px rgba(0,0,0,.1)}.message.user .message-text{background-color:rgba(238,242,245,.75);color:#333;border-bottom-right-radius:4px}.message.bot .message-text{background-color:rgba(6,147,227,.8);color:#fff;border-bottom-left-radius:4px}.chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}.chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid var(--primary-color)}.chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}</style>
+                /* **FIX: Finestra Chatbot alzata** */
+                #chatbot-window-wrapper{position:fixed;bottom:115px;right:25px;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out}
+                /* **FIX: Pulsante X ripristinato a destra** */
+                .chatbot-close-btn{position:absolute;top:10px;right:15px;font-size:2.2em;color:white;cursor:pointer;line-height:1;font-weight:300}
+                @media (max-width:768px){
+                    /* **FIX: Finestra Chatbot alzata su mobile** */
+                    #chatbot-window-wrapper{bottom:105px;right:15px}
+                    #chatbot-bubble{bottom:15px;right:15px}
+                }
+                /* Il resto del CSS del chatbot rimane invariato */
+                @keyframes rhythmic-bounce{0%,100%{transform:translateY(0)}10%,30%{transform:translateY(0)}20%{transform:translateY(-15px)}25%{transform:translateY(0)}35%{transform:translateY(-15px)}40%{transform:translateY(0)}}#chatbot-bubble{position:fixed;bottom:25px;right:25px;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(fausto_immagine.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:9999}#chatbot-bubble.bouncing{animation:rhythmic-bounce 2.5s ease-in-out}#chatbot-bubble:hover{transform:scale(1.1)}#chatbot-bubble.open{background-image:none;background-color:var(--primary-color);animation:none}#chatbot-bubble.open .icon-close{opacity:1}#chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}#chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}#chatbot-window{position:relative;margin-top:45px;width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden}.chatbot-header-logo{width:90px;height:90px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 10px rgba(0,0,0,0.3);object-fit:cover;position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:10000}.chatbot-header{position:relative;background-color:var(--primary-color);color:#fff;padding:1rem;padding-top:55px;text-align:center;flex-shrink:0}.chatbot-messages{flex-grow:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column;background-image:linear-gradient(rgba(249,247,243,.7),rgba(249,247,243,.7)),url(https://github.com/Rickym2025/fausto-fusetti-links/blob/main/sfondo_chat.jpg?raw=true);background-size:cover;background-position:center}.message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}.message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0;align-self:flex-start}.message-text{padding:10px 15px;border-radius:18px;line-height:1.4;overflow-wrap:break-word;word-break:break-word;text-align:left;box-shadow:0 2px 5px rgba(0,0,0,.1)}.message.user .message-text{background-color:rgba(238,242,245,.75);color:#333;border-bottom-right-radius:4px}.message.bot .message-text{background-color:rgba(6,147,227,.8);color:#fff;border-bottom-left-radius:4px}.chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}.chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid var(--primary-color)}.chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}</style>
                 <div id="chatbot-bubble"><svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg></div>
                 <div id="chatbot-window-wrapper"><img src="fausto_immagine.jpg" alt="Fausto AI" class="chatbot-header-logo"><div id="chatbot-window"><div class="chatbot-header"><div><h3>Fausto AI</h3><small>Assistente Virtuale</small></div><span class="chatbot-close-btn">&times;</span></div><div class="chatbot-messages" id="chatbot-messages"></div><div class="chatbot-input"><input type="text" id="chatbot-input-field" name="chatbot_message" autocomplete="off" placeholder="Scrivi un messaggio..."><button id="chatbot-send-btn"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg></button></div></div></div>`;
                 
