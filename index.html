@@ -121,6 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const formResult = document.getElementById('form-result');
     
     function initializeCoreFunctionality() {
+        // Setup dei listener per i modal e i pulsanti principali
         document.getElementById('open-music-modal').addEventListener('click', () => { document.getElementById('music-modal').style.display = 'flex'; });
         document.getElementById('open-video-modal').addEventListener('click', () => { document.getElementById('video-modal').style.display = 'flex'; });
         document.getElementById('open-services-modal').addEventListener('click', () => { document.getElementById('services-modal').style.display = 'flex'; });
@@ -131,33 +132,20 @@ document.addEventListener('DOMContentLoaded', function() {
             closeModal('services-modal'); document.getElementById('contact-modal').style.display = 'flex';
             document.querySelector('#contact-modal select[name="service_type"]').value = 'canzone_personalizzata'; 
         });
-        form.addEventListener('submit', function(e) { 
-            e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio..."; 
-            fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData })
-                .then(r => r.json()).then(d => { formResult.innerHTML = d.success ? "Messaggio inviato!" : `Errore: ${d.message}`; if(d.success) form.reset(); })
-                .catch(() => formResult.innerHTML = "Errore di rete."); 
-        });
+
+        // Listener per il pulsante dell'overlay audio (ora funziona perché inizializzato)
+        startAudioBtn.addEventListener('click', handleStartAudioClick);
         
+        // Setup del form
+        form.addEventListener('submit', handleFormSubmit);
+        
+        // Setup dei filtri del catalogo
         filterContainer.addEventListener('click', handleFilterClick);
         
         // Difesa Livello 1: Throttling sull'input dell'utente per prevenire spam di comandi
-        songListContainer.addEventListener('click', (e) => {
-            if (appState.isPlayerThrottled) return;
-            appState.isPlayerThrottled = true;
+        songListContainer.addEventListener('click', handleSongListClickWithThrottle);
 
-            setTimeout(() => { appState.isPlayerThrottled = false; }, 400);
-            
-            const item = e.target.closest('.song-item');
-            if (item) {
-                const titleToFind = item.querySelector('.title').textContent;
-                const filteredSongs = appState.allSongs.filter(song => (appState.currentFilters.genre === 'all' || song.genre === appState.currentFilters.genre) && (appState.currentFilters.category === 'all' || song.category === appState.currentFilters.category) && (appState.currentFilters.argomento === 'all' || song.argomento === appState.currentFilters.argomento));
-                const song = filteredSongs.find(s => s.title === titleToFind);
-                if (song) {
-                    handleSongClick(item, song);
-                }
-            }
-        });
-
+        // Caricamento dei dati e delle funzionalità secondarie
         loadMusicFromApi();
         setupSecondaryFeatures();
     }
@@ -167,13 +155,16 @@ document.addEventListener('DOMContentLoaded', function() {
             await bgAudio.play();
             bgAudio.muted = false;
         } catch (error) {
+            console.warn("Autoplay audio bloccato. Mostro l'overlay.");
             audioStartOverlay.style.display = 'flex';
         } finally {
-            updateMuteButton();
+            updateMuteButton(); // Sicuro da chiamare qui ora
         }
     }
 
-    startAudioBtn.addEventListener('click', async () => {
+    // --- Gestori di Eventi ---
+
+    async function handleStartAudioClick() {
         audioStartOverlay.style.display = 'none';
         try {
             await bgAudio.play();
@@ -182,7 +173,36 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error("Impossibile avviare l'audio dopo il click:", error);
         }
-    });
+    }
+    
+    function handleFormSubmit(e) {
+        e.preventDefault();
+        const formData = new FormData(form);
+        formResult.innerHTML = "Invio...";
+        fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData })
+            .then(r => r.json())
+            .then(d => {
+                formResult.innerHTML = d.success ? "Messaggio inviato!" : `Errore: ${d.message}`;
+                if (d.success) form.reset();
+            })
+            .catch(() => formResult.innerHTML = "Errore di rete.");
+    }
+
+    function handleSongListClickWithThrottle(e) {
+        if (appState.isPlayerThrottled) return;
+        appState.isPlayerThrottled = true;
+        setTimeout(() => { appState.isPlayerThrottled = false; }, 400);
+        
+        const item = e.target.closest('.song-item');
+        if (item) {
+            const titleToFind = item.querySelector('.title').textContent;
+            const filteredSongs = appState.allSongs.filter(song => (appState.currentFilters.genre === 'all' || song.genre === appState.currentFilters.genre) && (appState.currentFilters.category === 'all' || song.category === appState.currentFilters.category) && (appState.currentFilters.argomento === 'all' || song.argomento === appState.currentFilters.argomento));
+            const song = filteredSongs.find(s => s.title === titleToFind);
+            if (song) handleSongClick(item, song);
+        }
+    }
+
+    // --- Funzioni di Logica e Utilità ---
     
     audioCta.addEventListener('click', () => {
         bgAudio.muted = !bgAudio.muted;
@@ -213,16 +233,12 @@ document.addEventListener('DOMContentLoaded', function() {
         modal.style.display = 'none';
     }
 
-    // Logica di gestione del player (ora più semplice)
     async function handleSongClick(item, song) {
         const isSameSong = (item === appState.currentPlayingItem);
         try {
             if (isSameSong) {
-                if (catalogPlayer.paused) {
-                    await catalogPlayer.play();
-                } else {
-                    catalogPlayer.pause();
-                }
+                if (catalogPlayer.paused) await catalogPlayer.play();
+                else catalogPlayer.pause();
             } else {
                 if (appState.currentPlayingItem) {
                     appState.currentPlayingItem.classList.remove('playing');
@@ -240,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Difesa Livello 2: Decouplare gli aggiornamenti UI dagli eventi media per risolvere la race condition interna
+    // Difesa Livello 2: Decouplare gli aggiornamenti UI dagli eventi media
     catalogPlayer.addEventListener('play', () => {
         setTimeout(() => {
             if (appState.currentPlayingItem) {
@@ -284,7 +300,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function createFilterButtons() {
-        const filters = { 'Genere': [...new Set(appState.allSongs.map(s => s.genre).filter(Boolean)))], 'Categoria': [...new Set(appState.allSongs.map(s => s.category).filter(Boolean)))], 'Argomento': [...new Set(appState.allSongs.map(s => s.argomento).filter(Boolean)))] };
+        // *** FIX: Correzione dell'errore di sintassi ***
+        const filters = {
+            'Genere': [...new Set(appState.allSongs.map(s => s.genre).filter(Boolean))],
+            'Categoria': [...new Set(appState.allSongs.map(s => s.category).filter(Boolean))],
+            'Argomento': [...new Set(appState.allSongs.map(s => s.argomento).filter(Boolean))]
+        };
         filterContainer.innerHTML = '';
         for (const key in filters) {
             const filterKey = key === 'Genere' ? 'genre' : (key === 'Categoria' ? 'category' : 'argomento');
@@ -322,15 +343,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function setupSecondaryFeatures() {
-        // ... (Codice aforismi e chatbot invariato) ...
-        try {
-            const chatbotContainer = document.getElementById('chatbot-container');
-            if(chatbotContainer) {
-                // ... (HTML e logica del chatbot come prima) ...
-            }
-        } catch(error) {
-            console.error("Errore nell'inizializzazione del chatbot:", error);
-        }
+        // Qui va il codice degli aforismi e del chatbot, che è corretto e rimane invariato
+        // ...
     }
 
     // --- PUNTO D'INGRESSO ---
