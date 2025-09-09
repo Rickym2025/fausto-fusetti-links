@@ -107,11 +107,11 @@ document.addEventListener('DOMContentLoaded', function() {
         currentPlayingItem: null,
         currentFilters: { genre: 'all', category: 'all', argomento: 'all' },
         backgroundMusicSrc: document.getElementById('background-audio')?.querySelector('source')?.src || '',
-        isBgMusicMuted: true, // La musica parte muta
+        isBgMusicMuted: true,
     };
 
     // Riferimenti agli elementi DOM
-    const bgAudio = document.getElementById('background-audio'); // Usato SOLO per sbloccare l'audio context
+    const bgAudio = document.getElementById('background-audio');
     const audioStartOverlay = document.getElementById('audio-start-overlay');
     const startAudioBtn = document.getElementById('start-audio-btn');
     const audioCta = document.getElementById('audio-cta');
@@ -155,7 +155,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function closeModal(modalId) {
         document.getElementById(modalId).style.display = 'none';
-        // Quando un modale si chiude, ripristina la musica di sottofondo
         playBackgroundMusic();
     }
 
@@ -173,9 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
     async function handleStartAudioClick() {
         audioStartOverlay.style.display = 'none';
         appState.isBgMusicMuted = false;
-        // La prima interazione utente sblocca la possibilità di usare l'audio.
-        // Tentiamo di far partire il player principale direttamente.
-        bgAudio.play().catch(()=>{}); // Sblocca l'audio context in background
+        bgAudio.play().catch(()=>{});
         bgAudio.pause();
         updateMuteButton();
         playBackgroundMusic();
@@ -229,6 +226,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 const webhookUrl = 'https://n8n.automaita.it/webhook/ffausto-ai-chat', bubble = document.getElementById('chatbot-bubble'), windowWrapper = document.getElementById('chatbot-window-wrapper'), messagesEl = document.getElementById('chatbot-messages'), inputField = document.getElementById('chatbot-input-field'), sendBtn = document.getElementById('chatbot-send-btn'), closeBtn = document.querySelector('.chatbot-close-btn'), welcomeMessage = document.getElementById('chatbot-welcome-message');
                 let reEngagementTimer = null;
 
+                const triggerWelcomeAnimation = () => {
+                    // Funzione centralizzata per mostrare il benvenuto
+                    if (!windowWrapper.classList.contains('open')) {
+                        welcomeMessage.classList.add('visible');
+                        bubble.classList.add('bouncing');
+                        setTimeout(() => { welcomeMessage.classList.remove('visible'); }, 6000);
+                    }
+                };
+                
                 const toggleChat = () => {
                     if (appState.isChatAnimating) return;
                     appState.isChatAnimating = true;
@@ -246,13 +252,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     setTimeout(() => {
                         appState.isChatAnimating = false;
                         if (!isOpening) {
-                            reEngagementTimer = setTimeout(() => {
-                                if (!windowWrapper.classList.contains('open')) {
-                                    welcomeMessage.classList.add('visible');
-                                    if (window.innerWidth > 768) { bubble.classList.add('bouncing'); }
-                                    setTimeout(() => { welcomeMessage.classList.remove('visible'); }, 6000);
-                                }
-                            }, 15000);
+                            reEngagementTimer = setTimeout(triggerWelcomeAnimation, 15000);
                         }
                     }, 350);
                 };
@@ -264,10 +264,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 closeBtn.addEventListener('click', toggleChat);
                 sendBtn.addEventListener('click', sendMessage);
                 inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
-                addMessage("Ciao! Sono Fausto AI, assistente virtuale...", 'bot');
+                
+                // **FIX: Ripristino frase di benvenuto originale**
+                addMessage("Ciao! Sono Fausto AI, assistente virtuale. Sono qui per aiutarti a trovare il tuo brano ideale. Cosa stai cercando?", 'bot');
 
-                setTimeout(() => { if (!windowWrapper.classList.contains('open')) { welcomeMessage.classList.add('visible'); if (window.innerWidth > 768) { bubble.classList.add('bouncing'); } } }, 2000);
-                setTimeout(() => { welcomeMessage.classList.remove('visible'); }, 8000);
+                // Logica di benvenuto iniziale
+                setTimeout(triggerWelcomeAnimation, 2000);
             }
         } catch(e) { console.error("Errore chatbot", e); }
     }
