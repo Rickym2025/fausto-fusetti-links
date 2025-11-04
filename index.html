@@ -12,7 +12,7 @@
     html { scroll-behavior: smooth; }
     body { font-family: 'Montserrat', sans-serif; color: #f0f0f0; text-align: center; }
     #background-video { position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; width: auto; height: auto; z-index: -100; object-fit: cover; filter: brightness(0.5); }
-    .container-wrapper { min-height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .container-wrapper { min-height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center; padding: 20px; padding-bottom: 60px; /* Aggiunto padding per non sovrapporre il footer */ }
     .container { position: relative; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(10px); padding: 90px 30px 40px 30px; max-width: 680px; width: 100%; margin-top: 100px; margin-bottom: 40px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); z-index: 2; }
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
     #audio-cta { position: absolute; top: -25px; right: -20px; display: flex; align-items: center; background-color: rgba(6, 147, 227, 0.2); border: 1px solid var(--primary-color); padding: 8px 15px; border-radius: 30px; backdrop-filter: blur(5px); animation: pulse 2.5s infinite ease-in-out; z-index: 10; cursor: pointer; visibility: hidden; }
@@ -25,6 +25,7 @@
     .button { display: block; margin: 18px auto; padding: 16px 30px; border: 2px solid var(--primary-color); border-radius: 30px; text-decoration: none; color: #f0f0f0; font-size: 1.2em; font-weight: 500; transition: all 0.3s ease; background-color: transparent; cursor: pointer; }
     .button:hover { background: var(--primary-color); color: white; transform: translateY(-3px); box-shadow: 0 4px 15px rgba(6, 147, 227, 0.4); }
     .button.collabora { border-color: var(--secondary-color); } .button.collabora:hover { background: var(--secondary-color); box-shadow: 0 4px 15px rgba(227, 160, 6, 0.4); }
+    .button.jukebox { border-color: var(--secondary-color); } .button.jukebox:hover { background: var(--secondary-color); box-shadow: 0 4px 15px rgba(227, 160, 6, 0.4); } /* Stile per il nuovo pulsante */
     .button i { margin-right: 10px; }
     .social-icons { display: flex; justify-content: center; gap: 30px; margin: 40px 0 20px; }
     .social-icons a { color: #c7c7c7; font-size: 2.2em; transition: all 0.3s ease; }
@@ -59,6 +60,7 @@
     #audio-start-content p { margin-bottom: 25px; font-size: 1.1em; line-height: 1.6; }
     #start-audio-btn { background: var(--primary-color); color: white; border: none; padding: 15px 30px; border-radius: 30px; font-size: 1.2em; cursor: pointer; transition: all 0.3s ease; }
     #start-audio-btn:hover { background: var(--secondary-color); transform: translateY(-2px); }
+    .info-footer { position: fixed; bottom: 0; left: 0; width: 100%; background-color: rgba(0, 0, 0, 0.85); color: #ccc; padding: 12px; text-align: center; font-size: 0.9em; z-index: 100; }
   </style>
 </head>
 <body>
@@ -77,7 +79,8 @@
       <div id="audio-cta"><span class="cta-text">Attiva la musica</span><div id="mute-btn-icon"><i class="fas fa-volume-mute"></i></div></div>
       <img src="logo6.jpg" alt="Logo FF Musica" class="profile-logo">
       <h1>Fausto Fusetti</h1>
-      <p class="bio">Con 40 anni di esperienza come musicista, compositore e autore, trasformo emozioni in musica. La mia versatilità mi permette di spaziare tra ogni genere: dal liscio al moderno, dal jazz alle colonne sonore per la pubblicità.<br><br>Come polistrumentista (pianoforte, chitarra, tromba, chitarra basso e voce), offro un servizio completo per la creazione di canzoni personalizzate. Se sei un'orchestra, un cantante o un editore in cerca di un brano inedito e su misura, sei nel posto giusto, ti posso fornire: base con tracce aperte, musica con spartito e parole.</p>
+      <p class="bio">Piacere, sono Fausto Fusetti, in arte <strong>Fausto Miriani</strong>. Dal 1988 la musica è la mia vita: sono polistrumentista, cantante, compositore, paroliere e anche autore di libri. Una passione che mi ha portato a comporre oltre 700 brani e a incidere 11 dischi.<br><br>La mia carriera è stata un viaggio entusiasmante sui palchi più prestigiosi, collaborando con icone come <strong>Fred Bongusto, Peppino di Capri e Califano</strong>. La mia creatività non conosce confini: dal pop al melodico, dal jazz alla musica latina, ogni genere è un'occasione per trasformare emozioni in musica e raccontare storie uniche.<br><br>Oggi metto questa esperienza al tuo servizio per creare <strong>canzoni e libri personalizzati</strong>, e continuo a investire sul futuro, seguendo giovani talenti in nuovi progetti discografici.</p>
+        <a href="https://rickym2025.github.io/jukebox-ff/" target="_blank" class="button jukebox"><i class="fas fa-compact-disc"></i> Area Riservata Jukebox</a>
         <button id="open-music-modal" class="button"><i class="fas fa-music"></i>Catalogo Musicale</button>
         <button id="open-video-modal" class="button"><i class="fas fa-video"></i>Guarda i Video</button>
         <button id="open-services-modal" class="button service-highlight"><i class="fas fa-heart"></i>Canzoni Personalizzate</button>
@@ -93,6 +96,10 @@
   <div id="services-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="services-modal">&times;</span><h2><i class="fas fa-heart" style="color: var(--secondary-color); margin-right: 10px;"></i>Canzoni Personalizzate</h2><div style="text-align: left; line-height: 1.6; margin-bottom: 20px;"><h3 style="color: var(--primary-color); margin-bottom: 10px;">✨ Servizi Esclusivi:</h3><ul style="list-style: none; padding-left: 0;"><li style="margin-bottom: 10px;"><i class="fas fa-heart" style="color: #e74c3c; margin-right: 8px;"></i> <strong>Canzoni per Coppie</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-ring" style="color: #f39c12; margin-right: 8px;"></i> <strong>Anniversari e Matrimoni</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-gift" style="color: #9b59b6; margin-right: 8px;"></i> <strong>Testi Personalizzati</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-birthday-cake" style="color: #e67e22; margin-right: 8px;"></i> <strong>Eventi Speciali</strong></li></ul><div style="background: rgba(6, 147, 227, 0.1); border-left: 4px solid var(--primary-color); padding: 15px; margin: 20px 0; border-radius: 5px;"><p><strong>💡 Come funziona:</strong> Raccontami la tua storia, i tuoi ricordi. Creerò una canzone unica che rappresenti le tue emozioni.</p></div></div><button id="contact-for-custom-song" class="button collabora">Richiedi la Tua Canzone</button></div></div>
   <div id="contact-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="contact-modal">&times;</span><h2>Contattami per il tuo Progetto</h2><form id="contact-form" class="contact-form" autocomplete="on"><input type="hidden" name="access_key" value="9013a8d5-0901-42a0-b9e6-4c45553f960d"/><input type="text" name="name" placeholder="Il tuo Nome" required autocomplete="name"/><input type="email" name="email" placeholder="La tua Email" required autocomplete="email"/><input type="tel" name="phone" placeholder="Il tuo Telefono (Opzionale)" autocomplete="tel"/><select name="service_type"><option value="">Seleziona il tipo di servizio</option><option value="canzone_personalizzata">Canzone Personalizzata</option><option value="composizione_artista">Composizione per Artista</option><option value="intrattenimento_live">Intrattenimento Live</option><option value="altro">Altro</option></select><textarea name="message" rows="4" placeholder="Descrivi la tua idea o richiesta..." required></textarea><button type="submit" class="button collabora">Invia Messaggio</button></form><div id="form-result"></div></div></div>
   
+  <div class="info-footer">
+    Iscrizione SIAE n. 189515
+  </div>
+
   <div id="chatbot-container"></div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
