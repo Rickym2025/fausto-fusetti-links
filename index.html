@@ -17,7 +17,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@700&amp;family=Montserrat:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
 <style>
-:root { --primary-color: #0693e3; --secondary-color: #e3a006; }
+/* AGGIUNTO COLORE JINGLE */
+:root { --primary-color: #0693e3; --secondary-color: #e3a006; --jingle-color: #00e1ff; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body { font-family: 'Montserrat', sans-serif; color: #f0f0f0; text-align: center; }
@@ -36,6 +37,11 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
 .button:hover { background: var(--primary-color); color: white; transform: translateY(-3px); box-shadow: 0 4px 15px rgba(6, 147, 227, 0.4); }
 .button.collabora { border-color: var(--secondary-color); } .button.collabora:hover { background: var(--secondary-color); box-shadow: 0 4px 15px rgba(227, 160, 6, 0.4); }
 .button.jukebox { border-color: var(--secondary-color); } .button.jukebox:hover { background: var(--secondary-color); box-shadow: 0 4px 15px rgba(227, 160, 6, 0.4); }
+
+/* STILE NUOVO PULSANTE JINGLE */
+.button.jingle { border-color: var(--jingle-color); color: var(--jingle-color); } 
+.button.jingle:hover { background: var(--jingle-color); color: #000; box-shadow: 0 4px 20px rgba(0, 225, 255, 0.6); border-color: var(--jingle-color); }
+
 .button i { margin-right: 10px; }
 .social-icons { display: flex; justify-content: center; gap: 30px; margin: 40px 0 20px; }
 .social-icons a { color: #c7c7c7; font-size: 2.2em; transition: all 0.3s ease; }
@@ -100,7 +106,13 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
 <img src="logo6.jpg" alt="Logo FF Musica" class="profile-logo">
 <h1>Fausto Fusetti</h1>
 <p class="bio">Piacere, sono Fausto Fusetti, in arte <strong>Fausto Miriani</strong>. Dal 1988 la musica è la mia vita: sono polistrumentista, cantante, compositore, paroliere e anche autore di libri. Una passione che mi ha portato a comporre oltre 700 brani e a incidere 11 dischi.<br><br>La mia carriera è stata un viaggio entusiasmante sui palchi più prestigiosi, collaborando con icone come <strong>Fred Bongusto, Peppino di Capri e Califano</strong>. La mia creatività non conosce confini: dal pop al melodico, dal jazz alla musica latina, ogni genere è un'occasione per trasformare emozioni in musica e raccontare storie uniche.<br><br>Oggi metto questa esperienza al tuo servizio per creare <strong>canzoni e libri personalizzati</strong>, e continuo a investire sul futuro, seguendo giovani talenti in nuovi progetti discografici.</p>
+
+<!-- PULSANTI -->
 <a href="https://rickym2025.github.io/jukebox-ff/" target="_blank" class="button jukebox"><i class="fas fa-compact-disc"></i> Area Riservata Jukebox</a>
+
+<!-- NUOVO PULSANTE JINGLE -->
+<a href="https://rickym2025.github.io/jingle-shop/" target="_blank" class="button jingle"><i class="fas fa-icons"></i> Jingle Shop & Royalty Free</a>
+
 <button id="open-music-modal" class="button"><i class="fas fa-music"></i>Catalogo Musicale</button>
 <button id="open-video-modal" class="button"><i class="fas fa-video"></i>Guarda i Video</button>
 <button id="open-services-modal" class="button service-highlight"><i class="fas fa-heart"></i>Canzoni Personalizzate</button>
@@ -240,15 +252,13 @@ function setupBackgroundVideo() { if (window.innerWidth <= 768) { const videoEle
 function handleFormSubmit(e) { e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio..."; fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).then(r => r.json()).then(d => { formResult.innerHTML = d.success ? "Messaggio inviato!" : `Errore: ${d.message}`; if (d.success) form.reset(); }).catch(() => formResult.innerHTML = "Errore di rete."); }
 
 function handleSongListClick(e) {
-        // 1. GESTIONE CLICK SUL VIDEO (MP4 DIRETTO)
         const videoBtn = e.target.closest('.video-btn');
         if (videoBtn) {
-            e.stopPropagation(); // Ferma la propagazione per non attivare l'audio MP3
+            e.stopPropagation(); 
             
             const videoUrl = videoBtn.dataset.videoUrl;
             
             if (videoUrl) {
-                // Mette in pausa l'audio principale (MP3)
                 mainPlayer.pause();
                 if (appState.currentPlayingItem) {
                     appState.currentPlayingItem.classList.remove('playing');
@@ -257,8 +267,6 @@ function handleSongListClick(e) {
                 const videoOverlay = document.getElementById('single-video-overlay');
                 const videoContainer = document.getElementById('single-video-container');
                 
-                // INSERIAMO IL PLAYER VIDEO HTML5 STANDARD
-                // style="width: 100%; height: 100%" assicura che riempia la finestra
                 videoContainer.innerHTML = `
                     <video controls autoplay style="width: 100%; height: 100%; object-fit: contain;">
                         <source src="${videoUrl}" type="video/mp4">
@@ -273,11 +281,9 @@ function handleSongListClick(e) {
             return;
         }
 
-        // 2. GESTIONE CLICK SUL BRANO (AUDIO MP3)
         const item = e.target.closest('.song-item');
         if (item) {
             const titleToFind = item.querySelector('.title').textContent;
-            // Cerca il brano nel catalogo completo
             const song = appState.allSongs.find(s => s.title === titleToFind); 
             if (song) handleSongClick(item, song);
         }
@@ -286,10 +292,9 @@ function handleSongListClick(e) {
 audioCta.addEventListener('click', () => { appState.isBgMusicMuted = !appState.isBgMusicMuted; if (appState.isBgMusicMuted) { mainPlayer.pause(); } else { playBackgroundMusic(); } updateMuteButton(); });
 function updateMuteButton() { const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i'); const ctaText = document.querySelector('#audio-cta .cta-text'); muteBtnIcon.className = appState.isBgMusicMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up'; ctaText.textContent = appState.isBgMusicMuted ? 'Attiva la musica' : 'Disattiva musica'; audioCta.style.visibility = 'visible'; }
 async function loadMusicFromApi() {
-        const CACHE_KEY = 'ff_music_catalog_cache_v2'; // Nome della chiave in memoria
-        const CACHE_DURATION = 3600 * 1000; // 1 ora (in millisecondi)
+        const CACHE_KEY = 'ff_music_catalog_cache_v2'; 
+        const CACHE_DURATION = 3600 * 1000; 
 
-        // 1. TENTATIVO DI CARICAMENTO VELOCE (CACHE)
         const cachedData = localStorage.getItem(CACHE_KEY);
         let loadedFromCache = false;
 
@@ -298,16 +303,13 @@ async function loadMusicFromApi() {
                 const parsed = JSON.parse(cachedData);
                 const now = new Date().getTime();
                 
-                // Se i dati sono "freschi" (meno di 1 ora), usali subito e non chiamare Google
                 if (now - parsed.timestamp < CACHE_DURATION) {
                     appState.allSongs = parsed.songs;
                     createFilterButtons();
                     renderSongs();
                     console.log("Catalogo caricato istantaneamente dalla Cache.");
-                    return; // STOP! Non facciamo la chiamata lenta a Google
+                    return; 
                 } else {
-                    // I dati esistono ma sono vecchi: li usiamo intanto per non mostrare il vuoto,
-                    // ma poi sotto chiameremo Google per aggiornarli in background.
                     appState.allSongs = parsed.songs;
                     createFilterButtons();
                     renderSongs();
@@ -319,14 +321,11 @@ async function loadMusicFromApi() {
             }
         }
 
-        // 2. CARICAMENTO DA GOOGLE (LENTO)
-        // Se non abbiamo caricato dalla cache, mostriamo il messaggio di attesa
         if (!loadedFromCache) {
             songListContainer.innerHTML = `<p><i class="fas fa-spinner fa-spin"></i> Caricamento catalogo...</p>`;
         }
 
         try {
-            // Aggiungiamo un parametro casuale (&t=...) per evitare che il browser metta in cache la chiamata HTTP stessa
             const response = await fetch('https://script.google.com/macros/s/AKfycbw666DGD4BlSHuJwmVYcRLF9_qMJX2LXy_r6gCGVbjR_dXQDngQU-JttofSKOwUkIJZ/exec?source=catalogo&t=' + new Date().getTime());
             
             if (!response.ok) throw new Error(`Errore di rete`);
@@ -336,31 +335,25 @@ async function loadMusicFromApi() {
             if (Array.isArray(newSongs) && newSongs.length > 0) {
                 appState.allSongs = newSongs;
                 
-                // 3. SALVIAMO I NUOVI DATI IN MEMORIA PER LA PROSSIMA VOLTA
                 localStorage.setItem(CACHE_KEY, JSON.stringify({
                     timestamp: new Date().getTime(),
                     songs: newSongs
                 }));
 
-                // Aggiorniamo l'interfaccia con i dati freschi
                 createFilterButtons();
                 renderSongs();
                 console.log("Dati aggiornati da Google.");
             }
         } catch (error) {
             console.error("Errore fetch Google:", error);
-            // Se Google fallisce ma non avevamo cache, mostriamo errore
             if (!loadedFromCache) {
                 songListContainer.innerHTML = `<p style="color: #ffc107;">Impossibile aggiornare il catalogo al momento.</p>`;
             }
         }
     }function createFilterButtons() {
-        // Funzione helper per estrarre e separare i tag unici
         const getUniqueTags = (prop) => {
             const rawValues = appState.allSongs.map(s => s[prop]).filter(Boolean);
-            // Spezza le stringhe con , o ; e rimuove gli spazi extra
             const splitTags = rawValues.flatMap(text => text.split(/[;,]+/).map(t => t.trim()));
-            // Rimuove duplicati e ordina alfabeticamente
             return [...new Set(splitTags)].sort();
         };
 
@@ -387,16 +380,13 @@ async function loadMusicFromApi() {
 function renderSongs() {
         songListContainer.innerHTML = '';
         
-        // Helper per verificare se il brano contiene il tag selezionato
         const hasTag = (songValue, filterValue) => {
             if (filterValue === 'all') return true;
             if (!songValue) return false;
-            // Spezza la stringa del brano in un array di tag e controlla se include il filtro
             const tags = songValue.split(/[;,]+/).map(t => t.trim());
             return tags.includes(filterValue);
         };
 
-        // Filtra le canzoni usando la nuova logica "hasTag"
         const filteredSongs = appState.allSongs.filter(song => 
             hasTag(song.genre, appState.currentFilters.genre) && 
             hasTag(song.category, appState.currentFilters.category) && 
