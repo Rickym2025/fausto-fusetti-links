@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - Fausto Fusetti Musica</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
+    <style>
+        :root { --primary-color: #0693e3; --secondary-color: #e3a006; --bg-dark: #121212; --card-bg: #1e1e1e; }
+        body { font-family: 'Montserrat', sans-serif; background-color: var(--bg-dark); color: #f0f0f0; margin: 0; padding: 0; }
+        
+        /* HEADER SEMPLIFICATO */
+        header { background: rgba(0,0,0,0.9); padding: 20px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-weight: 800; color: white; text-decoration: none; font-size: 1.2rem; }
+        .logo span { color: var(--primary-color); }
+        .back-btn { color: #ccc; text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; border: 1px solid #444; padding: 5px 15px; border-radius: 20px; transition: all 0.3s; }
+        .back-btn:hover { border-color: var(--primary-color); color: white; }
+
+        /* CONTAINER BLOG */
+        .blog-container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        .blog-header { text-align: center; margin-bottom: 50px; }
+        .blog-header h1 { font-size: 2.5rem; margin-bottom: 10px; color: var(--primary-color); }
+        
+        /* GRIGLIA ARTICOLI */
+        .article-card { background: var(--card-bg); border-radius: 15px; overflow: hidden; margin-bottom: 30px; transition: transform 0.3s; border: 1px solid #333; display: flex; flex-direction: column; }
+        .article-card:hover { transform: translateY(-5px); border-color: var(--primary-color); }
+        
+        .card-img { height: 200px; background-size: cover; background-position: center; background-color: #333; }
+        
+        .card-content { padding: 25px; }
+        .card-meta { font-size: 0.8rem; color: #888; margin-bottom: 10px; display: flex; gap: 15px; }
+        .card-title { font-size: 1.5rem; margin-bottom: 15px; color: white; line-height: 1.3; }
+        .card-excerpt { color: #ccc; line-height: 1.6; margin-bottom: 20px; font-size: 0.95rem; }
+        
+        .read-more { display: inline-block; padding: 10px 20px; background: transparent; border: 1px solid var(--primary-color); color: var(--primary-color); text-decoration: none; border-radius: 5px; font-weight: 600; transition: all 0.3s; }
+        .read-more:hover { background: var(--primary-color); color: white; }
+
+        /* FOOTER */
+        footer { text-align: center; padding: 40px; color: #666; font-size: 0.8rem; }
+        
+        @media(min-width: 600px) {
+            .article-card { flex-direction: row; }
+            .card-img { width: 40%; height: auto; min-height: 250px; }
+            .card-content { width: 60%; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="../index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Home Fausto</a>
+    <a href="#" class="logo">FF <span>Musica Blog</span></a>
+</header>
+
+<div class="blog-container">
+    <div class="blog-header">
+        <h1>News & Approfondimenti</h1>
+        <p>Il mondo della musica, delle orchestre e dei jingle.</p>
+    </div>
+
+    <!-- LISTA ARTICOLI (n8n inserirà qui i nuovi articoli) -->
+    <div id="articles-list">
+        
+        <!-- ESEMPIO ARTICOLO 1 -->
+        <article class="article-card">
+            <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=500&q=80')"></div>
+            <div class="card-content">
+                <div class="card-meta">
+                    <span><i class="far fa-calendar"></i> 24 Gen 2026</span>
+                    <span><i class="far fa-user"></i> Fausto Fusetti</span>
+                </div>
+                <h2 class="card-title">Benvenuti nel nuovo blog musicale</h2>
+                <p class="card-excerpt">Siamo felici di inaugurare questo spazio dove parleremo di composizione, diritti musicali e jingle per radio.</p>
+                <a href="benvenuto.html" class="read-more">Leggi tutto <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </article>
+
+    </div>
+</div>
+
+<footer>
+    &copy; 2026 Fausto Fusetti - Tutti i diritti riservati
+</footer>
+
+</body>
+</html>
