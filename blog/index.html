@@ -33,10 +33,41 @@
         .filter-btn:hover, .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
         /* GRIGLIA ARTICOLI (Layout a schede piccole - Punto 9) */
-        .articles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
-        
-        .article-card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid #333; display: flex; flex-direction: column; transition: transform 0.3s, box-shadow 0.3s; height: 100%; }
-        .article-card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        /* GRIGLIA */
+        .articles-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 25px; 
+        }
+
+        /* LINK CONTENITORE (Nuovo) */
+        /* Essenziale per far funzionare l'altezza uguale delle card */
+        .article-card-link {
+            display: block;       /* Si comporta come un blocco */
+            text-decoration: none; 
+            color: inherit; 
+            height: 100%;         /* Forza il link a occupare tutta l'altezza della riga */
+        }
+
+        /* CARD */
+        .article-card { 
+            background: var(--card); 
+            border-radius: 12px; 
+            overflow: hidden; 
+            border: 1px solid #333; 
+            display: flex; 
+            flex-direction: column; 
+            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s; 
+            height: 100%;         /* Si espande per riempire il link */
+        }
+
+        /* HOVER EFFECT */
+        /* L'effetto si attiva quando passi sopra il link contenitore (.article-card-link) */
+        .article-card-link:hover .article-card { 
+            transform: translateY(-5px); 
+            border-color: var(--primary); 
+            box-shadow: 0 5px 20px rgba(6, 147, 227, 0.25); /* Glow blu invece che ombra nera */
+        }
         
         .card-img { height: 160px; background-size: cover; background-position: center; background-color: #222; position: relative; }
         .card-cat { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); color: var(--accent); font-size: 0.75rem; padding: 4px 10px; border-radius: 4px; font-weight: 600; text-transform: uppercase; }
