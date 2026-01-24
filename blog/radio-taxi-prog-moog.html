@@ -1,0 +1,220 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radio Taxi: Viaggio nel Prog con il Moog (Puntata del 20 Gennaio 2026) | Fausto Fusetti</title>
+    <meta name="description" content="Immergiti nell'atmosfera unica di 'Radio Taxi: The Prog Side of the Moog', una trasmissione che celebra le sonorità progressive attraverso l'iconico sintetizzatore Moog. Scopri i brani selezionati e l'esperienza sonora offerta da George & Frank-One il 20 gennaio 2026.">
+    <meta name="author" content="Fausto Fusetti">
+    
+    <!-- OPEN GRAPH -->
+    <meta property="og:title" content="Radio Taxi: Viaggio nel Prog con il Moog (Puntata del 20 Gennaio 2026)">
+    <meta property="og:description" content="Immergiti nell'atmosfera unica di 'Radio Taxi: The Prog Side of the Moog', una trasmissione che celebra le sonorità progressive attraverso l'iconico sintetizzatore Moog. Scopri i brani selezionati e l'esperienza sonora offerta da George & Frank-One il 20 gennaio 2026.">
+    <meta property="og:image" content="https://rickym2025.github.io/fausto-fusetti-links/blog/img/radio-taxi-prog-moog.jpg">
+    <meta property="og:url" content="https://rickym2025.github.io/fausto-fusetti-links/blog/radio-taxi-prog-moog.html">
+    <meta property="og:type" content="article">
+
+    <!-- STILI -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+    <style>
+        :root { --primary: #00e1ff; --bg: #0a0a0a; --text: #ffffff; --card: #141414; --border: #333; }
+        * { box-sizing: border-box; margin:0; padding:0; }
+        body { font-family: 'Montserrat', sans-serif; background: var(--bg); color: var(--text); padding-bottom: 60px; line-height: 1.6; }
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        
+        /* HEADER */
+        header { background: rgba(10,10,10,0.95); padding: 15px 20px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(10px); }
+        .logo { font-weight: 800; font-size: 1.2rem; text-transform: uppercase; }
+        .logo span { color: var(--primary); }
+        .nav-btn { border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; font-size: 0.9rem; display:flex; align-items:center; gap:8px; }
+        .nav-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+        /* HERO */
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        
+        .article-header { text-align: center; margin: 40px 0; }
+        .meta-tags { display: flex; justify-content: center; gap: 15px; color: #888; font-size: 0.9rem; margin-bottom: 15px; }
+        h1 { font-size: clamp(2rem, 5vw, 3rem); color: var(--primary); line-height: 1.1; margin-bottom: 30px; text-shadow: 0 0 20px rgba(0, 225, 255, 0.15); }
+        
+        .featured-img { width: 100%; border-radius: 12px; margin-bottom: 40px; border: 1px solid var(--border); box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        
+        /* CONTENUTO */
+        .content { font-size: 1.1rem; color: #e0e0e0; }
+        .content h2 { color: #fff; margin-top: 50px; margin-bottom: 20px; font-size: 1.8rem; border-left: 4px solid var(--primary); padding-left: 15px; }
+        .content h3 { color: #ccc; margin-top: 30px; margin-bottom: 15px; font-size: 1.4rem; }
+        .content p { margin-bottom: 20px; }
+        .content ul, .content ol { margin-bottom: 20px; padding-left: 20px; color: #ccc; }
+        .content li { margin-bottom: 10px; }
+        .content strong { color: white; }
+
+        /* CTA BOX */
+        .cta-box { background: linear-gradient(45deg, #1a1a1a, #0d0d0d); border: 1px solid var(--primary); padding: 40px; border-radius: 15px; margin: 60px 0; text-align: center; box-shadow: 0 0 30px rgba(0, 225, 255, 0.1); }
+        .cta-btn { display: inline-block; background: var(--primary); color: #000; padding: 15px 35px; border-radius: 30px; font-weight: 800; font-size: 1.1rem; margin-top: 20px; transition: transform 0.2s; }
+        .cta-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--primary); }
+
+        /* CORRELATI */
+        .related { border-top: 1px solid var(--border); padding-top: 50px; }
+        .section-title { color: var(--primary); margin-bottom: 30px; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 1px; }
+        .related-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+        .related-card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid var(--border); transition: all 0.3s; display: flex; flex-direction: column; height: 100%; justify-content: space-between; }
+        .related-card:hover { border-color: var(--primary); transform: translateY(-5px); box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
+
+        /* FOOTER */
+        footer { text-align: center; margin-top: 80px; padding-top: 40px; border-top: 1px solid #222; color: #666; font-size: 0.8rem; }
+        
+        /* TABS LINGUA */
+        .lang-switch { display: flex; justify-content: center; gap: 10px; margin: 20px 0; }
+        .lang-btn { background: transparent; border: 1px solid var(--primary); color: var(--primary); padding: 5px 15px; cursor: pointer; border-radius: 20px; font-weight: bold; transition: 0.3s; }
+        .lang-btn.active { background: var(--primary); color: black; }
+        .content-en { display: none; }
+    </style>
+    
+    <script>
+        function switchLang(lang) {
+            document.querySelectorAll('.lang-content').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.lang-btn').forEach(el => el.classList.remove('active'));
+            document.querySelector('.content-' + lang).style.display = 'block';
+            document.querySelector('.btn-' + lang).classList.add('active');
+        }
+    </script>
+</head>
+<body>
+
+<header>
+    <a href="../index.html" class="nav-btn"><i class="fas fa-arrow-left"></i> Home</a>
+    <a href="../index.html" class="logo">FF <span>Blog</span></a>
+    <a href="https://rickym2025.github.io/jingle-shop/" class="nav-btn" style="border-color:var(--primary); color:var(--primary);">
+        <i class="fas fa-music"></i> Shop
+    </a>
+</header>
+
+<div class="container">
+    <div class="article-header">
+        <div class="meta-tags">
+            <span><i class="far fa-calendar"></i> 24-01-2026</span>
+            <span><i class="fas fa-tag"></i> Musica</span>
+        </div>
+        
+        <!-- TITOLO DINAMICO JS -->
+        <h1 class="lang-content content-it">Radio Taxi: Viaggio nel Prog con il Moog (Puntata del 20 Gennaio 2026)</h1>
+        <h1 class="lang-content content-en" style="display:none">Radio Taxi: A Prog Journey with the Moog (January 20, 2026 Episode)</h1>
+    </div>
+
+    <img src="img/radio-taxi-prog-moog.jpg" alt="Radio Taxi: Viaggio nel Prog con il Moog (Puntata del 20 Gennaio 2026)" class="featured-img">
+
+    <!-- SELETTORE LINGUA -->
+    <div class="lang-switch">
+        <button class="lang-btn btn-it active" onclick="switchLang('it')">🇮🇹 ITA</button>
+        <button class="lang-btn btn-en" onclick="switchLang('en')">🇬🇧 ENG</button>
+    </div>
+
+    <div class="lang-content content-it">
+        <div class="content">
+            <h2>Radio Taxi: Un'Odissea Progressive con il Moog (Puntata del 20 Gennaio 2026)</h2>
+<p>Il 20 gennaio 2026, le onde radio sono state invase da un'esperienza sonora unica: <em>Radio Taxi - The Prog Side of the Moog</em>. Questa trasmissione, curata con passione da George & Frank-One, ha offerto un viaggio immersivo nel mondo del progressive rock, con un focus particolare sulle infinite possibilità sonore offerte dal sintetizzatore Moog.</p>
+
+<div style="text-align: center;">&nbsp;<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjy9LU4DVWXwpenCVaeABdtPI3XA1iem7JP3YMIqn2tdL8Wc6Ug58MomB47pE5dQAoC49VRg2UHuw59ngZTQveOWPD8QBuE-wxtbqvvK3x24-PyCJwGZdPe9ZYvpBSPi22MZBvhVA_dVJ0h3kfUvGZSeWpbEBTlwJIxqYgvBwE0uP-rlEFz_Q8znflgu0Gi/s2048/Selecta%20The%20Prog%20Side.jpg" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="2048" data-original-width="2048" height="400" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjy9LU4DVWXwpenCVaeABdtPI3XA1iem7JP3YMIqn2tdL8Wc6Ug58MomB47pE5dQAoC49VRg2UHuw59ngZTQveOWPD8QBuE-wxtbqvvK3x24-PyCJwGZdPe9ZYvpBSPi22MZBvhVA_dVJ0h3kfUvGZSeWpbEBTlwJIxqYgvBwE0uP-rlEFz_Q8znflgu0Gi/w400-h400/Selecta%20The%20Prog%20Side.jpg" width="400" /></a></div><div style="text-align: center;"><br /></div><div style="text-align: center;"><b>Trasmissione andata in onda martedì 20 gennaio 2026</b></div><div style="text-align: center;"><br /></div><div style="text-align: center;"><b>BUON ASCOLTO</b></div><div style="text-align: center;"><br /></div>
+<div class="separator" style="clear: both; text-align: center;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhfNqj_UKE-FKuQxjTcCwBOySmtZ5jWU4SInxQBIVFZjRgMazfeWOBei39_kOC0owIlCcD2ASWYIR_T8o3goKEAVfNiDY4aDrLv3dTnsX6yRAmmPZ7DWwTtuqj25cibk51nltTgDuNIxad-wkqr4clvXwLO39jy86kpA5lDhn76pJU4YXLkjQXDR_mDAMGm/s1920/d053cc16-10f5-4a5d-bcd4-3d4ccf6b785c.jpg" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="1152" data-original-width="1920" height="240" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhfNqj_UKE-FKuQxjTcCwBOySmtZ5jWU4SInxQBIVFZjRgMazfeWOBei39_kOC0owIlCcD2ASWYIR_T8o3goKEAVfNiDY4aDrLv3dTnsX6yRAmmPZ7DWwTtuqj25cibk51nltTgDuNIxad-wkqr4clvXwLO39jy86kpA5lDhn76pJU4YXLkjQXDR_mDAMGm/w400-h240/d053cc16-10f5-4a5d-bcd4-3d4ccf6b785c.jpg" width="400" /></a></div><div class="separator" style="clear: both; text-align: center;"><br /></div><div class="separator" style="clear: both; text-align: center;"><b><a href="https://www.mixcloud.com/radiopanda963/radio-taxi-the-prog-side-of-the-moog-di-marted%C3%AC-20-gennaio-2026/">LINK</a></b></div><div class="separator" style="clear: both; text-align: center;"><br /></div><div class="separator" style="clear: both; text-align: center;"><b><i>Post by George &amp; Frank-One</i></b></div>
+
+
+<h3>Un Viaggio Sonoro nel Progressive Rock</h3>
+<p>La trasmissione <em>Radio Taxi</em> non è semplicemente un insieme di brani; è un'esperienza curata, una selezione attentamente pensata per esaltare le sfumature del progressive rock. Il <strong>Moog</strong>, con le sue sonorità inconfondibili, diventa protagonista, colorando ogni brano con il suo timbro unico. L'utilizzo del <strong>Moog</strong> in questo contesto non è solo una scelta stilistica, ma un vero e proprio omaggio a uno strumento che ha definito un'epoca e continua ad ispirare musicisti di tutto il mondo.</p>
+
+<h3>La Selezione Musicale di George & Frank-One</h3>
+<p>Anche se non ci è dato conoscere la tracklist completa, possiamo immaginare un percorso sonoro che abbraccia le diverse sfaccettature del progressive rock. Dai paesaggi sonori epici dei <strong>Pink Floyd</strong> alle intricate composizioni dei <strong>King Crimson</strong>, passando per le sperimentazioni dei <strong>Yes</strong>, <em>Radio Taxi</em> promette un viaggio attraverso la storia e l'evoluzione di questo genere musicale.</p>
+
+<h3>Perché Ascoltare <em>Radio Taxi</em>?</h3>
+<ul>
+  <li>Per riscoprire le gemme del progressive rock.</li>
+  <li>Per apprezzare l'utilizzo innovativo del Moog.</li>
+  <li>Per lasciarsi trasportare in un'esperienza sonora unica.</li>
+  <li>Per la curatela musicale di George & Frank-One</li>
+</ul>
+
+<h3>Il Fascino Intramontabile del Progressive Rock</h3>
+<p>Il progressive rock, con la sua complessità e la sua ambizione, continua ad affascinare ascoltatori di tutte le età. <em>Radio Taxi</em> ci ricorda perché questo genere è così importante e perché merita di essere celebrato. Attraverso l'utilizzo del <strong>Moog</strong>, la trasmissione dona nuova linfa vitale a queste sonorità immortali, creando un'esperienza d'ascolto coinvolgente e appagante.</p>
+
+<p>In conclusione, <em>Radio Taxi - The Prog Side of the Moog</em> è un'esperienza radiofonica imperdibile per tutti gli amanti del progressive rock e per chiunque sia curioso di scoprire le meraviglie sonore del sintetizzatore <strong>Moog</strong>. Un plauso a George & Frank-One per aver creato un'oasi sonora dedicata a questo genere musicale così ricco e affascinante. La scelta di concentrarsi sul suono del <strong>Moog</strong> rende l'esperienza ancora più unica e distintiva, un vero e proprio valore aggiunto per tutti gli ascoltatori che amano il progressive rock. Ricordate, il <strong>Moog</strong> è molto più di uno strumento; è un'icona, un simbolo di innovazione e creatività.</p>
+
+<p>Fonte originale: <a href="https://verso-la-stratosfera.blogspot.com/2026/01/radio-taxi-prog-side-of-moog-puntata_21.html" target="_blank" rel="nofollow">Link</a></p>
+        </div>
+    </div>
+
+    <div class="lang-content content-en">
+        <div class="content">
+            <h2>Radio Taxi: A Progressive Odyssey with the Moog (January 20, 2026 Episode)</h2>
+<p>On January 20, 2026, the airwaves were invaded by a unique sonic experience: <em>Radio Taxi - The Prog Side of the Moog</em>. This broadcast, passionately curated by George & Frank-One, offered an immersive journey into the world of progressive rock, with a particular focus on the infinite sonic possibilities offered by the Moog synthesizer.</p>
+
+<div style="text-align: center;">&nbsp;<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjy9LU4DVWXwpenCVaeABdtPI3XA1iem7JP3YMIqn2tdL8Wc6Ug58MomB47pE5dQAoC49VRg2UHuw59ngZTQveOWPD8QBuE-wxtbqvvK3x24-PyCJwGZdPe9ZYvpBSPi22MZBvhVA_dVJ0h3kfUvGZSeWpbEBTlwJIxqYgvBwE0uP-rlEFz_Q8znflgu0Gi/s2048/Selecta%20The%20Prog%20Side.jpg" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="2048" data-original-width="2048" height="400" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjy9LU4DVWXwpenCVaeABdtPI3XA1iem7JP3YMIqn2tdL8Wc6Ug58MomB47pE5dQAoC49VRg2UHuw59ngZTQveOWPD8QBuE-wxtbqvvK3x24-PyCJwGZdPe9ZYvpBSPi22MZBvhVA_dVJ0h3kfUvGZSeWpbEBTlwJIxqYgvBwE0uP-rlEFz_Q8znflgu0Gi/w400-h400/Selecta%20The%20Prog%20Side.jpg" width="400" /></a></div><div style="text-align: center;"><br /></div><div style="text-align: center;"><b>Broadcast aired on Tuesday, January 20, 2026</b></div><div style="text-align: center;"><br /></div><div style="text-align: center;"><b>ENJOY LISTENING</b></div><div style="text-align: center;"><br /></div>
+<div class="separator" style="clear: both; text-align: center;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhfNqj_UKE-FKuQxjTcCwBOySmtZ5jWU4SInxQBIVFZjRgMazfeWOBei39_kOC0owIlCcD2ASWYIR_T8o3goKEAVfNiDY4aDrLv3dTnsX6yRAmmPZ7DWwTtuqj25cibk51nltTgDuNIxad-wkqr4clvXwLO39jy86kpA5lDhn76pJU4YXLkjQXDR_mDAMGm/s1920/d053cc16-10f5-4a5d-bcd4-3d4ccf6b785c.jpg" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="1152" data-original-width="1920" height="240" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhfNqj_UKE-FKuQxjTcCwBOySmtZ5jWU4SInxQBIVFZjRgMazfeWOBei39_kOC0owIlCcD2ASWYIR_T8o3goKEAVfNiDY4aDrLv3dTnsX6yRAmmPZ7DWwTtuqj25cibk51nltTgDuNIxad-wkqr4clvXwLO39jy86kpA5lDhn76pJU4YXLkjQXDR_mDAMGm/w400-h240/d053cc16-10f5-4a5d-bcd4-3d4ccf6b785c.jpg" width="400" /></a></div><div class="separator" style="clear: both; text-align: center;"><br /></div><div class="separator" style="clear: both; text-align: center;"><b><a href="https://www.mixcloud.com/radiopanda963/radio-taxi-the-prog-side-of-the-moog-di-marted%C3%AC-20-gennaio-2026/">LINK</a></b></div><div class="separator" style="clear: both; text-align: center;"><br /></div><div class="separator" style="clear: both; text-align: center;"><b><i>Post by George &amp; Frank-One</i></b></div>
+
+<h3>A Sonic Journey into Progressive Rock</h3>
+<p>The <em>Radio Taxi</em> broadcast is not simply a collection of tracks; it's a curated experience, a selection carefully thought out to enhance the nuances of progressive rock. The <strong>Moog</strong>, with its unmistakable sound, becomes the protagonist, coloring each track with its unique timbre. The use of the <strong>Moog</strong> in this context is not just a stylistic choice, but a true homage to an instrument that defined an era and continues to inspire musicians around the world.</p>
+
+<h3>The Musical Selection of George & Frank-One</h3>
+<p>Although we are not given to know the complete tracklist, we can imagine a sound journey that embraces the different facets of progressive rock. From the epic soundscapes of <strong>Pink Floyd</strong> to the intricate compositions of <strong>King Crimson</strong>, passing through the experiments of <strong>Yes</strong>, <em>Radio Taxi</em> promises a trip through the history and evolution of this musical genre.</p>
+
+<h3>Why Listen to <em>Radio Taxi</em>?</h3>
+<ul>
+  <li>To rediscover the gems of progressive rock.</li>
+  <li>To appreciate the innovative use of the Moog.</li>
+  <li>To be transported into a unique sound experience.</li>
+  <li>For the musical curation of George & Frank-One.</li>
+</ul>
+
+<h3>The Timeless Charm of Progressive Rock</h3>
+<p>Progressive rock, with its complexity and its ambition, continues to fascinate listeners of all ages. <em>Radio Taxi</em> reminds us why this genre is so important and why it deserves to be celebrated. Through the use of the <strong>Moog</strong>, the transmission gives new life to these immortal sounds, creating an engaging and rewarding listening experience.</p>
+
+<p>In conclusion, <em>Radio Taxi - The Prog Side of the Moog</em> is an unmissable radio experience for all lovers of progressive rock and for anyone curious to discover the sonic wonders of the <strong>Moog</strong> synthesizer. A round of applause to George & Frank-One for creating a sonic oasis dedicated to this rich and fascinating musical genre. The choice to focus on the sound of the <strong>Moog</strong> makes the experience even more unique and distinctive, a real added value for all listeners who love progressive rock. Remember, the <strong>Moog</strong> is much more than an instrument; it's an icon, a symbol of innovation and creativity.</p>
+
+<p>Original source: <a href="https://verso-la-stratosfera.blogspot.com/2026/01/radio-taxi-prog-side-of-moog-puntata_21.html" target="_blank" rel="nofollow">Link</a></p>
+        </div>
+    </div>
+
+    <!-- BOX CTA -->
+    <div class="cta-box">
+        <h3 style="color:white; margin-bottom:10px;">Ti serve una base musicale unica?</h3>
+        <p style="color:#ccc;">Scopri le produzioni originali di Fausto Fusetti. Jingle, basi per orchestre e colonne sonore.</p>
+        <a href="https://rickym2025.github.io/jingle-shop/" class="cta-btn">
+            Visita lo Shop <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+
+    <!-- ARTICOLI CORRELATI -->
+    <div class="related">
+        <h3 class="section-title">Leggi anche</h3>
+        <div class="related-grid">
+            
+        <a href="eugenio-finardi-aosta-2026.html" class="related-card">
+            <div style="font-size:0.8rem; color:#00e1ff; margin-bottom:5px;">
+                <i class="far fa-calendar"></i> 24-01-2026
+            </div>
+            <h4 style="margin:0 0 5px 0; color:white; font-size:1rem;">Musica</h4>
+            <span style="font-size:0.75rem; background:#333; padding:2px 8px; border-radius:4px; color:#ccc;">
+                Musica
+            </span>
+        </a>
+        
+        <a href=".html" class="related-card">
+            <div style="font-size:0.8rem; color:#00e1ff; margin-bottom:5px;">
+                <i class="far fa-calendar"></i> 
+            </div>
+            <h4 style="margin:0 0 5px 0; color:white; font-size:1rem;">Articolo consigliato</h4>
+            <span style="font-size:0.75rem; background:#333; padding:2px 8px; border-radius:4px; color:#ccc;">
+                Musica
+            </span>
+        </a>
+        
+        </div>
+    </div>
+    
+    <footer>
+        &copy; 2026 Fausto Fusetti - Tutti i diritti riservati
+    </footer>
+</div>
+
+</body>
+</html>
