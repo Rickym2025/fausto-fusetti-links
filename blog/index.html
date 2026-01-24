@@ -3,141 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog - Fausto Fusetti Musica</title>
+    <title>Blog & News - Fausto Fusetti</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
-        :root { --primary-color: #0693e3; --secondary-color: #e3a006; --bg-dark: #121212; --card-bg: #1e1e1e; }
-        body { font-family: 'Montserrat', sans-serif; background-color: var(--bg-dark); color: #f0f0f0; margin: 0; padding: 0; }
-        
-        /* HEADER SEMPLIFICATO */
-        header { background: rgba(0,0,0,0.9); padding: 20px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-weight: 800; color: white; text-decoration: none; font-size: 1.2rem; }
-        .logo span { color: var(--primary-color); }
-        .back-btn { color: #ccc; text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; border: 1px solid #444; padding: 5px 15px; border-radius: 20px; transition: all 0.3s; }
-        .back-btn:hover { border-color: var(--primary-color); color: white; }
+        :root { --primary: #0693e3; --secondary: #e3a006; --accent: #00e1ff; --bg: #0a0a0a; --card: #141414; --border: #333; }
+        body { font-family: 'Montserrat', sans-serif; background-color: var(--bg); color: #f0f0f0; margin: 0; padding: 0; }
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
 
-        /* CONTAINER BLOG */
-        .blog-container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
-        .blog-header { text-align: center; margin-bottom: 50px; }
-        .blog-header h1 { font-size: 2.5rem; margin-bottom: 10px; color: var(--primary-color); }
-        
-        /* GRIGLIA ARTICOLI */
-        .article-card { background: var(--card-bg); border-radius: 15px; overflow: hidden; margin-bottom: 30px; transition: transform 0.3s; border: 1px solid #333; display: flex; flex-direction: column; }
-        .article-card:hover { transform: translateY(-5px); border-color: var(--primary-color); }
-        
-        .card-img { height: 200px; background-size: cover; background-position: center; background-color: #333; }
-        
-        .card-content { padding: 25px; }
-        .card-meta { font-size: 0.8rem; color: #888; margin-bottom: 10px; display: flex; gap: 15px; }
-        .card-title { font-size: 1.5rem; margin-bottom: 15px; color: white; line-height: 1.3; }
-        .card-excerpt { color: #ccc; line-height: 1.6; margin-bottom: 20px; font-size: 0.95rem; }
-        
-        .read-more { display: inline-block; padding: 10px 20px; background: transparent; border: 1px solid var(--primary-color); color: var(--primary-color); text-decoration: none; border-radius: 5px; font-weight: 600; transition: all 0.3s; }
-        .read-more:hover { background: var(--primary-color); color: white; }
+        /* HEADER */
+        header { background: rgba(0,0,0,0.95); padding: 15px 20px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .logo { font-weight: 800; color: white; font-size: 1.2rem; }
+        .logo span { color: var(--primary); }
+        .back-btn { color: #ccc; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; border: 1px solid #444; padding: 5px 15px; border-radius: 20px; }
+        .back-btn:hover { border-color: var(--primary); color: white; background: rgba(6, 147, 227, 0.1); }
 
-        /* FOOTER */
-        footer { text-align: center; padding: 40px; color: #666; font-size: 0.8rem; }
+        .search-bar { display: flex; align-items: center; background: #222; border: 1px solid #444; border-radius: 25px; padding: 5px 15px; flex-grow: 1; max-width: 400px; }
+        .search-bar input { background: transparent; border: none; color: white; width: 100%; outline: none; padding: 5px; font-family: inherit; }
+        .search-bar i { color: #888; }
+
+        /* CONTAINER */
+        .blog-container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        .blog-header { text-align: center; margin-bottom: 40px; }
+        .blog-header h1 { font-size: 2.5rem; color: var(--primary); margin-bottom: 10px; }
         
-        @media(min-width: 600px) {
-            .article-card { flex-direction: row; }
-            .card-img { width: 40%; height: auto; min-height: 250px; }
-            .card-content { width: 60%; }
-        }
+        /* FILTRI */
+        .filters { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
+        .filter-btn { background: transparent; border: 1px solid #444; color: #ccc; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; transition: 0.3s; }
+        .filter-btn:hover, .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* GRIGLIA ARTICOLI (Layout a schede piccole - Punto 9) */
+        .articles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        
+        .article-card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid #333; display: flex; flex-direction: column; transition: transform 0.3s, box-shadow 0.3s; height: 100%; }
+        .article-card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        
+        .card-img { height: 160px; background-size: cover; background-position: center; background-color: #222; position: relative; }
+        .card-cat { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); color: var(--accent); font-size: 0.75rem; padding: 4px 10px; border-radius: 4px; font-weight: 600; text-transform: uppercase; }
+        
+        .card-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .card-meta { font-size: 0.8rem; color: #888; margin-bottom: 10px; display: flex; gap: 10px; align-items: center; }
+        .card-title { font-size: 1.1rem; margin-bottom: 10px; color: white; line-height: 1.4; font-weight: 700; flex-grow: 1; }
+        .card-excerpt { color: #aaa; font-size: 0.9rem; line-height: 1.5; margin-bottom: 20px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        
+        .read-btn { align-self: flex-start; color: var(--primary); font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; }
+        .read-btn:hover { color: white; }
+
+        /* SEZIONE PIU LETTI (Punto 11 - Statica per ora) */
+        .most-read-section { margin-top: 60px; border-top: 1px solid #333; padding-top: 40px; }
+        .section-header { font-size: 1.5rem; margin-bottom: 20px; color: var(--secondary); display: flex; align-items: center; gap: 10px; }
+        .most-read-list { list-style: none; padding: 0; }
+        .most-read-item { display: flex; gap: 15px; margin-bottom: 20px; align-items: center; border-bottom: 1px solid #222; padding-bottom: 15px; }
+        .most-read-num { font-size: 2rem; font-weight: 800; color: #333; width: 30px; }
+        .most-read-title { font-size: 1rem; font-weight: 600; color: #ddd; transition: 0.3s; }
+        .most-read-title:hover { color: var(--primary); }
+
+        footer { text-align: center; padding: 40px; color: #666; font-size: 0.8rem; margin-top: 50px; border-top: 1px solid #222; }
     </style>
 </head>
 <body>
 
 <header>
-    <a href="../index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Home Fausto</a>
-    <a href="#" class="logo">FF <span>Musica Blog</span></a>
+    <a href="../index.html" class="back-btn"><i class="fas fa-home"></i> Home</a>
+    <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Cerca articoli (es. Jingle, Rock, Tech)..." onkeyup="filterArticles()">
+    </div>
+    <a href="#" class="logo">FF <span>Blog</span></a>
 </header>
 
 <div class="blog-container">
     <div class="blog-header">
         <h1>News & Approfondimenti</h1>
-        <p>Il mondo della musica, delle orchestre e dei jingle.</p>
+        <p>Musica, Produzione, Radio e Curiosità.</p>
     </div>
 
-    <!-- LISTA ARTICOLI (n8n inserirà qui i nuovi articoli) -->
-    <div id="articles-list">
+    <div class="filters">
+        <button class="filter-btn active" onclick="filterCategory('all')">Tutti</button>
+        <button class="filter-btn" onclick="filterCategory('News')">News</button>
+        <button class="filter-btn" onclick="filterCategory('Recensioni')">Recensioni</button>
+        <button class="filter-btn" onclick="filterCategory('Eventi')">Eventi</button>
+        <button class="filter-btn" onclick="filterCategory('Tech')">Tech & Radio</button>
+    </div>
 
-        <!-- ARTICOLO tutti-pazzi-live-rds-roma-2025 -->
-        <article class="article-card">
-            <div class="card-img" style="background-image: url('img/tutti-pazzi-live-rds-roma-2025.jpg')"></div>
-            <div class="card-content">
-                <div class="card-meta">
-                    <span><i class="far fa-calendar"></i> 24-01-2026</span>
-                    <span><i class="far fa-tag"></i> Musica</span>
-                </div>
-                <h2 class="card-title">Tutti Pazzi Live RDS: Il Morning Show che Infuoca Roma - Edizione 2025</h2>
-                <p class="card-excerpt">RDS porta il suo morning show di successo, Tutti Pazzi per RDS, dal vivo a Roma l'11 febbraio 2025. Un'occasione imperdibile per i fan di vivere l'energia e la spensieratezza del programma radiofonico in un'esperienza immersiva all'Auditorium Multimediale.</p>
-                <a href="tutti-pazzi-live-rds-roma-2025.html" class="read-more">Leggi tutto <i class="fas fa-arrow-right"></i></a>
-            </div>
-        </article>
-
-        <!-- ARTICOLO rds-top-employer-2026 -->
-        <article class="article-card">
-            <div class="card-img" style="background-image: url('img/rds-top-employer-2026.jpg')"></div>
-            <div class="card-content">
-                <div class="card-meta">
-                    <span><i class="far fa-calendar"></i> 24-01-2026</span>
-                    <span><i class="far fa-tag"></i> Musica</span>
-                </div>
-                <h2 class="card-title">RDS: Leader nel settore media, certificata Top Employer Italia 2026</h2>
-                <p class="card-excerpt">RDS 100% Grandi Successi si conferma un'eccellenza nel panorama media italiano, ottenendo la prestigiosa certificazione Top Employer Italia 2026. Un riconoscimento che sottolinea l'impegno dell'azienda verso i propri dipendenti e la sua posizione di leadership nel settore.</p>
-                <a href="rds-top-employer-2026.html" class="read-more">Leggi tutto <i class="fas fa-arrow-right"></i></a>
-            </div>
-        </article>
-
-        <!-- ARTICOLO world-radio-day-2026-milano -->
-        <article class="article-card">
-            <div class="card-img" style="background-image: url('img/world-radio-day-2026-milano.jpg')"></div>
-            <div class="card-content">
-                <div class="card-meta">
-                    <span><i class="far fa-calendar"></i> 24-01-2026</span>
-                    <span><i class="far fa-tag"></i> Musica</span>
-                </div>
-                <h2 class="card-title">World Radio Day 2026 a Milano: Celebrazione, Ospiti e Programma dell'evento radiofonico</h2>
-                <p class="card-excerpt">Milano si prepara a celebrare il World Radio Day 2026 il 9 marzo con un evento ricco di ospiti illustri come Linus, Jake La Furia e Giuseppe Cruciani. Scopri il programma completo e come partecipare a questa festa dedicata alla radio.</p>
-                <a href="world-radio-day-2026-milano.html" class="read-more">Leggi tutto <i class="fas fa-arrow-right"></i></a>
-            </div>
-        </article>
-
-        <!-- ARTICOLO radio-taxi-prog-moog-2026 -->
-        <article class="article-card">
-            <div class="card-img" style="background-image: url('img/radio-taxi-prog-moog-2026.jpg')"></div>
-            <div class="card-content">
-                <div class="card-meta">
-                    <span><i class="far fa-calendar"></i> 24-01-2026</span>
-                    <span><i class="far fa-tag"></i> Musica</span>
-                </div>
-                <h2 class="card-title">Radio Taxi: Viaggio nel Prog con il Moog (20 Gennaio 2026) - Recensione</h2>
-                <p class="card-excerpt">Immergiti nell'episodio di Radio Taxi del 20 Gennaio 2026, un'esplorazione del lato progressivo del Moog. Scopri i suoni sintetici e le atmosfere uniche selezionate da George & Frank-One, un viaggio sonoro che celebra l'innovazione musicale.</p>
-                <a href="radio-taxi-prog-moog-2026.html" class="read-more">Leggi tutto <i class="fas fa-arrow-right"></i></a>
-            </div>
-        </article>
+    <!-- PUNTO DI INIEZIONE PER N8N (Non toccare questo ID) -->
+    <div class="articles-grid" id="articles-list">
         
-        <!-- ARTICOLO FINARDI (Generato da n8n) -->
-<article class="article-card">
-    <div class="card-img" style="background-image: url('img/eugenio-finardi-aosta-2026.jpg')"></div>
-    <div class="card-content">
-        <div class="card-meta">
-            <span><i class="far fa-calendar"></i> 24-01-2026</span>
-            <span><i class="far fa-tag"></i> Musica</span>
-        </div>
-        <h2 class="card-title">Eugenio Finardi Infuoca Aosta nel 2026</h2>
-        <p class="card-excerpt">Un'immersione nel live di Eugenio Finardi al Teatro Splendor di Aosta, con un bootleg che celebra i 50 anni di carriera...</p>
-        <a href="eugenio-finardi-aosta-2026.html" class="read-more">Leggi tutto <i class="fas fa-arrow-right"></i></a>
-    </div>
-</article>
+        <!-- ESEMPIO ARTICOLO (Verrà spinto giù dai nuovi) -->
+        <article class="article-card" data-cat="News">
+            <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=500&q=80')">
+                <span class="card-cat">News</span>
+            </div>
+            <div class="card-content">
+                <div class="card-meta"><span><i class="far fa-calendar"></i> 01/01/2026</span></div>
+                <h2 class="card-title">Benvenuti nel Blog di Fausto Fusetti</h2>
+                <p class="card-excerpt">Uno spazio dedicato alla musica, ai jingle e alle produzioni originali. Scopri le novità.</p>
+                <a href="#" class="read-btn">Leggi <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </article>
 
+    </div>
+
+    <!-- PUNTO 11: I PIÙ LETTI (Statico) -->
+    <div class="most-read-section">
+        <h3 class="section-header"><i class="fas fa-chart-line"></i> I più letti del mese</h3>
+        <ul class="most-read-list">
+            <li class="most-read-item">
+                <span class="most-read-num">1</span>
+                <a href="#" class="most-read-title">Come scegliere il Jingle perfetto per la tua Radio</a>
+            </li>
+            <li class="most-read-item">
+                <span class="most-read-num">2</span>
+                <a href="#" class="most-read-title">Diritti d'autore e AI: Cosa cambia nel 2026?</a>
+            </li>
+            <li class="most-read-item">
+                <span class="most-read-num">3</span>
+                <a href="#" class="most-read-title">La magia del Prog Italiano: Viaggio negli anni '70</a>
+            </li>
+        </ul>
     </div>
 </div>
 
 <footer>
-    &copy; 2026 Fausto Fusetti - Tutti i diritti riservati
+    &copy; 2026 Fausto Fusetti - <a href="https://rickym2025.github.io/JingleShop/" style="color:var(--primary)">Visita lo Shop</a>
 </footer>
+
+<script>
+    // FUNZIONE FILTRO CATEGORIE E RICERCA
+    function filterCategory(cat) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        const articles = document.querySelectorAll('.article-card');
+        articles.forEach(art => {
+            const artCat = art.getAttribute('data-cat') || "";
+            if (cat === 'all' || artCat.includes(cat)) {
+                art.style.display = 'flex';
+            } else {
+                art.style.display = 'none';
+            }
+        });
+    }
+
+    function filterArticles() {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        const articles = document.querySelectorAll('.article-card');
+        
+        articles.forEach(art => {
+            const title = art.querySelector('.card-title').textContent.toLowerCase();
+            const text = art.querySelector('.card-excerpt').textContent.toLowerCase();
+            const cat = art.getAttribute('data-cat').toLowerCase();
+            
+            if (title.includes(query) || text.includes(query) || cat.includes(query)) {
+                art.style.display = 'flex';
+            } else {
+                art.style.display = 'none';
+            }
+        });
+    }
+</script>
 
 </body>
 </html>
