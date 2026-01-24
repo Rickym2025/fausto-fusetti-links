@@ -4,8 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blog & News - Fausto Fusetti</title>
+    
+    <!-- FAVICON -->
+    <link rel="icon" href="../favicon.ico?v=2" sizes="any" type="image/x-icon">
+    <link rel="icon" href="../icon-192.png?v=2" sizes="192x192" type="image/png">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png?v=2">
+
+    <!-- FONT E ICONE -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
     <style>
         :root { --primary: #0693e3; --secondary: #e3a006; --accent: #00e1ff; --bg: #0a0a0a; --card: #141414; --border: #333; }
         body { font-family: 'Montserrat', sans-serif; background-color: var(--bg); color: #f0f0f0; margin: 0; padding: 0; }
@@ -26,30 +34,29 @@
         .blog-container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
         .blog-header { text-align: center; margin-bottom: 40px; }
         .blog-header h1 { font-size: 2.5rem; color: var(--primary); margin-bottom: 10px; }
+        .blog-header p { color: #888; }
         
         /* FILTRI */
         .filters { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
         .filter-btn { background: transparent; border: 1px solid #444; color: #ccc; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; transition: 0.3s; }
         .filter-btn:hover, .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        /* GRIGLIA ARTICOLI (Layout a schede piccole - Punto 9) */
-        /* GRIGLIA */
+        /* GRIGLIA ARTICOLI */
         .articles-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
             gap: 25px; 
         }
 
-        /* LINK CONTENITORE (Nuovo) */
-        /* Essenziale per far funzionare l'altezza uguale delle card */
+        /* LINK CONTENITORE (Per card interamente cliccabile) */
         .article-card-link {
-            display: block;       /* Si comporta come un blocco */
+            display: block;
             text-decoration: none; 
             color: inherit; 
-            height: 100%;         /* Forza il link a occupare tutta l'altezza della riga */
+            height: 100%;
         }
 
-        /* CARD */
+        /* CARD STYLE */
         .article-card { 
             background: var(--card); 
             border-radius: 12px; 
@@ -58,15 +65,14 @@
             display: flex; 
             flex-direction: column; 
             transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s; 
-            height: 100%;         /* Si espande per riempire il link */
+            height: 100%;
         }
 
-        /* HOVER EFFECT */
-        /* L'effetto si attiva quando passi sopra il link contenitore (.article-card-link) */
+        /* HOVER EFFECT SUL LINK */
         .article-card-link:hover .article-card { 
             transform: translateY(-5px); 
             border-color: var(--primary); 
-            box-shadow: 0 5px 20px rgba(6, 147, 227, 0.25); /* Glow blu invece che ombra nera */
+            box-shadow: 0 5px 20px rgba(6, 147, 227, 0.25);
         }
         
         .card-img { height: 160px; background-size: cover; background-position: center; background-color: #222; position: relative; }
@@ -78,18 +84,11 @@
         .card-excerpt { color: #aaa; font-size: 0.9rem; line-height: 1.5; margin-bottom: 20px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
         
         .read-btn { align-self: flex-start; color: var(--primary); font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; }
-        .read-btn:hover { color: white; }
-
-        /* SEZIONE PIU LETTI (Punto 11 - Statica per ora) */
-        .most-read-section { margin-top: 60px; border-top: 1px solid #333; padding-top: 40px; }
-        .section-header { font-size: 1.5rem; margin-bottom: 20px; color: var(--secondary); display: flex; align-items: center; gap: 10px; }
-        .most-read-list { list-style: none; padding: 0; }
-        .most-read-item { display: flex; gap: 15px; margin-bottom: 20px; align-items: center; border-bottom: 1px solid #222; padding-bottom: 15px; }
-        .most-read-num { font-size: 2rem; font-weight: 800; color: #333; width: 30px; }
-        .most-read-title { font-size: 1rem; font-weight: 600; color: #ddd; transition: 0.3s; }
-        .most-read-title:hover { color: var(--primary); }
+        .article-card-link:hover .read-btn { color: white; }
 
         footer { text-align: center; padding: 40px; color: #666; font-size: 0.8rem; margin-top: 50px; border-top: 1px solid #222; }
+        footer a { color: var(--primary); }
+        footer a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -109,42 +108,84 @@
         <p>Musica, Produzione, Radio e Curiosità.</p>
     </div>
 
-    <div class="filters">
+    <!-- FILTRI DINAMICI -->
+    <div class="filters" id="categoryFilters">
+        <!-- Questo pulsante rimane fisso, gli altri verranno generati dallo script -->
         <button class="filter-btn active" onclick="filterCategory('all')">Tutti</button>
-        <button class="filter-btn" onclick="filterCategory('News')">News</button>
-        <button class="filter-btn" onclick="filterCategory('Recensioni')">Recensioni</button>
-        <button class="filter-btn" onclick="filterCategory('Eventi')">Eventi</button>
-        <button class="filter-btn" onclick="filterCategory('Tech')">Tech & Radio</button>
     </div>
 
-    <!-- PUNTO DI INIEZIONE PER N8N (Non toccare questo ID) -->
-<div class="articles-grid" id="articles-list">  
+    <!-- GRIGLIA ARTICOLI (Punto di iniezione n8n) -->
+    <div class="articles-grid" id="articles-list">
+        <!-- Gli articoli verranno inseriti qui dal workflow n8n -->
+    </div>
+
+    <footer>
+        &copy; 2026 Fausto Fusetti - 
+        <a href="https://rickym2025.github.io/JingleShop/" target="_blank">Visita il Jingle Shop</a> - 
+        <a href="https://ff-music-store.printify.me/" target="_blank">Visita il Gadgets Shop</a> - 
+        <a href="https://rickym2025.github.io/fausto-fusetti-links/index.html">Torna alla Home</a>
+    </footer>
 </div>
 
-<footer>
-    &copy; 2026 Fausto Fusetti - <a href="https://rickym2025.github.io/JingleShop/" style="color:var(--primary)">Visita il Jingle Shop </a> - <a href="https://ff-music-store.printify.me/" style="color:var(--primary)">Visita il Gadgets Shop </a>  - <a href="https://rickym2025.github.io/fausto-fusetti-links/index.html" style="color:var(--primary)">Torna alla Home </a>
-</footer>
-
 <script>
-    // FUNZIONE FILTRO CATEGORIE E RICERCA
+    document.addEventListener("DOMContentLoaded", function() {
+        generateDynamicFilters();
+    });
+
+    // 1. GENERA FILTRI IN BASE AGLI ARTICOLI PRESENTI
+    function generateDynamicFilters() {
+        const articles = document.querySelectorAll('.article-card-link');
+        const categories = new Set();
+        const filterContainer = document.getElementById('categoryFilters');
+
+        // Trova tutte le categorie uniche
+        articles.forEach(art => {
+            const cat = art.getAttribute('data-cat');
+            if (cat && cat.trim() !== "") {
+                categories.add(cat.trim());
+            }
+        });
+
+        // Ordina e crea i pulsanti
+        const sortedCategories = Array.from(categories).sort();
+        sortedCategories.forEach(cat => {
+            const btn = document.createElement('button');
+            btn.className = 'filter-btn';
+            btn.textContent = cat;
+            btn.onclick = function(e) { 
+                filterCategory(cat); 
+                // Gestione classe active visuale
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+            };
+            filterContainer.appendChild(btn);
+        });
+    }
+
+    // 2. FILTRA PER CATEGORIA
     function filterCategory(cat) {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
+        // Se si clicca "Tutti", resetta lo stile active
+        if(cat === 'all') {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector('.filters button').classList.add('active'); // Il primo btn è "Tutti"
+        }
+
+        const articles = document.querySelectorAll('.article-card-link');
         
-        const articles = document.querySelectorAll('.article-card');
         articles.forEach(art => {
             const artCat = art.getAttribute('data-cat') || "";
-            if (cat === 'all' || artCat.includes(cat)) {
-                art.style.display = 'flex';
+            if (cat === 'all' || artCat === cat) {
+                art.style.display = 'block'; // 'block' perché ora è un tag <a>
             } else {
                 art.style.display = 'none';
             }
         });
     }
 
+    // 3. BARRA DI RICERCA
     function filterArticles() {
         const query = document.getElementById('searchInput').value.toLowerCase();
-        const articles = document.querySelectorAll('.article-card');
+        const articles = document.querySelectorAll('.article-card-link');
         
         articles.forEach(art => {
             const title = art.querySelector('.card-title').textContent.toLowerCase();
@@ -152,7 +193,7 @@
             const cat = art.getAttribute('data-cat').toLowerCase();
             
             if (title.includes(query) || text.includes(query) || cat.includes(query)) {
-                art.style.display = 'flex';
+                art.style.display = 'block';
             } else {
                 art.style.display = 'none';
             }
