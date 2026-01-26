@@ -1,15 +1,6 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-KD9H9P2RKT"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-KD9H9P2RKT');
-</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blog & News - Fausto Fusetti</title>
@@ -17,7 +8,9 @@
     <!-- FAVICON -->
     <link rel="icon" href="../favicon.ico?v=2" sizes="any" type="image/x-icon">
     <link rel="icon" href="../icon-192.png?v=2" sizes="192x192" type="image/png">
-    <link rel="apple-touch-icon" href="../apple-touch-icon.png?v=2">
+    
+    <!-- GOOGLE ANALYTICS (Il tuo tag va qui) -->
+    <!-- ... -->
 
     <!-- FONT E ICONE -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
@@ -28,62 +21,55 @@
         body { font-family: 'Montserrat', sans-serif; background-color: var(--bg); color: #f0f0f0; margin: 0; padding: 0; }
         a { text-decoration: none; color: inherit; transition: 0.3s; }
 
-        /* HEADER */
-        header { background: rgba(0,0,0,0.95); padding: 15px 20px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        /* HEADER CORRETTO */
+        header { background: rgba(10,10,10,0.95); padding: 15px 20px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
         .logo { font-weight: 800; color: white; font-size: 1.2rem; }
         .logo span { color: var(--primary); }
-        .back-btn { color: #ccc; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; border: 1px solid #444; padding: 5px 15px; border-radius: 20px; }
-        .back-btn:hover { border-color: var(--primary); color: white; background: rgba(6, 147, 227, 0.1); }
+        
+        /* PULSANTI HEADER DISTANZIATI E COLORATI */
+        .nav-links { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 5px; align-items: center; }
+        
+        .nav-btn { border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; display:flex; align-items:center; gap:8px; white-space: nowrap; color: #ccc; background: transparent; }
+        .nav-btn:hover { border-color: var(--primary); color: white; background: rgba(6, 147, 227, 0.1); }
+        
+        /* Colori specifici forzati */
+        .nav-btn.special { border-color: var(--accent) !important; color: var(--accent) !important; }
+        .nav-btn.special:hover { background: rgba(0, 225, 255, 0.1) !important; color: white !important; }
+        
+        .nav-btn.shop { border-color: var(--secondary) !important; color: var(--secondary) !important; }
+        .nav-btn.shop:hover { background: rgba(227, 160, 6, 0.1) !important; color: white !important; }
 
-        .search-bar { display: flex; align-items: center; background: #222; border: 1px solid #444; border-radius: 25px; padding: 5px 15px; flex-grow: 1; max-width: 400px; }
+        .search-bar { display: flex; align-items: center; background: #222; border: 1px solid #444; border-radius: 25px; padding: 5px 15px; flex-grow: 1; max-width: 400px; margin: 0 auto; }
         .search-bar input { background: transparent; border: none; color: white; width: 100%; outline: none; padding: 5px; font-family: inherit; }
         .search-bar i { color: #888; }
 
-        /* CONTAINER */
         .blog-container { max-width: 1000px; margin: 40px auto; padding: 0 20px; min-height: 60vh; }
         .blog-header { text-align: center; margin-bottom: 40px; }
         .blog-header h1 { font-size: 2.5rem; color: var(--primary); margin-bottom: 10px; }
-        .blog-header p { color: #888; }
         
         /* FILTRI */
         .filters { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
         .filter-btn { background: transparent; border: 1px solid #444; color: #ccc; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; transition: 0.3s; }
         .filter-btn:hover, .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        /* GRIGLIA ARTICOLI */
-        .articles-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-            gap: 25px; 
-            margin-bottom: 40px;
-        }
+        /* GRIGLIA */
+        .articles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; margin-bottom: 40px; }
 
         /* CARD STYLE */
         .article-card-link { display: block; text-decoration: none; color: inherit; height: 100%; }
-        .article-card { 
-            background: var(--card); 
-            border-radius: 12px; 
-            overflow: hidden; 
-            border: 1px solid #333; 
-            display: flex; 
-            flex-direction: column; 
-            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s; 
-            height: 100%;
-        }
+        .article-card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid #333; display: flex; flex-direction: column; transition: transform 0.3s, box-shadow 0.3s; height: 100%; }
         .article-card-link:hover .article-card { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 5px 20px rgba(6, 147, 227, 0.25); }
         
         .card-img { height: 160px; background-size: cover; background-position: center; background-color: #222; position: relative; }
         .card-cat { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); color: var(--accent); font-size: 0.75rem; padding: 4px 10px; border-radius: 4px; font-weight: 600; text-transform: uppercase; }
-        
         .card-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
         .card-meta { font-size: 0.8rem; color: #888; margin-bottom: 10px; display: flex; gap: 10px; align-items: center; }
         .card-title { font-size: 1.1rem; margin-bottom: 10px; color: white; line-height: 1.4; font-weight: 700; flex-grow: 1; }
         .card-excerpt { color: #aaa; font-size: 0.9rem; line-height: 1.5; margin-bottom: 20px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-        
         .read-btn { align-self: flex-start; color: var(--primary); font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; }
         .article-card-link:hover .read-btn { color: white; }
 
-        /* PAGINAZIONE (NUOVO STILE) */
+        /* PAGINAZIONE */
         .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 40px; flex-wrap: wrap; }
         .page-btn { background: #222; border: 1px solid #444; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; font-weight: bold; }
         .page-btn:hover { border-color: var(--primary); color: var(--primary); }
@@ -92,7 +78,6 @@
 
         footer { text-align: center; padding: 40px; color: #666; font-size: 0.8rem; margin-top: 50px; border-top: 1px solid #222; }
         footer a { color: var(--primary); }
-        footer a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -103,8 +88,6 @@
     <div class="nav-links">
         <a href="../index.html" class="nav-btn"><i class="fas fa-home"></i> Home</a>
         <a href="index.html" class="nav-btn"><i class="fas fa-list"></i> Indice</a>
-        
-        <!-- Link Shop e Gadgets -->
         <a href="https://rickym2025.github.io/JingleShop/" class="nav-btn special" target="_blank"><i class="fas fa-music"></i> Jingle Shop</a>
         <a href="https://ff-music-store.printify.me/" class="nav-btn shop" target="_blank"><i class="fas fa-tshirt"></i> Gadgets</a>
         <a href="#" class="nav-btn" onclick="alert('Catalogo Musicale in arrivo!')"><i class="fas fa-folder-open"></i> Catalogo</a>
@@ -117,14 +100,15 @@
         <p>Musica, Produzione, Radio e Curiosità.</p>
     </div>
 
+    <!-- BARRA RICERCA -->
+    <div class="search-bar" style="margin-bottom: 30px;">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Cerca articoli (es. Jingle, Rock, Tech)...">
+    </div>
+
     <!-- FILTRI DINAMICI -->
     <div class="filters" id="categoryFilters">
         <button class="filter-btn active" onclick="filterCategory('all')">Tutti</button>
-    </div>
-
-    <div class="search-bar" style="margin-bottom: 30px; margin-left: auto; margin-right: auto;">
-        <i class="fas fa-search"></i>
-        <input type="text" id="searchInput" placeholder="Cerca articoli (es. Jingle, Rock, Tech)...">
     </div>
 
     <!-- GRIGLIA ARTICOLI -->
@@ -721,30 +705,18 @@
     <!-- CONTROLLI PAGINAZIONE -->
     <div class="pagination" id="paginationControls"></div>
 
-    <div class="most-read-section" style="margin-top: 60px; border-top: 1px solid #333; padding-top: 40px;">
-        <h3 style="font-size: 1.5rem; margin-bottom: 20px; color: var(--secondary);"><i class="fas fa-chart-line"></i> I più letti del mese</h3>
-        <ul style="list-style: none; padding: 0;">
-            <li style="display: flex; gap: 15px; margin-bottom: 20px; align-items: center; border-bottom: 1px solid #222; padding-bottom: 15px;">
-                <span style="font-size: 2rem; font-weight: 800; color: #333; width: 30px;">1</span>
-                <a href="#" style="font-size: 1rem; font-weight: 600; color: #ddd; text-decoration:none;">Come scegliere il Jingle perfetto per la tua Radio</a>
-            </li>
-            <li style="display: flex; gap: 15px; margin-bottom: 20px; align-items: center; border-bottom: 1px solid #222; padding-bottom: 15px;">
-                <span style="font-size: 2rem; font-weight: 800; color: #333; width: 30px;">2</span>
-                <a href="#" style="font-size: 1rem; font-weight: 600; color: #ddd; text-decoration:none;">Diritti d'autore e AI: Cosa cambia nel 2026?</a>
-            </li>
-        </ul>
-    </div>
 </div>
 
 <footer>
-    &copy; 2026 Fausto Fusetti - 
-    <a href="https://rickym2025.github.io/JingleShop/" target="_blank">Visita il Jingle Shop</a>
+    &copy; 2026 Fausto Fusetti - <a href="https://rickym2025.github.io/JingleShop/" target="_blank">Visita il Jingle Shop</a>
 </footer>
 
-<!-- SCRIPT GESTIONE PAGINAZIONE E FILTRI -->
+<!-- SCRIPT DI GESTIONE -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        // 1. Genera i filtri in base agli articoli presenti
         generateDynamicFilters();
+        // 2. Avvia la paginazione
         initBlog();
     });
 
@@ -756,10 +728,14 @@
         const articles = document.querySelectorAll('.article-card-link');
         const categories = new Set();
         const filterContainer = document.getElementById('categoryFilters');
+        
+        // Cerca le categorie
         articles.forEach(art => {
             const cat = art.getAttribute('data-cat');
             if (cat) categories.add(cat.trim());
         });
+
+        // Crea i bottoni
         Array.from(categories).sort().forEach(cat => {
             const btn = document.createElement('button');
             btn.className = 'filter-btn';
@@ -770,8 +746,11 @@
     }
 
     function initBlog() {
+        // Prendi tutti gli articoli
         currentArticles = Array.from(document.querySelectorAll('.article-card-link'));
         renderPagination();
+        
+        // Attiva ricerca
         document.getElementById('searchInput').addEventListener('keyup', (e) => {
             const query = e.target.value.toLowerCase();
             filterData(query);
@@ -780,14 +759,18 @@
 
     function filterCategory(cat) {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        // Trova il bottone cliccato anche se generato dinamicamente
+        // Trova e attiva il bottone
         const allBtns = Array.from(document.querySelectorAll('.filter-btn'));
         const btn = allBtns.find(b => b.textContent === cat) || allBtns[0]; 
-        btn.classList.add('active');
+        if(btn) btn.classList.add('active');
 
         const allArticles = Array.from(document.querySelectorAll('.article-card-link'));
-        if (cat === 'all') currentArticles = allArticles;
-        else currentArticles = allArticles.filter(art => art.getAttribute('data-cat') === cat);
+        
+        if (cat === 'all') {
+            currentArticles = allArticles;
+        } else {
+            currentArticles = allArticles.filter(art => art.getAttribute('data-cat') === cat);
+        }
         
         currentPage = 1;
         renderPagination();
@@ -801,7 +784,10 @@
             currentArticles = allArticles.filter(art => {
                 const title = art.querySelector('.card-title').textContent.toLowerCase();
                 const text = art.querySelector('.card-excerpt').textContent.toLowerCase();
-                const cat = art.getAttribute('data-cat').toLowerCase();
+                // Safe check se data-cat esiste
+                const catAttr = art.getAttribute('data-cat');
+                const cat = catAttr ? catAttr.toLowerCase() : "";
+                
                 return title.includes(query) || text.includes(query) || cat.includes(query);
             });
         }
@@ -811,12 +797,18 @@
 
     function renderPagination() {
         const allArticlesDOM = document.querySelectorAll('.article-card-link');
+        // Nascondi TUTTO
         allArticlesDOM.forEach(el => el.style.display = 'none'); 
 
         const start = (currentPage - 1) * itemsPerPage;
         const end = start + itemsPerPage;
-        currentArticles.slice(start, end).forEach(el => el.style.display = 'block'); 
+        
+        // Mostra SOLO quelli della pagina corrente
+        if(currentArticles.length > 0) {
+            currentArticles.slice(start, end).forEach(el => el.style.display = 'block'); 
+        }
 
+        // Crea i controlli
         const paginationControls = document.getElementById('paginationControls');
         paginationControls.innerHTML = "";
         const totalPages = Math.ceil(currentArticles.length / itemsPerPage);
@@ -846,6 +838,8 @@
             nextBtn.disabled = currentPage === totalPages;
             nextBtn.onclick = () => { if(currentPage < totalPages) { currentPage++; renderPagination(); window.scrollTo(0,0); }};
             paginationControls.appendChild(nextBtn);
+        } else if (currentArticles.length === 0) {
+             paginationControls.innerHTML = "<p style='color:#888'>Nessun articolo trovato.</p>";
         }
     }
 </script>
