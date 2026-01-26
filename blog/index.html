@@ -9,8 +9,8 @@
     <link rel="icon" href="../favicon.ico?v=2" sizes="any" type="image/x-icon">
     <link rel="icon" href="../icon-192.png?v=2" sizes="192x192" type="image/png">
     
-    <!-- GOOGLE ANALYTICS (Il tuo tag va qui) -->
-    <!-- ... -->
+    <!-- GOOGLE ANALYTICS -->
+    <!-- (Il tuo codice GA4 rimane qui se lo avevi messo) -->
 
     <!-- FONT E ICONE -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
@@ -21,21 +21,19 @@
         body { font-family: 'Montserrat', sans-serif; background-color: var(--bg); color: #f0f0f0; margin: 0; padding: 0; }
         a { text-decoration: none; color: inherit; transition: 0.3s; }
 
-        /* HEADER CORRETTO */
+        /* HEADER */
         header { background: rgba(10,10,10,0.95); padding: 15px 20px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
         .logo { font-weight: 800; color: white; font-size: 1.2rem; }
         .logo span { color: var(--primary); }
         
-        /* PULSANTI HEADER DISTANZIATI E COLORATI */
         .nav-links { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 5px; align-items: center; }
         
         .nav-btn { border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; display:flex; align-items:center; gap:8px; white-space: nowrap; color: #ccc; background: transparent; }
         .nav-btn:hover { border-color: var(--primary); color: white; background: rgba(6, 147, 227, 0.1); }
         
-        /* Colori specifici forzati */
+        /* Colori specifici */
         .nav-btn.special { border-color: var(--accent) !important; color: var(--accent) !important; }
         .nav-btn.special:hover { background: rgba(0, 225, 255, 0.1) !important; color: white !important; }
-        
         .nav-btn.shop { border-color: var(--secondary) !important; color: var(--secondary) !important; }
         .nav-btn.shop:hover { background: rgba(227, 160, 6, 0.1) !important; color: white !important; }
 
@@ -55,10 +53,24 @@
         /* GRIGLIA */
         .articles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; margin-bottom: 40px; }
 
-        /* CARD STYLE */
-        .article-card-link { display: block; text-decoration: none; color: inherit; height: 100%; }
-        .article-card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid #333; display: flex; flex-direction: column; transition: transform 0.3s, box-shadow 0.3s; height: 100%; }
-        .article-card-link:hover .article-card { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 5px 20px rgba(6, 147, 227, 0.25); }
+        /* CARD STYLE - Compatibile con vecchi e nuovi articoli */
+        .article-card, .article-card-link .article-card { 
+            background: var(--card); 
+            border-radius: 12px; 
+            overflow: hidden; 
+            border: 1px solid #333; 
+            display: flex; 
+            flex-direction: column; 
+            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s; 
+            height: 100%;
+        }
+        
+        /* Gestione Hover universale */
+        .article-card:hover, .article-card-link:hover .article-card { 
+            transform: translateY(-5px); 
+            border-color: var(--primary); 
+            box-shadow: 0 5px 20px rgba(6, 147, 227, 0.25); 
+        }
         
         .card-img { height: 160px; background-size: cover; background-position: center; background-color: #222; position: relative; }
         .card-cat { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); color: var(--accent); font-size: 0.75rem; padding: 4px 10px; border-radius: 4px; font-weight: 600; text-transform: uppercase; }
@@ -67,7 +79,8 @@
         .card-title { font-size: 1.1rem; margin-bottom: 10px; color: white; line-height: 1.4; font-weight: 700; flex-grow: 1; }
         .card-excerpt { color: #aaa; font-size: 0.9rem; line-height: 1.5; margin-bottom: 20px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
         .read-btn { align-self: flex-start; color: var(--primary); font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; }
-        .article-card-link:hover .read-btn { color: white; }
+        
+        .article-card:hover .read-btn, .article-card-link:hover .read-btn { color: white; }
 
         /* PAGINAZIONE */
         .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 40px; flex-wrap: wrap; }
@@ -90,7 +103,7 @@
         <a href="index.html" class="nav-btn"><i class="fas fa-list"></i> Indice</a>
         <a href="https://rickym2025.github.io/JingleShop/" class="nav-btn special" target="_blank"><i class="fas fa-music"></i> Jingle Shop</a>
         <a href="https://ff-music-store.printify.me/" class="nav-btn shop" target="_blank"><i class="fas fa-tshirt"></i> Gadgets</a>
-        <a href="#" class="nav-btn" onclick="alert('Catalogo Musicale in arrivo!')"><i class="fas fa-folder-open"></i> Catalogo</a>
+        <!-- Pulsante Catalogo RIMOSSO come richiesto -->
     </div>
 </header>
 
@@ -100,7 +113,7 @@
         <p>Musica, Produzione, Radio e Curiosità.</p>
     </div>
 
-    <!-- BARRA RICERCA -->
+    <!-- BARRA DI RICERCA -->
     <div class="search-bar" style="margin-bottom: 30px;">
         <i class="fas fa-search"></i>
         <input type="text" id="searchInput" placeholder="Cerca articoli (es. Jingle, Rock, Tech)...">
@@ -711,31 +724,56 @@
     &copy; 2026 Fausto Fusetti - <a href="https://rickym2025.github.io/JingleShop/" target="_blank">Visita il Jingle Shop</a>
 </footer>
 
-<!-- SCRIPT DI GESTIONE -->
+<!-- SCRIPT DI GESTIONE ROBUSTO -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // 1. Genera i filtri in base agli articoli presenti
-        generateDynamicFilters();
-        // 2. Avvia la paginazione
         initBlog();
     });
 
     const itemsPerPage = 9; 
     let currentPage = 1;
-    let currentArticles = []; 
+    let allItems = []; // Contiene tutti gli elementi del DOM
+    let currentItems = []; // Contiene gli elementi filtrati
+
+    function initBlog() {
+        // 1. Recupera TUTTI i figli diretti della griglia (sia <a> che <article>)
+        // Questo rende lo script "Universale" per vecchi e nuovi articoli
+        const grid = document.getElementById('articles-list');
+        allItems = Array.from(grid.children); 
+        currentItems = allItems;
+        
+        generateDynamicFilters();
+        renderPagination();
+        
+        // Listener Ricerca
+        document.getElementById('searchInput').addEventListener('keyup', (e) => {
+            filterData(e.target.value.toLowerCase());
+        });
+    }
+
+    // Helper per recuperare la categoria da qualsiasi struttura HTML
+    function getCategory(element) {
+        // Cerca data-cat sull'elemento stesso
+        if (element.hasAttribute('data-cat')) return element.getAttribute('data-cat');
+        // O cerca nell'elemento figlio (se è un link che avvolge l'article)
+        const child = element.querySelector('[data-cat]');
+        if (child) return child.getAttribute('data-cat');
+        // O cerca nello span della categoria visiva
+        const span = element.querySelector('.card-cat');
+        if (span) return span.textContent;
+        
+        return "News"; // Default
+    }
 
     function generateDynamicFilters() {
-        const articles = document.querySelectorAll('.article-card-link');
         const categories = new Set();
         const filterContainer = document.getElementById('categoryFilters');
         
-        // Cerca le categorie
-        articles.forEach(art => {
-            const cat = art.getAttribute('data-cat');
+        allItems.forEach(el => {
+            const cat = getCategory(el);
             if (cat) categories.add(cat.trim());
         });
 
-        // Crea i bottoni
         Array.from(categories).sort().forEach(cat => {
             const btn = document.createElement('button');
             btn.className = 'filter-btn';
@@ -745,31 +783,16 @@
         });
     }
 
-    function initBlog() {
-        // Prendi tutti gli articoli
-        currentArticles = Array.from(document.querySelectorAll('.article-card-link'));
-        renderPagination();
-        
-        // Attiva ricerca
-        document.getElementById('searchInput').addEventListener('keyup', (e) => {
-            const query = e.target.value.toLowerCase();
-            filterData(query);
-        });
-    }
-
     function filterCategory(cat) {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        // Trova e attiva il bottone
         const allBtns = Array.from(document.querySelectorAll('.filter-btn'));
         const btn = allBtns.find(b => b.textContent === cat) || allBtns[0]; 
         if(btn) btn.classList.add('active');
 
-        const allArticles = Array.from(document.querySelectorAll('.article-card-link'));
-        
         if (cat === 'all') {
-            currentArticles = allArticles;
+            currentItems = allItems;
         } else {
-            currentArticles = allArticles.filter(art => art.getAttribute('data-cat') === cat);
+            currentItems = allItems.filter(el => getCategory(el) === cat);
         }
         
         currentPage = 1;
@@ -777,18 +800,13 @@
     }
 
     function filterData(query) {
-        const allArticles = Array.from(document.querySelectorAll('.article-card-link'));
         if (query.trim() === "") {
-            currentArticles = allArticles;
+            currentItems = allItems;
         } else {
-            currentArticles = allArticles.filter(art => {
-                const title = art.querySelector('.card-title').textContent.toLowerCase();
-                const text = art.querySelector('.card-excerpt').textContent.toLowerCase();
-                // Safe check se data-cat esiste
-                const catAttr = art.getAttribute('data-cat');
-                const cat = catAttr ? catAttr.toLowerCase() : "";
-                
-                return title.includes(query) || text.includes(query) || cat.includes(query);
+            currentItems = allItems.filter(el => {
+                // Cerca testo ovunque dentro l'elemento
+                const text = el.textContent.toLowerCase();
+                return text.includes(query);
             });
         }
         currentPage = 1;
@@ -796,22 +814,21 @@
     }
 
     function renderPagination() {
-        const allArticlesDOM = document.querySelectorAll('.article-card-link');
-        // Nascondi TUTTO
-        allArticlesDOM.forEach(el => el.style.display = 'none'); 
+        // Nascondi tutto
+        allItems.forEach(el => el.style.display = 'none'); 
 
         const start = (currentPage - 1) * itemsPerPage;
         const end = start + itemsPerPage;
         
-        // Mostra SOLO quelli della pagina corrente
-        if(currentArticles.length > 0) {
-            currentArticles.slice(start, end).forEach(el => el.style.display = 'block'); 
+        // Mostra solo pagina corrente
+        if(currentItems.length > 0) {
+            currentItems.slice(start, end).forEach(el => el.style.display = 'block'); 
         }
 
-        // Crea i controlli
+        // Genera bottoni
         const paginationControls = document.getElementById('paginationControls');
         paginationControls.innerHTML = "";
-        const totalPages = Math.ceil(currentArticles.length / itemsPerPage);
+        const totalPages = Math.ceil(currentItems.length / itemsPerPage);
 
         if (totalPages > 1) {
             // Indietro
@@ -838,7 +855,7 @@
             nextBtn.disabled = currentPage === totalPages;
             nextBtn.onclick = () => { if(currentPage < totalPages) { currentPage++; renderPagination(); window.scrollTo(0,0); }};
             paginationControls.appendChild(nextBtn);
-        } else if (currentArticles.length === 0) {
+        } else if (currentItems.length === 0) {
              paginationControls.innerHTML = "<p style='color:#888'>Nessun articolo trovato.</p>";
         }
     }
