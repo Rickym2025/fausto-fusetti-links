@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-KD9H9P2RKT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-KD9H9P2RKT');
+</script>
 <meta charset="UTF-8" />
 <!-- Preconnessione ai server esterni -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,16 +25,6 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@700&amp;family=Montserrat:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
-
-<!-- GOOGLE ANALYTICS -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-KD9H9P2RKT"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-KD9H9P2RKT');
-</script>
-
 <style>
 /* CSS STYLES */
 :root { --primary-color: #0693e3; --secondary-color: #e3a006; --jingle-color: #00e1ff; }
@@ -299,9 +298,9 @@ function handleSongListClick(e) {
 audioCta.addEventListener('click', () => { appState.isBgMusicMuted = !appState.isBgMusicMuted; if (appState.isBgMusicMuted) { mainPlayer.pause(); } else { playBackgroundMusic(); } updateMuteButton(); });
 function updateMuteButton() { const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i'); const ctaText = document.querySelector('#audio-cta .cta-text'); muteBtnIcon.className = appState.isBgMusicMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up'; ctaText.textContent = appState.isBgMusicMuted ? 'Attiva la musica' : 'Disattiva musica'; audioCta.style.visibility = 'visible'; }
 
-// CARICAMENTO E FILTRAGGIO AGGIORNATO (NO GENERE, SOLO FAUSTO CD)
+// CARICAMENTO E FILTRAGGIO AGGIORNATO
 async function loadMusicFromApi() {
-        const CACHE_KEY = 'ff_music_catalog_cache_v3'; // Cambio versione cache
+        const CACHE_KEY = 'ff_music_catalog_cache_v5_plus'; // Cambio versione cache
         const CACHE_DURATION = 3600 * 1000; 
 
         const cachedData = localStorage.getItem(CACHE_KEY);
@@ -338,11 +337,15 @@ async function loadMusicFromApi() {
             if (!response.ok) throw new Error(`Errore di rete`);
             let newSongs = await response.json();
             
-            // 1. FILTRO "Fausto CD" (Ignora case sensitive e spazi)
+            // MODIFICA QUI PER AGGIUNGERE ALTRE LISTE
+            // Inserisci i nomi delle liste che vuoi vedere, tutto minuscolo
+            const listeDaMostrare = ["fausto cd"]; // <--- AGGIUNGI QUI ALTRE VOCI ES: ["fausto cd", "altro"]
+
             if (Array.isArray(newSongs)) {
                 newSongs = newSongs.filter(s => {
-                    const stato = s.Stato || s.stato || ""; // Cerca colonna Stato o stato
-                    return stato.toLowerCase().includes("Fausto_CD");
+                    const stato = (s.Stato || s.stato || "").toLowerCase();
+                    // Controlla se la colonna Stato contiene una delle voci autorizzate
+                    return listeDaMostrare.some(filtro => stato.includes(filtro));
                 });
 
                 appState.allSongs = newSongs;
@@ -354,7 +357,7 @@ async function loadMusicFromApi() {
 
                 createFilterButtons();
                 renderSongs();
-                console.log("Dati aggiornati (Solo Fausto CD).");
+                console.log("Dati aggiornati e filtrati.");
             }
         } catch (error) {
             console.error("Errore fetch:", error);
@@ -367,22 +370,14 @@ async function loadMusicFromApi() {
 // CREAZIONE BOTTONI (Solo Categoria e Argomento)
 function createFilterButtons() {
         const getUniqueTags = (prop) => {
-            // Normalizza il nome della proprietà (Sheet potrebbe usare maiuscole/minuscole)
             const rawValues = appState.allSongs.map(s => s[prop] || s[prop.charAt(0).toUpperCase() + prop.slice(1)]).filter(Boolean);
             const splitTags = rawValues.flatMap(text => text.split(/[;,]+/).map(t => t.trim()));
             return [...new Set(splitTags)].sort();
         };
 
-        const filters = { 
-            'Categoria': getUniqueTags('category'), // Cerca 'category' o 'Category' o 'Categoria' (gestito da getUniqueTags se adattato, ma qui semplifico)
-            'Argomento': getUniqueTags('argomento') 
-        };
-        
         // Helper per cercare la proprietà corretta nel JSON dello Sheet
-        // (Spesso Google Sheet API ritorna tutto minuscolo, es: 'categoria', 'argomento')
         function getSafeTags(keyLower) {
              const rawValues = appState.allSongs.map(s => {
-                 // Cerca la chiave ignorando maiuscole/minuscole
                  const key = Object.keys(s).find(k => k.toLowerCase() === keyLower);
                  return key ? s[key] : null;
              }).filter(Boolean);
@@ -391,13 +386,12 @@ function createFilterButtons() {
         }
 
         const realFilters = {
-            'Categoria': getSafeTags('categoria'), // Cerca 'Categoria' o 'categoria'
-            'Argomento': getSafeTags('argomento')  // Cerca 'Argomento' o 'argomento'
+            'Categoria': getSafeTags('categoria'), 
+            'Argomento': getSafeTags('argomento') 
         };
 
         filterContainer.innerHTML = ''; 
         for (const label in realFilters) { 
-            // Usa una chiave interna generica per lo stato
             const filterKey = label.toLowerCase(); 
             let buttonsHtml = `<div class="filter-group"><div class="filter-label">${label}</div><div class="filter-buttons">`; 
             buttonsHtml += `<button class="filter-btn active" data-filter-key="${filterKey}" data-filter-value="all">Tutti</button>`; 
@@ -411,13 +405,12 @@ function createFilterButtons() {
         } 
 }
 
-// RENDERIZZAZIONE (Aggiornata per cercare chiavi dinamiche)
+// RENDERIZZAZIONE
 function renderSongs() {
         songListContainer.innerHTML = '';
         
         const hasTag = (songObj, keyLower, filterValue) => {
             if (filterValue === 'all') return true;
-            // Trova il valore nel song object ignorando il case della chiave
             const realKey = Object.keys(songObj).find(k => k.toLowerCase() === keyLower);
             const songValue = realKey ? songObj[realKey] : "";
             
@@ -427,7 +420,7 @@ function renderSongs() {
         };
 
         const filteredSongs = appState.allSongs.filter(song => 
-            hasTag(song, 'categoria', appState.currentFilters.category) && // Usa chiave interna 'category' mappata su 'categoria'
+            hasTag(song, 'categoria', appState.currentFilters.category) && 
             hasTag(song, 'argomento', appState.currentFilters.argomento)
         );
 
@@ -436,7 +429,6 @@ function renderSongs() {
                 const item = document.createElement('div');
                 item.className = 'song-item';
                 
-                // Cerca Titolo e Video in modo sicuro
                 const titleKey = Object.keys(song).find(k => k.toLowerCase() === 'titolo') || 'title';
                 const videoKey = Object.keys(song).find(k => k.toLowerCase() === 'video');
                 
@@ -467,7 +459,6 @@ function handleFilterClick(e) {
     if (e.target.classList.contains('filter-btn')) { 
         const { filterKey, filterValue } = e.target.dataset; 
         
-        // Mappatura inversa: se clicco bottone generato da 'Categoria', aggiorno appState.category
         if(filterKey === 'categoria') appState.currentFilters.category = filterValue;
         if(filterKey === 'argomento') appState.currentFilters.argomento = filterValue;
         
