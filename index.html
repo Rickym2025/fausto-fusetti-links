@@ -1,490 +1,851 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8" />
-<!-- Preconnessione ai server esterni per risparmiare tempo DNS -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-  
-  <!-- Precaricamento immagine profilo (LCP) -->
-  <link rel="preload" as="image" href="logo6.jpg">        
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Fausto Fusetti - FF Musica</title>
-<link rel="icon" href="favicon.ico?v=2" sizes="any" type="image/x-icon">
-<link rel="icon" href="icon-192.png?v=2" sizes="192x192" type="image/png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
-<link href="https://fonts.googleapis.com/css2?family=Arvo:wght@700&amp;family=Montserrat:wght@400;500;600&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
-<style>
-/* AGGIUNTO COLORE JINGLE */
-:root { --primary-color: #0693e3; --secondary-color: #e3a006; --jingle-color: #00e1ff; }
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body { font-family: 'Montserrat', sans-serif; color: #f0f0f0; text-align: center; }
-#background-video { position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; width: auto; height: auto; z-index: -100; object-fit: cover; filter: brightness(0.5); }
-.container-wrapper { min-height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center; padding: 20px; padding-bottom: 60px; }
-.container { position: relative; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(10px); padding: 90px 30px 40px 30px; max-width: 680px; width: 100%; margin-top: 100px; margin-bottom: 40px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); z-index: 2; }
-@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-#audio-cta { position: absolute; top: -25px; right: -20px; display: flex; align-items: center; background-color: rgba(6, 147, 227, 0.2); border: 1px solid var(--primary-color); padding: 8px 15px; border-radius: 30px; backdrop-filter: blur(5px); animation: pulse 2.5s infinite ease-in-out; z-index: 10; cursor: pointer; visibility: hidden; }
-#audio-cta .cta-text { margin-right: 10px; font-weight: 500; color: #f0f0f0; }
-#mute-btn-icon { background: white; color: var(--primary-color); border-radius: 50%; width: 35px; height: 35px; font-size: 1em; display: flex; align-items: center; justify-content: center; }
-@keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
-.profile-logo { width: 150px; height: 150px; border-radius: 50%; border: 4px solid rgba(255, 255, 255, 0.9); box-shadow: 0 0 20px var(--primary-color); object-fit: cover; position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); animation: spin 15s linear infinite; }
-h1 { font-size: 1.8em; margin-bottom: 15px; font-weight: 500; }
-p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1; }
-.button { display: block; margin: 18px auto; padding: 16px 30px; border: 2px solid var(--primary-color); border-radius: 30px; text-decoration: none; color: #f0f0f0; font-size: 1.2em; font-weight: 500; transition: all 0.3s ease; background-color: transparent; cursor: pointer; }
-.button:hover { background: var(--primary-color); color: white; transform: translateY(-3px); box-shadow: 0 4px 15px rgba(6, 147, 227, 0.4); }
-.button.collabora { border-color: var(--secondary-color); } .button.collabora:hover { background: var(--secondary-color); box-shadow: 0 4px 15px rgba(227, 160, 6, 0.4); }
-.button.jukebox { border-color: var(--secondary-color); } .button.jukebox:hover { background: var(--secondary-color); box-shadow: 0 4px 15px rgba(227, 160, 6, 0.4); }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog & News - Fausto Fusetti</title>
+    
+    <!-- FAVICON -->
+    <link rel="icon" href="../favicon.ico?v=2" sizes="any" type="image/x-icon">
+    <link rel="icon" href="../icon-192.png?v=2" sizes="192x192" type="image/png">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png?v=2">
 
-/* STILE NUOVO PULSANTE JINGLE */
-.button.jingle { border-color: var(--jingle-color); color: var(--jingle-color); } 
-.button.jingle:hover { background: var(--jingle-color); color: #000; box-shadow: 0 4px 20px rgba(0, 225, 255, 0.6); border-color: var(--jingle-color); }
+    <!-- FONT E ICONE -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+    <style>
+        :root { --primary: #0693e3; --secondary: #e3a006; --accent: #00e1ff; --bg: #0a0a0a; --card: #141414; --border: #333; }
+        body { font-family: 'Montserrat', sans-serif; background-color: var(--bg); color: #f0f0f0; margin: 0; padding: 0; }
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
 
-.button i { margin-right: 10px; }
-.social-icons { display: flex; justify-content: center; gap: 30px; margin: 40px 0 20px; }
-.social-icons a { color: #c7c7c7; font-size: 2.2em; transition: all 0.3s ease; }
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
-.modal-content { background: #1e1e1e; padding: 30px; border-radius: 15px; width: 100%; max-width: 550px; position: relative; max-height: 90vh; overflow-y: auto; }
-.modal-close { position: absolute; top: 15px; right: 20px; font-size: 2em; color: white; cursor: pointer; line-height: 1; }
-.music-catalog .info-box { background: rgba(6, 147, 227, 0.1); border: 1px solid var(--primary-color); padding: 15px; border-radius: 10px; margin-bottom: 25px; font-size: 1.1em; }
-.filter-group { margin-bottom: 15px; }
-.filter-group .filter-label { text-align: left; margin-bottom: 8px; font-weight: 500; color: var(--primary-color); }
-.filter-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
-.filter-btn { padding: 8px 14px; border: 1px solid #555; border-radius: 20px; background: none; color: #f0f0f0; cursor: pointer; font-size: 0.9em; transition: all 0.2s ease; }
-.filter-btn.active { background-color: var(--primary-color); border-color: var(--primary-color); color: white; }
-.song-list-container { max-height: 40vh; overflow-y: auto; margin-top: 20px; }
-.song-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #333; transition: background-color 0.3s ease; border-radius: 5px; }
-.song-item:last-child { border-bottom: none; }
-.song-item .title { flex-grow: 1; text-align: left; pointer-events: none; }
-.song-item .play-btn { background: none; border: 2px solid var(--primary-color); color: var(--primary-color); border-radius: 50%; width: 40px; height: 40px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; margin-left: 10px; cursor: pointer; }
-.song-item:hover { background-color: rgba(255,255,255,0.05); }
-.song-item.playing { background-color: rgba(6, 147, 227, 0.2); }
-.song-item.playing .play-btn { background-color: var(--primary-color); color: white; }
-.song-item .video-btn { background: none; border: 2px solid var(--secondary-color); color: var(--secondary-color); border-radius: 50%; width: 40px; height: 40px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; margin-right: 10px; cursor: pointer; font-size: 0.9em; }
-.song-item .video-btn:hover { background-color: var(--secondary-color); color: white; transform: scale(1.1); box-shadow: 0 0 10px rgba(227, 160, 6, 0.4); }
+        /* HEADER */
+        header { background: rgba(0,0,0,0.95); padding: 15px 20px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .logo { font-weight: 800; color: white; font-size: 1.2rem; }
+        .logo span { color: var(--primary); }
+        
+        .nav-links { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; -ms-overflow-style: none; scrollbar-width: none; }
+        .nav-links::-webkit-scrollbar { display: none; }
+        
+        .nav-btn { border: 1px solid var(--border); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; display:flex; align-items:center; gap:6px; white-space: nowrap; color: #ccc; }
+        .nav-btn:hover { border-color: var(--primary); color: white; background: rgba(6, 147, 227, 0.1); }
+        .nav-btn.special { border-color: var(--accent); color: var(--accent); }
+        .nav-btn.shop { border-color: var(--secondary); color: var(--secondary); }
 
-.contact-form { display: flex; flex-direction: column; gap: 15px; text-align: left; }
-.contact-form input, .contact-form textarea, .contact-form select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #555; background-color: #2c2c2c; color: #f0f0f0; font-size: 1em; }
-#form-result { margin-top: 15px; font-weight: bold; }
-.service-highlight { background: linear-gradient(135deg, rgba(6, 147, 227, 0.1), rgba(227, 160, 6, 0.1)); border: 2px solid transparent; background-clip: padding-box; position: relative; }
-.service-highlight::before { content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); border-radius: inherit; z-index: -1; }
-#aphorism-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; pointer-events: none; }
-@keyframes fadeInOut { 0% { opacity: 0; transform: var(--transform-start); } 15% { opacity: 1; transform: var(--transform-end); } 85% { opacity: 1; transform: var(--transform-end); } 100% { opacity: 0; transform: var(--transform-start); } }
-.aphorism-postit { position: absolute; background-color: #fefabc; color: #333; padding: 15px; border-radius: 5px; box-shadow: 5px 5px 15px rgba(0,0,0,0.3); max-width: 250px; font-family: 'Georgia', serif; animation: fadeInOut 10s ease-in-out forwards; }
-#audio-start-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.9); display: flex; align-items: center; justify-content: center; z-index: 100000; backdrop-filter: blur(10px); }
-#audio-start-content { background: rgba(6, 147, 227, 0.1); border: 2px solid var(--primary-color); padding: 40px; border-radius: 20px; text-align: center; max-width: 500px; margin: 20px; }
-#audio-start-content h2 { color: var(--primary-color); margin-bottom: 15px; font-size: 1.8em; }
-#audio-start-content p { margin-bottom: 25px; font-size: 1.1em; line-height: 1.6; }
-#start-audio-btn { background: var(--primary-color); color: white; border: none; padding: 15px 30px; border-radius: 30px; font-size: 1.2em; cursor: pointer; transition: all 0.3s ease; }
-#start-audio-btn:hover { background: var(--secondary-color); transform: translateY(-2px); }
-.info-footer { position: fixed; bottom: 0; left: 0; width: 100%; background-color: rgba(0, 0, 0, 0.85); color: #ccc; padding: 12px; text-align: center; font-size: 0.9em; z-index: 100; }
+        .search-bar { display: flex; align-items: center; background: #222; border: 1px solid #444; border-radius: 25px; padding: 5px 15px; flex-grow: 1; max-width: 400px; }
+        .search-bar input { background: transparent; border: none; color: white; width: 100%; outline: none; padding: 5px; font-family: inherit; }
+        .search-bar i { color: #888; }
 
-#single-video-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 20000; display: none; align-items: center; justify-content: center; flex-direction: column; }
-#single-video-container { width: 90%; max-width: 900px; aspect-ratio: 16 / 9; position: relative; background: black; box-shadow: 0 0 30px rgba(6, 147, 227, 0.3); }
-#single-video-container iframe { width: 100%; height: 100%; border: none; }
-#close-single-video { margin-top: 20px; background: none; border: 1px solid white; color: white; padding: 10px 20px; border-radius: 30px; cursor: pointer; font-size: 1.2em; transition: all 0.3s; }
-#close-single-video:hover { background: white; color: black; }
+        /* CONTAINER */
+        .blog-container { max-width: 1000px; margin: 40px auto; padding: 0 20px; min-height: 60vh; }
+        .blog-header { text-align: center; margin-bottom: 40px; }
+        .blog-header h1 { font-size: 2.5rem; color: var(--primary); margin-bottom: 10px; }
+        .blog-header p { color: #888; }
+        
+        /* FILTRI */
+        .filters { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
+        .filter-btn { background: transparent; border: 1px solid #444; color: #ccc; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; transition: 0.3s; }
+        .filter-btn:hover, .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-</style>
+        /* GRIGLIA ARTICOLI */
+        .articles-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 25px; 
+            margin-bottom: 40px;
+        }
+
+        /* CARD STYLE */
+        .article-card-link { display: block; text-decoration: none; color: inherit; height: 100%; }
+        .article-card { 
+            background: var(--card); 
+            border-radius: 12px; 
+            overflow: hidden; 
+            border: 1px solid #333; 
+            display: flex; 
+            flex-direction: column; 
+            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s; 
+            height: 100%;
+        }
+        .article-card-link:hover .article-card { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 5px 20px rgba(6, 147, 227, 0.25); }
+        
+        .card-img { height: 160px; background-size: cover; background-position: center; background-color: #222; position: relative; }
+        .card-cat { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); color: var(--accent); font-size: 0.75rem; padding: 4px 10px; border-radius: 4px; font-weight: 600; text-transform: uppercase; }
+        
+        .card-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .card-meta { font-size: 0.8rem; color: #888; margin-bottom: 10px; display: flex; gap: 10px; align-items: center; }
+        .card-title { font-size: 1.1rem; margin-bottom: 10px; color: white; line-height: 1.4; font-weight: 700; flex-grow: 1; }
+        .card-excerpt { color: #aaa; font-size: 0.9rem; line-height: 1.5; margin-bottom: 20px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        
+        .read-btn { align-self: flex-start; color: var(--primary); font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; }
+        .article-card-link:hover .read-btn { color: white; }
+
+        /* PAGINAZIONE (NUOVO STILE) */
+        .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 40px; flex-wrap: wrap; }
+        .page-btn { background: #222; border: 1px solid #444; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; font-weight: bold; }
+        .page-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .page-btn.active { background: var(--primary); border-color: var(--primary); color: white; }
+        .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        footer { text-align: center; padding: 40px; color: #666; font-size: 0.8rem; margin-top: 50px; border-top: 1px solid #222; }
+        footer a { color: var(--primary); }
+        footer a:hover { text-decoration: underline; }
+    </style>
 </head>
 <body>
-<div id="audio-start-overlay">
-<div id="audio-start-content">
-<h2><i class="fas fa-music"></i> Benvenuto!</h2>
-<p>Per la migliore esperienza, questa pagina include una musica di sottofondo. Clicca per attivarla.</p>
-<button id="start-audio-btn">Avvia l'Esperienza Musicale</button>
-</div>
-</div>
-<video autoplay muted loop playsinline preload="auto" id="background-video" poster="immagine_sfondo.png"><source src="video_sfondo_compressed.mp4" type="video/mp4" /></video>
-<audio loop preload="auto" id="background-audio"><source src="7a-Controtempo-compresso.mp3" type="audio/mpeg" /></audio>
-<div id="aphorism-container"></div>
-<div class="container-wrapper">
-<div class="container">
-<div id="audio-cta"><span class="cta-text">Attiva la musica</span><div id="mute-btn-icon"><i class="fas fa-volume-mute"></i></div></div>
-<img src="logo6.jpg" alt="Logo FF Musica" class="profile-logo">
-<h1>Fausto Fusetti</h1>
-<p class="bio">Piacere, sono Fausto Fusetti, in arte <strong>Fausto Miriani</strong>. Dal 1988 la musica è la mia vita: sono polistrumentista, cantante, compositore, paroliere e anche autore di libri. Una passione che mi ha portato a comporre oltre 700 brani e a incidere 11 dischi.<br><br>La mia carriera è stata un viaggio entusiasmante sui palchi più prestigiosi, collaborando con icone come <strong>Fred Bongusto, Peppino di Capri e Califano</strong>. La mia creatività non conosce confini: dal pop al melodico, dal jazz alla musica latina, ogni genere è un'occasione per trasformare emozioni in musica e raccontare storie uniche.<br><br>Oggi metto questa esperienza al tuo servizio per creare <strong>canzoni e libri personalizzati</strong>, e continuo a investire sul futuro, seguendo giovani talenti in nuovi progetti discografici.</p>
 
-<!-- PULSANTI -->
-<a href="https://rickym2025.github.io/jukebox-ff/" target="_blank" class="button jukebox"><i class="fas fa-compact-disc"></i> Area Riservata Jukebox</a>
-
-<!-- NUOVO PULSANTE JINGLE -->
-<a href="https://rickym2025.github.io/JingleShop/" target="_blank" class="button jingle"><i class="fas fa-icons"></i> Jingle Shop</a>
-
-<button id="open-music-modal" class="button"><i class="fas fa-music"></i>Catalogo Musicale</button>
-<button id="open-video-modal" class="button"><i class="fas fa-video"></i>Guarda i Video</button>
-<button id="open-services-modal" class="button service-highlight"><i class="fas fa-heart"></i>Canzoni Personalizzate</button>
-<button id="open-contact-modal" class="button collabora"><i class="fas fa-pencil-alt"></i>Contattami per un Progetto</button>
-<button id="open-shop-modal" class="button"><i class="fas fa-shopping-cart"></i>Shop</button>
-<a href="blog/index.html" class="button" style="border-color: #fff; color: #fff;">
-    <i class="fas fa-newspaper"></i> Blog & News
-</a>  
-<div class="social-icons"><a href="https://www.instagram.com/faustofusetti/" target="_blank"><i class="fa-brands fa-instagram"></i></a><a href="https://www.facebook.com/fausto.fusetti.9" target="_blank"><i class="fa-brands fa-facebook"></i></a><a href="https://www.youtube.com/@faustofusetti5859" target="_blank"><i class="fa-brands fa-youtube"></i></a></div>
-</div>
-</div>
-<div id="shop-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="shop-modal">&times;</span><h2><i class="fas fa-shopping-cart" style="color: var(--primary-color); margin-right: 10px;"></i> Shop / Supportami</h2><p style="margin: 15px 0; font-size: 0.9em; color: #ccc;"><i>In qualità di Affiliato Amazon, ricevo un guadagno per gli acquisti idonei. Acquistando tramite questi link supporti il mio lavoro, senza alcun costo aggiuntivo per te. Grazie!</i></p><a href="https://www.amazon.it/hz/wishlist/ls/282CA0XU81D3C?tag=zero100store-21" target="_blank" class="button"><i class="fab fa-amazon"></i> La mia Attrezzatura</a><a href="https://www.amazon.it/gp/dmusic/promotions/AmazonMusicUnlimited?tag=zero100store-21" target="_blank" class="button"><i class="fas fa-music"></i> Prova Amazon Music Unlimited</a><a href="https://ff-music-store.printify.me/" target="_blank" class="button"><i class="fas fa-tshirt"></i> Merchandising Ufficiale</a></div></div>
-<div id="video-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="video-modal">&times;</span><h2>Video Selezionati</h2><a href="https://www.youtube.com/watch?v=7s3-7DV38IA" target="_blank" class="button">Produzioni Varie</a><a href="https://www.youtube.com/watch?v=Y8YqyCT7h5E" target="_blank" class="button">Ascolta "Noi"</a><a href="https://www.youtube.com/watch?v=igexCZ24Twg" target="_blank" class="button">Ascolta "Per Te"</a></div></div>
-<div id="music-modal" class="modal-overlay"><div class="modal-content music-catalog"><span class="modal-close" data-target="music-modal">&times;</span><h2>Catalogo Musicale</h2><div class="info-box"><i class="fas fa-filter"></i> Seleziona i filtri per trovare il brano che cerchi.</div><div id="filter-container"></div><div id="song-list-container"></div><audio id="catalog-audio-player"></audio></div></div>
-<div id="services-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="services-modal">&times;</span><h2><i class="fas fa-heart" style="color: var(--secondary-color); margin-right: 10px;"></i>Canzoni Personalizzate</h2><div style="text-align: left; line-height: 1.6; margin-bottom: 20px;"><h3 style="color: var(--primary-color); margin-bottom: 10px;">✨ Servizi Esclusivi:</h3><ul style="list-style: none; padding-left: 0;"><li style="margin-bottom: 10px;"><i class="fas fa-heart" style="color: #e74c3c; margin-right: 8px;"></i> <strong>Canzoni per Coppie</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-ring" style="color: #f39c12; margin-right: 8px;"></i> <strong>Anniversari e Matrimoni</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-gift" style="color: #9b59b6; margin-right: 8px;"></i> <strong>Testi Personalizzati</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-birthday-cake" style="color: #e67e22; margin-right: 8px;"></i> <strong>Eventi Speciali</strong></li></ul><div style="background: rgba(6, 147, 227, 0.1); border-left: 4px solid var(--primary-color); padding: 15px; margin: 20px 0; border-radius: 5px;"><p><strong>💡 Come funziona:</strong> Raccontami la tua storia, i tuoi ricordi. Creerò una canzone unica che rappresenti le tue emozioni.</p></div></div><button id="contact-for-custom-song" class="button collabora">Richiedi la Tua Canzone</button></div></div>
-<div id="contact-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="contact-modal">&times;</span><h2>Contattami per il tuo Progetto</h2><form id="contact-form" class="contact-form" autocomplete="on"><input type="hidden" name="access_key" value="9013a8d5-0901-42a0-b9e6-4c45553f960d"/><input type="text" name="name" placeholder="Il tuo Nome" required autocomplete="name"/><input type="email" name="email" placeholder="La tua Email" required autocomplete="email"/><input type="tel" name="phone" placeholder="Il tuo Telefono (Opzionale)" autocomplete="tel"/><select name="service_type"><option value="">Seleziona il tipo di servizio</option><option value="canzone_personalizzata">Canzone Personalizzata</option><option value="composizione_artista">Composizione per Artista</option><option value="intrattenimento_live">Intrattenimento Live</option><option value="altro">Altro</option></select><textarea name="message" rows="4" placeholder="Descrivi la tua idea o richiesta..." required></textarea><button type="submit" class="button collabora">Invia Messaggio</button></form><div id="form-result"></div></div></div>
-<div id="single-video-overlay">
-<div id="single-video-container">
-<div id="video-placeholder"></div>
-</div>
-<button id="close-single-video"><i class="fas fa-times"></i> Chiudi Video</button>
-</div>
-<div class="info-footer">
-Iscrizione SIAE n. 189515 e 593874
-</div>
-<div id="chatbot-container"></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-
-const appState = {
-isChatAnimating: false,
-allSongs: [],
-currentPlayingItem: null,
-currentFilters: { genre: 'all', category: 'all', argomento: 'all' },
-backgroundMusicSrc: document.getElementById('background-audio')?.querySelector('source')?.src || '',
-isBgMusicMuted: true,
-};
-
-const bgAudio = document.getElementById('background-audio');
-const audioStartOverlay = document.getElementById('audio-start-overlay');
-const startAudioBtn = document.getElementById('start-audio-btn');
-const audioCta = document.getElementById('audio-cta');
-const mainPlayer = document.getElementById('catalog-audio-player');
-mainPlayer.loop = true;
-
-const songListContainer = document.getElementById('song-list-container');
-const filterContainer = document.getElementById('filter-container');
-const form = document.getElementById('contact-form');
-const formResult = document.getElementById('form-result');
-
-function initializeCoreFunctionality() {
-document.getElementById('open-music-modal').addEventListener('click', () => openModal('music-modal'));
-document.getElementById('open-video-modal').addEventListener('click', () => openModal('video-modal'));
-document.getElementById('open-services-modal').addEventListener('click', () => openModal('services-modal'));
-document.getElementById('open-contact-modal').addEventListener('click', () => openModal('contact-modal'));
-document.getElementById('open-shop-modal').addEventListener('click', () => openModal('shop-modal'));
-
-document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', (e) => closeModal(e.currentTarget.dataset.target)));
-document.getElementById('contact-for-custom-song').addEventListener('click', () => {
-closeModal('services-modal');
-openModal('contact-modal');
-document.querySelector('#contact-modal select[name="service_type"]').value = 'canzone_personalizzata';
-});
-
-startAudioBtn.addEventListener('click', handleStartAudioClick);
-form.addEventListener('submit', handleFormSubmit);
-filterContainer.addEventListener('click', handleFilterClick);
-songListContainer.addEventListener('click', handleSongListClick);
-
-document.getElementById('close-single-video').addEventListener('click', () => {
-const videoOverlay = document.getElementById('single-video-overlay');
-const videoContainer = document.getElementById('single-video-container');
-videoOverlay.style.display = 'none';
-videoContainer.innerHTML = '';
-});
-
-setupBackgroundVideo();
-loadMusicFromApi();
-setupSecondaryFeatures();
-}
-
-function openModal(modalId) {
-mainPlayer.pause();
-document.getElementById(modalId).style.display = 'flex';
-}
-
-function closeModal(modalId) {
-document.getElementById(modalId).style.display = 'none';
-playBackgroundMusic();
-}
-
-async function playBackgroundMusic() {
-if (!appState.isBgMusicMuted && appState.backgroundMusicSrc) {
-if (mainPlayer.src !== appState.backgroundMusicSrc) {
-mainPlayer.src = appState.backgroundMusicSrc;
-}
-mainPlayer.loop = true;
-try { await mainPlayer.play(); }
-catch (error) { console.warn("Impossibile riprendere la musica di sottofondo:", error); }
-}
-}
-
-async function handleStartAudioClick() {
-audioStartOverlay.style.display = 'none';
-appState.isBgMusicMuted = false;
-bgAudio.play().catch(()=>{});
-bgAudio.pause();
-updateMuteButton();
-playBackgroundMusic();
-}
-
-async function handleSongClick(item, song) {
-const isSameSong = (item === appState.currentPlayingItem);
-try {
-if (isSameSong && !mainPlayer.paused) {
-mainPlayer.pause();
-} else {
-if (appState.currentPlayingItem && appState.currentPlayingItem !== item) {
-appState.currentPlayingItem.classList.remove('playing');
-}
-appState.currentPlayingItem = item;
-mainPlayer.src = song.url;
-mainPlayer.loop = false;
-await mainPlayer.play();
-}
-} catch (error) {
-console.error("Errore Player:", error);
-if (appState.currentPlayingItem) appState.currentPlayingItem.classList.remove('playing');
-appState.currentPlayingItem = null;
-}
-}
-
-mainPlayer.addEventListener('play', () => { if (appState.currentPlayingItem && !mainPlayer.loop) { appState.currentPlayingItem.classList.add('playing'); } });
-mainPlayer.addEventListener('pause', () => { if (appState.currentPlayingItem) { appState.currentPlayingItem.classList.remove('playing'); } });
-mainPlayer.addEventListener('ended', () => { if (appState.currentPlayingItem) { appState.currentPlayingItem.classList.remove('playing'); appState.currentPlayingItem = null; } playBackgroundMusic(); });
-
-function setupBackgroundVideo() { if (window.innerWidth <= 768) { const videoElement = document.getElementById('background-video'); const videoSource = videoElement.querySelector('source'); if (videoSource) { videoSource.src = 'https://raw.githubusercontent.com/Rickym2025/fausto-fusetti-links/main/video%20sax.mp4'; videoElement.load(); } } }
-function handleFormSubmit(e) { e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio..."; fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).then(r => r.json()).then(d => { formResult.innerHTML = d.success ? "Messaggio inviato!" : `Errore: ${d.message}`; if (d.success) form.reset(); }).catch(() => formResult.innerHTML = "Errore di rete."); }
-
-function handleSongListClick(e) {
-        const videoBtn = e.target.closest('.video-btn');
-        if (videoBtn) {
-            e.stopPropagation(); 
-            
-            const videoUrl = videoBtn.dataset.videoUrl;
-            
-            if (videoUrl) {
-                mainPlayer.pause();
-                if (appState.currentPlayingItem) {
-                    appState.currentPlayingItem.classList.remove('playing');
-                }
-                
-                const videoOverlay = document.getElementById('single-video-overlay');
-                const videoContainer = document.getElementById('single-video-container');
-                
-                videoContainer.innerHTML = `
-                    <video controls autoplay style="width: 100%; height: 100%; object-fit: contain;">
-                        <source src="${videoUrl}" type="video/mp4">
-                        Il tuo browser non supporta la riproduzione video.
-                    </video>
-                `;
-                
-                videoOverlay.style.display = 'flex';
-            } else {
-                alert("Link video mancante.");
-            }
-            return;
-        }
-
-        const item = e.target.closest('.song-item');
-        if (item) {
-            const titleToFind = item.querySelector('.title').textContent;
-            const song = appState.allSongs.find(s => s.title === titleToFind); 
-            if (song) handleSongClick(item, song);
-        }
-    }
-
-audioCta.addEventListener('click', () => { appState.isBgMusicMuted = !appState.isBgMusicMuted; if (appState.isBgMusicMuted) { mainPlayer.pause(); } else { playBackgroundMusic(); } updateMuteButton(); });
-function updateMuteButton() { const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i'); const ctaText = document.querySelector('#audio-cta .cta-text'); muteBtnIcon.className = appState.isBgMusicMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up'; ctaText.textContent = appState.isBgMusicMuted ? 'Attiva la musica' : 'Disattiva musica'; audioCta.style.visibility = 'visible'; }
-async function loadMusicFromApi() {
-        const CACHE_KEY = 'ff_music_catalog_cache_v2'; 
-        const CACHE_DURATION = 3600 * 1000; 
-
-        const cachedData = localStorage.getItem(CACHE_KEY);
-        let loadedFromCache = false;
-
-        if (cachedData) {
-            try {
-                const parsed = JSON.parse(cachedData);
-                const now = new Date().getTime();
-                
-                if (now - parsed.timestamp < CACHE_DURATION) {
-                    appState.allSongs = parsed.songs;
-                    createFilterButtons();
-                    renderSongs();
-                    console.log("Catalogo caricato istantaneamente dalla Cache.");
-                    return; 
-                } else {
-                    appState.allSongs = parsed.songs;
-                    createFilterButtons();
-                    renderSongs();
-                    loadedFromCache = true;
-                    console.log("Mostro dati cache scaduti in attesa di aggiornamento...");
-                }
-            } catch (e) {
-                console.warn("Errore lettura cache", e);
-            }
-        }
-
-        if (!loadedFromCache) {
-            songListContainer.innerHTML = `<p><i class="fas fa-spinner fa-spin"></i> Caricamento catalogo...</p>`;
-        }
-
-        try {
-            const response = await fetch('https://script.google.com/macros/s/AKfycbw666DGD4BlSHuJwmVYcRLF9_qMJX2LXy_r6gCGVbjR_dXQDngQU-JttofSKOwUkIJZ/exec?source=catalogo&t=' + new Date().getTime());
-            
-            if (!response.ok) throw new Error(`Errore di rete`);
-            
-            const newSongs = await response.json();
-            
-            if (Array.isArray(newSongs) && newSongs.length > 0) {
-                appState.allSongs = newSongs;
-                
-                localStorage.setItem(CACHE_KEY, JSON.stringify({
-                    timestamp: new Date().getTime(),
-                    songs: newSongs
-                }));
-
-                createFilterButtons();
-                renderSongs();
-                console.log("Dati aggiornati da Google.");
-            }
-        } catch (error) {
-            console.error("Errore fetch Google:", error);
-            if (!loadedFromCache) {
-                songListContainer.innerHTML = `<p style="color: #ffc107;">Impossibile aggiornare il catalogo al momento.</p>`;
-            }
-        }
-    }function createFilterButtons() {
-        const getUniqueTags = (prop) => {
-            const rawValues = appState.allSongs.map(s => s[prop]).filter(Boolean);
-            const splitTags = rawValues.flatMap(text => text.split(/[;,]+/).map(t => t.trim()));
-            return [...new Set(splitTags)].sort();
-        };
-
-        const filters = { 
-            'Genere': getUniqueTags('genre'), 
-            'Categoria': getUniqueTags('category'), 
-            'Argomento': getUniqueTags('argomento') 
-        };
-
-        filterContainer.innerHTML = ''; 
-        for (const key in filters) { 
-            const filterKey = key === 'Genere' ? 'genre' : (key === 'Categoria' ? 'category' : 'argomento'); 
-            let buttonsHtml = `<div class="filter-group"><div class="filter-label">${key}</div><div class="filter-buttons">`; 
-            buttonsHtml += `<button class="filter-btn active" data-filter-key="${filterKey}" data-filter-value="all">Tutti</button>`; 
-            
-            filters[key].forEach(value => { 
-                buttonsHtml += `<button class="filter-btn" data-filter-key="${filterKey}" data-filter-value="${value}">${value}</button>`; 
-            }); 
-            
-            buttonsHtml += `</div></div>`; 
-            filterContainer.innerHTML += buttonsHtml; 
-        } 
-    }
-function renderSongs() {
-        songListContainer.innerHTML = '';
+<header>
+    <a href="index.html" class="logo">FF <span>Blog</span></a>
+    
+    <div class="nav-links">
+        <a href="../index.html" class="nav-btn"><i class="fas fa-home"></i> Home</a>
+        <a href="index.html" class="nav-btn"><i class="fas fa-list"></i> Indice</a>
         
-        const hasTag = (songValue, filterValue) => {
-            if (filterValue === 'all') return true;
-            if (!songValue) return false;
-            const tags = songValue.split(/[;,]+/).map(t => t.trim());
-            return tags.includes(filterValue);
-        };
+        <!-- Link Shop e Gadgets -->
+        <a href="https://rickym2025.github.io/JingleShop/" class="nav-btn special" target="_blank"><i class="fas fa-music"></i> Jingle Shop</a>
+        <a href="https://ff-music-store.printify.me/" class="nav-btn shop" target="_blank"><i class="fas fa-tshirt"></i> Gadgets</a>
+        <a href="#" class="nav-btn" onclick="alert('Catalogo Musicale in arrivo!')"><i class="fas fa-folder-open"></i> Catalogo</a>
+    </div>
+</header>
 
-        const filteredSongs = appState.allSongs.filter(song => 
-            hasTag(song.genre, appState.currentFilters.genre) && 
-            hasTag(song.category, appState.currentFilters.category) && 
-            hasTag(song.argomento, appState.currentFilters.argomento)
-        );
+<div class="blog-container">
+    <div class="blog-header">
+        <h1>News & Approfondimenti</h1>
+        <p>Musica, Produzione, Radio e Curiosità.</p>
+    </div>
 
-        if (filteredSongs.length > 0) {
-            filteredSongs.forEach(song => {
-                const item = document.createElement('div');
-                item.className = 'song-item';
-                
-                let videoHtml = '';
-                if (song.video && song.video.trim() !== '') {
-                    videoHtml = `<div class="video-btn" data-video-url="${song.video}" title="Guarda il video">
-                                    <i class="fas fa-video"></i>
-                                 </div>`;
-                }
+    <!-- FILTRI DINAMICI -->
+    <div class="filters" id="categoryFilters">
+        <button class="filter-btn active" onclick="filterCategory('all')">Tutti</button>
+    </div>
 
-                item.innerHTML = `
-                    <span class="title">${song.title}</span>
-                    ${videoHtml}
-                    <div class="play-btn"><i class="fas fa-play"></i></div>
-                `;
-                
-                songListContainer.appendChild(item);
-            });
-        } else {
-            songListContainer.innerHTML = '<p>Nessun brano corrisponde ai filtri.</p>';
-        }
+    <div class="search-bar" style="margin-bottom: 30px; margin-left: auto; margin-right: auto;">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Cerca articoli (es. Jingle, Rock, Tech)...">
+    </div>
+
+    <!-- GRIGLIA ARTICOLI -->
+    <!-- PUNTO DI INIEZIONE PER N8N: NON TOCCARE L'ID 'articles-list' -->
+    <div class="articles-grid" id="articles-list">
+
+        <!-- ARTICOLO bad-bunny-super-bowl-stile -->
+        <a href="bad-bunny-super-bowl-stile.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/bad-bunny-super-bowl-stile.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 25-01-2026</span></div>
+                    <h2 class="card-title">Bad Bunny al Super Bowl: Rivoluzione di Stile o Provocazione?</h2>
+                    <p class="card-excerpt">Analizziamo il potenziale impatto della performance di Bad Bunny al Super Bowl, concentrandoci sull'attesa per le sue scelte di stile.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO soundreef-reparto-artistico -->
+        <a href="soundreef-reparto-artistico.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/soundreef-reparto-artistico.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 25-01-2026</span></div>
+                    <h2 class="card-title">Soundreef Reparto Artistico: Opportunità per Artisti Indipendenti</h2>
+                    <p class="card-excerpt">Soundreef lancia il Reparto Artistico, una nuova iniziativa per connettere autori, artisti e professionisti del settore musicale.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO amici-25-pagelle-sedicesima-puntata -->
+        <a href="amici-25-pagelle-sedicesima-puntata.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/amici-25-pagelle-sedicesima-puntata.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 25-01-2026</span></div>
+                    <h2 class="card-title">Amici 25: Pagelle della Sedicesima Puntata</h2>
+                    <p class="card-excerpt">Analisi approfondita della sedicesima puntata di Amici 25, con focus sul riscatto di Opi e la rinascita artistica di Plasma.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO kid-yugi-anche-gli-eroi-muoiono -->
+        <a href="kid-yugi-anche-gli-eroi-muoiono.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/kid-yugi-anche-gli-eroi-muoiono.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 25-01-2026</span></div>
+                    <h2 class="card-title">Kid Yugi: “Anche gli eroi muoiono” – Album e Cinema</h2>
+                    <p class="card-excerpt">Kid Yugi sta per rilasciare il suo nuovo album “Anche gli eroi muoiono” e porta la sua arte anche al cinema.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO levante-eurovision-israele -->
+        <a href="levante-eurovision-israele.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/levante-eurovision-israele.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 25-01-2026</span></div>
+                    <h2 class="card-title">Levante e l'Eurovision: No all'edizione con Israele</h2>
+                    <p class="card-excerpt">La cantautrice Levante prende posizione contro la partecipazione di Israele all'Eurovision, scatenando un acceso dibattito.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO fluente-femmina-ep-recensione -->
+        <a href="fluente-femmina-ep-recensione.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/fluente-femmina-ep-recensione.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 25-01-2026</span></div>
+                    <h2 class="card-title">fluente: Femmina, l'EP che svela il mondo musicale dell'artista</h2>
+                    <p class="card-excerpt">L'EP di debutto di fluente, 'Femmina', è un viaggio introspettivo e sonoro nel mondo musicale dell'artista.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO mahmood-parigi-inedito -->
+        <a href="mahmood-parigi-inedito.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/mahmood-parigi-inedito.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 25-01-2026</span></div>
+                    <h2 class="card-title">Mahmood Incanta Parigi: Inedito Anticipa il Nuovo Album</h2>
+                    <p class="card-excerpt">Mahmood sorprende tutti sfilando a Parigi per Willy Chavarria e presentando un brano inedito.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO dj-balli-dub-spaghetti-western -->
+        <a href="dj-balli-dub-spaghetti-western.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/dj-balli-dub-spaghetti-western.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 25-01-2026</span></div>
+                    <h2 class="card-title">Dj Balli: Quando Dub Giamaicano e Spaghetti Western si Incontrano</h2>
+                    <p class="card-excerpt">Un'analisi del saggio 'Per un pugno di bling bling' di Dj Balli, che esplora l'inattesa fusione tra dub e western.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO chiara-galiazzo-sanremo-2026 -->
+        <a href="chiara-galiazzo-sanremo-2026.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/chiara-galiazzo-sanremo-2026.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 25-01-2026</span></div>
+                    <h2 class="card-title">Chiara Galiazzo: Sanremo 2026, il brano scartato che fa discutere</h2>
+                    <p class="card-excerpt">Chiara Galiazzo riaccende il dibattito su Sanremo presentando un brano escluso dalla competizione.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO the-voice-italy-ritorno -->
+        <a href="the-voice-italy-ritorno.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/the-voice-italy-ritorno.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 25-01-2026</span></div>
+                    <h2 class="card-title">The Voice of Italy: Ritorno Shock con Carlo Conti?</h2>
+                    <p class="card-excerpt">Indiscrezioni bomba sul ritorno di The Voice of Italy con Carlo Conti alla conduzione e un posto per Sanremo.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO dare-forme-al-mondo-staid -->
+        <a href="dare-forme-al-mondo-staid.html" class="article-card-link" data-cat="Libri">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/dare-forme-al-mondo-staid.jpg')"><span class="card-cat">Libri</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 25-01-2026</span></div>
+                    <h2 class="card-title">Dare Forme al Mondo: L'Antropologia degli Oggetti</h2>
+                    <p class="card-excerpt">L'antropologo Andrea Staid sfida le nostre convinzioni sugli oggetti quotidiani nel suo libro 'Dare forme al mondo'.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO serie-tv-2016 -->
+        <a href="serie-tv-2016.html" class="article-card-link" data-cat="Televisione">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/serie-tv-2016.jpg')"><span class="card-cat">Televisione</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 25-01-2026</span></div>
+                    <h2 class="card-title">Le Serie TV Indimenticabili del 2016</h2>
+                    <p class="card-excerpt">Un tuffo nel passato alla scoperta delle serie TV che hanno segnato il 2016, tra utopie e distopie.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO levante-sanremo-2026 -->
+        <a href="levante-sanremo-2026.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/levante-sanremo-2026.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 25-01-2026</span></div>
+                    <h2 class="card-title">Levante a Sanremo 2026: Nuovo album e cover con Alanis Morissette</h2>
+                    <p class="card-excerpt">Levante si prepara per Sanremo 2026 con il brano 'Sei Tu' e annuncia un nuovo album.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO francesca-michielin-supergirl -->
+        <a href="francesca-michielin-supergirl.html" class="article-card-link" data-cat="Fumetti">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/francesca-michielin-supergirl.jpg')"><span class="card-cat">Fumetti</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 25-01-2026</span></div>
+                    <h2 class="card-title">Francesca Michielin debutta come scrittrice per DC Comics</h2>
+                    <p class="card-excerpt">La cantautrice firma una storia originale di Supergirl nell'antologia 'Supergirl: The World'.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO tullio-de-piscopo-intervista -->
+        <a href="tullio-de-piscopo-intervista.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/tullio-de-piscopo-intervista.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 25-01-2026</span></div>
+                    <h2 class="card-title">Tullio De Piscopo: Interplay e Sangue nella Musica a 80 Anni</h2>
+                    <p class="card-excerpt">Un'analisi dell'intervista a Tullio De Piscopo, tra interplay e orrore per le collaborazioni a distanza.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO arctic-monkeys-opening-night -->
+        <a href="arctic-monkeys-opening-night.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/arctic-monkeys-opening-night.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 25-01-2026</span></div>
+                    <h2 class="card-title">Arctic Monkeys: Ritorno con 'Opening Night'</h2>
+                    <p class="card-excerpt">Gli Arctic Monkeys sorprendono i fan con l'uscita di un brano inedito dopo quattro anni di silenzio.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO oscar-2026-nomination-sorprese -->
+        <a href="oscar-2026-nomination-sorprese.html" class="article-card-link" data-cat="Cinema">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/oscar-2026-nomination-sorprese.jpg')"><span class="card-cat">Cinema</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 25-01-2026</span></div>
+                    <h2 class="card-title">Oscar 2026: Nomination e Sorprese dell'Academy</h2>
+                    <p class="card-excerpt">Un'analisi delle nomination agli Oscar 2026, tra esclusioni inattese e candidature sorprendenti.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO station-to-station-50-anni -->
+        <a href="station-to-station-50-anni.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/station-to-station-50-anni.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 25-01-2026</span></div>
+                    <h2 class="card-title">Station to Station: 50 Anni del Capolavoro di Bowie</h2>
+                    <p class="card-excerpt">Un'analisi approfondita di 'Station to Station' di David Bowie a cinquant'anni dalla pubblicazione.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO il-sentimental-value-recensione -->
+        <a href="il-sentimental-value-recensione.html" class="article-card-link" data-cat="Cinema">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/il-sentimental-value-recensione.jpg')"><span class="card-cat">Cinema</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 25-01-2026</span></div>
+                    <h2 class="card-title">Il Sentimental Value: Recensione del Film di Joachim Trier</h2>
+                    <p class="card-excerpt">Analisi approfondita del film 'Il Sentimental Value' di Joachim Trier, candidato a nove premi Oscar.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO lucinda-williams-articolo -->
+        <a href="lucinda-williams-articolo.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/lucinda-williams-articolo.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 25-01-2026</span></div>
+                    <h2 class="card-title">Lucinda Williams: l'icona Alt-Country Ribelle</h2>
+                    <p class="card-excerpt">Un'analisi su Lucinda Williams, evidenziando la sua audacia e il suo impatto sulle nuove generazioni.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO harry-styles-aperture -->
+        <a href="harry-styles-aperture.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/harry-styles-aperture.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 25-01-2026</span></div>
+                    <h2 class="card-title">Harry Styles lancia 'Aperture' e il nuovo album</h2>
+                    <p class="card-excerpt">Harry Styles presenta 'Aperture', il brano che anticipa il suo nuovo progetto 'Kiss All the Time'.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO arctic-monkeys-abbey-road -->
+        <a href="arctic-monkeys-abbey-road.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/arctic-monkeys-abbey-road.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 25-01-2026</span></div>
+                    <h2 class="card-title">Arctic Monkeys: Registrazioni Segrete ad Abbey Road</h2>
+                    <p class="card-excerpt">Un video amatoriale svela le registrazioni degli Arctic Monkeys ad Abbey Road Studios.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO raye-this-music-may-contain-hope -->
+        <a href="raye-this-music-may-contain-hope.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/raye-this-music-may-contain-hope.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 25-01-2026</span></div>
+                    <h2 class="card-title">Raye: Nuovo Album e Data Italiana</h2>
+                    <p class="card-excerpt">Raye annuncia 'This Music May Contain Hope' e conferma un'unica data italiana a Bologna.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO harry-styles-vaticano-album -->
+        <a href="harry-styles-vaticano-album.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/harry-styles-vaticano-album.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 25-01-2026</span></div>
+                    <h2 class="card-title">Harry Styles: Vaticano, Nuovo Album e Punteggiatura</h2>
+                    <p class="card-excerpt">Harry Styles svela il mistero della sua presenza in Vaticano e spiega il suo nuovo album.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO francis-buchholz-scorpions -->
+        <a href="francis-buchholz-scorpions.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/francis-buchholz-scorpions.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 24-01-2026</span></div>
+                    <h2 class="card-title">Addio a Francis Buchholz, storico bassista degli Scorpions</h2>
+                    <p class="card-excerpt">Il mondo del rock piange la scomparsa di Francis Buchholz (1951-2024).</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO c-s-i-ritorno-marzabotto -->
+        <a href="c-s-i-ritorno-marzabotto.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/c-s-i-ritorno-marzabotto.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 24-01-2026</span></div>
+                    <h2 class="card-title">C.S.I. Ritornano: Da Mostar a Marzabotto</h2>
+                    <p class="card-excerpt">I C.S.I. annunciano il loro ritorno sulle scene dopo anni di silenzio con un tour accessibile.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO i-16-migliori-film-2016 -->
+        <a href="i-16-migliori-film-2016.html" class="article-card-link" data-cat="Cinema">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/i-16-migliori-film-2016.jpg')"><span class="card-cat">Cinema</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 24-01-2026</span></div>
+                    <h2 class="card-title">I 16 Film Indimenticabili del 2016</h2>
+                    <p class="card-excerpt">Un tuffo nel passato per riscoprire i 16 film che hanno segnato il 2016.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO roger-waters-meloni-gilmour -->
+        <a href="roger-waters-meloni-gilmour.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/roger-waters-meloni-gilmour.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 24-01-2026</span></div>
+                    <h2 class="card-title">Roger Waters Shock: Polemica su Meloni e Gilmour</h2>
+                    <p class="card-excerpt">Roger Waters scatena la polemica con dichiarazioni forti sulla politica italiana.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO billie-joe-armstrong-heroes-cover -->
+        <a href="billie-joe-armstrong-heroes-cover.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/billie-joe-armstrong-heroes-cover.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 24-01-2026</span></div>
+                    <h2 class="card-title">Billie Joe Armstrong e Jacob: Cover di 'Heroes'</h2>
+                    <p class="card-excerpt">Il frontman dei Green Day duetta con il figlio in una cover toccante di David Bowie.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO open-sound-festival -->
+        <a href="open-sound-festival.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/open-sound-festival.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 24-01-2026</span></div>
+                    <h2 class="card-title">Open Sound: Riflessioni sul Futuro dei Festival</h2>
+                    <p class="card-excerpt">Un'analisi approfondita sul futuro sostenibile ed etico dei festival musicali.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO enrico-bisi-musica-torino -->
+        <a href="enrico-bisi-musica-torino.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/enrico-bisi-musica-torino.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 24-01-2026</span></div>
+                    <h2 class="card-title">Enrico Bisi: Quando la Musica Narra Storie di Torino</h2>
+                    <p class="card-excerpt">Un'immersione nell'arte di Enrico Bisi e il suo legame cinematografico con Torino.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO i-10-dischi-internazionali-2026 -->
+        <a href="i-10-dischi-internazionali-2026.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/i-10-dischi-internazionali-2026.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 24-01-2026</span></div>
+                    <h2 class="card-title">10 Migliori Album del 2025 da Riscoprire nel 2026</h2>
+                    <p class="card-excerpt">Una selezione imperdibile della musica internazionale che ha segnato l'anno passato.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO tragedia-crans-montana -->
+        <a href="tragedia-crans-montana.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/tragedia-crans-montana.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 24-01-2026</span></div>
+                    <h2 class="card-title">Tragedia di Crans Montana: Riflessioni sulla Sicurezza</h2>
+                    <p class="card-excerpt">L'articolo analizza la tragica vicenda del club La Constellation in Svizzera.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO takkuuk-groenlandia-bicep -->
+        <a href="takkuuk-groenlandia-bicep.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/takkuuk-groenlandia-bicep.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 24-01-2026</span></div>
+                    <h2 class="card-title">Takkuuk: Viaggio sonoro in Groenlandia</h2>
+                    <p class="card-excerpt">Un progetto musicale che porta l'ascoltatore in Groenlandia, influenzato dai Sigur Rós e Bicep.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO xhl-unit-lorenzo-corsetti -->
+        <a href="xhl-unit-lorenzo-corsetti.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/xhl-unit-lorenzo-corsetti.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 24-01-2026</span></div>
+                    <h2 class="card-title">XHL Unit: L'Innovazione Sonora di Lorenzo Corsetti</h2>
+                    <p class="card-excerpt">Un'analisi della premiere di XHL Unit, progetto che sfida le convenzioni elettroniche.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO inner-spaces-milano -->
+        <a href="inner-spaces-milano.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/inner-spaces-milano.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 24-01-2026</span></div>
+                    <h2 class="card-title">Inner_Spaces a Milano: un evento unico</h2>
+                    <p class="card-excerpt">Un'analisi approfondita dell'evento Inner_Spaces a Milano e la sua importanza culturale.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO radio-obbligatoria-auto-bruxelles -->
+        <a href="radio-obbligatoria-auto-bruxelles.html" class="article-card-link" data-cat="Tech">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/radio-obbligatoria-auto-bruxelles.jpg')"><span class="card-cat">Tech</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 24-01-2026</span></div>
+                    <h2 class="card-title">Radio obbligatoria in auto: Bruxelles stoppa l'Italia?</h2>
+                    <p class="card-excerpt">La Commissione Europea frena l'obbligo del DAB+ nelle nuove auto in Italia.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO fuori-massena-milano -->
+        <a href="fuori-massena-milano.html" class="article-card-link" data-cat="Eventi">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/fuori-massena-milano.jpg')"><span class="card-cat">Eventi</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 24-01-2026</span></div>
+                    <h2 class="card-title">Fuori Massena: Radio Deejay accende Milano</h2>
+                    <p class="card-excerpt">Il progetto 'Fuori Massena' porta l'energia della radio alla Fabbrica del Vapore.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO rocky-kiss-kiss-bau-bau-2026 -->
+        <a href="rocky-kiss-kiss-bau-bau-2026.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/rocky-kiss-kiss-bau-bau-2026.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 24-01-2026</span></div>
+                    <h2 class="card-title">Rocky: Lo Yorkshire Re di Kiss Kiss Bau Bau 2026</h2>
+                    <p class="card-excerpt">La storia del piccolo campione che ha conquistato il concorso di Radio Kiss Kiss.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO radio-zeta-club -->
+        <a href="radio-zeta-club.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/radio-zeta-club.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 24-01-2026</span></div>
+                    <h2 class="card-title">Radio Zeta Club: Dance e DJ Set esclusivi</h2>
+                    <p class="card-excerpt">Radio Zeta lancia un nuovo format dedicato alla musica dance ed elettronica.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO alberto-davoli-ritorna-radio-monte-carlo -->
+        <a href="alberto-davoli-ritorna-radio-monte-carlo.html" class="article-card-link" data-cat="Tech">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/alberto-davoli-ritorna-radio-monte-carlo.jpg')"><span class="card-cat">Tech</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 24-01-2026</span></div>
+                    <h2 class="card-title">Alberto Davoli Ritorna a Radio Monte Carlo</h2>
+                    <p class="card-excerpt">Il celebre conduttore torna a "Happy Together" dopo cinque settimane.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO rtl-102-5-power-hits-estate-2026-verona -->
+        <a href="rtl-102-5-power-hits-estate-2026-verona.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/rtl-102-5-power-hits-estate-2026-verona.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 24-01-2026</span></div>
+                    <h2 class="card-title">RTL 102.5 Power Hits Estate 2026: Biglietti Disponibili</h2>
+                    <p class="card-excerpt">Disponibili i biglietti per la finalissima all'Arena di Verona.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO tutti-pazzi-live-rds-roma -->
+        <a href="tutti-pazzi-live-rds-roma.html" class="article-card-link" data-cat="News">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/tutti-pazzi-live-rds-roma.jpg')"><span class="card-cat">News</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 24-01-2026</span></div>
+                    <h2 class="card-title">Tutti Pazzi Live RDS: Il Morning Show Infuoca Roma</h2>
+                    <p class="card-excerpt">L'energia contagiosa di 'Tutti Pazzi per RDS' torna a Roma con un evento live.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO rds-top-employer-2026 -->
+        <a href="rds-top-employer-2026.html" class="article-card-link" data-cat="Tech">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/rds-top-employer-2026.jpg')"><span class="card-cat">Tech</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 24-01-2026</span></div>
+                    <h2 class="card-title">RDS: Top Employer Italia 2026</h2>
+                    <p class="card-excerpt">RDS ottiene la prestigiosa certificazione Top Employer Italia 2026.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+        <!-- ARTICOLO world-radio-day-2026-milano -->
+        <a href="world-radio-day-2026-milano.html" class="article-card-link" data-cat="Tech">
+            <article class="article-card">
+                <div class="card-img" style="background-image: url('img/world-radio-day-2026-milano.jpg')"><span class="card-cat">Tech</span></div>
+                <div class="card-content">
+                    <div class="card-meta"><span><i class="far fa-calendar"></i> 24-01-2026</span></div>
+                    <h2 class="card-title">World Radio Day 2026: Celebrazione a Milano</h2>
+                    <p class="card-excerpt">Milano celebra il World Radio Day con Linus, Jake La Furia e altre star.</p>
+                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
+                </div>
+            </article>
+        </a>
+
+    </div>
+    
+    <!-- CONTROLLI PAGINAZIONE -->
+    <div class="pagination" id="paginationControls"></div>
+
+    <div class="most-read-section" style="margin-top: 60px; border-top: 1px solid #333; padding-top: 40px;">
+        <h3 style="font-size: 1.5rem; margin-bottom: 20px; color: var(--secondary);"><i class="fas fa-chart-line"></i> I più letti del mese</h3>
+        <ul style="list-style: none; padding: 0;">
+            <li style="display: flex; gap: 15px; margin-bottom: 20px; align-items: center; border-bottom: 1px solid #222; padding-bottom: 15px;">
+                <span style="font-size: 2rem; font-weight: 800; color: #333; width: 30px;">1</span>
+                <a href="#" style="font-size: 1rem; font-weight: 600; color: #ddd; text-decoration:none;">Come scegliere il Jingle perfetto per la tua Radio</a>
+            </li>
+            <li style="display: flex; gap: 15px; margin-bottom: 20px; align-items: center; border-bottom: 1px solid #222; padding-bottom: 15px;">
+                <span style="font-size: 2rem; font-weight: 800; color: #333; width: 30px;">2</span>
+                <a href="#" style="font-size: 1rem; font-weight: 600; color: #ddd; text-decoration:none;">Diritti d'autore e AI: Cosa cambia nel 2026?</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<footer>
+    &copy; 2026 Fausto Fusetti - 
+    <a href="https://rickym2025.github.io/JingleShop/" target="_blank">Visita il Jingle Shop</a>
+</footer>
+
+<!-- SCRIPT GESTIONE PAGINAZIONE E FILTRI -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        generateDynamicFilters();
+        initBlog();
+    });
+
+    const itemsPerPage = 9; 
+    let currentPage = 1;
+    let currentArticles = []; 
+
+    function generateDynamicFilters() {
+        const articles = document.querySelectorAll('.article-card-link');
+        const categories = new Set();
+        const filterContainer = document.getElementById('categoryFilters');
+        articles.forEach(art => {
+            const cat = art.getAttribute('data-cat');
+            if (cat) categories.add(cat.trim());
+        });
+        Array.from(categories).sort().forEach(cat => {
+            const btn = document.createElement('button');
+            btn.className = 'filter-btn';
+            btn.textContent = cat;
+            btn.onclick = function(e) { filterCategory(cat); };
+            filterContainer.appendChild(btn);
+        });
     }
 
-function handleFilterClick(e) { if (e.target.classList.contains('filter-btn')) { const { filterKey, filterValue } = e.target.dataset; appState.currentFilters[filterKey] = filterValue; e.target.parentElement.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active')); e.target.classList.add('active'); renderSongs(); } }
+    function initBlog() {
+        currentArticles = Array.from(document.querySelectorAll('.article-card-link'));
+        renderPagination();
+        document.getElementById('searchInput').addEventListener('keyup', (e) => {
+            const query = e.target.value.toLowerCase();
+            filterData(query);
+        });
+    }
 
-function setupSecondaryFeatures() {
-try {
-const chatbotContainer = document.getElementById('chatbot-container');
-if(chatbotContainer) {
-chatbotContainer.innerHTML = `<style>#chatbot-window-wrapper{position:fixed;bottom:140px;right:25px;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out}.chatbot-close-btn{position:absolute;top:10px;right:15px;font-size:2.2em;color:white;cursor:pointer;line-height:1;font-weight:300}#chatbot-welcome-message{position:fixed;bottom:100px;right:40px;background:var(--primary-color);color:white;padding:10px 15px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.2);opacity:0;transform:translateY(10px);transition:all .4s ease-in-out;visibility:hidden;z-index:9997;font-size:.9em}#chatbot-welcome-message.visible{opacity:1;transform:translateY(0);visibility:visible}#chatbot-welcome-message::after{content:'';position:absolute;bottom:-7px;right:25px;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid var(--primary-color)}@media (max-width:768px){#chatbot-window-wrapper{bottom:130px;right:15px} #chatbot-bubble{bottom:15px;right:15px} #chatbot-welcome-message{right:25px;bottom:90px} #chatbot-welcome-message::after{right:20px}}@keyframes rhythmic-bounce{0%,100%{transform:translateY(0)}10%,30%{transform:translateY(0)}20%{transform:translateY(-15px)}25%{transform:translateY(0)}35%{transform:translateY(-15px)}40%{transform:translateY(0)}}#chatbot-bubble{position:fixed;bottom:25px;right:25px;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(fausto_immagine.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:9999}#chatbot-bubble.bouncing{animation:rhythmic-bounce 2.5s ease-in-out}#chatbot-bubble:hover{transform:scale(1.1)}#chatbot-bubble.open{background-image:none;background-color:var(--primary-color);animation:none}#chatbot-bubble.open .icon-close{opacity:1}#chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}#chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}#chatbot-window{position:relative;margin-top:45px;width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden}.chatbot-header-logo{width:90px;height:90px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 10px rgba(0,0,0,0.3);object-fit:cover;position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:10000}.chatbot-header{position:relative;background-color:var(--primary-color);color:#fff;padding:1rem;padding-top:55px;text-align:center;flex-shrink:0}.chatbot-messages{flex-grow:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column;background-image:linear-gradient(rgba(249,247,243,.7),rgba(249,247,243,.7)),url(https://github.com/Rickym2025/fausto-fusetti-links/blob/main/sfondo_chat.jpg?raw=true);background-size:cover;background-position:center}.message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}.message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0;align-self:flex-start}.message-text{padding:10px 15px;border-radius:18px;line-height:1.4;overflow-wrap:break-word;word-break:break-word;text-align:left;box-shadow:0 2px 5px rgba(0,0,0,.1)}.message.user .message-text{background-color:rgba(238,242,245,.75);color:#333;border-bottom-right-radius:4px}.message.bot .message-text{background-color:rgba(6,147,227,.8);color:#fff;border-bottom-left-radius:4px}.chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}.chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid var(--primary-color)}.chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}</style>
+    function filterCategory(cat) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        // Trova il bottone cliccato anche se generato dinamicamente
+        const allBtns = Array.from(document.querySelectorAll('.filter-btn'));
+        const btn = allBtns.find(b => b.textContent === cat) || allBtns[0]; 
+        btn.classList.add('active');
 
-<div id="chatbot-bubble"><svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg></div>
-            <div id="chatbot-welcome-message">Posso aiutarti a trovare un brano?</div>
-            <div id="chatbot-window-wrapper"><img src="fausto_immagine.jpg" alt="Fausto AI" class="chatbot-header-logo"><div id="chatbot-window"><div class="chatbot-header"><div><h3>Fausto AI</h3><small>Assistente Virtuale</small></div><span class="chatbot-close-btn">&times;</span></div><div class="chatbot-messages" id="chatbot-messages"></div><div class="chatbot-input"><input type="text" id="chatbot-input-field" name="chatbot_message" autocomplete="off" placeholder="Scrivi un messaggio..."><button id="chatbot-send-btn"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg></button></div></div></div>`;
-            
-            const webhookUrl = 'https://n8n-nuovo.duckdns.org/webhook/ffausto-ai-chat', bubble = document.getElementById('chatbot-bubble'), windowWrapper = document.getElementById('chatbot-window-wrapper'), messagesEl = document.getElementById('chatbot-messages'), inputField = document.getElementById('chatbot-input-field'), sendBtn = document.getElementById('chatbot-send-btn'), closeBtn = document.querySelector('.chatbot-close-btn'), welcomeMessage = document.getElementById('chatbot-welcome-message');
-            let reEngagementTimer = null;
+        const allArticles = Array.from(document.querySelectorAll('.article-card-link'));
+        if (cat === 'all') currentArticles = allArticles;
+        else currentArticles = allArticles.filter(art => art.getAttribute('data-cat') === cat);
+        
+        currentPage = 1;
+        renderPagination();
+    }
 
-            const triggerWelcomeAnimation = () => {
-                if (!windowWrapper.classList.contains('open')) {
-                    welcomeMessage.classList.add('visible');
-                    bubble.classList.add('bouncing');
-                    setTimeout(() => { welcomeMessage.classList.remove('visible'); }, 6000);
-                }
-            };
-            
-            const toggleChat = () => {
-                if (appState.isChatAnimating) return;
-                appState.isChatAnimating = true;
-
-                clearTimeout(reEngagementTimer);
-                welcomeMessage.classList.remove('visible');
-                bubble.classList.remove('bouncing');
-
-                const isOpening = !windowWrapper.classList.contains('open');
-                windowWrapper.classList.toggle('open');
-                bubble.classList.toggle('open');
-
-                if (isOpening) { setTimeout(() => inputField.focus(), 300); }
-
-                setTimeout(() => {
-                    appState.isChatAnimating = false;
-                    if (!isOpening) {
-                        reEngagementTimer = setTimeout(triggerWelcomeAnimation, 15000);
-                    }
-                }, 350);
-            };
-
-            const addMessage = (rawText, type) => { const msgDiv = document.createElement('div'); msgDiv.className = `message ${type}`; if (type === 'bot') { const avatar = document.createElement('img'); avatar.src = 'fausto_immagine.jpg'; avatar.className = 'message-avatar'; msgDiv.appendChild(avatar); } const textDiv = document.createElement('div'); textDiv.className = 'message-text'; textDiv.innerHTML = DOMPurify.sanitize(rawText, { ADD_TAGS: ['a', 'ul', 'li', 'strong'], ADD_ATTR: ['href', 'target'] }); msgDiv.appendChild(textDiv); messagesEl.appendChild(msgDiv); messagesEl.scrollTop = messagesEl.scrollHeight; };
-            const sendMessage = async () => { const userMessage = inputField.value.trim(); if (userMessage === '') return; addMessage(userMessage, 'user'); inputField.value = ''; try { const response = await fetch(`${webhookUrl}?user_message=${encodeURIComponent(userMessage)}`, { method: 'POST' }); if (!response.ok) throw new Error("Network response"); const data = await response.json(); addMessage(data.response || "C'è stato un problema.", 'bot'); } catch (error) { addMessage('Spiacente, si è verificato un errore.', 'bot'); } };
-            
-            bubble.addEventListener('click', toggleChat);
-            closeBtn.addEventListener('click', toggleChat);
-            sendBtn.addEventListener('click', sendMessage);
-            inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
-            
-            addMessage("Ciao! Sono Fausto AI, assistente virtuale. Sono qui per aiutarti a trovare il tuo brano ideale. Cosa stai cercando?", 'bot');
-
-            setTimeout(triggerWelcomeAnimation, 2000);
+    function filterData(query) {
+        const allArticles = Array.from(document.querySelectorAll('.article-card-link'));
+        if (query.trim() === "") {
+            currentArticles = allArticles;
+        } else {
+            currentArticles = allArticles.filter(art => {
+                const title = art.querySelector('.card-title').textContent.toLowerCase();
+                const text = art.querySelector('.card-excerpt').textContent.toLowerCase();
+                const cat = art.getAttribute('data-cat').toLowerCase();
+                return title.includes(query) || text.includes(query) || cat.includes(query);
+            });
         }
-    } catch(e) { console.error("Errore chatbot", e); }
-}
+        currentPage = 1;
+        renderPagination();
+    }
 
-initializeCoreFunctionality();
-audioStartOverlay.style.display = 'flex';
+    function renderPagination() {
+        const allArticlesDOM = document.querySelectorAll('.article-card-link');
+        allArticlesDOM.forEach(el => el.style.display = 'none'); 
 
-});
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        currentArticles.slice(start, end).forEach(el => el.style.display = 'block'); 
+
+        const paginationControls = document.getElementById('paginationControls');
+        paginationControls.innerHTML = "";
+        const totalPages = Math.ceil(currentArticles.length / itemsPerPage);
+
+        if (totalPages > 1) {
+            // Indietro
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'page-btn';
+            prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.onclick = () => { if(currentPage > 1) { currentPage--; renderPagination(); window.scrollTo(0,0); }};
+            paginationControls.appendChild(prevBtn);
+
+            // Numeri
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement('button');
+                btn.className = \`page-btn \${i === currentPage ? 'active' : ''}\`;
+                btn.textContent = i;
+                btn.onclick = () => { currentPage = i; renderPagination(); window.scrollTo(0,0); };
+                paginationControls.appendChild(btn);
+            }
+
+            // Avanti
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'page-btn';
+            nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.onclick = () => { if(currentPage < totalPages) { currentPage++; renderPagination(); window.scrollTo(0,0); }};
+            paginationControls.appendChild(nextBtn);
+        }
+    }
 </script>
+
 </body>
 </html>
