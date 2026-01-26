@@ -153,17 +153,17 @@ Iscrizione SIAE n. 189515 e 593874
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
-    // --- CONFIGURAZIONE E STATO ---
+    // --- CONFIGURAZIONE ---
     const appState = {
         allSongs: [],
         currentPlayingItem: null,
         currentFilters: { category: 'all', argomento: 'all' },
         backgroundMusicSrc: document.getElementById('background-audio')?.querySelector('source')?.src || '',
         isBgMusicMuted: true,
-        isChatAnimating: false // Stato per il chatbot
+        isChatAnimating: false
     };
 
-    // --- ELEMENTI DOM PRINCIPALI ---
+    // --- ELEMENTI DOM ---
     const bgAudio = document.getElementById('background-audio');
     const audioStartOverlay = document.getElementById('audio-start-overlay');
     const startAudioBtn = document.getElementById('start-audio-btn');
@@ -176,33 +176,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if(mainPlayer) mainPlayer.loop = true;
 
-    // =========================================================================
-    // 1. GESTIONE DATI E MAPPING (Il cuore del sistema)
-    // =========================================================================
-
-    // Funzione che "normalizza" i dati: legge qualsiasi nome di colonna arrivi da Google
+    // --- MAPPING DATI ---
+    // Adatta i dati ricevuti da Google allo standard del sito
     function getSongData(song) {
-        // Helper per cercare una chiave ignorando maiuscole/minuscole
+        // Cerca chiave case-insensitive
         const findKey = (target) => Object.keys(song).find(k => k.toLowerCase() === target.toLowerCase());
-
+        
         return {
-            title: song[findKey('title')] || song[findKey('titolo')] || "Titolo Sconosciuto",
-            audio: song[findKey('url')] || song[findKey('link_ascolto')] || "",
-            video: song[findKey('video')] || song[findKey('video_link')] || "",
-            // Qui mappiamo Categoria -> Genere
-            category: song[findKey('category')] || song[findKey('categoria')] || song[findKey('genre')] || "",
-            argomento: song[findKey('argomento')] || "",
-            // Importante: cerca la colonna Stato (o status, o state)
-            stato: song[findKey('stato')] || song[findKey('status')] || song[findKey('state')] || ""
+            title: song[findKey('title')] || "Titolo Sconosciuto",
+            audio: song[findKey('url')] || "",
+            video: song[findKey('video')] || "",
+            // Qui mappiamo la categoria ricevuta dallo script come "Genere"
+            category: song[findKey('category')] || song[findKey('genre')] || "",
+            argomento: song[findKey('argomento')] || ""
         };
     }
 
-    // =========================================================================
-    // 2. INIZIALIZZAZIONE
-    // =========================================================================
-
+    // --- INIZIALIZZAZIONE ---
     function initializeCoreFunctionality() {
-        // Setup Modali
+        // Modali
         document.getElementById('open-music-modal').addEventListener('click', () => openModal('music-modal'));
         document.getElementById('open-video-modal').addEventListener('click', () => openModal('video-modal'));
         document.getElementById('open-services-modal').addEventListener('click', () => openModal('services-modal'));
@@ -211,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', (e) => closeModal(e.currentTarget.dataset.target)));
 
-        // Setup Tasto "Richiedi Canzone"
+        // Tasto custom
         const customBtn = document.getElementById('contact-for-custom-song');
         if(customBtn) {
             customBtn.addEventListener('click', () => {
@@ -222,84 +214,64 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Event Listeners Base
         if(startAudioBtn) startAudioBtn.addEventListener('click', handleStartAudioClick);
         if(form) form.addEventListener('submit', handleFormSubmit);
         if(filterContainer) filterContainer.addEventListener('click', handleFilterClick);
         if(songListContainer) songListContainer.addEventListener('click', handleSongListClick);
 
-        // Chiusura Video Singolo
         document.getElementById('close-single-video').addEventListener('click', () => {
             document.getElementById('single-video-overlay').style.display = 'none';
             document.getElementById('single-video-container').innerHTML = '';
         });
 
         setupBackgroundVideo();
-        loadMusicFromApi(); // Carica il catalogo
-        
-        // --- AVVIO CHATBOT ---
+        loadMusicFromApi();
         initChatbot(); 
     }
 
-    // =========================================================================
-    // 3. LOGICA CATALOGO MUSICALE
-    // =========================================================================
-
+    // --- CARICAMENTO DATI (SEMPLIFICATO) ---
     async function loadMusicFromApi() {
-        const CACHE_KEY = 'ff_catalog_v75_brani'; 
-        // Nota: Se vuoi aggiornare i dati subito, scommenta la riga sotto una volta, poi ricommentala
-        // localStorage.removeItem(CACHE_KEY);
+        // !!! IMPORTANTE: CAMBIA VERSIONE CACHE PER VEDERE SUBITO LE MODIFICHE !!!
+        const CACHE_KEY = 'ff_catalog_checkbox_v1'; 
+        // localStorage.removeItem(CACHE_KEY); // Scommenta una volta se non vedi aggiornamenti
 
-        songListContainer.innerHTML = `<p><i class="fas fa-spinner fa-spin"></i> Caricamento libreria...</p>`;
+        songListContainer.innerHTML = `<p><i class="fas fa-spinner fa-spin"></i> Caricamento catalogo...</p>`;
 
         try {
+            // *** INCOLLA QUI IL TUO NUOVO URL DEPLOY ***
             const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw666DGD4BlSHuJwmVYcRLF9_qMJX2LXy_r6gCGVbjR_dXQDngQU-JttofSKOwUkIJZ/exec';
-            const response = await fetch(SCRIPT_URL + '?source=catalogo&t=' + new Date().getTime());
             
+            const response = await fetch(SCRIPT_URL + '?source=catalogo&t=' + new Date().getTime());
             if (!response.ok) throw new Error("Errore connessione");
+            
             let rawData = await response.json();
             
-            // Gestione formati dati Google
-            let allRawSongs = [];
+            // Gestione formati
+            let incomingSongs = [];
             if (Array.isArray(rawData)) {
-                allRawSongs = rawData;
+                incomingSongs = rawData;
             } else if (rawData.data && Array.isArray(rawData.data)) {
-                allRawSongs = rawData.data;
+                incomingSongs = rawData.data;
             } else {
-                allRawSongs = Object.values(rawData).filter(x => typeof x === 'object');
+                incomingSongs = Object.values(rawData).filter(x => typeof x === 'object');
             }
 
-            // --- FILTRO STATO ---
-            const statiAmmessi = ["fausto_cd", "sax_cd", "riccardo_cd", "matteo_cd"];
-            
-            const filteredSongs = allRawSongs.filter(song => {
-                const data = getSongData(song);
-                const statoLower = String(data.stato).toLowerCase();
-                
-                // Se la colonna stato è vuota, decidiamo se includere o no.
-                // Per ora includiamo SOLO se corrisponde a una delle liste
-                return statiAmmessi.some(tag => statoLower.includes(tag));
-            });
+            // ORA NON FILTRIAMO PIÙ NULLA QUI.
+            // Ci fidiamo che lo Script Google mandi solo le canzoni con Checkbox = TRUE.
+            appState.allSongs = incomingSongs;
 
-            // LOG DI CONTROLLO (Premi F12 per vederlo)
-            console.log(`Totale brani scaricati: ${allRawSongs.length}`);
-            console.log(`Totale brani dopo filtro Stato: ${filteredSongs.length}`);
+            console.log(`Caricate ${appState.allSongs.length} canzoni dal Catalogo.`);
 
-            if (filteredSongs.length === 0) {
-                 // FALLBACK DI SICUREZZA: Se il filtro uccide tutto (magari la colonna stato non viene letta)
-                 // Mostriamo tutto per non lasciare il sito vuoto, ma avvisiamo in console.
-                 console.warn("ATTENZIONE: Il filtro ha restituito 0 brani. Mostro tutto il database per sicurezza.");
-                 appState.allSongs = allRawSongs;
+            if (appState.allSongs.length === 0) {
+                songListContainer.innerHTML = `<p style="color:orange">Nessun brano trovato. Verifica di aver spuntato la colonna 'Catalogo' nel foglio.</p>`;
             } else {
-                 appState.allSongs = filteredSongs;
+                createFilterButtons();
+                renderSongs();
             }
-
-            createFilterButtons();
-            renderSongs();
 
         } catch (error) {
-            console.error("Errore catalogo:", error);
-            songListContainer.innerHTML = `<p>Impossibile caricare il catalogo.</p>`;
+            console.error(error);
+            songListContainer.innerHTML = `<p>Errore caricamento dati.</p>`;
         }
     }
 
@@ -310,12 +282,12 @@ document.addEventListener('DOMContentLoaded', function() {
             return [...new Set(split)].sort();
         };
 
-        const genres = extractTags('category'); // Usa i dati di 'category'
+        const genres = extractTags('category'); 
         const arguments = extractTags('argomento');
 
         filterContainer.innerHTML = '';
 
-        // Pulsanti GENERE (ex Categoria)
+        // Filtro GENERE
         if (genres.length > 0) {
             let html = `<div class="filter-group"><div class="filter-label">Genere</div><div class="filter-buttons">`;
             html += `<button class="filter-btn active" data-filter-key="category" data-filter-value="all">Tutti</button>`;
@@ -326,7 +298,7 @@ document.addEventListener('DOMContentLoaded', function() {
             filterContainer.innerHTML += html;
         }
 
-        // Pulsanti ARGOMENTO
+        // Filtro ARGOMENTO
         if (arguments.length > 0) {
             let html = `<div class="filter-group"><div class="filter-label">Argomento</div><div class="filter-buttons">`;
             html += `<button class="filter-btn active" data-filter-key="argomento" data-filter-value="all">Tutti</button>`;
@@ -362,8 +334,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = getSongData(song);
             const item = document.createElement('div');
             item.className = 'song-item';
-            
-            // Salva URL audio
             item.dataset.audioUrl = data.audio;
 
             let videoHtml = '';
@@ -380,70 +350,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // =========================================================================
-    // 4. GESTIONE EVENTI (Click, Player, etc)
-    // =========================================================================
-
-    function handleFilterClick(e) {
-        if (e.target.classList.contains('filter-btn')) {
-            const { filterKey, filterValue } = e.target.dataset;
-            appState.currentFilters[filterKey] = filterValue;
-            
-            e.target.parentElement.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            e.target.classList.add('active');
-            renderSongs();
-        }
-    }
-
-    function handleSongListClick(e) {
-        // Gestione Click VIDEO
-        const videoBtn = e.target.closest('.video-btn');
-        if (videoBtn) {
-            e.stopPropagation();
-            const url = videoBtn.dataset.videoUrl;
-            if(mainPlayer) mainPlayer.pause();
-            
-            const container = document.getElementById('single-video-container');
-            const overlay = document.getElementById('single-video-overlay');
-            
-            if (url.includes('youtube') || url.includes('youtu.be')) {
-                let embed = url.replace("watch?v=", "embed/").replace("youtu.be/", "youtube.com/embed/");
-                if(embed.includes('&')) embed = embed.split('&')[0];
-                container.innerHTML = `<iframe src="${embed}" style="width:100%; height:100%; border:0" allowfullscreen></iframe>`;
-            } else {
-                container.innerHTML = `<video controls autoplay style="width:100%; height:100%"><source src="${url}" type="video/mp4"></video>`;
-            }
-            overlay.style.display = 'flex';
-            return;
-        }
-
-        // Gestione Click AUDIO
-        const item = e.target.closest('.song-item');
-        if (item) {
-            const audioUrl = item.dataset.audioUrl;
-            if(!audioUrl) { alert("Audio non disponibile."); return; }
-
-            if (item === appState.currentPlayingItem && !mainPlayer.paused) {
-                mainPlayer.pause();
-                item.classList.remove('playing');
-            } else {
-                if (appState.currentPlayingItem) appState.currentPlayingItem.classList.remove('playing');
-                appState.currentPlayingItem = item;
-                item.classList.add('playing');
-                mainPlayer.src = audioUrl;
-                mainPlayer.loop = false;
-                mainPlayer.play().catch(e => console.error("Play error:", e));
-            }
-        }
-    }
-
-    // Funzioni Ausiliarie (Video Sfondo, Audio Background, Form)
+    // --- EVENTI E FUNZIONI AUSILIARIE ---
     function openModal(id) { if(mainPlayer) mainPlayer.pause(); document.getElementById(id).style.display = 'flex'; }
-    
-    function closeModal(id) { 
-        document.getElementById(id).style.display = 'none'; 
-        playBackgroundMusic(); 
-    }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; playBackgroundMusic(); }
 
     async function playBackgroundMusic() {
         if (!appState.isBgMusicMuted && appState.backgroundMusicSrc) {
@@ -477,6 +386,50 @@ document.addEventListener('DOMContentLoaded', function() {
         audioCta.style.visibility = 'visible';
     }
 
+    function handleFilterClick(e) {
+        if (e.target.classList.contains('filter-btn')) {
+            const { filterKey, filterValue } = e.target.dataset;
+            appState.currentFilters[filterKey] = filterValue;
+            e.target.parentElement.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+            renderSongs();
+        }
+    }
+
+    function handleSongListClick(e) {
+        const videoBtn = e.target.closest('.video-btn');
+        if (videoBtn) {
+            e.stopPropagation();
+            const url = videoBtn.dataset.videoUrl;
+            if(mainPlayer) mainPlayer.pause();
+            const container = document.getElementById('single-video-container');
+            const overlay = document.getElementById('single-video-overlay');
+            if (url.includes('youtube') || url.includes('youtu.be')) {
+                let embed = url.replace("watch?v=", "embed/").replace("youtu.be/", "youtube.com/embed/");
+                if(embed.includes('&')) embed = embed.split('&')[0];
+                container.innerHTML = `<iframe src="${embed}" style="width:100%; height:100%; border:0" allowfullscreen></iframe>`;
+            } else {
+                container.innerHTML = `<video controls autoplay style="width:100%; height:100%"><source src="${url}" type="video/mp4"></video>`;
+            }
+            overlay.style.display = 'flex';
+            return;
+        }
+
+        const item = e.target.closest('.song-item');
+        if (item) {
+            const audioUrl = item.dataset.audioUrl;
+            if(!audioUrl) { alert("Audio non disponibile."); return; }
+            if (item === appState.currentPlayingItem && !mainPlayer.paused) {
+                mainPlayer.pause(); item.classList.remove('playing');
+            } else {
+                if (appState.currentPlayingItem) appState.currentPlayingItem.classList.remove('playing');
+                appState.currentPlayingItem = item; item.classList.add('playing');
+                mainPlayer.src = audioUrl; mainPlayer.loop = false;
+                mainPlayer.play().catch(e => console.error("Play error:", e));
+            }
+        }
+    }
+
     function setupBackgroundVideo() {
         if (window.innerWidth <= 768) {
             const v = document.getElementById('background-video');
@@ -493,16 +446,10 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(d => { formResult.innerHTML = d.success ? "Inviato!" : "Errore."; if(d.success) form.reset(); });
     }
 
-    // =========================================================================
-    // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓  SEZIONE CHATBOT (BOT)  ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
-    // =========================================================================
-    // Inserisci questo blocco esattamente qui, alla fine dello script
-    
+    // --- CHATBOT ---
     function initChatbot() {
         const container = document.getElementById('chatbot-container');
         if(!container) return;
-
-        // Inserimento HTML e CSS del Bot
         container.innerHTML = `
         <style>
             #chatbot-window-wrapper{position:fixed;bottom:140px;right:25px;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out}.chatbot-close-btn{position:absolute;top:10px;right:15px;font-size:2.2em;color:white;cursor:pointer;line-height:1;font-weight:300}#chatbot-welcome-message{position:fixed;bottom:100px;right:40px;background:var(--primary-color);color:white;padding:10px 15px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.2);opacity:0;transform:translateY(10px);transition:all .4s ease-in-out;visibility:hidden;z-index:9997;font-size:.9em}#chatbot-welcome-message.visible{opacity:1;transform:translateY(0);visibility:visible}#chatbot-welcome-message::after{content:'';position:absolute;bottom:-7px;right:25px;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid var(--primary-color)}@media (max-width:768px){#chatbot-window-wrapper{bottom:130px;right:15px} #chatbot-bubble{bottom:15px;right:15px} #chatbot-welcome-message{right:25px;bottom:90px} #chatbot-welcome-message::after{right:20px}}@keyframes rhythmic-bounce{0%,100%{transform:translateY(0)}10%,30%{transform:translateY(0)}20%{transform:translateY(-15px)}25%{transform:translateY(0)}35%{transform:translateY(-15px)}40%{transform:translateY(0)}}#chatbot-bubble{position:fixed;bottom:25px;right:25px;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(fausto_immagine.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:9999}#chatbot-bubble.bouncing{animation:rhythmic-bounce 2.5s ease-in-out}#chatbot-bubble:hover{transform:scale(1.1)}#chatbot-bubble.open{background-image:none;background-color:var(--primary-color);animation:none}#chatbot-bubble.open .icon-close{opacity:1}#chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}#chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}#chatbot-window{position:relative;margin-top:45px;width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden}.chatbot-header-logo{width:90px;height:90px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 10px rgba(0,0,0,0.3);object-fit:cover;position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:10000}.chatbot-header{position:relative;background-color:var(--primary-color);color:#fff;padding:1rem;padding-top:55px;text-align:center;flex-shrink:0}.chatbot-messages{flex-grow:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column;background-image:linear-gradient(rgba(249,247,243,.7),rgba(249,247,243,.7)),url(https://github.com/Rickym2025/fausto-fusetti-links/blob/main/sfondo_chat.jpg?raw=true);background-size:cover;background-position:center}.message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}.message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0;align-self:flex-start}.message-text{padding:10px 15px;border-radius:18px;line-height:1.4;overflow-wrap:break-word;word-break:break-word;text-align:left;box-shadow:0 2px 5px rgba(0,0,0,.1)}.message.user .message-text{background-color:rgba(238,242,245,.75);color:#333;border-bottom-right-radius:4px}.message.bot .message-text{background-color:rgba(6,147,227,.8);color:#fff;border-bottom-left-radius:4px}.chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}.chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid var(--primary-color)}.chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}
@@ -521,7 +468,6 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         </div>`;
 
-        // Logica Chatbot
         const webhookUrl = 'https://n8n-nuovo.duckdns.org/webhook/ffausto-ai-chat';
         const bubble = document.getElementById('chatbot-bubble');
         const windowWrapper = document.getElementById('chatbot-window-wrapper');
@@ -543,17 +489,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const toggleChat = () => {
             if (appState.isChatAnimating) return;
             appState.isChatAnimating = true;
-
             clearTimeout(reEngagementTimer);
             welcomeMessage.classList.remove('visible');
             bubble.classList.remove('bouncing');
-
             const isOpening = !windowWrapper.classList.contains('open');
             windowWrapper.classList.toggle('open');
             bubble.classList.toggle('open');
-
             if (isOpening) setTimeout(() => inputField.focus(), 300);
-
             setTimeout(() => {
                 appState.isChatAnimating = false;
                 if (!isOpening) reEngagementTimer = setTimeout(triggerWelcomeAnimation, 15000);
@@ -564,17 +506,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const msgDiv = document.createElement('div');
             msgDiv.className = `message ${type}`;
             if (type === 'bot') {
-                const avatar = document.createElement('img');
-                avatar.src = 'fausto_immagine.jpg';
-                avatar.className = 'message-avatar';
-                msgDiv.appendChild(avatar);
+                const avatar = document.createElement('img'); avatar.src = 'fausto_immagine.jpg'; avatar.className = 'message-avatar'; msgDiv.appendChild(avatar);
             }
-            const textDiv = document.createElement('div');
-            textDiv.className = 'message-text';
+            const textDiv = document.createElement('div'); textDiv.className = 'message-text';
             textDiv.innerHTML = DOMPurify.sanitize(rawText, { ADD_TAGS: ['a', 'ul', 'li', 'strong'], ADD_ATTR: ['href', 'target'] });
             msgDiv.appendChild(textDiv);
-            messagesEl.appendChild(msgDiv);
-            messagesEl.scrollTop = messagesEl.scrollHeight;
+            messagesEl.appendChild(msgDiv); messagesEl.scrollTop = messagesEl.scrollHeight;
         };
 
         const sendMessage = async () => {
@@ -587,21 +524,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!response.ok) throw new Error("Network response");
                 const data = await response.json();
                 addMessage(data.response || "C'è stato un problema.", 'bot');
-            } catch (error) {
-                addMessage('Spiacente, si è verificato un errore.', 'bot');
-            }
+            } catch (error) { addMessage('Spiacente, si è verificato un errore.', 'bot'); }
         };
 
-        bubble.addEventListener('click', toggleChat);
-        closeBtn.addEventListener('click', toggleChat);
-        sendBtn.addEventListener('click', sendMessage);
-        inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
-
+        bubble.addEventListener('click', toggleChat); closeBtn.addEventListener('click', toggleChat);
+        sendBtn.addEventListener('click', sendMessage); inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
         addMessage("Ciao! Sono Fausto AI, assistente virtuale. Sono qui per aiutarti a trovare il tuo brano ideale. Cosa stai cercando?", 'bot');
         setTimeout(triggerWelcomeAnimation, 2000);
     }
 
-    // AVVIO
     initializeCoreFunctionality();
     if(audioStartOverlay) audioStartOverlay.style.display = 'flex';
 });
