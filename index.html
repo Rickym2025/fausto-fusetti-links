@@ -267,58 +267,95 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // --- CARICAMENTO MUSICA (CORRETTO) ---
+// --- VERSIONE DIAGNOSTICA ---
     async function loadMusicFromApi() {
-        const CACHE_KEY = 'ff_catalog_v_final';
-        
-        // Se vuoi forzare l'aggiornamento, togli il commento alla riga sotto:
-        // localStorage.removeItem(CACHE_KEY);
+        console.log("--- INIZIO DIAGNOSI CATALOGO ---");
+        const CACHE_KEY = 'ff_catalog_DIAGNOSTIC';
+        localStorage.removeItem(CACHE_KEY); // Rimuovo la cache per leggere i dati freschi
 
-        const cachedData = localStorage.getItem(CACHE_KEY);
-        if (cachedData) {
-            try {
-                const parsed = JSON.parse(cachedData);
-                // Cache valida per 1 ora
-                if (new Date().getTime() - parsed.timestamp < 3600 * 1000) {
-                    appState.allSongs = parsed.songs;
-                    createFilterButtons();
-                    renderSongs();
-                    return;
-                }
-            } catch(e) {}
-        }
-
-        songListContainer.innerHTML = `<p><i class="fas fa-spinner fa-spin"></i> Caricamento catalogo...</p>`;
+        songListContainer.innerHTML = `<p><i class="fas fa-spinner fa-spin"></i> Analisi dati in corso...</p>`;
 
         try {
-            // URL dello script Google
-            const response = await fetch('https://script.google.com/macros/s/AKfycbw666DGD4BlSHuJwmVYcRLF9_qMJX2LXy_r6gCGVbjR_dXQDngQU-JttofSKOwUkIJZ/exec?source=catalogo&t=' + new Date().getTime());
-            if (!response.ok) throw new Error("Errore di rete");
+            // Il tuo URL
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw666DGD4BlSHuJwmVYcRLF9_qMJX2LXy_r6gCGVbjR_dXQDngQU-JttofSKOwUkIJZ/exec';
             
-            let newSongs = await response.json();
+            const response = await fetch(SCRIPT_URL + '?source=catalogo&t=' + new Date().getTime());
+            if (!response.ok) throw new Error("Errore connessione Google");
             
-            // FILTRO SULLA COLONNA "STATO"
-            const listeDaMostrare = ["Fausto_CD", "Sax_CD", "Riccardo_CD", "Matteo_CD"];   //INSERISCI QUI COSA ASCOLTARE NEL CATALOGO
-            
-            if (Array.isArray(newSongs)) {
-                newSongs = newSongs.filter(s => {
-                    // Usiamo getProp per leggere "Stato" anche se scritto "stato" o "STATO"
-                    const stato = getProp(s, 'Stato').toLowerCase();
-                    return listeDaMostrare.some(filtro => stato.includes(filtro));
-                });
+            let rawData = await response.json();
+            console.log("1. Dati Grezzi ricevuti:", rawData); // VEDIAMO COSA ARRIVA
 
-                appState.allSongs = newSongs;
-                
-                localStorage.setItem(CACHE_KEY, JSON.stringify({
-                    timestamp: new Date().getTime(),
-                    songs: newSongs
-                }));
+            let newSongs = [];
 
-                createFilterButtons();
-                renderSongs();
+            // Tentativo di capire la struttura
+            if (Array.isArray(rawData)) {
+                newSongs = rawData;
+                console.log("2. Formato rilevato: Array semplice");
+            } else if (rawData.data && Array.isArray(rawData.data)) {
+                newSongs = rawData.data;
+                console.log("2. Formato rilevato: Oggetto con proprietà 'data'");
+            } else if (rawData.records && Array.isArray(rawData.records)) {
+                newSongs = rawData.records;
+                console.log("2. Formato rilevato: Oggetto con proprietà 'records'");
+            } else {
+                // Se è un oggetto strano, proviamo a convertirlo
+                console.warn("2. Formato sconosciuto. Tento conversione...");
+                newSongs = Object.values(rawData);
             }
+
+            if (!newSongs || newSongs.length === 0) {
+                songListContainer.innerHTML = `<p style="color:orange">Il Database sembra vuoto.</p>`;
+                return;
+            }
+
+            // --- CONTROLLO NOMI COLONNE ---
+            // Prendiamo il primo elemento per vedere come si chiamano le chiavi
+            const primaCanzone = newSongs[0];
+            const chiaviTrovate = Object.keys(primaCanzone);
+            console.log("3. Nomi Colonne Trovati nel primo brano:", chiaviTrovate);
+            
+            // Verifichiamo il valore di "Stato" nel primo brano
+            // Cerchiamo qualsiasi chiave che contenga "stato"
+            const chiaveStato = chiaviTrovate.find(k => k.toLowerCase().includes("stato"));
+            console.log(`4. La colonna Stato è stata rilevata come: '${chiaveStato}'`);
+            if (chiaveStato) {
+                console.log(`   Valore nel primo brano: '${primaCanzone[chiaveStato]}'`);
+            } else {
+                console.warn("   ATTENZIONE: Nessuna colonna 'Stato' trovata!");
+            }
+
+            // --- FILTRAGGIO (Ora più robusto) ---
+            const listeDaMostrare = ["fausto_cd", "sax_cd", "riccardo_cd", "matteo_cd"];
+            
+            const songsFiltrate = newSongs.filter(s => {
+                // Usa la funzione getProp definita nel codice principale
+                // Se non c'è, la ridefinisco qui al volo per sicurezza
+                const getVal = (o, k) => {
+                    const found = Object.keys(o).find(key => key.toLowerCase() === k.toLowerCase());
+                    return found ? o[found] : "";
+                };
+
+                const stato = String(getVal(s, 'Stato')).toLowerCase().trim();
+                return listeDaMostrare.some(filtro => stato.includes(filtro));
+            });
+
+            console.log(`5. Risultato Filtro: ${songsFiltrate.length} canzoni trovate su ${newSongs.length} totali.`);
+
+            // Se il filtro cancella tutto, per ora mostriamo TUTTO così vediamo almeno la lista
+            if (songsFiltrate.length === 0) {
+                console.warn("Il filtro ha nascosto tutto. Mostro elenco completo per debug.");
+                appState.allSongs = newSongs; // Carico tutto
+                songListContainer.innerHTML += `<p style="color:orange; font-size:0.8em;">Filtro Stato fallito. Mostro ${newSongs.length} brani non filtrati per controllo.</p>`;
+            } else {
+                appState.allSongs = songsFiltrate;
+            }
+
+            createFilterButtons();
+            renderSongs();
+
         } catch (error) {
-            console.error("Errore catalogo:", error);
-            songListContainer.innerHTML = `<p>Impossibile caricare il catalogo.</p>`;
+            console.error("Errore FATALE:", error);
+            songListContainer.innerHTML = `<p style="color:red">Errore: ${error.message}</p>`;
         }
     }
 
