@@ -153,15 +153,17 @@ Iscrizione SIAE n. 189515 e 593874
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
+    // --- CONFIGURAZIONE E STATO ---
     const appState = {
-        isChatAnimating: false,
         allSongs: [],
         currentPlayingItem: null,
         currentFilters: { category: 'all', argomento: 'all' },
         backgroundMusicSrc: document.getElementById('background-audio')?.querySelector('source')?.src || '',
         isBgMusicMuted: true,
+        isChatAnimating: false // Stato per il chatbot
     };
 
+    // --- ELEMENTI DOM PRINCIPALI ---
     const bgAudio = document.getElementById('background-audio');
     const audioStartOverlay = document.getElementById('audio-start-overlay');
     const startAudioBtn = document.getElementById('start-audio-btn');
@@ -174,18 +176,33 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if(mainPlayer) mainPlayer.loop = true;
 
-    // --- FUNZIONI DI SUPPORTO PER LEGGERE IL FOGLIO GOOGLE ---
-    // Questa funzione serve a leggere le colonne anche se scritte maiuscole/minuscole
-    function getProp(obj, keyName) {
-        if (!obj) return "";
-        const keys = Object.keys(obj);
-        // Cerca la chiave ignorando maiuscole/minuscole
-        const match = keys.find(k => k.toLowerCase() === keyName.toLowerCase());
-        return match ? obj[match] : "";
+    // =========================================================================
+    // 1. GESTIONE DATI E MAPPING (Il cuore del sistema)
+    // =========================================================================
+
+    // Funzione che "normalizza" i dati: legge qualsiasi nome di colonna arrivi da Google
+    function getSongData(song) {
+        // Helper per cercare una chiave ignorando maiuscole/minuscole
+        const findKey = (target) => Object.keys(song).find(k => k.toLowerCase() === target.toLowerCase());
+
+        return {
+            title: song[findKey('title')] || song[findKey('titolo')] || "Titolo Sconosciuto",
+            audio: song[findKey('url')] || song[findKey('link_ascolto')] || "",
+            video: song[findKey('video')] || song[findKey('video_link')] || "",
+            // Qui mappiamo Categoria -> Genere
+            category: song[findKey('category')] || song[findKey('categoria')] || song[findKey('genre')] || "",
+            argomento: song[findKey('argomento')] || "",
+            // Importante: cerca la colonna Stato (o status, o state)
+            stato: song[findKey('stato')] || song[findKey('status')] || song[findKey('state')] || ""
+        };
     }
 
+    // =========================================================================
+    // 2. INIZIALIZZAZIONE
+    // =========================================================================
+
     function initializeCoreFunctionality() {
-        // Modali
+        // Setup Modali
         document.getElementById('open-music-modal').addEventListener('click', () => openModal('music-modal'));
         document.getElementById('open-video-modal').addEventListener('click', () => openModal('video-modal'));
         document.getElementById('open-services-modal').addEventListener('click', () => openModal('services-modal'));
@@ -194,51 +211,245 @@ document.addEventListener('DOMContentLoaded', function() {
 
         document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', (e) => closeModal(e.currentTarget.dataset.target)));
 
-        // Tasto speciale "Richiedi Canzone"
+        // Setup Tasto "Richiedi Canzone"
         const customBtn = document.getElementById('contact-for-custom-song');
         if(customBtn) {
             customBtn.addEventListener('click', () => {
                 closeModal('services-modal');
                 openModal('contact-modal');
-                document.querySelector('#contact-modal select[name="service_type"]').value = 'canzone_personalizzata';
+                const select = document.querySelector('#contact-modal select[name="service_type"]');
+                if(select) select.value = 'canzone_personalizzata';
             });
         }
 
+        // Event Listeners Base
         if(startAudioBtn) startAudioBtn.addEventListener('click', handleStartAudioClick);
         if(form) form.addEventListener('submit', handleFormSubmit);
-        
-        // QUI C'ERA L'ERRORE: Ora la funzione handleFilterClick è definita correttamente sotto
         if(filterContainer) filterContainer.addEventListener('click', handleFilterClick);
         if(songListContainer) songListContainer.addEventListener('click', handleSongListClick);
 
+        // Chiusura Video Singolo
         document.getElementById('close-single-video').addEventListener('click', () => {
             document.getElementById('single-video-overlay').style.display = 'none';
             document.getElementById('single-video-container').innerHTML = '';
         });
 
         setupBackgroundVideo();
-        loadMusicFromApi(); // Carica i dati
-        setupSecondaryFeatures();
+        loadMusicFromApi(); // Carica il catalogo
+        
+        // --- AVVIO CHATBOT ---
+        initChatbot(); 
     }
 
-    function openModal(modalId) {
-        if(mainPlayer) mainPlayer.pause();
-        document.getElementById(modalId).style.display = 'flex';
+    // =========================================================================
+    // 3. LOGICA CATALOGO MUSICALE
+    // =========================================================================
+
+    async function loadMusicFromApi() {
+        const CACHE_KEY = 'ff_catalog_v75_brani'; 
+        // Nota: Se vuoi aggiornare i dati subito, scommenta la riga sotto una volta, poi ricommentala
+        // localStorage.removeItem(CACHE_KEY);
+
+        songListContainer.innerHTML = `<p><i class="fas fa-spinner fa-spin"></i> Caricamento libreria...</p>`;
+
+        try {
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw666DGD4BlSHuJwmVYcRLF9_qMJX2LXy_r6gCGVbjR_dXQDngQU-JttofSKOwUkIJZ/exec';
+            const response = await fetch(SCRIPT_URL + '?source=catalogo&t=' + new Date().getTime());
+            
+            if (!response.ok) throw new Error("Errore connessione");
+            let rawData = await response.json();
+            
+            // Gestione formati dati Google
+            let allRawSongs = [];
+            if (Array.isArray(rawData)) {
+                allRawSongs = rawData;
+            } else if (rawData.data && Array.isArray(rawData.data)) {
+                allRawSongs = rawData.data;
+            } else {
+                allRawSongs = Object.values(rawData).filter(x => typeof x === 'object');
+            }
+
+            // --- FILTRO STATO ---
+            const statiAmmessi = ["fausto_cd", "sax_cd", "riccardo_cd", "matteo_cd"];
+            
+            const filteredSongs = allRawSongs.filter(song => {
+                const data = getSongData(song);
+                const statoLower = String(data.stato).toLowerCase();
+                
+                // Se la colonna stato è vuota, decidiamo se includere o no.
+                // Per ora includiamo SOLO se corrisponde a una delle liste
+                return statiAmmessi.some(tag => statoLower.includes(tag));
+            });
+
+            // LOG DI CONTROLLO (Premi F12 per vederlo)
+            console.log(`Totale brani scaricati: ${allRawSongs.length}`);
+            console.log(`Totale brani dopo filtro Stato: ${filteredSongs.length}`);
+
+            if (filteredSongs.length === 0) {
+                 // FALLBACK DI SICUREZZA: Se il filtro uccide tutto (magari la colonna stato non viene letta)
+                 // Mostriamo tutto per non lasciare il sito vuoto, ma avvisiamo in console.
+                 console.warn("ATTENZIONE: Il filtro ha restituito 0 brani. Mostro tutto il database per sicurezza.");
+                 appState.allSongs = allRawSongs;
+            } else {
+                 appState.allSongs = filteredSongs;
+            }
+
+            createFilterButtons();
+            renderSongs();
+
+        } catch (error) {
+            console.error("Errore catalogo:", error);
+            songListContainer.innerHTML = `<p>Impossibile caricare il catalogo.</p>`;
+        }
     }
 
-    function closeModal(modalId) {
-        document.getElementById(modalId).style.display = 'none';
-        playBackgroundMusic();
+    function createFilterButtons() {
+        const extractTags = (fieldKey) => {
+            const raw = appState.allSongs.map(s => getSongData(s)[fieldKey]).filter(Boolean);
+            const split = raw.flatMap(t => t.toString().split(/[;,]+/).map(x => x.trim()));
+            return [...new Set(split)].sort();
+        };
+
+        const genres = extractTags('category'); // Usa i dati di 'category'
+        const arguments = extractTags('argomento');
+
+        filterContainer.innerHTML = '';
+
+        // Pulsanti GENERE (ex Categoria)
+        if (genres.length > 0) {
+            let html = `<div class="filter-group"><div class="filter-label">Genere</div><div class="filter-buttons">`;
+            html += `<button class="filter-btn active" data-filter-key="category" data-filter-value="all">Tutti</button>`;
+            genres.forEach(val => {
+                html += `<button class="filter-btn" data-filter-key="category" data-filter-value="${val}">${val}</button>`;
+            });
+            html += `</div></div>`;
+            filterContainer.innerHTML += html;
+        }
+
+        // Pulsanti ARGOMENTO
+        if (arguments.length > 0) {
+            let html = `<div class="filter-group"><div class="filter-label">Argomento</div><div class="filter-buttons">`;
+            html += `<button class="filter-btn active" data-filter-key="argomento" data-filter-value="all">Tutti</button>`;
+            arguments.forEach(val => {
+                html += `<button class="filter-btn" data-filter-key="argomento" data-filter-value="${val}">${val}</button>`;
+            });
+            html += `</div></div>`;
+            filterContainer.innerHTML += html;
+        }
+    }
+
+    function renderSongs() {
+        songListContainer.innerHTML = '';
+        
+        const currentCat = appState.currentFilters.category;
+        const currentArg = appState.currentFilters.argomento;
+
+        const filtered = appState.allSongs.filter(song => {
+            const data = getSongData(song);
+            
+            const catMatch = currentCat === 'all' || data.category.toString().split(/[;,]+/).map(t=>t.trim()).includes(currentCat);
+            const argMatch = currentArg === 'all' || data.argomento.toString().split(/[;,]+/).map(t=>t.trim()).includes(currentArg);
+
+            return catMatch && argMatch;
+        });
+
+        if (filtered.length === 0) {
+            songListContainer.innerHTML = '<p>Nessun brano con questi filtri.</p>';
+            return;
+        }
+
+        filtered.forEach(song => {
+            const data = getSongData(song);
+            const item = document.createElement('div');
+            item.className = 'song-item';
+            
+            // Salva URL audio
+            item.dataset.audioUrl = data.audio;
+
+            let videoHtml = '';
+            if (data.video && data.video.trim().length > 5) {
+                videoHtml = `<div class="video-btn" data-video-url="${data.video}"><i class="fas fa-video"></i></div>`;
+            }
+
+            item.innerHTML = `
+                <span class="title">${data.title}</span>
+                ${videoHtml}
+                <div class="play-btn"><i class="fas fa-play"></i></div>
+            `;
+            songListContainer.appendChild(item);
+        });
+    }
+
+    // =========================================================================
+    // 4. GESTIONE EVENTI (Click, Player, etc)
+    // =========================================================================
+
+    function handleFilterClick(e) {
+        if (e.target.classList.contains('filter-btn')) {
+            const { filterKey, filterValue } = e.target.dataset;
+            appState.currentFilters[filterKey] = filterValue;
+            
+            e.target.parentElement.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+            renderSongs();
+        }
+    }
+
+    function handleSongListClick(e) {
+        // Gestione Click VIDEO
+        const videoBtn = e.target.closest('.video-btn');
+        if (videoBtn) {
+            e.stopPropagation();
+            const url = videoBtn.dataset.videoUrl;
+            if(mainPlayer) mainPlayer.pause();
+            
+            const container = document.getElementById('single-video-container');
+            const overlay = document.getElementById('single-video-overlay');
+            
+            if (url.includes('youtube') || url.includes('youtu.be')) {
+                let embed = url.replace("watch?v=", "embed/").replace("youtu.be/", "youtube.com/embed/");
+                if(embed.includes('&')) embed = embed.split('&')[0];
+                container.innerHTML = `<iframe src="${embed}" style="width:100%; height:100%; border:0" allowfullscreen></iframe>`;
+            } else {
+                container.innerHTML = `<video controls autoplay style="width:100%; height:100%"><source src="${url}" type="video/mp4"></video>`;
+            }
+            overlay.style.display = 'flex';
+            return;
+        }
+
+        // Gestione Click AUDIO
+        const item = e.target.closest('.song-item');
+        if (item) {
+            const audioUrl = item.dataset.audioUrl;
+            if(!audioUrl) { alert("Audio non disponibile."); return; }
+
+            if (item === appState.currentPlayingItem && !mainPlayer.paused) {
+                mainPlayer.pause();
+                item.classList.remove('playing');
+            } else {
+                if (appState.currentPlayingItem) appState.currentPlayingItem.classList.remove('playing');
+                appState.currentPlayingItem = item;
+                item.classList.add('playing');
+                mainPlayer.src = audioUrl;
+                mainPlayer.loop = false;
+                mainPlayer.play().catch(e => console.error("Play error:", e));
+            }
+        }
+    }
+
+    // Funzioni Ausiliarie (Video Sfondo, Audio Background, Form)
+    function openModal(id) { if(mainPlayer) mainPlayer.pause(); document.getElementById(id).style.display = 'flex'; }
+    
+    function closeModal(id) { 
+        document.getElementById(id).style.display = 'none'; 
+        playBackgroundMusic(); 
     }
 
     async function playBackgroundMusic() {
         if (!appState.isBgMusicMuted && appState.backgroundMusicSrc) {
-            if (mainPlayer.src !== appState.backgroundMusicSrc) {
-                mainPlayer.src = appState.backgroundMusicSrc;
-            }
+            if (mainPlayer.src !== appState.backgroundMusicSrc) mainPlayer.src = appState.backgroundMusicSrc;
             mainPlayer.loop = true;
-            try { await mainPlayer.play(); }
-            catch (error) { console.warn("Autoplay audio bloccato dal browser (normale).", error); }
+            try { await mainPlayer.play(); } catch(e){}
         }
     }
 
@@ -253,338 +464,142 @@ document.addEventListener('DOMContentLoaded', function() {
     if(audioCta) {
         audioCta.addEventListener('click', () => {
             appState.isBgMusicMuted = !appState.isBgMusicMuted;
-            if (appState.isBgMusicMuted) { mainPlayer.pause(); } else { playBackgroundMusic(); }
+            if (appState.isBgMusicMuted) mainPlayer.pause(); else playBackgroundMusic();
             updateMuteButton();
         });
     }
 
     function updateMuteButton() {
-        const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i');
-        const ctaText = document.querySelector('#audio-cta .cta-text');
-        muteBtnIcon.className = appState.isBgMusicMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
-        ctaText.textContent = appState.isBgMusicMuted ? 'Attiva la musica' : 'Disattiva musica';
+        const icon = document.getElementById('mute-btn-icon').querySelector('i');
+        const text = document.querySelector('#audio-cta .cta-text');
+        icon.className = appState.isBgMusicMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
+        text.textContent = appState.isBgMusicMuted ? 'Attiva la musica' : 'Disattiva musica';
         audioCta.style.visibility = 'visible';
-    }
-
-    // --- CARICAMENTO MUSICA (CORRETTO) ---
-// --- VERSIONE DIAGNOSTICA ---
-    async function loadMusicFromApi() {
-        console.log("--- INIZIO DIAGNOSI CATALOGO ---");
-        const CACHE_KEY = 'ff_catalog_DIAGNOSTIC';
-        localStorage.removeItem(CACHE_KEY); // Rimuovo la cache per leggere i dati freschi
-
-        songListContainer.innerHTML = `<p><i class="fas fa-spinner fa-spin"></i> Analisi dati in corso...</p>`;
-
-        try {
-            // Il tuo URL
-            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw666DGD4BlSHuJwmVYcRLF9_qMJX2LXy_r6gCGVbjR_dXQDngQU-JttofSKOwUkIJZ/exec';
-            
-            const response = await fetch(SCRIPT_URL + '?source=catalogo&t=' + new Date().getTime());
-            if (!response.ok) throw new Error("Errore connessione Google");
-            
-            let rawData = await response.json();
-            console.log("1. Dati Grezzi ricevuti:", rawData); // VEDIAMO COSA ARRIVA
-
-            let newSongs = [];
-
-            // Tentativo di capire la struttura
-            if (Array.isArray(rawData)) {
-                newSongs = rawData;
-                console.log("2. Formato rilevato: Array semplice");
-            } else if (rawData.data && Array.isArray(rawData.data)) {
-                newSongs = rawData.data;
-                console.log("2. Formato rilevato: Oggetto con proprietà 'data'");
-            } else if (rawData.records && Array.isArray(rawData.records)) {
-                newSongs = rawData.records;
-                console.log("2. Formato rilevato: Oggetto con proprietà 'records'");
-            } else {
-                // Se è un oggetto strano, proviamo a convertirlo
-                console.warn("2. Formato sconosciuto. Tento conversione...");
-                newSongs = Object.values(rawData);
-            }
-
-            if (!newSongs || newSongs.length === 0) {
-                songListContainer.innerHTML = `<p style="color:orange">Il Database sembra vuoto.</p>`;
-                return;
-            }
-
-            // --- CONTROLLO NOMI COLONNE ---
-            // Prendiamo il primo elemento per vedere come si chiamano le chiavi
-            const primaCanzone = newSongs[0];
-            const chiaviTrovate = Object.keys(primaCanzone);
-            console.log("3. Nomi Colonne Trovati nel primo brano:", chiaviTrovate);
-            
-            // Verifichiamo il valore di "Stato" nel primo brano
-            // Cerchiamo qualsiasi chiave che contenga "stato"
-            const chiaveStato = chiaviTrovate.find(k => k.toLowerCase().includes("stato"));
-            console.log(`4. La colonna Stato è stata rilevata come: '${chiaveStato}'`);
-            if (chiaveStato) {
-                console.log(`   Valore nel primo brano: '${primaCanzone[chiaveStato]}'`);
-            } else {
-                console.warn("   ATTENZIONE: Nessuna colonna 'Stato' trovata!");
-            }
-
-            // --- FILTRAGGIO (Ora più robusto) ---
-            const listeDaMostrare = ["fausto_cd", "sax_cd", "riccardo_cd", "matteo_cd"];
-            
-            const songsFiltrate = newSongs.filter(s => {
-                // Usa la funzione getProp definita nel codice principale
-                // Se non c'è, la ridefinisco qui al volo per sicurezza
-                const getVal = (o, k) => {
-                    const found = Object.keys(o).find(key => key.toLowerCase() === k.toLowerCase());
-                    return found ? o[found] : "";
-                };
-
-                const stato = String(getVal(s, 'Stato')).toLowerCase().trim();
-                return listeDaMostrare.some(filtro => stato.includes(filtro));
-            });
-
-            console.log(`5. Risultato Filtro: ${songsFiltrate.length} canzoni trovate su ${newSongs.length} totali.`);
-
-            // Se il filtro cancella tutto, per ora mostriamo TUTTO così vediamo almeno la lista
-            if (songsFiltrate.length === 0) {
-                console.warn("Il filtro ha nascosto tutto. Mostro elenco completo per debug.");
-                appState.allSongs = newSongs; // Carico tutto
-                songListContainer.innerHTML += `<p style="color:orange; font-size:0.8em;">Filtro Stato fallito. Mostro ${newSongs.length} brani non filtrati per controllo.</p>`;
-            } else {
-                appState.allSongs = songsFiltrate;
-            }
-
-            createFilterButtons();
-            renderSongs();
-
-        } catch (error) {
-            console.error("Errore FATALE:", error);
-            songListContainer.innerHTML = `<p style="color:red">Errore: ${error.message}</p>`;
-        }
-    }
-
-    // --- CREAZIONE BOTTONI FILTRO ---
-    function createFilterButtons() {
-        const extractTags = (keyName) => {
-            // Legge i dati usando i nomi corretti del tuo file Excel (Categoria, Argomento)
-            const rawValues = appState.allSongs.map(s => getProp(s, keyName)).filter(Boolean);
-            const splitTags = rawValues.flatMap(text => text.toString().split(/[;,]+/).map(t => t.trim()));
-            return [...new Set(splitTags)].sort();
-        };
-
-        const categories = extractTags('Categoria');
-        const arguments = extractTags('Argomento');
-
-        filterContainer.innerHTML = '';
-        
-        // Bottoni Categoria
-        if (categories.length > 0) {
-            let html = `<div class="filter-group"><div class="filter-label">Categoria</div><div class="filter-buttons">`;
-            html += `<button class="filter-btn active" data-filter-key="category" data-filter-value="all">Tutti</button>`;
-            categories.forEach(val => {
-                html += `<button class="filter-btn" data-filter-key="category" data-filter-value="${val}">${val}</button>`;
-            });
-            html += `</div></div>`;
-            filterContainer.innerHTML += html;
-        }
-
-        // Bottoni Argomento
-        if (arguments.length > 0) {
-            let html = `<div class="filter-group"><div class="filter-label">Argomento</div><div class="filter-buttons">`;
-            html += `<button class="filter-btn active" data-filter-key="argomento" data-filter-value="all">Tutti</button>`;
-            arguments.forEach(val => {
-                html += `<button class="filter-btn" data-filter-key="argomento" data-filter-value="${val}">${val}</button>`;
-            });
-            html += `</div></div>`;
-            filterContainer.innerHTML += html;
-        }
-    }
-
-    // --- RENDERIZZAZIONE LISTA CANZONI ---
-    function renderSongs() {
-        songListContainer.innerHTML = '';
-        
-        const hasTag = (songObj, keyName, filterValue) => {
-            if (filterValue === 'all') return true;
-            const val = getProp(songObj, keyName);
-            if (!val) return false;
-            return val.toString().split(/[;,]+/).map(t => t.trim()).includes(filterValue);
-        };
-
-        const filteredSongs = appState.allSongs.filter(song => 
-            hasTag(song, 'Categoria', appState.currentFilters.category) && 
-            hasTag(song, 'Argomento', appState.currentFilters.argomento)
-        );
-
-        if (filteredSongs.length > 0) {
-            filteredSongs.forEach(song => {
-                const item = document.createElement('div');
-                item.className = 'song-item';
-                
-                // MAPPING CORRETTO: Qui colleghiamo i nomi del tuo Excel al codice
-                const title = getProp(song, 'Titolo') || "Titolo Sconosciuto";
-                const videoUrl = getProp(song, 'Video_Link'); // Colonna Video_Link
-                const audioUrl = getProp(song, 'Link_Ascolto'); // Colonna Link_Ascolto
-
-                // Salviamo il link audio dentro l'elemento HTML (invisibile)
-                item.dataset.audioUrl = audioUrl;
-
-                let videoHtml = '';
-                if (videoUrl && videoUrl.trim() !== '') {
-                    videoHtml = `<div class="video-btn" data-video-url="${videoUrl}"><i class="fas fa-video"></i></div>`;
-                }
-
-                item.innerHTML = `
-                    <span class="title">${title}</span>
-                    ${videoHtml}
-                    <div class="play-btn"><i class="fas fa-play"></i></div>
-                `;
-                songListContainer.appendChild(item);
-            });
-        } else {
-            songListContainer.innerHTML = '<p>Nessun brano corrisponde ai filtri.</p>';
-        }
-    }
-
-    // --- FUNZIONI CLIC (QUELLE CHE MANCAVANO) ---
-    function handleFilterClick(e) {
-        if (e.target.classList.contains('filter-btn')) {
-            const { filterKey, filterValue } = e.target.dataset;
-            
-            if(filterKey === 'category') appState.currentFilters.category = filterValue;
-            if(filterKey === 'argomento') appState.currentFilters.argomento = filterValue;
-            
-            e.target.parentElement.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            e.target.classList.add('active');
-            renderSongs();
-        }
-    }
-
-    function handleSongListClick(e) {
-        // Clic su Video
-        const videoBtn = e.target.closest('.video-btn');
-        if (videoBtn) {
-            e.stopPropagation(); 
-            const videoUrl = videoBtn.dataset.videoUrl;
-            
-            const overlay = document.getElementById('single-video-overlay');
-            const container = document.getElementById('single-video-container');
-            
-            if(mainPlayer) mainPlayer.pause();
-            
-            // Gestione YouTube o Video File
-            if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
-                let embed = videoUrl.replace("watch?v=", "embed/").replace("youtu.be/", "youtube.com/embed/");
-                container.innerHTML = `<iframe src="${embed}" style="width:100%; height:100%; border:0" allowfullscreen></iframe>`;
-            } else {
-                container.innerHTML = `<video controls autoplay style="width:100%; height:100%"><source src="${videoUrl}" type="video/mp4"></video>`;
-            }
-            overlay.style.display = 'flex';
-            return;
-        }
-
-        // Clic su Canzone (Play)
-        const item = e.target.closest('.song-item');
-        if (item) {
-            // Recupera l'URL audio che abbiamo salvato prima
-            const audioUrl = item.dataset.audioUrl;
-            
-            if(!audioUrl) {
-                alert("File audio non disponibile.");
-                return;
-            }
-
-            if (item === appState.currentPlayingItem && !mainPlayer.paused) {
-                mainPlayer.pause();
-                item.classList.remove('playing');
-            } else {
-                if (appState.currentPlayingItem) appState.currentPlayingItem.classList.remove('playing');
-                appState.currentPlayingItem = item;
-                item.classList.add('playing');
-                
-                mainPlayer.src = audioUrl;
-                mainPlayer.loop = false;
-                mainPlayer.play().catch(e => console.error("Errore play:", e));
-            }
-        }
     }
 
     function setupBackgroundVideo() {
         if (window.innerWidth <= 768) {
-            const videoElement = document.getElementById('background-video');
-            if(videoElement) {
-                videoElement.innerHTML = '<source src="https://raw.githubusercontent.com/Rickym2025/fausto-fusetti-links/main/video%20sax.mp4" type="video/mp4" />';
-                videoElement.load();
-            }
+            const v = document.getElementById('background-video');
+            if(v) { v.innerHTML = '<source src="https://raw.githubusercontent.com/Rickym2025/fausto-fusetti-links/main/video%20sax.mp4" type="video/mp4" />'; v.load(); }
         }
     }
 
     function handleFormSubmit(e) {
         e.preventDefault();
-        const formData = new FormData(form);
+        const fd = new FormData(form);
         formResult.innerHTML = "Invio...";
-        fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData })
+        fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd })
             .then(r => r.json())
-            .then(d => {
-                formResult.innerHTML = d.success ? "Messaggio inviato!" : `Errore: ${d.message}`;
-                if (d.success) form.reset();
-            })
-            .catch(() => formResult.innerHTML = "Errore di rete.");
+            .then(d => { formResult.innerHTML = d.success ? "Inviato!" : "Errore."; if(d.success) form.reset(); });
     }
+
+    // =========================================================================
+    // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓  SEZIONE CHATBOT (BOT)  ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+    // =========================================================================
+    // Inserisci questo blocco esattamente qui, alla fine dello script
     
-function setupSecondaryFeatures() {
-try {
-const chatbotContainer = document.getElementById('chatbot-container');
-if(chatbotContainer) {
-chatbotContainer.innerHTML = `<style>#chatbot-window-wrapper{position:fixed;bottom:140px;right:25px;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out}.chatbot-close-btn{position:absolute;top:10px;right:15px;font-size:2.2em;color:white;cursor:pointer;line-height:1;font-weight:300}#chatbot-welcome-message{position:fixed;bottom:100px;right:40px;background:var(--primary-color);color:white;padding:10px 15px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.2);opacity:0;transform:translateY(10px);transition:all .4s ease-in-out;visibility:hidden;z-index:9997;font-size:.9em}#chatbot-welcome-message.visible{opacity:1;transform:translateY(0);visibility:visible}#chatbot-welcome-message::after{content:'';position:absolute;bottom:-7px;right:25px;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid var(--primary-color)}@media (max-width:768px){#chatbot-window-wrapper{bottom:130px;right:15px} #chatbot-bubble{bottom:15px;right:15px} #chatbot-welcome-message{right:25px;bottom:90px} #chatbot-welcome-message::after{right:20px}}@keyframes rhythmic-bounce{0%,100%{transform:translateY(0)}10%,30%{transform:translateY(0)}20%{transform:translateY(-15px)}25%{transform:translateY(0)}35%{transform:translateY(-15px)}40%{transform:translateY(0)}}#chatbot-bubble{position:fixed;bottom:25px;right:25px;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(fausto_immagine.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:9999}#chatbot-bubble.bouncing{animation:rhythmic-bounce 2.5s ease-in-out}#chatbot-bubble:hover{transform:scale(1.1)}#chatbot-bubble.open{background-image:none;background-color:var(--primary-color);animation:none}#chatbot-bubble.open .icon-close{opacity:1}#chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}#chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}#chatbot-window{position:relative;margin-top:45px;width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden}.chatbot-header-logo{width:90px;height:90px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 10px rgba(0,0,0,0.3);object-fit:cover;position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:10000}.chatbot-header{position:relative;background-color:var(--primary-color);color:#fff;padding:1rem;padding-top:55px;text-align:center;flex-shrink:0}.chatbot-messages{flex-grow:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column;background-image:linear-gradient(rgba(249,247,243,.7),rgba(249,247,243,.7)),url(https://github.com/Rickym2025/fausto-fusetti-links/blob/main/sfondo_chat.jpg?raw=true);background-size:cover;background-position:center}.message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}.message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0;align-self:flex-start}.message-text{padding:10px 15px;border-radius:18px;line-height:1.4;overflow-wrap:break-word;word-break:break-word;text-align:left;box-shadow:0 2px 5px rgba(0,0,0,.1)}.message.user .message-text{background-color:rgba(238,242,245,.75);color:#333;border-bottom-right-radius:4px}.message.bot .message-text{background-color:rgba(6,147,227,.8);color:#fff;border-bottom-left-radius:4px}.chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}.chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid var(--primary-color)}.chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}</style>
+    function initChatbot() {
+        const container = document.getElementById('chatbot-container');
+        if(!container) return;
 
-<div id="chatbot-bubble"><svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg></div>
-            <div id="chatbot-welcome-message">Posso aiutarti a trovare un brano?</div>
-            <div id="chatbot-window-wrapper"><img src="fausto_immagine.jpg" alt="Fausto AI" class="chatbot-header-logo"><div id="chatbot-window"><div class="chatbot-header"><div><h3>Fausto AI</h3><small>Assistente Virtuale</small></div><span class="chatbot-close-btn">&times;</span></div><div class="chatbot-messages" id="chatbot-messages"></div><div class="chatbot-input"><input type="text" id="chatbot-input-field" name="chatbot_message" autocomplete="off" placeholder="Scrivi un messaggio..."><button id="chatbot-send-btn"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg></button></div></div></div>`;
-            
-            const webhookUrl = 'https://n8n-nuovo.duckdns.org/webhook/ffausto-ai-chat', bubble = document.getElementById('chatbot-bubble'), windowWrapper = document.getElementById('chatbot-window-wrapper'), messagesEl = document.getElementById('chatbot-messages'), inputField = document.getElementById('chatbot-input-field'), sendBtn = document.getElementById('chatbot-send-btn'), closeBtn = document.querySelector('.chatbot-close-btn'), welcomeMessage = document.getElementById('chatbot-welcome-message');
-            let reEngagementTimer = null;
+        // Inserimento HTML e CSS del Bot
+        container.innerHTML = `
+        <style>
+            #chatbot-window-wrapper{position:fixed;bottom:140px;right:25px;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out}.chatbot-close-btn{position:absolute;top:10px;right:15px;font-size:2.2em;color:white;cursor:pointer;line-height:1;font-weight:300}#chatbot-welcome-message{position:fixed;bottom:100px;right:40px;background:var(--primary-color);color:white;padding:10px 15px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.2);opacity:0;transform:translateY(10px);transition:all .4s ease-in-out;visibility:hidden;z-index:9997;font-size:.9em}#chatbot-welcome-message.visible{opacity:1;transform:translateY(0);visibility:visible}#chatbot-welcome-message::after{content:'';position:absolute;bottom:-7px;right:25px;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid var(--primary-color)}@media (max-width:768px){#chatbot-window-wrapper{bottom:130px;right:15px} #chatbot-bubble{bottom:15px;right:15px} #chatbot-welcome-message{right:25px;bottom:90px} #chatbot-welcome-message::after{right:20px}}@keyframes rhythmic-bounce{0%,100%{transform:translateY(0)}10%,30%{transform:translateY(0)}20%{transform:translateY(-15px)}25%{transform:translateY(0)}35%{transform:translateY(-15px)}40%{transform:translateY(0)}}#chatbot-bubble{position:fixed;bottom:25px;right:25px;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(fausto_immagine.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:9999}#chatbot-bubble.bouncing{animation:rhythmic-bounce 2.5s ease-in-out}#chatbot-bubble:hover{transform:scale(1.1)}#chatbot-bubble.open{background-image:none;background-color:var(--primary-color);animation:none}#chatbot-bubble.open .icon-close{opacity:1}#chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}#chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}#chatbot-window{position:relative;margin-top:45px;width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden}.chatbot-header-logo{width:90px;height:90px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 10px rgba(0,0,0,0.3);object-fit:cover;position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:10000}.chatbot-header{position:relative;background-color:var(--primary-color);color:#fff;padding:1rem;padding-top:55px;text-align:center;flex-shrink:0}.chatbot-messages{flex-grow:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column;background-image:linear-gradient(rgba(249,247,243,.7),rgba(249,247,243,.7)),url(https://github.com/Rickym2025/fausto-fusetti-links/blob/main/sfondo_chat.jpg?raw=true);background-size:cover;background-position:center}.message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}.message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0;align-self:flex-start}.message-text{padding:10px 15px;border-radius:18px;line-height:1.4;overflow-wrap:break-word;word-break:break-word;text-align:left;box-shadow:0 2px 5px rgba(0,0,0,.1)}.message.user .message-text{background-color:rgba(238,242,245,.75);color:#333;border-bottom-right-radius:4px}.message.bot .message-text{background-color:rgba(6,147,227,.8);color:#fff;border-bottom-left-radius:4px}.chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}.chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid var(--primary-color)}.chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}
+        </style>
+        <div id="chatbot-bubble"><svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg></div>
+        <div id="chatbot-welcome-message">Posso aiutarti a trovare un brano?</div>
+        <div id="chatbot-window-wrapper">
+            <img src="fausto_immagine.jpg" alt="Fausto AI" class="chatbot-header-logo">
+            <div id="chatbot-window">
+                <div class="chatbot-header"><div><h3>Fausto AI</h3><small>Assistente Virtuale</small></div><span class="chatbot-close-btn">&times;</span></div>
+                <div class="chatbot-messages" id="chatbot-messages"></div>
+                <div class="chatbot-input">
+                    <input type="text" id="chatbot-input-field" name="chatbot_message" autocomplete="off" placeholder="Scrivi un messaggio...">
+                    <button id="chatbot-send-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg></button>
+                </div>
+            </div>
+        </div>`;
 
-            const triggerWelcomeAnimation = () => {
-                if (!windowWrapper.classList.contains('open')) {
-                    welcomeMessage.classList.add('visible');
-                    bubble.classList.add('bouncing');
-                    setTimeout(() => { welcomeMessage.classList.remove('visible'); }, 6000);
-                }
-            };
-            
-            const toggleChat = () => {
-                if (appState.isChatAnimating) return;
-                appState.isChatAnimating = true;
+        // Logica Chatbot
+        const webhookUrl = 'https://n8n-nuovo.duckdns.org/webhook/ffausto-ai-chat';
+        const bubble = document.getElementById('chatbot-bubble');
+        const windowWrapper = document.getElementById('chatbot-window-wrapper');
+        const messagesEl = document.getElementById('chatbot-messages');
+        const inputField = document.getElementById('chatbot-input-field');
+        const sendBtn = document.getElementById('chatbot-send-btn');
+        const closeBtn = document.querySelector('.chatbot-close-btn');
+        const welcomeMessage = document.getElementById('chatbot-welcome-message');
+        let reEngagementTimer = null;
 
-                clearTimeout(reEngagementTimer);
-                welcomeMessage.classList.remove('visible');
-                bubble.classList.remove('bouncing');
+        const triggerWelcomeAnimation = () => {
+            if (!windowWrapper.classList.contains('open')) {
+                welcomeMessage.classList.add('visible');
+                bubble.classList.add('bouncing');
+                setTimeout(() => { welcomeMessage.classList.remove('visible'); }, 6000);
+            }
+        };
 
-                const isOpening = !windowWrapper.classList.contains('open');
-                windowWrapper.classList.toggle('open');
-                bubble.classList.toggle('open');
+        const toggleChat = () => {
+            if (appState.isChatAnimating) return;
+            appState.isChatAnimating = true;
 
-                if (isOpening) { setTimeout(() => inputField.focus(), 300); }
+            clearTimeout(reEngagementTimer);
+            welcomeMessage.classList.remove('visible');
+            bubble.classList.remove('bouncing');
 
-                setTimeout(() => {
-                    appState.isChatAnimating = false;
-                    if (!isOpening) {
-                        reEngagementTimer = setTimeout(triggerWelcomeAnimation, 15000);
-                    }
-                }, 350);
-            };
+            const isOpening = !windowWrapper.classList.contains('open');
+            windowWrapper.classList.toggle('open');
+            bubble.classList.toggle('open');
 
-            const addMessage = (rawText, type) => { const msgDiv = document.createElement('div'); msgDiv.className = `message ${type}`; if (type === 'bot') { const avatar = document.createElement('img'); avatar.src = 'fausto_immagine.jpg'; avatar.className = 'message-avatar'; msgDiv.appendChild(avatar); } const textDiv = document.createElement('div'); textDiv.className = 'message-text'; textDiv.innerHTML = DOMPurify.sanitize(rawText, { ADD_TAGS: ['a', 'ul', 'li', 'strong'], ADD_ATTR: ['href', 'target'] }); msgDiv.appendChild(textDiv); messagesEl.appendChild(msgDiv); messagesEl.scrollTop = messagesEl.scrollHeight; };
-            const sendMessage = async () => { const userMessage = inputField.value.trim(); if (userMessage === '') return; addMessage(userMessage, 'user'); inputField.value = ''; try { const response = await fetch(`${webhookUrl}?user_message=${encodeURIComponent(userMessage)}`, { method: 'POST' }); if (!response.ok) throw new Error("Network response"); const data = await response.json(); addMessage(data.response || "C'è stato un problema.", 'bot'); } catch (error) { addMessage('Spiacente, si è verificato un errore.', 'bot'); } };
-            
-            bubble.addEventListener('click', toggleChat);
-            closeBtn.addEventListener('click', toggleChat);
-            sendBtn.addEventListener('click', sendMessage);
-            inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
-            
-            addMessage("Ciao! Sono Fausto AI, assistente virtuale. Sono qui per aiutarti a trovare il tuo brano ideale. Cosa stai cercando?", 'bot');
+            if (isOpening) setTimeout(() => inputField.focus(), 300);
 
-            setTimeout(triggerWelcomeAnimation, 2000);
-        }
-    } catch(e) { console.error("Errore chatbot", e); }
-}
+            setTimeout(() => {
+                appState.isChatAnimating = false;
+                if (!isOpening) reEngagementTimer = setTimeout(triggerWelcomeAnimation, 15000);
+            }, 350);
+        };
+
+        const addMessage = (rawText, type) => {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${type}`;
+            if (type === 'bot') {
+                const avatar = document.createElement('img');
+                avatar.src = 'fausto_immagine.jpg';
+                avatar.className = 'message-avatar';
+                msgDiv.appendChild(avatar);
+            }
+            const textDiv = document.createElement('div');
+            textDiv.className = 'message-text';
+            textDiv.innerHTML = DOMPurify.sanitize(rawText, { ADD_TAGS: ['a', 'ul', 'li', 'strong'], ADD_ATTR: ['href', 'target'] });
+            msgDiv.appendChild(textDiv);
+            messagesEl.appendChild(msgDiv);
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+        };
+
+        const sendMessage = async () => {
+            const userMessage = inputField.value.trim();
+            if (userMessage === '') return;
+            addMessage(userMessage, 'user');
+            inputField.value = '';
+            try {
+                const response = await fetch(`${webhookUrl}?user_message=${encodeURIComponent(userMessage)}`, { method: 'POST' });
+                if (!response.ok) throw new Error("Network response");
+                const data = await response.json();
+                addMessage(data.response || "C'è stato un problema.", 'bot');
+            } catch (error) {
+                addMessage('Spiacente, si è verificato un errore.', 'bot');
+            }
+        };
+
+        bubble.addEventListener('click', toggleChat);
+        closeBtn.addEventListener('click', toggleChat);
+        sendBtn.addEventListener('click', sendMessage);
+        inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
+
+        addMessage("Ciao! Sono Fausto AI, assistente virtuale. Sono qui per aiutarti a trovare il tuo brano ideale. Cosa stai cercando?", 'bot');
+        setTimeout(triggerWelcomeAnimation, 2000);
+    }
 
     // AVVIO
     initializeCoreFunctionality();
