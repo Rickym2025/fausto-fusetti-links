@@ -342,7 +342,7 @@ async function loadMusicFromApi() {
             if (Array.isArray(newSongs)) {
                 newSongs = newSongs.filter(s => {
                     const stato = s.Stato || s.stato || ""; // Cerca colonna Stato o stato
-                    return stato.toLowerCase().includes("fausto cd");
+                    return stato.toLowerCase().includes("Fausto_CD");
                 });
 
                 appState.allSongs = newSongs;
