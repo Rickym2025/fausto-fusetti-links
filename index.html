@@ -297,7 +297,7 @@ document.addEventListener('DOMContentLoaded', function() {
             let newSongs = await response.json();
             
             // FILTRO SULLA COLONNA "STATO"
-            const listeDaMostrare = ["fausto_cd", "sax_cd", "riccardo_cd", "matteo_cd"];
+            const listeDaMostrare = ["Fausto_CD", "Sax_CD", "Riccardo_CD", "Matteo_CD"];   //INSERISCI QUI COSA ASCOLTARE NEL CATALOGO
             
             if (Array.isArray(newSongs)) {
                 newSongs = newSongs.filter(s => {
