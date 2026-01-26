@@ -153,315 +153,344 @@ Iscrizione SIAE n. 189515 e 593874
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
-const appState = {
-isChatAnimating: false,
-allSongs: [],
-currentPlayingItem: null,
-currentFilters: { category: 'all', argomento: 'all' },
-backgroundMusicSrc: document.getElementById('background-audio')?.querySelector('source')?.src || '',
-isBgMusicMuted: true,
-};
+    const appState = {
+        isChatAnimating: false,
+        allSongs: [],
+        currentPlayingItem: null,
+        currentFilters: { category: 'all', argomento: 'all' },
+        backgroundMusicSrc: document.getElementById('background-audio')?.querySelector('source')?.src || '',
+        isBgMusicMuted: true,
+    };
 
-const bgAudio = document.getElementById('background-audio');
-const audioStartOverlay = document.getElementById('audio-start-overlay');
-const startAudioBtn = document.getElementById('start-audio-btn');
-const audioCta = document.getElementById('audio-cta');
-const mainPlayer = document.getElementById('catalog-audio-player');
-mainPlayer.loop = true;
+    const bgAudio = document.getElementById('background-audio');
+    const audioStartOverlay = document.getElementById('audio-start-overlay');
+    const startAudioBtn = document.getElementById('start-audio-btn');
+    const audioCta = document.getElementById('audio-cta');
+    const mainPlayer = document.getElementById('catalog-audio-player');
+    const songListContainer = document.getElementById('song-list-container');
+    const filterContainer = document.getElementById('filter-container');
+    const form = document.getElementById('contact-form');
+    const formResult = document.getElementById('form-result');
 
-const songListContainer = document.getElementById('song-list-container');
-const filterContainer = document.getElementById('filter-container');
-const form = document.getElementById('contact-form');
-const formResult = document.getElementById('form-result');
+    if(mainPlayer) mainPlayer.loop = true;
 
-function initializeCoreFunctionality() {
-document.getElementById('open-music-modal').addEventListener('click', () => openModal('music-modal'));
-document.getElementById('open-video-modal').addEventListener('click', () => openModal('video-modal'));
-document.getElementById('open-services-modal').addEventListener('click', () => openModal('services-modal'));
-document.getElementById('open-contact-modal').addEventListener('click', () => openModal('contact-modal'));
-document.getElementById('open-shop-modal').addEventListener('click', () => openModal('shop-modal'));
-
-document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', (e) => closeModal(e.currentTarget.dataset.target)));
-document.getElementById('contact-for-custom-song').addEventListener('click', () => {
-closeModal('services-modal');
-openModal('contact-modal');
-document.querySelector('#contact-modal select[name="service_type"]').value = 'canzone_personalizzata';
-});
-
-startAudioBtn.addEventListener('click', handleStartAudioClick);
-form.addEventListener('submit', handleFormSubmit);
-filterContainer.addEventListener('click', handleFilterClick);
-songListContainer.addEventListener('click', handleSongListClick);
-
-document.getElementById('close-single-video').addEventListener('click', () => {
-const videoOverlay = document.getElementById('single-video-overlay');
-const videoContainer = document.getElementById('single-video-container');
-videoOverlay.style.display = 'none';
-videoContainer.innerHTML = '';
-});
-
-setupBackgroundVideo();
-loadMusicFromApi();
-setupSecondaryFeatures();
-}
-
-function openModal(modalId) {
-mainPlayer.pause();
-document.getElementById(modalId).style.display = 'flex';
-}
-
-function closeModal(modalId) {
-document.getElementById(modalId).style.display = 'none';
-playBackgroundMusic();
-}
-
-async function playBackgroundMusic() {
-if (!appState.isBgMusicMuted && appState.backgroundMusicSrc) {
-if (mainPlayer.src !== appState.backgroundMusicSrc) {
-mainPlayer.src = appState.backgroundMusicSrc;
-}
-mainPlayer.loop = true;
-try { await mainPlayer.play(); }
-catch (error) { console.warn("Impossibile riprendere la musica di sottofondo:", error); }
-}
-}
-
-async function handleStartAudioClick() {
-audioStartOverlay.style.display = 'none';
-appState.isBgMusicMuted = false;
-bgAudio.play().catch(()=>{});
-bgAudio.pause();
-updateMuteButton();
-playBackgroundMusic();
-}
-
-async function handleSongClick(item, song) {
-const isSameSong = (item === appState.currentPlayingItem);
-try {
-if (isSameSong && !mainPlayer.paused) {
-mainPlayer.pause();
-} else {
-if (appState.currentPlayingItem && appState.currentPlayingItem !== item) {
-appState.currentPlayingItem.classList.remove('playing');
-}
-appState.currentPlayingItem = item;
-mainPlayer.src = song.url;
-mainPlayer.loop = false;
-await mainPlayer.play();
-}
-} catch (error) {
-console.error("Errore Player:", error);
-if (appState.currentPlayingItem) appState.currentPlayingItem.classList.remove('playing');
-appState.currentPlayingItem = null;
-}
-}
-
-mainPlayer.addEventListener('play', () => { if (appState.currentPlayingItem && !mainPlayer.loop) { appState.currentPlayingItem.classList.add('playing'); } });
-mainPlayer.addEventListener('pause', () => { if (appState.currentPlayingItem) { appState.currentPlayingItem.classList.remove('playing'); } });
-mainPlayer.addEventListener('ended', () => { if (appState.currentPlayingItem) { appState.currentPlayingItem.classList.remove('playing'); appState.currentPlayingItem = null; } playBackgroundMusic(); });
-
-function setupBackgroundVideo() { if (window.innerWidth <= 768) { const videoElement = document.getElementById('background-video'); const videoSource = videoElement.querySelector('source'); if (videoSource) { videoSource.src = 'https://raw.githubusercontent.com/Rickym2025/fausto-fusetti-links/main/video%20sax.mp4'; videoElement.load(); } } }
-function handleFormSubmit(e) { e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio..."; fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).then(r => r.json()).then(d => { formResult.innerHTML = d.success ? "Messaggio inviato!" : `Errore: ${d.message}`; if (d.success) form.reset(); }).catch(() => formResult.innerHTML = "Errore di rete."); }
-
-function handleSongListClick(e) {
-    const videoBtn = e.target.closest('.video-btn');
-    if (videoBtn) {
-        e.stopPropagation(); 
-        const videoUrl = videoBtn.dataset.videoUrl;
-        if (videoUrl) {
-            mainPlayer.pause();
-            if (appState.currentPlayingItem) appState.currentPlayingItem.classList.remove('playing');
-            
-            const videoOverlay = document.getElementById('single-video-overlay');
-            const videoContainer = document.getElementById('single-video-container');
-            
-            // Controllo se è un link YouTube o un file diretto
-            if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
-                let embedUrl = videoUrl.replace("watch?v=", "embed/").replace("youtu.be/", "youtube.com/embed/");
-                videoContainer.innerHTML = `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
-            } else {
-                videoContainer.innerHTML = `
-                    <video controls autoplay style="width: 100%; height: 100%;">
-                        <source src="${videoUrl}" type="video/mp4">
-                    </video>`;
-            }
-            videoOverlay.style.display = 'flex';
-        }
-        return;
+    // --- FUNZIONI DI SUPPORTO PER LEGGERE IL FOGLIO GOOGLE ---
+    // Questa funzione serve a leggere le colonne anche se scritte maiuscole/minuscole
+    function getProp(obj, keyName) {
+        if (!obj) return "";
+        const keys = Object.keys(obj);
+        // Cerca la chiave ignorando maiuscole/minuscole
+        const match = keys.find(k => k.toLowerCase() === keyName.toLowerCase());
+        return match ? obj[match] : "";
     }
 
-    const item = e.target.closest('.song-item');
-    if (item) {
-        const audioUrl = item.dataset.audioUrl;
-        if (!audioUrl) {
-            alert("Audio non disponibile per questo brano.");
-            return;
-        }
+    function initializeCoreFunctionality() {
+        // Modali
+        document.getElementById('open-music-modal').addEventListener('click', () => openModal('music-modal'));
+        document.getElementById('open-video-modal').addEventListener('click', () => openModal('video-modal'));
+        document.getElementById('open-services-modal').addEventListener('click', () => openModal('services-modal'));
+        document.getElementById('open-contact-modal').addEventListener('click', () => openModal('contact-modal'));
+        document.getElementById('open-shop-modal').addEventListener('click', () => openModal('shop-modal'));
 
-        if (item === appState.currentPlayingItem && !mainPlayer.paused) {
-            mainPlayer.pause();
-        } else {
-            if (appState.currentPlayingItem) appState.currentPlayingItem.classList.remove('playing');
-            appState.currentPlayingItem = item;
-            mainPlayer.src = audioUrl;
-            mainPlayer.loop = false;
-            mainPlayer.play().catch(err => console.error("Errore riproduzione:", err));
-        }
-    }
-}
+        document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', (e) => closeModal(e.currentTarget.dataset.target)));
 
-audioCta.addEventListener('click', () => { appState.isBgMusicMuted = !appState.isBgMusicMuted; if (appState.isBgMusicMuted) { mainPlayer.pause(); } else { playBackgroundMusic(); } updateMuteButton(); });
-function updateMuteButton() { const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i'); const ctaText = document.querySelector('#audio-cta .cta-text'); muteBtnIcon.className = appState.isBgMusicMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up'; ctaText.textContent = appState.isBgMusicMuted ? 'Attiva la musica' : 'Disattiva musica'; audioCta.style.visibility = 'visible'; }
-
-// CARICAMENTO E FILTRAGGIO AGGIORNATO
-async function loadMusicFromApi() {
-    const CACHE_KEY = 'ff_music_catalog_v6'; 
-    const CACHE_DURATION = 3600 * 1000; 
-
-    const cachedData = localStorage.getItem(CACHE_KEY);
-    let loadedFromCache = false;
-
-    if (cachedData) {
-        try {
-            const parsed = JSON.parse(cachedData);
-            const now = new Date().getTime();
-            if (now - parsed.timestamp < CACHE_DURATION) {
-                appState.allSongs = parsed.songs;
-                createFilterButtons();
-                renderSongs();
-                return; 
-            } else {
-                appState.allSongs = parsed.songs;
-                createFilterButtons();
-                renderSongs();
-                loadedFromCache = true;
-            }
-        } catch (e) { console.warn("Errore cache", e); }
-    }
-
-    if (!loadedFromCache) {
-        songListContainer.innerHTML = `<p><i class="fas fa-spinner fa-spin"></i> Caricamento catalogo...</p>`;
-    }
-
-    try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycbw666DGD4BlSHuJwmVYcRLF9_r6gCGVbjR_dXQDngQU-JttofSKOwUkIJZ/exec?source=catalogo&t=' + new Date().getTime());
-        if (!response.ok) throw new Error(`Errore di rete`);
-        let newSongs = await response.json();
-        
-        // CORREZIONE 1: Filtro Case-Insensitive
-        const listeDaMostrare = ["fausto_cd", "sax_cd", "riccardo_cd", "matteo_cd"]; 
-
-        if (Array.isArray(newSongs)) {
-            newSongs = newSongs.filter(s => {
-                const valoreStato = (s.Stato || s.stato || "").toLowerCase();
-                return listeDaMostrare.some(f => valoreStato.includes(f));
+        // Tasto speciale "Richiedi Canzone"
+        const customBtn = document.getElementById('contact-for-custom-song');
+        if(customBtn) {
+            customBtn.addEventListener('click', () => {
+                closeModal('services-modal');
+                openModal('contact-modal');
+                document.querySelector('#contact-modal select[name="service_type"]').value = 'canzone_personalizzata';
             });
-
-            appState.allSongs = newSongs;
-            localStorage.setItem(CACHE_KEY, JSON.stringify({
-                timestamp: new Date().getTime(),
-                songs: newSongs
-            }));
-
-            createFilterButtons();
-            renderSongs();
         }
-    } catch (error) {
-        console.error("Errore fetch:", error);
-        if (!loadedFromCache) {
-            songListContainer.innerHTML = `<p style="color: #ffc107;">Impossibile caricare il catalogo.</p>`;
+
+        if(startAudioBtn) startAudioBtn.addEventListener('click', handleStartAudioClick);
+        if(form) form.addEventListener('submit', handleFormSubmit);
+        
+        // QUI C'ERA L'ERRORE: Ora la funzione handleFilterClick è definita correttamente sotto
+        if(filterContainer) filterContainer.addEventListener('click', handleFilterClick);
+        if(songListContainer) songListContainer.addEventListener('click', handleSongListClick);
+
+        document.getElementById('close-single-video').addEventListener('click', () => {
+            document.getElementById('single-video-overlay').style.display = 'none';
+            document.getElementById('single-video-container').innerHTML = '';
+        });
+
+        setupBackgroundVideo();
+        loadMusicFromApi(); // Carica i dati
+        setupSecondaryFeatures();
+    }
+
+    function openModal(modalId) {
+        if(mainPlayer) mainPlayer.pause();
+        document.getElementById(modalId).style.display = 'flex';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+        playBackgroundMusic();
+    }
+
+    async function playBackgroundMusic() {
+        if (!appState.isBgMusicMuted && appState.backgroundMusicSrc) {
+            if (mainPlayer.src !== appState.backgroundMusicSrc) {
+                mainPlayer.src = appState.backgroundMusicSrc;
+            }
+            mainPlayer.loop = true;
+            try { await mainPlayer.play(); }
+            catch (error) { console.warn("Autoplay audio bloccato dal browser (normale).", error); }
         }
     }
-}
 
-// CREAZIONE BOTTONI (Solo Categoria e Argomento)
-function createFilterButtons() {
-        const getUniqueTags = (prop) => {
-            const rawValues = appState.allSongs.map(s => s[prop] || s[prop.charAt(0).toUpperCase() + prop.slice(1)]).filter(Boolean);
-            const splitTags = rawValues.flatMap(text => text.split(/[;,]+/).map(t => t.trim()));
+    function handleStartAudioClick() {
+        audioStartOverlay.style.display = 'none';
+        appState.isBgMusicMuted = false;
+        if(bgAudio) { bgAudio.play().catch(()=>{}); bgAudio.pause(); }
+        updateMuteButton();
+        playBackgroundMusic();
+    }
+
+    if(audioCta) {
+        audioCta.addEventListener('click', () => {
+            appState.isBgMusicMuted = !appState.isBgMusicMuted;
+            if (appState.isBgMusicMuted) { mainPlayer.pause(); } else { playBackgroundMusic(); }
+            updateMuteButton();
+        });
+    }
+
+    function updateMuteButton() {
+        const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i');
+        const ctaText = document.querySelector('#audio-cta .cta-text');
+        muteBtnIcon.className = appState.isBgMusicMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
+        ctaText.textContent = appState.isBgMusicMuted ? 'Attiva la musica' : 'Disattiva musica';
+        audioCta.style.visibility = 'visible';
+    }
+
+    // --- CARICAMENTO MUSICA (CORRETTO) ---
+    async function loadMusicFromApi() {
+        const CACHE_KEY = 'ff_catalog_v_final';
+        
+        // Se vuoi forzare l'aggiornamento, togli il commento alla riga sotto:
+        // localStorage.removeItem(CACHE_KEY);
+
+        const cachedData = localStorage.getItem(CACHE_KEY);
+        if (cachedData) {
+            try {
+                const parsed = JSON.parse(cachedData);
+                // Cache valida per 1 ora
+                if (new Date().getTime() - parsed.timestamp < 3600 * 1000) {
+                    appState.allSongs = parsed.songs;
+                    createFilterButtons();
+                    renderSongs();
+                    return;
+                }
+            } catch(e) {}
+        }
+
+        songListContainer.innerHTML = `<p><i class="fas fa-spinner fa-spin"></i> Caricamento catalogo...</p>`;
+
+        try {
+            // URL dello script Google
+            const response = await fetch('https://script.google.com/macros/s/AKfycbw666DGD4BlSHuJwmVYcRLF9_qMJX2LXy_r6gCGVbjR_dXQDngQU-JttofSKOwUkIJZ/exec?source=catalogo&t=' + new Date().getTime());
+            if (!response.ok) throw new Error("Errore di rete");
+            
+            let newSongs = await response.json();
+            
+            // FILTRO SULLA COLONNA "STATO"
+            const listeDaMostrare = ["fausto_cd", "sax_cd", "riccardo_cd", "matteo_cd"];
+            
+            if (Array.isArray(newSongs)) {
+                newSongs = newSongs.filter(s => {
+                    // Usiamo getProp per leggere "Stato" anche se scritto "stato" o "STATO"
+                    const stato = getProp(s, 'Stato').toLowerCase();
+                    return listeDaMostrare.some(filtro => stato.includes(filtro));
+                });
+
+                appState.allSongs = newSongs;
+                
+                localStorage.setItem(CACHE_KEY, JSON.stringify({
+                    timestamp: new Date().getTime(),
+                    songs: newSongs
+                }));
+
+                createFilterButtons();
+                renderSongs();
+            }
+        } catch (error) {
+            console.error("Errore catalogo:", error);
+            songListContainer.innerHTML = `<p>Impossibile caricare il catalogo.</p>`;
+        }
+    }
+
+    // --- CREAZIONE BOTTONI FILTRO ---
+    function createFilterButtons() {
+        const extractTags = (keyName) => {
+            // Legge i dati usando i nomi corretti del tuo file Excel (Categoria, Argomento)
+            const rawValues = appState.allSongs.map(s => getProp(s, keyName)).filter(Boolean);
+            const splitTags = rawValues.flatMap(text => text.toString().split(/[;,]+/).map(t => t.trim()));
             return [...new Set(splitTags)].sort();
         };
 
-        // Helper per cercare la proprietà corretta nel JSON dello Sheet
-        function getSafeTags(keyLower) {
-             const rawValues = appState.allSongs.map(s => {
-                 const key = Object.keys(s).find(k => k.toLowerCase() === keyLower);
-                 return key ? s[key] : null;
-             }).filter(Boolean);
-             const splitTags = rawValues.flatMap(text => text.split(/[;,]+/).map(t => t.trim()));
-             return [...new Set(splitTags)].sort();
+        const categories = extractTags('Categoria');
+        const arguments = extractTags('Argomento');
+
+        filterContainer.innerHTML = '';
+        
+        // Bottoni Categoria
+        if (categories.length > 0) {
+            let html = `<div class="filter-group"><div class="filter-label">Categoria</div><div class="filter-buttons">`;
+            html += `<button class="filter-btn active" data-filter-key="category" data-filter-value="all">Tutti</button>`;
+            categories.forEach(val => {
+                html += `<button class="filter-btn" data-filter-key="category" data-filter-value="${val}">${val}</button>`;
+            });
+            html += `</div></div>`;
+            filterContainer.innerHTML += html;
         }
 
-        const realFilters = {
-            'Categoria': getSafeTags('categoria'), 
-            'Argomento': getSafeTags('argomento') 
+        // Bottoni Argomento
+        if (arguments.length > 0) {
+            let html = `<div class="filter-group"><div class="filter-label">Argomento</div><div class="filter-buttons">`;
+            html += `<button class="filter-btn active" data-filter-key="argomento" data-filter-value="all">Tutti</button>`;
+            arguments.forEach(val => {
+                html += `<button class="filter-btn" data-filter-key="argomento" data-filter-value="${val}">${val}</button>`;
+            });
+            html += `</div></div>`;
+            filterContainer.innerHTML += html;
+        }
+    }
+
+    // --- RENDERIZZAZIONE LISTA CANZONI ---
+    function renderSongs() {
+        songListContainer.innerHTML = '';
+        
+        const hasTag = (songObj, keyName, filterValue) => {
+            if (filterValue === 'all') return true;
+            const val = getProp(songObj, keyName);
+            if (!val) return false;
+            return val.toString().split(/[;,]+/).map(t => t.trim()).includes(filterValue);
         };
 
-        filterContainer.innerHTML = ''; 
-        for (const label in realFilters) { 
-            const filterKey = label.toLowerCase(); 
-            let buttonsHtml = `<div class="filter-group"><div class="filter-label">${label}</div><div class="filter-buttons">`; 
-            buttonsHtml += `<button class="filter-btn active" data-filter-key="${filterKey}" data-filter-value="all">Tutti</button>`; 
+        const filteredSongs = appState.allSongs.filter(song => 
+            hasTag(song, 'Categoria', appState.currentFilters.category) && 
+            hasTag(song, 'Argomento', appState.currentFilters.argomento)
+        );
+
+        if (filteredSongs.length > 0) {
+            filteredSongs.forEach(song => {
+                const item = document.createElement('div');
+                item.className = 'song-item';
+                
+                // MAPPING CORRETTO: Qui colleghiamo i nomi del tuo Excel al codice
+                const title = getProp(song, 'Titolo') || "Titolo Sconosciuto";
+                const videoUrl = getProp(song, 'Video_Link'); // Colonna Video_Link
+                const audioUrl = getProp(song, 'Link_Ascolto'); // Colonna Link_Ascolto
+
+                // Salviamo il link audio dentro l'elemento HTML (invisibile)
+                item.dataset.audioUrl = audioUrl;
+
+                let videoHtml = '';
+                if (videoUrl && videoUrl.trim() !== '') {
+                    videoHtml = `<div class="video-btn" data-video-url="${videoUrl}"><i class="fas fa-video"></i></div>`;
+                }
+
+                item.innerHTML = `
+                    <span class="title">${title}</span>
+                    ${videoHtml}
+                    <div class="play-btn"><i class="fas fa-play"></i></div>
+                `;
+                songListContainer.appendChild(item);
+            });
+        } else {
+            songListContainer.innerHTML = '<p>Nessun brano corrisponde ai filtri.</p>';
+        }
+    }
+
+    // --- FUNZIONI CLIC (QUELLE CHE MANCAVANO) ---
+    function handleFilterClick(e) {
+        if (e.target.classList.contains('filter-btn')) {
+            const { filterKey, filterValue } = e.target.dataset;
             
-            realFilters[label].forEach(value => { 
-                buttonsHtml += `<button class="filter-btn" data-filter-key="${filterKey}" data-filter-value="${value}">${value}</button>`; 
-            }); 
+            if(filterKey === 'category') appState.currentFilters.category = filterValue;
+            if(filterKey === 'argomento') appState.currentFilters.argomento = filterValue;
             
-            buttonsHtml += `</div></div>`; 
-            filterContainer.innerHTML += buttonsHtml; 
-        } 
-}
+            e.target.parentElement.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+            renderSongs();
+        }
+    }
 
-// RENDERIZZAZIONE
-function renderSongs() {
-    songListContainer.innerHTML = '';
-    
-    const hasTag = (songObj, keyLower, filterValue) => {
-        if (filterValue === 'all') return true;
-        const realKey = Object.keys(songObj).find(k => k.toLowerCase() === keyLower);
-        const songValue = realKey ? songObj[realKey] : "";
-        if (!songValue) return false;
-        return songValue.split(/[;,]+/).map(t => t.trim()).includes(filterValue);
-    };
-
-    const filteredSongs = appState.allSongs.filter(song => 
-        hasTag(song, 'categoria', appState.currentFilters.category) && 
-        hasTag(song, 'argomento', appState.currentFilters.argomento)
-    );
-
-    if (filteredSongs.length > 0) {
-        filteredSongs.forEach(song => {
-            const item = document.createElement('div');
-            item.className = 'song-item';
+    function handleSongListClick(e) {
+        // Clic su Video
+        const videoBtn = e.target.closest('.video-btn');
+        if (videoBtn) {
+            e.stopPropagation(); 
+            const videoUrl = videoBtn.dataset.videoUrl;
             
-            // CORREZIONE 2: Mapping corretto delle colonne del tuo Sheet
-            const title = song.Titolo || song.titolo || "Senza Titolo";
-            const videoUrl = song.Video_Link || song.video_link || "";
-            // Cerchiamo l'audio in Link_Ascolto come da tuo sheet
-            const audioUrl = song.Link_Ascolto || song.link_ascolto || "";
+            const overlay = document.getElementById('single-video-overlay');
+            const container = document.getElementById('single-video-container');
+            
+            if(mainPlayer) mainPlayer.pause();
+            
+            // Gestione YouTube o Video File
+            if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+                let embed = videoUrl.replace("watch?v=", "embed/").replace("youtu.be/", "youtube.com/embed/");
+                container.innerHTML = `<iframe src="${embed}" style="width:100%; height:100%; border:0" allowfullscreen></iframe>`;
+            } else {
+                container.innerHTML = `<video controls autoplay style="width:100%; height:100%"><source src="${videoUrl}" type="video/mp4"></video>`;
+            }
+            overlay.style.display = 'flex';
+            return;
+        }
 
-            let videoHtml = '';
-            if (videoUrl && videoUrl.trim() !== '') {
-                videoHtml = `<div class="video-btn" data-video-url="${videoUrl}" title="Guarda il video">
-                                <i class="fas fa-video"></i>
-                             </div>`;
+        // Clic su Canzone (Play)
+        const item = e.target.closest('.song-item');
+        if (item) {
+            // Recupera l'URL audio che abbiamo salvato prima
+            const audioUrl = item.dataset.audioUrl;
+            
+            if(!audioUrl) {
+                alert("File audio non disponibile.");
+                return;
             }
 
-            // Salviamo l'url audio nel dataset dell'elemento per recuperarlo al click
-            item.dataset.audioUrl = audioUrl;
-
-            item.innerHTML = `
-                <span class="title">${title}</span>
-                ${videoHtml}
-                <div class="play-btn"><i class="fas fa-play"></i></div>
-            `;
-            songListContainer.appendChild(item);
-        });
-    } else {
-        songListContainer.innerHTML = '<p>Nessun brano corrisponde ai filtri.</p>';
+            if (item === appState.currentPlayingItem && !mainPlayer.paused) {
+                mainPlayer.pause();
+                item.classList.remove('playing');
+            } else {
+                if (appState.currentPlayingItem) appState.currentPlayingItem.classList.remove('playing');
+                appState.currentPlayingItem = item;
+                item.classList.add('playing');
+                
+                mainPlayer.src = audioUrl;
+                mainPlayer.loop = false;
+                mainPlayer.play().catch(e => console.error("Errore play:", e));
+            }
+        }
     }
-}
 
+    function setupBackgroundVideo() {
+        if (window.innerWidth <= 768) {
+            const videoElement = document.getElementById('background-video');
+            if(videoElement) {
+                videoElement.innerHTML = '<source src="https://raw.githubusercontent.com/Rickym2025/fausto-fusetti-links/main/video%20sax.mp4" type="video/mp4" />';
+                videoElement.load();
+            }
+        }
+    }
+
+    function handleFormSubmit(e) {
+        e.preventDefault();
+        const formData = new FormData(form);
+        formResult.innerHTML = "Invio...";
+        fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData })
+            .then(r => r.json())
+            .then(d => {
+                formResult.innerHTML = d.success ? "Messaggio inviato!" : `Errore: ${d.message}`;
+                if (d.success) form.reset();
+            })
+            .catch(() => formResult.innerHTML = "Errore di rete.");
+    }
+    
 function setupSecondaryFeatures() {
 try {
 const chatbotContainer = document.getElementById('chatbot-container');
@@ -520,9 +549,9 @@ chatbotContainer.innerHTML = `<style>#chatbot-window-wrapper{position:fixed;bott
     } catch(e) { console.error("Errore chatbot", e); }
 }
 
-initializeCoreFunctionality();
-audioStartOverlay.style.display = 'flex';
-
+    // AVVIO
+    initializeCoreFunctionality();
+    if(audioStartOverlay) audioStartOverlay.style.display = 'flex';
 });
 </script>
 </body>
