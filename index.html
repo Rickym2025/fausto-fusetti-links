@@ -57,7 +57,7 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
 .filter-group .filter-label { text-align: left; margin-bottom: 8px; font-weight: 500; color: var(--primary-color); }
 .filter-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
 .filter-btn { padding: 8px 14px; border: 1px solid #555; border-radius: 20px; background: none; color: #f0f0f0; cursor: pointer; font-size: 0.9em; transition: all 0.2s ease; }
-.filter-btn.active { background-color: var(--primary-color); border-color: var(--primary-color); color: white; }
+.filter-btn.active { background: var(--primary-color); border-color: var(--primary-color); color: white; }
 
 /* VIEW SWITCHER (LISTA vs ALBUM) */
 .view-switcher { display: flex; justify-content: center; margin-bottom: 20px; gap: 10px; border-bottom: 1px solid #333; padding-bottom: 15px; }
@@ -73,7 +73,7 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
 .song-item.playing { background-color: rgba(6, 147, 227, 0.2); border-left: 3px solid var(--primary-color); }
 .song-item.playing .play-btn { background-color: var(--primary-color); color: white; }
 
-/* DETTAGLI BRANO (TITOLO, GENERE, DURATA) */
+/* DETTAGLI BRANO */
 .song-info { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; margin: 0 10px; }
 .song-title { font-weight: 600; font-size: 1rem; color: #fff; margin-bottom: 4px; }
 .song-meta { font-size: 0.8rem; color: var(--text-gray); display: flex; flex-wrap: wrap; gap: 10px; }
@@ -161,10 +161,10 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
         <h2>Catalogo Musicale</h2>
         <div class="info-box"><i class="fas fa-headphones"></i> Esplora la discografia di Fausto.</div>
         
-        <!-- SWITCH VISTA -->
+        <!-- SWITCH VISTA: ALBUM Default -->
         <div class="view-switcher">
-            <button class="view-btn active" id="btn-list-view" onclick="switchView('list')"><i class="fas fa-list"></i> Lista</button>
-            <button class="view-btn" id="btn-album-view" onclick="switchView('album')"><i class="fas fa-compact-disc"></i> Album</button>
+            <button class="view-btn" id="btn-list-view" onclick="switchView('list')"><i class="fas fa-list"></i> Lista</button>
+            <button class="view-btn active" id="btn-album-view" onclick="switchView('album')"><i class="fas fa-compact-disc"></i> Album</button>
         </div>
 
         <div id="filter-container"></div>
@@ -198,7 +198,7 @@ const appState = {
     currentFilters: { category: 'all', argomento: 'all' },
     backgroundMusicSrc: document.getElementById('background-audio')?.querySelector('source')?.src || '',
     isBgMusicMuted: true,
-    viewMode: 'list' 
+    viewMode: 'album' // DEFAULT: ALBUM
 };
 
 const bgAudio = document.getElementById('background-audio');
@@ -213,6 +213,7 @@ const filterContainer = document.getElementById('filter-container');
 const form = document.getElementById('contact-form');
 const formResult = document.getElementById('form-result');
 
+// GLOBAL SWITCH VIEW FUNCTION
 window.switchView = function(mode) {
     appState.viewMode = mode;
     document.getElementById('btn-list-view').classList.toggle('active', mode === 'list');
@@ -343,7 +344,7 @@ function updateMuteButton() { const muteBtnIcon = document.getElementById('mute-
 
 async function loadMusicFromApi() {
     // AGGIORNATO CACHE KEY PER FORZARE REFRESH
-    const CACHE_KEY = 'ff_music_catalog_cache_v10_dynamic'; 
+    const CACHE_KEY = 'ff_music_catalog_cache_v11_final'; 
     const CACHE_DURATION = 3600 * 1000; 
     const cachedData = localStorage.getItem(CACHE_KEY);
     let loadedFromCache = false;
@@ -368,14 +369,8 @@ async function loadMusicFromApi() {
         if (!response.ok) throw new Error(`Errore di rete`);
         let newSongs = await response.json();
         
-        // Log per Debug (se serve, apri F12 -> Console)
-        if(newSongs && newSongs.length > 0) console.log("Primo brano scaricato:", newSongs[0]);
-
         if (Array.isArray(newSongs)) {
-            // === NESSUN FILTRO RESTRITTIVO ===
-            // Carichiamo tutto quello che c'è nello sheet.
-            // Se in futuro vuoi nascondere qualcosa, usa la checkbox "Catalogo" nello sheet.
-            
+            // NESSUN FILTRO LOCALE: L'APPS SCRIPT GIÀ FILTRA PER "CATALOGO" = TRUE
             appState.allSongs = newSongs;
             localStorage.setItem(CACHE_KEY, JSON.stringify({ timestamp: new Date().getTime(), songs: newSongs }));
             createFilterButtons();
@@ -387,7 +382,6 @@ async function loadMusicFromApi() {
     }
 }
 
-// Funzione intelligente per leggere proprietà ignorando maiuscole/minuscole
 function getProp(obj, keyName) {
     if (!obj || !keyName) return "";
     const key = Object.keys(obj).find(k => {
@@ -470,7 +464,6 @@ function renderSongs() {
         // Raggruppa brani che hanno lo stesso CD
         filteredSongs.forEach(song => {
             let albumName = getProp(song, 'Titolo_CD') || "Singoli & Altro";
-            // Normalizziamo il nome per evitare duplicati per spazi/case
             albumName = albumName.trim(); 
             if (!albums[albumName]) albums[albumName] = [];
             albums[albumName].push(song);
@@ -519,7 +512,6 @@ function handleFilterClick(e) {
         const { filterKey, filterValue } = e.target.dataset; 
         if(filterKey === 'categoria') appState.currentFilters.category = filterValue;
         if(filterKey === 'argomento') appState.currentFilters.argomento = filterValue;
-        
         e.target.parentElement.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active')); 
         e.target.classList.add('active'); 
         renderSongs(); 
