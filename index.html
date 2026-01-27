@@ -7,17 +7,13 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-KD9H9P2RKT');
 </script>
 <meta charset="UTF-8" />
-<!-- Preconnessione ai server esterni -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-  
-  <!-- Precaricamento immagine profilo -->
-  <link rel="preload" as="image" href="logo6.jpg">        
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="preload" as="image" href="logo6.jpg">        
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Fausto Fusetti - FF Musica</title>
 <link rel="icon" href="favicon.ico?v=2" sizes="any" type="image/x-icon">
@@ -27,7 +23,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
 <style>
 /* CSS STYLES */
-:root { --primary-color: #0693e3; --secondary-color: #e3a006; --jingle-color: #00e1ff; }
+:root { --primary-color: #0693e3; --secondary-color: #e3a006; --jingle-color: #00e1ff; --text-gray: #aaa; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body { font-family: 'Montserrat', sans-serif; color: #f0f0f0; text-align: center; }
@@ -52,24 +48,52 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
 .social-icons { display: flex; justify-content: center; gap: 30px; margin: 40px 0 20px; }
 .social-icons a { color: #c7c7c7; font-size: 2.2em; transition: all 0.3s ease; }
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
-.modal-content { background: #1e1e1e; padding: 30px; border-radius: 15px; width: 100%; max-width: 550px; position: relative; max-height: 90vh; overflow-y: auto; }
+.modal-content { background: #1e1e1e; padding: 30px; border-radius: 15px; width: 100%; max-width: 650px; position: relative; max-height: 90vh; overflow-y: auto; }
 .modal-close { position: absolute; top: 15px; right: 20px; font-size: 2em; color: white; cursor: pointer; line-height: 1; }
 .music-catalog .info-box { background: rgba(6, 147, 227, 0.1); border: 1px solid var(--primary-color); padding: 15px; border-radius: 10px; margin-bottom: 25px; font-size: 1.1em; }
+
+/* FILTRI E CONTROLLI */
 .filter-group { margin-bottom: 15px; }
 .filter-group .filter-label { text-align: left; margin-bottom: 8px; font-weight: 500; color: var(--primary-color); }
 .filter-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
 .filter-btn { padding: 8px 14px; border: 1px solid #555; border-radius: 20px; background: none; color: #f0f0f0; cursor: pointer; font-size: 0.9em; transition: all 0.2s ease; }
 .filter-btn.active { background-color: var(--primary-color); border-color: var(--primary-color); color: white; }
-.song-list-container { max-height: 40vh; overflow-y: auto; margin-top: 20px; }
-.song-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #333; transition: background-color 0.3s ease; border-radius: 5px; }
+
+/* VIEW SWITCHER (LISTA vs ALBUM) */
+.view-switcher { display: flex; justify-content: center; margin-bottom: 20px; gap: 10px; border-bottom: 1px solid #333; padding-bottom: 15px; }
+.view-btn { background: transparent; border: 1px solid #555; color: #ccc; padding: 8px 16px; border-radius: 5px; cursor: pointer; transition: 0.3s; }
+.view-btn.active { background: var(--primary-color); border-color: var(--primary-color); color: white; }
+.view-btn:hover { border-color: var(--primary-color); }
+
+/* LISTA BRANI */
+.song-list-container { max-height: 50vh; overflow-y: auto; margin-top: 20px; }
+.song-item { display: flex; align-items: center; padding: 12px 10px; border-bottom: 1px solid #333; transition: background-color 0.3s ease; border-radius: 5px; text-align: left; }
 .song-item:last-child { border-bottom: none; }
-.song-item .title { flex-grow: 1; text-align: left; pointer-events: none; }
-.song-item .play-btn { background: none; border: 2px solid var(--primary-color); color: var(--primary-color); border-radius: 50%; width: 40px; height: 40px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; margin-left: 10px; cursor: pointer; }
 .song-item:hover { background-color: rgba(255,255,255,0.05); }
-.song-item.playing { background-color: rgba(6, 147, 227, 0.2); }
+.song-item.playing { background-color: rgba(6, 147, 227, 0.2); border-left: 3px solid var(--primary-color); }
 .song-item.playing .play-btn { background-color: var(--primary-color); color: white; }
-.song-item .video-btn { background: none; border: 2px solid var(--secondary-color); color: var(--secondary-color); border-radius: 50%; width: 40px; height: 40px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; margin-right: 10px; cursor: pointer; font-size: 0.9em; }
-.song-item .video-btn:hover { background-color: var(--secondary-color); color: white; transform: scale(1.1); box-shadow: 0 0 10px rgba(227, 160, 6, 0.4); }
+
+/* DETTAGLI BRANO (TITOLO, GENERE, DURATA) */
+.song-info { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; margin: 0 10px; }
+.song-title { font-weight: 600; font-size: 1rem; color: #fff; }
+.song-meta { font-size: 0.8rem; color: var(--text-gray); display: flex; gap: 10px; margin-top: 3px; }
+.song-meta i { margin-right: 4px; font-size: 0.75rem; }
+
+/* PULSANTI PLAY/VIDEO */
+.play-btn { background: none; border: 2px solid var(--primary-color); color: var(--primary-color); border-radius: 50%; width: 35px; height: 35px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; cursor: pointer; }
+.video-btn { background: none; border: 2px solid var(--secondary-color); color: var(--secondary-color); border-radius: 50%; width: 35px; height: 35px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; margin-right: 8px; cursor: pointer; font-size: 0.8em; }
+.video-btn:hover { background-color: var(--secondary-color); color: white; }
+
+/* STILE ALBUM */
+.album-card { background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 10px; margin-bottom: 25px; overflow: hidden; }
+.album-header { padding: 15px; background: rgba(0,0,0,0.3); display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #444; }
+.album-cover { width: 60px; height: 60px; border-radius: 5px; object-fit: cover; background: #222; }
+.album-info { text-align: left; }
+.album-title { font-size: 1.2em; color: var(--primary-color); font-weight: bold; margin: 0; }
+.album-count { font-size: 0.9em; color: #888; }
+.album-tracks { padding: 5px; }
+
+/* MODALI E ALTRO */
 .contact-form { display: flex; flex-direction: column; gap: 15px; text-align: left; }
 .contact-form input, .contact-form textarea, .contact-form select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #555; background-color: #2c2c2c; color: #f0f0f0; font-size: 1em; }
 #form-result { margin-top: 15px; font-weight: bold; }
@@ -108,7 +132,7 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
 <div id="audio-cta"><span class="cta-text">Attiva la musica</span><div id="mute-btn-icon"><i class="fas fa-volume-mute"></i></div></div>
 <img src="logo6.jpg" alt="Logo FF Musica" class="profile-logo">
 <h1>Fausto Fusetti</h1>
-<p class="bio">Piacere, sono Fausto Fusetti, in arte <strong>Fausto Miriani</strong>. Dal 1988 la musica è la mia vita: sono polistrumentista, cantante, compositore, paroliere e anche autore di libri. Una passione che mi ha portato a comporre oltre 700 brani e a incidere 11 dischi.<br><br>La mia carriera è stata un viaggio entusiasmante sui palchi più prestigiosi, collaborando con icone come <strong>Fred Bongusto, Peppino di Capri e Califano</strong>. La mia creatività non conosce confini: dal pop al melodico, dal jazz alla musica latina, ogni genere è un'occasione per trasformare emozioni in musica e raccontare storie uniche.<br><br>Oggi metto questa esperienza al tuo servizio per creare <strong>canzoni e libri personalizzati</strong>, e continuo a investire sul futuro, seguendo giovani talenti in nuovi progetti discografici.</p>
+<p class="bio">Piacere, sono Fausto Fusetti, in arte <strong>Fausto Miriani</strong>. Dal 1988 la musica è la mia vita: sono polistrumentista, cantante, compositore, paroliere e anche autore di libri.<br><br>La mia carriera è stata un viaggio entusiasmante sui palchi più prestigiosi, collaborando con icone come <strong>Fred Bongusto, Peppino di Capri e Califano</strong>.<br><br>Oggi metto questa esperienza al tuo servizio per creare <strong>canzoni e libri personalizzati</strong>, e continuo a investire sul futuro.</p>
 
 <!-- PULSANTI -->
 <a href="https://rickym2025.github.io/jukebox-ff/" target="_blank" class="button jukebox"><i class="fas fa-compact-disc"></i> Area Riservata Jukebox</a>
@@ -126,14 +150,30 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
 </div>
 
 <!-- MODALI -->
-<div id="shop-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="shop-modal">&times;</span><h2><i class="fas fa-shopping-cart" style="color: var(--primary-color); margin-right: 10px;"></i> Shop / Supportami</h2><p style="margin: 15px 0; font-size: 0.9em; color: #ccc;"><i>In qualità di Affiliato Amazon, ricevo un guadagno per gli acquisti idonei. Acquistando tramite questi link supporti il mio lavoro, senza alcun costo aggiuntivo per te. Grazie!</i></p><a href="https://www.amazon.it/hz/wishlist/ls/282CA0XU81D3C?tag=zero100store-21" target="_blank" class="button"><i class="fab fa-amazon"></i> La mia Attrezzatura</a><a href="https://www.amazon.it/gp/dmusic/promotions/AmazonMusicUnlimited?tag=zero100store-21" target="_blank" class="button"><i class="fas fa-music"></i> Prova Amazon Music Unlimited</a><a href="https://ff-music-store.printify.me/" target="_blank" class="button"><i class="fas fa-tshirt"></i> Merchandising Ufficiale</a></div></div>
+<div id="shop-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="shop-modal">&times;</span><h2><i class="fas fa-shopping-cart" style="color: var(--primary-color); margin-right: 10px;"></i> Shop / Supportami</h2><p style="margin: 15px 0; font-size: 0.9em; color: #ccc;"><i>Acquistando tramite questi link supporti il mio lavoro.</i></p><a href="https://www.amazon.it/hz/wishlist/ls/282CA0XU81D3C?tag=zero100store-21" target="_blank" class="button"><i class="fab fa-amazon"></i> La mia Attrezzatura</a><a href="https://www.amazon.it/gp/dmusic/promotions/AmazonMusicUnlimited?tag=zero100store-21" target="_blank" class="button"><i class="fas fa-music"></i> Prova Amazon Music Unlimited</a><a href="https://ff-music-store.printify.me/" target="_blank" class="button"><i class="fas fa-tshirt"></i> Merchandising Ufficiale</a></div></div>
 <div id="video-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="video-modal">&times;</span><h2>Video Selezionati</h2><a href="https://www.youtube.com/watch?v=7s3-7DV38IA" target="_blank" class="button">Produzioni Varie</a><a href="https://www.youtube.com/watch?v=Y8YqyCT7h5E" target="_blank" class="button">Ascolta "Noi"</a><a href="https://www.youtube.com/watch?v=igexCZ24Twg" target="_blank" class="button">Ascolta "Per Te"</a></div></div>
 
 <!-- CATALOGO MUSICALE -->
-<div id="music-modal" class="modal-overlay"><div class="modal-content music-catalog"><span class="modal-close" data-target="music-modal">&times;</span><h2>Catalogo Musicale</h2><div class="info-box"><i class="fas fa-filter"></i> Seleziona i filtri per trovare il brano che cerchi.</div><div id="filter-container"></div><div id="song-list-container"></div><audio id="catalog-audio-player"></audio></div></div>
+<div id="music-modal" class="modal-overlay">
+    <div class="modal-content music-catalog">
+        <span class="modal-close" data-target="music-modal">&times;</span>
+        <h2>Catalogo Musicale</h2>
+        <div class="info-box"><i class="fas fa-headphones"></i> Esplora la discografia di Fausto.</div>
+        
+        <!-- SWITCH VISTA -->
+        <div class="view-switcher">
+            <button class="view-btn active" id="btn-list-view" onclick="switchView('list')"><i class="fas fa-list"></i> Lista</button>
+            <button class="view-btn" id="btn-album-view" onclick="switchView('album')"><i class="fas fa-compact-disc"></i> Album</button>
+        </div>
 
-<div id="services-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="services-modal">&times;</span><h2><i class="fas fa-heart" style="color: var(--secondary-color); margin-right: 10px;"></i>Canzoni Personalizzate</h2><div style="text-align: left; line-height: 1.6; margin-bottom: 20px;"><h3 style="color: var(--primary-color); margin-bottom: 10px;">✨ Servizi Esclusivi:</h3><ul style="list-style: none; padding-left: 0;"><li style="margin-bottom: 10px;"><i class="fas fa-heart" style="color: #e74c3c; margin-right: 8px;"></i> <strong>Canzoni per Coppie</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-ring" style="color: #f39c12; margin-right: 8px;"></i> <strong>Anniversari e Matrimoni</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-gift" style="color: #9b59b6; margin-right: 8px;"></i> <strong>Testi Personalizzati</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-birthday-cake" style="color: #e67e22; margin-right: 8px;"></i> <strong>Eventi Speciali</strong></li></ul><div style="background: rgba(6, 147, 227, 0.1); border-left: 4px solid var(--primary-color); padding: 15px; margin: 20px 0; border-radius: 5px;"><p><strong>💡 Come funziona:</strong> Raccontami la tua storia, i tuoi ricordi. Creerò una canzone unica che rappresenti le tue emozioni.</p></div></div><button id="contact-for-custom-song" class="button collabora">Richiedi la Tua Canzone</button></div></div>
-<div id="contact-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="contact-modal">&times;</span><h2>Contattami per il tuo Progetto</h2><form id="contact-form" class="contact-form" autocomplete="on"><input type="hidden" name="access_key" value="9013a8d5-0901-42a0-b9e6-4c45553f960d"/><input type="text" name="name" placeholder="Il tuo Nome" required autocomplete="name"/><input type="email" name="email" placeholder="La tua Email" required autocomplete="email"/><input type="tel" name="phone" placeholder="Il tuo Telefono (Opzionale)" autocomplete="tel"/><select name="service_type"><option value="">Seleziona il tipo di servizio</option><option value="canzone_personalizzata">Canzone Personalizzata</option><option value="composizione_artista">Composizione per Artista</option><option value="intrattenimento_live">Intrattenimento Live</option><option value="altro">Altro</option></select><textarea name="message" rows="4" placeholder="Descrivi la tua idea o richiesta..." required></textarea><button type="submit" class="button collabora">Invia Messaggio</button></form><div id="form-result"></div></div></div>
+        <div id="filter-container"></div>
+        <div id="song-list-container"></div>
+        <audio id="catalog-audio-player"></audio>
+    </div>
+</div>
+
+<div id="services-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="services-modal">&times;</span><h2><i class="fas fa-heart" style="color: var(--secondary-color); margin-right: 10px;"></i>Canzoni Personalizzate</h2><div style="text-align: left; line-height: 1.6; margin-bottom: 20px;"><h3 style="color: var(--primary-color); margin-bottom: 10px;">✨ Servizi Esclusivi:</h3><ul style="list-style: none; padding-left: 0;"><li style="margin-bottom: 10px;"><i class="fas fa-heart" style="color: #e74c3c; margin-right: 8px;"></i> <strong>Canzoni per Coppie</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-ring" style="color: #f39c12; margin-right: 8px;"></i> <strong>Anniversari</strong></li></ul><button id="contact-for-custom-song" class="button collabora">Richiedi la Tua Canzone</button></div></div></div>
+<div id="contact-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="contact-modal">&times;</span><h2>Contattami per il tuo Progetto</h2><form id="contact-form" class="contact-form" autocomplete="on"><input type="hidden" name="access_key" value="9013a8d5-0901-42a0-b9e6-4c45553f960d"/><input type="text" name="name" placeholder="Il tuo Nome" required autocomplete="name"/><input type="email" name="email" placeholder="La tua Email" required autocomplete="email"/><select name="service_type"><option value="">Seleziona il tipo di servizio</option><option value="canzone_personalizzata">Canzone Personalizzata</option><option value="composizione_artista">Composizione per Artista</option><option value="altro">Altro</option></select><textarea name="message" rows="4" placeholder="Descrivi la tua idea o richiesta..." required></textarea><button type="submit" class="button collabora">Invia Messaggio</button></form><div id="form-result"></div></div></div>
 <div id="single-video-overlay">
 <div id="single-video-container">
 <div id="video-placeholder"></div>
@@ -145,396 +185,396 @@ Iscrizione SIAE n. 189515 e 593874
 </div>
 <div id="chatbot-container"></div>
 
-<!-- SCRIPT LIBRERIE -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
-
-<!-- SCRIPT PRINCIPALE -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
-    // --- CONFIGURAZIONE ---
-    const appState = {
-        allSongs: [],
-        currentPlayingItem: null,
-        currentFilters: { category: 'all', argomento: 'all' },
-        backgroundMusicSrc: document.getElementById('background-audio')?.querySelector('source')?.src || '',
-        isBgMusicMuted: true,
-        isChatAnimating: false
-    };
+const appState = {
+    isChatAnimating: false,
+    allSongs: [],
+    currentPlayingItem: null,
+    currentFilters: { category: 'all', argomento: 'all' },
+    backgroundMusicSrc: document.getElementById('background-audio')?.querySelector('source')?.src || '',
+    isBgMusicMuted: true,
+    viewMode: 'list' // 'list' o 'album'
+};
 
-    // --- ELEMENTI DOM ---
-    const bgAudio = document.getElementById('background-audio');
-    const audioStartOverlay = document.getElementById('audio-start-overlay');
-    const startAudioBtn = document.getElementById('start-audio-btn');
-    const audioCta = document.getElementById('audio-cta');
-    const mainPlayer = document.getElementById('catalog-audio-player');
-    const songListContainer = document.getElementById('song-list-container');
-    const filterContainer = document.getElementById('filter-container');
-    const form = document.getElementById('contact-form');
-    const formResult = document.getElementById('form-result');
+const bgAudio = document.getElementById('background-audio');
+const audioStartOverlay = document.getElementById('audio-start-overlay');
+const startAudioBtn = document.getElementById('start-audio-btn');
+const audioCta = document.getElementById('audio-cta');
+const mainPlayer = document.getElementById('catalog-audio-player');
+mainPlayer.loop = true;
 
-    if(mainPlayer) mainPlayer.loop = true;
+const songListContainer = document.getElementById('song-list-container');
+const filterContainer = document.getElementById('filter-container');
+const form = document.getElementById('contact-form');
+const formResult = document.getElementById('form-result');
 
-    // --- MAPPING DATI ---
-    // Adatta i dati ricevuti da Google allo standard del sito
-    function getSongData(song) {
-        // Cerca chiave case-insensitive
-        const findKey = (target) => Object.keys(song).find(k => k.toLowerCase() === target.toLowerCase());
-        
-        return {
-            title: song[findKey('title')] || "Titolo Sconosciuto",
-            audio: song[findKey('url')] || "",
-            video: song[findKey('video')] || "",
-            // Qui mappiamo la categoria ricevuta dallo script come "Genere"
-            category: song[findKey('category')] || song[findKey('genre')] || "",
-            argomento: song[findKey('argomento')] || ""
-        };
+// GLOBAL SWITCH VIEW FUNCTION
+window.switchView = function(mode) {
+    appState.viewMode = mode;
+    document.getElementById('btn-list-view').classList.toggle('active', mode === 'list');
+    document.getElementById('btn-album-view').classList.toggle('active', mode === 'album');
+    renderSongs();
+};
+
+function initializeCoreFunctionality() {
+document.getElementById('open-music-modal').addEventListener('click', () => openModal('music-modal'));
+document.getElementById('open-video-modal').addEventListener('click', () => openModal('video-modal'));
+document.getElementById('open-services-modal').addEventListener('click', () => openModal('services-modal'));
+document.getElementById('open-contact-modal').addEventListener('click', () => openModal('contact-modal'));
+document.getElementById('open-shop-modal').addEventListener('click', () => openModal('shop-modal'));
+
+document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', (e) => closeModal(e.currentTarget.dataset.target)));
+document.getElementById('contact-for-custom-song').addEventListener('click', () => {
+closeModal('services-modal');
+openModal('contact-modal');
+document.querySelector('#contact-modal select[name="service_type"]').value = 'canzone_personalizzata';
+});
+
+startAudioBtn.addEventListener('click', handleStartAudioClick);
+form.addEventListener('submit', handleFormSubmit);
+filterContainer.addEventListener('click', handleFilterClick);
+songListContainer.addEventListener('click', handleSongListClick);
+
+document.getElementById('close-single-video').addEventListener('click', () => {
+document.getElementById('single-video-overlay').style.display = 'none';
+document.getElementById('single-video-container').innerHTML = '';
+});
+
+setupBackgroundVideo();
+loadMusicFromApi();
+setupSecondaryFeatures();
+}
+
+function openModal(modalId) {
+mainPlayer.pause();
+document.getElementById(modalId).style.display = 'flex';
+}
+
+function closeModal(modalId) {
+document.getElementById(modalId).style.display = 'none';
+playBackgroundMusic();
+}
+
+async function playBackgroundMusic() {
+if (!appState.isBgMusicMuted && appState.backgroundMusicSrc) {
+if (mainPlayer.src !== appState.backgroundMusicSrc) {
+mainPlayer.src = appState.backgroundMusicSrc;
+}
+mainPlayer.loop = true;
+try { await mainPlayer.play(); }
+catch (error) { console.warn("Background audio error:", error); }
+}
+}
+
+async function handleStartAudioClick() {
+audioStartOverlay.style.display = 'none';
+appState.isBgMusicMuted = false;
+bgAudio.play().catch(()=>{});
+bgAudio.pause();
+updateMuteButton();
+playBackgroundMusic();
+}
+
+async function handleSongClick(item, song) {
+const isSameSong = (item === appState.currentPlayingItem);
+try {
+if (isSameSong && !mainPlayer.paused) {
+mainPlayer.pause();
+} else {
+if (appState.currentPlayingItem && appState.currentPlayingItem !== item) {
+appState.currentPlayingItem.classList.remove('playing');
+}
+appState.currentPlayingItem = item;
+mainPlayer.src = song.url;
+mainPlayer.loop = false;
+await mainPlayer.play();
+}
+} catch (error) {
+console.error("Errore Player:", error);
+if (appState.currentPlayingItem) appState.currentPlayingItem.classList.remove('playing');
+appState.currentPlayingItem = null;
+}
+}
+
+mainPlayer.addEventListener('play', () => { if (appState.currentPlayingItem && !mainPlayer.loop) { appState.currentPlayingItem.classList.add('playing'); } });
+mainPlayer.addEventListener('pause', () => { if (appState.currentPlayingItem) { appState.currentPlayingItem.classList.remove('playing'); } });
+mainPlayer.addEventListener('ended', () => { if (appState.currentPlayingItem) { appState.currentPlayingItem.classList.remove('playing'); appState.currentPlayingItem = null; } playBackgroundMusic(); });
+
+function setupBackgroundVideo() { if (window.innerWidth <= 768) { const videoElement = document.getElementById('background-video'); const videoSource = videoElement.querySelector('source'); if (videoSource) { videoSource.src = 'https://raw.githubusercontent.com/Rickym2025/fausto-fusetti-links/main/video%20sax.mp4'; videoElement.load(); } } }
+function handleFormSubmit(e) { e.preventDefault(); const formData = new FormData(form); formResult.innerHTML = "Invio..."; fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).then(r => r.json()).then(d => { formResult.innerHTML = d.success ? "Messaggio inviato!" : `Errore: ${d.message}`; if (d.success) form.reset(); }).catch(() => formResult.innerHTML = "Errore di rete."); }
+
+function handleSongListClick(e) {
+    const videoBtn = e.target.closest('.video-btn');
+    if (videoBtn) {
+        e.stopPropagation(); 
+        const videoUrl = videoBtn.dataset.videoUrl;
+        if (videoUrl) {
+            mainPlayer.pause();
+            if (appState.currentPlayingItem) appState.currentPlayingItem.classList.remove('playing');
+            const videoOverlay = document.getElementById('single-video-overlay');
+            const videoContainer = document.getElementById('single-video-container');
+            videoContainer.innerHTML = `<video controls autoplay style="width: 100%; height: 100%; object-fit: contain;"><source src="${videoUrl}" type="video/mp4"></video>`;
+            videoOverlay.style.display = 'flex';
+        } else { alert("Link video mancante."); }
+        return;
     }
-
-    // --- INIZIALIZZAZIONE ---
-    function initializeCoreFunctionality() {
-        // Modali
-        document.getElementById('open-music-modal').addEventListener('click', () => openModal('music-modal'));
-        document.getElementById('open-video-modal').addEventListener('click', () => openModal('video-modal'));
-        document.getElementById('open-services-modal').addEventListener('click', () => openModal('services-modal'));
-        document.getElementById('open-contact-modal').addEventListener('click', () => openModal('contact-modal'));
-        document.getElementById('open-shop-modal').addEventListener('click', () => openModal('shop-modal'));
-
-        document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', (e) => closeModal(e.currentTarget.dataset.target)));
-
-        // Tasto custom
-        const customBtn = document.getElementById('contact-for-custom-song');
-        if(customBtn) {
-            customBtn.addEventListener('click', () => {
-                closeModal('services-modal');
-                openModal('contact-modal');
-                const select = document.querySelector('#contact-modal select[name="service_type"]');
-                if(select) select.value = 'canzone_personalizzata';
-            });
+    const item = e.target.closest('.song-item');
+    if (item) {
+        // Cerca brano nel dataset (gestione album view)
+        let songUrl = item.dataset.songUrl;
+        if (!songUrl) {
+             const titleToFind = item.querySelector('.title').textContent;
+             const song = appState.allSongs.find(s => (s.titolo || s.title || s.Titolo) === titleToFind);
+             if (song) songUrl = song.url;
         }
-
-        if(startAudioBtn) startAudioBtn.addEventListener('click', handleStartAudioClick);
-        if(form) form.addEventListener('submit', handleFormSubmit);
-        if(filterContainer) filterContainer.addEventListener('click', handleFilterClick);
-        if(songListContainer) songListContainer.addEventListener('click', handleSongListClick);
-
-        document.getElementById('close-single-video').addEventListener('click', () => {
-            document.getElementById('single-video-overlay').style.display = 'none';
-            document.getElementById('single-video-container').innerHTML = '';
-        });
-
-        setupBackgroundVideo();
-        loadMusicFromApi();
-        initChatbot(); 
+        
+        if (songUrl) {
+             const song = { url: songUrl };
+             handleSongClick(item, song);
+        }
     }
+}
 
-    // --- CARICAMENTO DATI (SEMPLIFICATO) ---
-    async function loadMusicFromApi() {
-        // !!! IMPORTANTE: CAMBIA VERSIONE CACHE PER VEDERE SUBITO LE MODIFICHE !!!
-        const CACHE_KEY = 'ff_catalog_checkbox_v1'; 
-        // localStorage.removeItem(CACHE_KEY); // Scommenta una volta se non vedi aggiornamenti
+audioCta.addEventListener('click', () => { appState.isBgMusicMuted = !appState.isBgMusicMuted; if (appState.isBgMusicMuted) { mainPlayer.pause(); } else { playBackgroundMusic(); } updateMuteButton(); });
+function updateMuteButton() { const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i'); const ctaText = document.querySelector('#audio-cta .cta-text'); muteBtnIcon.className = appState.isBgMusicMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up'; ctaText.textContent = appState.isBgMusicMuted ? 'Attiva la musica' : 'Disattiva musica'; audioCta.style.visibility = 'visible'; }
 
-        songListContainer.innerHTML = `<p><i class="fas fa-spinner fa-spin"></i> Caricamento catalogo...</p>`;
+async function loadMusicFromApi() {
+    const CACHE_KEY = 'ff_music_catalog_cache_v7_columns'; 
+    const CACHE_DURATION = 3600 * 1000; 
+    const cachedData = localStorage.getItem(CACHE_KEY);
+    let loadedFromCache = false;
 
+    if (cachedData) {
         try {
-            // *** INCOLLA QUI IL TUO NUOVO URL DEPLOY ***
-            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw666DGD4BlSHuJwmVYcRLF9_qMJX2LXy_r6gCGVbjR_dXQDngQU-JttofSKOwUkIJZ/exec';
-            
-            const response = await fetch(SCRIPT_URL + '?source=catalogo&t=' + new Date().getTime());
-            if (!response.ok) throw new Error("Errore connessione");
-            
-            let rawData = await response.json();
-            
-            // Gestione formati
-            let incomingSongs = [];
-            if (Array.isArray(rawData)) {
-                incomingSongs = rawData;
-            } else if (rawData.data && Array.isArray(rawData.data)) {
-                incomingSongs = rawData.data;
-            } else {
-                incomingSongs = Object.values(rawData).filter(x => typeof x === 'object');
-            }
-
-            // ORA NON FILTRIAMO PIÙ NULLA QUI.
-            // Ci fidiamo che lo Script Google mandi solo le canzoni con Checkbox = TRUE.
-            appState.allSongs = incomingSongs;
-
-            console.log(`Caricate ${appState.allSongs.length} canzoni dal Catalogo.`);
-
-            if (appState.allSongs.length === 0) {
-                songListContainer.innerHTML = `<p style="color:orange">Nessun brano trovato. Verifica di aver spuntato la colonna 'Catalogo' nel foglio.</p>`;
-            } else {
+            const parsed = JSON.parse(cachedData);
+            if (new Date().getTime() - parsed.timestamp < CACHE_DURATION) {
+                appState.allSongs = parsed.songs;
                 createFilterButtons();
                 renderSongs();
+                return; 
             }
-
-        } catch (error) {
-            console.error(error);
-            songListContainer.innerHTML = `<p>Errore caricamento dati.</p>`;
-        }
+            loadedFromCache = true;
+        } catch (e) { console.warn("Cache error", e); }
     }
 
-    function createFilterButtons() {
-        const extractTags = (fieldKey) => {
-            const raw = appState.allSongs.map(s => getSongData(s)[fieldKey]).filter(Boolean);
-            const split = raw.flatMap(t => t.toString().split(/[;,]+/).map(x => x.trim()));
-            return [...new Set(split)].sort();
-        };
+    if (!loadedFromCache) songListContainer.innerHTML = `<p><i class="fas fa-spinner fa-spin"></i> Caricamento catalogo...</p>`;
 
-        const genres = extractTags('category'); 
-        const arguments = extractTags('argomento');
-
-        filterContainer.innerHTML = '';
-
-        // Filtro GENERE
-        if (genres.length > 0) {
-            let html = `<div class="filter-group"><div class="filter-label">Genere</div><div class="filter-buttons">`;
-            html += `<button class="filter-btn active" data-filter-key="category" data-filter-value="all">Tutti</button>`;
-            genres.forEach(val => {
-                html += `<button class="filter-btn" data-filter-key="category" data-filter-value="${val}">${val}</button>`;
-            });
-            html += `</div></div>`;
-            filterContainer.innerHTML += html;
-        }
-
-        // Filtro ARGOMENTO
-        if (arguments.length > 0) {
-            let html = `<div class="filter-group"><div class="filter-label">Argomento</div><div class="filter-buttons">`;
-            html += `<button class="filter-btn active" data-filter-key="argomento" data-filter-value="all">Tutti</button>`;
-            arguments.forEach(val => {
-                html += `<button class="filter-btn" data-filter-key="argomento" data-filter-value="${val}">${val}</button>`;
-            });
-            html += `</div></div>`;
-            filterContainer.innerHTML += html;
-        }
-    }
-
-    function renderSongs() {
-        songListContainer.innerHTML = '';
+    try {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbw666DGD4BlSHuJwmVYcRLF9_qMJX2LXy_r6gCGVbjR_dXQDngQU-JttofSKOwUkIJZ/exec?source=catalogo&t=' + new Date().getTime());
+        if (!response.ok) throw new Error(`Errore di rete`);
+        let newSongs = await response.json();
         
-        const currentCat = appState.currentFilters.category;
-        const currentArg = appState.currentFilters.argomento;
-
-        const filtered = appState.allSongs.filter(song => {
-            const data = getSongData(song);
-            
-            const catMatch = currentCat === 'all' || data.category.toString().split(/[;,]+/).map(t=>t.trim()).includes(currentCat);
-            const argMatch = currentArg === 'all' || data.argomento.toString().split(/[;,]+/).map(t=>t.trim()).includes(currentArg);
-
-            return catMatch && argMatch;
-        });
-
-        if (filtered.length === 0) {
-            songListContainer.innerHTML = '<p>Nessun brano con questi filtri.</p>';
-            return;
+        // FILTRO: Mantiene solo brani che hanno un titolo e un URL validi
+        // (Opzionale: puoi rimettere il filtro "Fausto CD" se vuoi)
+        if (Array.isArray(newSongs)) {
+            appState.allSongs = newSongs;
+            localStorage.setItem(CACHE_KEY, JSON.stringify({ timestamp: new Date().getTime(), songs: newSongs }));
+            createFilterButtons();
+            renderSongs();
         }
+    } catch (error) {
+        console.error("Fetch error:", error);
+        if (!loadedFromCache) songListContainer.innerHTML = `<p style="color: #ffc107;">Impossibile aggiornare il catalogo.</p>`;
+    }
+}
 
-        filtered.forEach(song => {
-            const data = getSongData(song);
+// Helper per leggere le proprietà in modo sicuro e case-insensitive
+function getProp(obj, keyName) {
+    if (!obj || !keyName) return "";
+    const key = Object.keys(obj).find(k => k.toLowerCase() === keyName.toLowerCase());
+    return key ? obj[key] : "";
+}
+
+function createFilterButtons() {
+    // MAPPATURA FILTRI: Categoria e Argomento
+    const getSafeTags = (keyName) => {
+         const rawValues = appState.allSongs.map(s => getProp(s, keyName)).filter(Boolean);
+         const splitTags = rawValues.flatMap(text => text.split(/[;,]+/).map(t => t.trim()));
+         return [...new Set(splitTags)].sort();
+    };
+
+    const filters = { 'Categoria': getSafeTags('Categoria'), 'Argomento': getSafeTags('Argomento') };
+    filterContainer.innerHTML = ''; 
+    for (const label in filters) { 
+        const filterKey = label.toLowerCase(); 
+        let buttonsHtml = `<div class="filter-group"><div class="filter-label">${label}</div><div class="filter-buttons">`; 
+        buttonsHtml += `<button class="filter-btn active" data-filter-key="${filterKey}" data-filter-value="all">Tutti</button>`; 
+        filters[label].forEach(value => { buttonsHtml += `<button class="filter-btn" data-filter-key="${filterKey}" data-filter-value="${value}">${value}</button>`; }); 
+        buttonsHtml += `</div></div>`; 
+        filterContainer.innerHTML += buttonsHtml; 
+    } 
+}
+
+function renderSongs() {
+    songListContainer.innerHTML = '';
+    
+    // Filtro logico
+    const filteredSongs = appState.allSongs.filter(song => {
+        const catVal = getProp(song, 'Categoria');
+        const argVal = getProp(song, 'Argomento');
+        
+        const catMatch = appState.currentFilters.category === 'all' || (catVal && catVal.includes(appState.currentFilters.category));
+        const argMatch = appState.currentFilters.argomento === 'all' || (argVal && argVal.includes(appState.currentFilters.argomento));
+        return catMatch && argMatch;
+    });
+
+    if (filteredSongs.length === 0) {
+        songListContainer.innerHTML = '<p>Nessun brano corrisponde ai filtri.</p>';
+        return;
+    }
+
+    if (appState.viewMode === 'list') {
+        // --- VISTA LISTA ---
+        filteredSongs.forEach(song => {
+            const title = getProp(song, 'Titolo') || "Titolo Sconosciuto";
+            const video = getProp(song, 'Video_Link');
+            const genre = getProp(song, 'Categoria');
+            const duration = getProp(song, 'Durata');
+            const url = getProp(song, 'url'); // Questa arriva spesso come 'url' minuscolo dallo script google
+
             const item = document.createElement('div');
             item.className = 'song-item';
-            item.dataset.audioUrl = data.audio;
+            item.dataset.songUrl = url;
 
-            let videoHtml = '';
-            if (data.video && data.video.trim().length > 5) {
-                videoHtml = `<div class="video-btn" data-video-url="${data.video}"><i class="fas fa-video"></i></div>`;
-            }
-
+            let videoHtml = video ? `<div class="video-btn" data-video-url="${video}"><i class="fas fa-video"></i></div>` : '';
+            
             item.innerHTML = `
-                <span class="title">${data.title}</span>
+                <div class="song-info">
+                    <span class="title">${title}</span>
+                    <div class="song-meta">
+                        ${genre ? `<span><i class="fas fa-music"></i> ${genre}</span>` : ''}
+                        ${duration ? `<span><i class="fas fa-clock"></i> ${duration}</span>` : ''}
+                    </div>
+                </div>
                 ${videoHtml}
                 <div class="play-btn"><i class="fas fa-play"></i></div>
             `;
             songListContainer.appendChild(item);
         });
-    }
 
-    // --- EVENTI E FUNZIONI AUSILIARIE ---
-    function openModal(id) { if(mainPlayer) mainPlayer.pause(); document.getElementById(id).style.display = 'flex'; }
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; playBackgroundMusic(); }
-
-    async function playBackgroundMusic() {
-        if (!appState.isBgMusicMuted && appState.backgroundMusicSrc) {
-            if (mainPlayer.src !== appState.backgroundMusicSrc) mainPlayer.src = appState.backgroundMusicSrc;
-            mainPlayer.loop = true;
-            try { await mainPlayer.play(); } catch(e){}
-        }
-    }
-
-    function handleStartAudioClick() {
-        audioStartOverlay.style.display = 'none';
-        appState.isBgMusicMuted = false;
-        if(bgAudio) { bgAudio.play().catch(()=>{}); bgAudio.pause(); }
-        updateMuteButton();
-        playBackgroundMusic();
-    }
-
-    if(audioCta) {
-        audioCta.addEventListener('click', () => {
-            appState.isBgMusicMuted = !appState.isBgMusicMuted;
-            if (appState.isBgMusicMuted) mainPlayer.pause(); else playBackgroundMusic();
-            updateMuteButton();
+    } else {
+        // --- VISTA ALBUM ---
+        const albums = {};
+        filteredSongs.forEach(song => {
+            const albumName = getProp(song, 'Titolo_CD') || "Singoli & Altro";
+            if (!albums[albumName]) albums[albumName] = [];
+            albums[albumName].push(song);
         });
-    }
 
-    function updateMuteButton() {
-        const icon = document.getElementById('mute-btn-icon').querySelector('i');
-        const text = document.querySelector('#audio-cta .cta-text');
-        icon.className = appState.isBgMusicMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
-        text.textContent = appState.isBgMusicMuted ? 'Attiva la musica' : 'Disattiva musica';
-        audioCta.style.visibility = 'visible';
-    }
+        for (const [albumName, songs] of Object.entries(albums)) {
+            const coverUrl = getProp(songs[0], 'Link_Thumbnail') || 'logo6.jpg'; // Usa Link_Thumbnail
+            
+            const albumCard = document.createElement('div');
+            albumCard.className = 'album-card';
+            
+            let tracksHtml = '';
+            songs.forEach(song => {
+                const title = getProp(song, 'Titolo');
+                const url = getProp(song, 'url');
+                const duration = getProp(song, 'Durata');
+                
+                tracksHtml += `
+                <div class="song-item" data-song-url="${url}">
+                    <span class="title" style="font-size:0.95em;">${title}</span>
+                    ${duration ? `<span style="font-size:0.8em; color:#888; margin-right:10px;">${duration}</span>` : ''}
+                    <div class="play-btn" style="width:28px; height:28px; font-size:0.8em;"><i class="fas fa-play"></i></div>
+                </div>`;
+            });
 
-    function handleFilterClick(e) {
-        if (e.target.classList.contains('filter-btn')) {
-            const { filterKey, filterValue } = e.target.dataset;
-            appState.currentFilters[filterKey] = filterValue;
-            e.target.parentElement.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            e.target.classList.add('active');
-            renderSongs();
-        }
-    }
-
-    function handleSongListClick(e) {
-        const videoBtn = e.target.closest('.video-btn');
-        if (videoBtn) {
-            e.stopPropagation();
-            const url = videoBtn.dataset.videoUrl;
-            if(mainPlayer) mainPlayer.pause();
-            const container = document.getElementById('single-video-container');
-            const overlay = document.getElementById('single-video-overlay');
-            if (url.includes('youtube') || url.includes('youtu.be')) {
-                let embed = url.replace("watch?v=", "embed/").replace("youtu.be/", "youtube.com/embed/");
-                if(embed.includes('&')) embed = embed.split('&')[0];
-                container.innerHTML = `<iframe src="${embed}" style="width:100%; height:100%; border:0" allowfullscreen></iframe>`;
-            } else {
-                container.innerHTML = `<video controls autoplay style="width:100%; height:100%"><source src="${url}" type="video/mp4"></video>`;
-            }
-            overlay.style.display = 'flex';
-            return;
-        }
-
-        const item = e.target.closest('.song-item');
-        if (item) {
-            const audioUrl = item.dataset.audioUrl;
-            if(!audioUrl) { alert("Audio non disponibile."); return; }
-            if (item === appState.currentPlayingItem && !mainPlayer.paused) {
-                mainPlayer.pause(); item.classList.remove('playing');
-            } else {
-                if (appState.currentPlayingItem) appState.currentPlayingItem.classList.remove('playing');
-                appState.currentPlayingItem = item; item.classList.add('playing');
-                mainPlayer.src = audioUrl; mainPlayer.loop = false;
-                mainPlayer.play().catch(e => console.error("Play error:", e));
-            }
-        }
-    }
-
-    function setupBackgroundVideo() {
-        if (window.innerWidth <= 768) {
-            const v = document.getElementById('background-video');
-            if(v) { v.innerHTML = '<source src="https://raw.githubusercontent.com/Rickym2025/fausto-fusetti-links/main/video%20sax.mp4" type="video/mp4" />'; v.load(); }
-        }
-    }
-
-    function handleFormSubmit(e) {
-        e.preventDefault();
-        const fd = new FormData(form);
-        formResult.innerHTML = "Invio...";
-        fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd })
-            .then(r => r.json())
-            .then(d => { formResult.innerHTML = d.success ? "Inviato!" : "Errore."; if(d.success) form.reset(); });
-    }
-
-    // --- CHATBOT ---
-    function initChatbot() {
-        const container = document.getElementById('chatbot-container');
-        if(!container) return;
-        container.innerHTML = `
-        <style>
-            #chatbot-window-wrapper{position:fixed;bottom:140px;right:25px;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out}.chatbot-close-btn{position:absolute;top:10px;right:15px;font-size:2.2em;color:white;cursor:pointer;line-height:1;font-weight:300}#chatbot-welcome-message{position:fixed;bottom:100px;right:40px;background:var(--primary-color);color:white;padding:10px 15px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.2);opacity:0;transform:translateY(10px);transition:all .4s ease-in-out;visibility:hidden;z-index:9997;font-size:.9em}#chatbot-welcome-message.visible{opacity:1;transform:translateY(0);visibility:visible}#chatbot-welcome-message::after{content:'';position:absolute;bottom:-7px;right:25px;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid var(--primary-color)}@media (max-width:768px){#chatbot-window-wrapper{bottom:130px;right:15px} #chatbot-bubble{bottom:15px;right:15px} #chatbot-welcome-message{right:25px;bottom:90px} #chatbot-welcome-message::after{right:20px}}@keyframes rhythmic-bounce{0%,100%{transform:translateY(0)}10%,30%{transform:translateY(0)}20%{transform:translateY(-15px)}25%{transform:translateY(0)}35%{transform:translateY(-15px)}40%{transform:translateY(0)}}#chatbot-bubble{position:fixed;bottom:25px;right:25px;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(fausto_immagine.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:9999}#chatbot-bubble.bouncing{animation:rhythmic-bounce 2.5s ease-in-out}#chatbot-bubble:hover{transform:scale(1.1)}#chatbot-bubble.open{background-image:none;background-color:var(--primary-color);animation:none}#chatbot-bubble.open .icon-close{opacity:1}#chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}#chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}#chatbot-window{position:relative;margin-top:45px;width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden}.chatbot-header-logo{width:90px;height:90px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 10px rgba(0,0,0,0.3);object-fit:cover;position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:10000}.chatbot-header{position:relative;background-color:var(--primary-color);color:#fff;padding:1rem;padding-top:55px;text-align:center;flex-shrink:0}.chatbot-messages{flex-grow:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column;background-image:linear-gradient(rgba(249,247,243,.7),rgba(249,247,243,.7)),url(https://github.com/Rickym2025/fausto-fusetti-links/blob/main/sfondo_chat.jpg?raw=true);background-size:cover;background-position:center}.message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}.message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0;align-self:flex-start}.message-text{padding:10px 15px;border-radius:18px;line-height:1.4;overflow-wrap:break-word;word-break:break-word;text-align:left;box-shadow:0 2px 5px rgba(0,0,0,.1)}.message.user .message-text{background-color:rgba(238,242,245,.75);color:#333;border-bottom-right-radius:4px}.message.bot .message-text{background-color:rgba(6,147,227,.8);color:#fff;border-bottom-left-radius:4px}.chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}.chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid var(--primary-color)}.chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}
-        </style>
-        <div id="chatbot-bubble"><svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg></div>
-        <div id="chatbot-welcome-message">Posso aiutarti a trovare un brano?</div>
-        <div id="chatbot-window-wrapper">
-            <img src="fausto_immagine.jpg" alt="Fausto AI" class="chatbot-header-logo">
-            <div id="chatbot-window">
-                <div class="chatbot-header"><div><h3>Fausto AI</h3><small>Assistente Virtuale</small></div><span class="chatbot-close-btn">&times;</span></div>
-                <div class="chatbot-messages" id="chatbot-messages"></div>
-                <div class="chatbot-input">
-                    <input type="text" id="chatbot-input-field" name="chatbot_message" autocomplete="off" placeholder="Scrivi un messaggio...">
-                    <button id="chatbot-send-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg></button>
+            albumCard.innerHTML = `
+                <div class="album-header">
+                    <img src="${coverUrl}" class="album-cover" alt="${albumName}">
+                    <div class="album-info">
+                        <h3 class="album-title">${albumName}</h3>
+                        <span class="album-count">${songs.length} brani</span>
+                    </div>
                 </div>
-            </div>
-        </div>`;
-
-        const webhookUrl = 'https://n8n-nuovo.duckdns.org/webhook/ffausto-ai-chat';
-        const bubble = document.getElementById('chatbot-bubble');
-        const windowWrapper = document.getElementById('chatbot-window-wrapper');
-        const messagesEl = document.getElementById('chatbot-messages');
-        const inputField = document.getElementById('chatbot-input-field');
-        const sendBtn = document.getElementById('chatbot-send-btn');
-        const closeBtn = document.querySelector('.chatbot-close-btn');
-        const welcomeMessage = document.getElementById('chatbot-welcome-message');
-        let reEngagementTimer = null;
-
-        const triggerWelcomeAnimation = () => {
-            if (!windowWrapper.classList.contains('open')) {
-                welcomeMessage.classList.add('visible');
-                bubble.classList.add('bouncing');
-                setTimeout(() => { welcomeMessage.classList.remove('visible'); }, 6000);
-            }
-        };
-
-        const toggleChat = () => {
-            if (appState.isChatAnimating) return;
-            appState.isChatAnimating = true;
-            clearTimeout(reEngagementTimer);
-            welcomeMessage.classList.remove('visible');
-            bubble.classList.remove('bouncing');
-            const isOpening = !windowWrapper.classList.contains('open');
-            windowWrapper.classList.toggle('open');
-            bubble.classList.toggle('open');
-            if (isOpening) setTimeout(() => inputField.focus(), 300);
-            setTimeout(() => {
-                appState.isChatAnimating = false;
-                if (!isOpening) reEngagementTimer = setTimeout(triggerWelcomeAnimation, 15000);
-            }, 350);
-        };
-
-        const addMessage = (rawText, type) => {
-            const msgDiv = document.createElement('div');
-            msgDiv.className = `message ${type}`;
-            if (type === 'bot') {
-                const avatar = document.createElement('img'); avatar.src = 'fausto_immagine.jpg'; avatar.className = 'message-avatar'; msgDiv.appendChild(avatar);
-            }
-            const textDiv = document.createElement('div'); textDiv.className = 'message-text';
-            textDiv.innerHTML = DOMPurify.sanitize(rawText, { ADD_TAGS: ['a', 'ul', 'li', 'strong'], ADD_ATTR: ['href', 'target'] });
-            msgDiv.appendChild(textDiv);
-            messagesEl.appendChild(msgDiv); messagesEl.scrollTop = messagesEl.scrollHeight;
-        };
-
-        const sendMessage = async () => {
-            const userMessage = inputField.value.trim();
-            if (userMessage === '') return;
-            addMessage(userMessage, 'user');
-            inputField.value = '';
-            try {
-                const response = await fetch(`${webhookUrl}?user_message=${encodeURIComponent(userMessage)}`, { method: 'POST' });
-                if (!response.ok) throw new Error("Network response");
-                const data = await response.json();
-                addMessage(data.response || "C'è stato un problema.", 'bot');
-            } catch (error) { addMessage('Spiacente, si è verificato un errore.', 'bot'); }
-        };
-
-        bubble.addEventListener('click', toggleChat); closeBtn.addEventListener('click', toggleChat);
-        sendBtn.addEventListener('click', sendMessage); inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
-        addMessage("Ciao! Sono Fausto AI, assistente virtuale. Sono qui per aiutarti a trovare il tuo brano ideale. Cosa stai cercando?", 'bot');
-        setTimeout(triggerWelcomeAnimation, 2000);
+                <div class="album-tracks">
+                    ${tracksHtml}
+                </div>
+            `;
+            songListContainer.appendChild(albumCard);
+        }
     }
+}
 
-    initializeCoreFunctionality();
-    if(audioStartOverlay) audioStartOverlay.style.display = 'flex';
+function handleFilterClick(e) { 
+    if (e.target.classList.contains('filter-btn')) { 
+        const { filterKey, filterValue } = e.target.dataset; 
+        if(filterKey === 'categoria') appState.currentFilters.category = filterValue;
+        if(filterKey === 'argomento') appState.currentFilters.argomento = filterValue;
+        
+        e.target.parentElement.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active')); 
+        e.target.classList.add('active'); 
+        renderSongs(); 
+    } 
+}
+
+function setupSecondaryFeatures() {
+try {
+const chatbotContainer = document.getElementById('chatbot-container');
+if(chatbotContainer) {
+chatbotContainer.innerHTML = `<style>#chatbot-window-wrapper{position:fixed;bottom:140px;right:25px;width:400px;max-width:calc(100vw - 30px);height:70vh;max-height:600px;z-index:9998;transform:translateY(20px) scale(.95);opacity:0;visibility:hidden;transition:all .3s ease-in-out}.chatbot-close-btn{position:absolute;top:10px;right:15px;font-size:2.2em;color:white;cursor:pointer;line-height:1;font-weight:300}#chatbot-welcome-message{position:fixed;bottom:100px;right:40px;background:var(--primary-color);color:white;padding:10px 15px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.2);opacity:0;transform:translateY(10px);transition:all .4s ease-in-out;visibility:hidden;z-index:9997;font-size:.9em}#chatbot-welcome-message.visible{opacity:1;transform:translateY(0);visibility:visible}#chatbot-welcome-message::after{content:'';position:absolute;bottom:-7px;right:25px;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid var(--primary-color)}@media (max-width:768px){#chatbot-window-wrapper{bottom:130px;right:15px} #chatbot-bubble{bottom:15px;right:15px} #chatbot-welcome-message{right:25px;bottom:90px} #chatbot-welcome-message::after{right:20px}}@keyframes rhythmic-bounce{0%,100%{transform:translateY(0)}10%,30%{transform:translateY(0)}20%{transform:translateY(-15px)}25%{transform:translateY(0)}35%{transform:translateY(-15px)}40%{transform:translateY(0)}}#chatbot-bubble{position:fixed;bottom:25px;right:25px;width:65px;height:65px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s ease;background-image:url(fausto_immagine.jpg);background-size:cover;background-position:center;border:3px solid var(--primary-color);z-index:9999}#chatbot-bubble.bouncing{animation:rhythmic-bounce 2.5s ease-in-out}#chatbot-bubble:hover{transform:scale(1.1)}#chatbot-bubble.open{background-image:none;background-color:var(--primary-color);animation:none}#chatbot-bubble.open .icon-close{opacity:1}#chatbot-bubble svg{width:32px;height:32px;color:#fff;transition:opacity .3s ease;opacity:0;position:absolute}#chatbot-window-wrapper.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}#chatbot-window{position:relative;margin-top:45px;width:100%;height:100%;background-color:#f9f7f3;border-radius:15px;box-shadow:0 12px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden}.chatbot-header-logo{width:90px;height:90px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 10px rgba(0,0,0,0.3);object-fit:cover;position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:10000}.chatbot-header{position:relative;background-color:var(--primary-color);color:#fff;padding:1rem;padding-top:55px;text-align:center;flex-shrink:0}.chatbot-messages{flex-grow:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column;background-image:linear-gradient(rgba(249,247,243,.7),rgba(249,247,243,.7)),url(https://github.com/Rickym2025/fausto-fusetti-links/blob/main/sfondo_chat.jpg?raw=true);background-size:cover;background-position:center}.message{display:flex;align-items:flex-end;margin-bottom:10px;max-width:85%}.message.user{align-self:flex-end}.message.bot{align-self:flex-start}.message-avatar{width:30px;height:30px;border-radius:50%;margin-right:10px;flex-shrink:0;align-self:flex-start}.message-text{padding:10px 15px;border-radius:18px;line-height:1.4;overflow-wrap:break-word;word-break:break-word;text-align:left;box-shadow:0 2px 5px rgba(0,0,0,.1)}.message.user .message-text{background-color:rgba(238,242,245,.75);color:#333;border-bottom-right-radius:4px}.message.bot .message-text{background-color:rgba(6,147,227,.8);color:#fff;border-bottom-left-radius:4px}.chatbot-input{display:flex;border-top:1px solid #ddd;background-color:#fff;padding:10px;align-items:center;flex-shrink:0}.chatbot-input input{flex-grow:1;border:none;padding:10px;font-size:1rem}.chatbot-input input:focus-visible{outline:2px solid var(--primary-color)}.chatbot-input button{background:none;border:none;padding:0 10px;cursor:pointer;color:var(--primary-color)}</style>
+
+<div id="chatbot-bubble"><svg class="icon-close" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 384 512"><path fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg></div>
+            <div id="chatbot-welcome-message">Posso aiutarti a trovare un brano?</div>
+            <div id="chatbot-window-wrapper"><img src="fausto_immagine.jpg" alt="Fausto AI" class="chatbot-header-logo"><div id="chatbot-window"><div class="chatbot-header"><div><h3>Fausto AI</h3><small>Assistente Virtuale</small></div><span class="chatbot-close-btn">&times;</span></div><div class="chatbot-messages" id="chatbot-messages"></div><div class="chatbot-input"><input type="text" id="chatbot-input-field" name="chatbot_message" autocomplete="off" placeholder="Scrivi un messaggio..."><button id="chatbot-send-btn"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg></button></div></div></div>`;
+            
+            const webhookUrl = 'https://n8n-nuovo.duckdns.org/webhook/ffausto-ai-chat', bubble = document.getElementById('chatbot-bubble'), windowWrapper = document.getElementById('chatbot-window-wrapper'), messagesEl = document.getElementById('chatbot-messages'), inputField = document.getElementById('chatbot-input-field'), sendBtn = document.getElementById('chatbot-send-btn'), closeBtn = document.querySelector('.chatbot-close-btn'), welcomeMessage = document.getElementById('chatbot-welcome-message');
+            let reEngagementTimer = null;
+
+            const triggerWelcomeAnimation = () => {
+                if (!windowWrapper.classList.contains('open')) {
+                    welcomeMessage.classList.add('visible');
+                    bubble.classList.add('bouncing');
+                    setTimeout(() => { welcomeMessage.classList.remove('visible'); }, 6000);
+                }
+            };
+            
+            const toggleChat = () => {
+                if (appState.isChatAnimating) return;
+                appState.isChatAnimating = true;
+
+                clearTimeout(reEngagementTimer);
+                welcomeMessage.classList.remove('visible');
+                bubble.classList.remove('bouncing');
+
+                const isOpening = !windowWrapper.classList.contains('open');
+                windowWrapper.classList.toggle('open');
+                bubble.classList.toggle('open');
+
+                if (isOpening) { setTimeout(() => inputField.focus(), 300); }
+
+                setTimeout(() => {
+                    appState.isChatAnimating = false;
+                    if (!isOpening) {
+                        reEngagementTimer = setTimeout(triggerWelcomeAnimation, 15000);
+                    }
+                }, 350);
+            };
+
+            const addMessage = (rawText, type) => { const msgDiv = document.createElement('div'); msgDiv.className = `message ${type}`; if (type === 'bot') { const avatar = document.createElement('img'); avatar.src = 'fausto_immagine.jpg'; avatar.className = 'message-avatar'; msgDiv.appendChild(avatar); } const textDiv = document.createElement('div'); textDiv.className = 'message-text'; textDiv.innerHTML = DOMPurify.sanitize(rawText, { ADD_TAGS: ['a', 'ul', 'li', 'strong'], ADD_ATTR: ['href', 'target'] }); msgDiv.appendChild(textDiv); messagesEl.appendChild(msgDiv); messagesEl.scrollTop = messagesEl.scrollHeight; };
+            const sendMessage = async () => { const userMessage = inputField.value.trim(); if (userMessage === '') return; addMessage(userMessage, 'user'); inputField.value = ''; try { const response = await fetch(`${webhookUrl}?user_message=${encodeURIComponent(userMessage)}`, { method: 'POST' }); if (!response.ok) throw new Error("Network response"); const data = await response.json(); addMessage(data.response || "C'è stato un problema.", 'bot'); } catch (error) { addMessage('Spiacente, si è verificato un errore.', 'bot'); } };
+            
+            bubble.addEventListener('click', toggleChat);
+            closeBtn.addEventListener('click', toggleChat);
+            sendBtn.addEventListener('click', sendMessage);
+            inputField.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
+            
+            addMessage("Ciao! Sono Fausto AI, assistente virtuale. Sono qui per aiutarti a trovare il tuo brano ideale. Cosa stai cercando?", 'bot');
+
+            setTimeout(triggerWelcomeAnimation, 2000);
+        }
+    } catch(e) { console.error("Errore chatbot", e); }
+}
+
+initializeCoreFunctionality();
+audioStartOverlay.style.display = 'flex';
+
 });
 </script>
 </body>
