@@ -75,9 +75,10 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
 
 /* DETTAGLI BRANO (TITOLO, GENERE, DURATA) */
 .song-info { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; margin: 0 10px; }
-.song-title { font-weight: 600; font-size: 1rem; color: #fff; }
-.song-meta { font-size: 0.8rem; color: var(--text-gray); display: flex; gap: 10px; margin-top: 3px; }
-.song-meta i { margin-right: 4px; font-size: 0.75rem; }
+.song-title { font-weight: 600; font-size: 1rem; color: #fff; margin-bottom: 4px; }
+.song-meta { font-size: 0.8rem; color: var(--text-gray); display: flex; flex-wrap: wrap; gap: 10px; }
+.song-meta span { display: flex; align-items: center; gap: 4px; }
+.song-meta i { font-size: 0.75rem; color: var(--primary-color); }
 
 /* PULSANTI PLAY/VIDEO */
 .play-btn { background: none; border: 2px solid var(--primary-color); color: var(--primary-color); border-radius: 50%; width: 35px; height: 35px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; cursor: pointer; }
@@ -87,9 +88,9 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
 /* STILE ALBUM */
 .album-card { background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 10px; margin-bottom: 25px; overflow: hidden; }
 .album-header { padding: 15px; background: rgba(0,0,0,0.3); display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #444; }
-.album-cover { width: 60px; height: 60px; border-radius: 5px; object-fit: cover; background: #222; }
+.album-cover { width: 80px; height: 80px; border-radius: 5px; object-fit: cover; background: #222; border: 1px solid #555; }
 .album-info { text-align: left; }
-.album-title { font-size: 1.2em; color: var(--primary-color); font-weight: bold; margin: 0; }
+.album-title { font-size: 1.2em; color: var(--primary-color); font-weight: bold; margin: 0 0 5px 0; }
 .album-count { font-size: 0.9em; color: #888; }
 .album-tracks { padding: 5px; }
 
@@ -197,7 +198,7 @@ const appState = {
     currentFilters: { category: 'all', argomento: 'all' },
     backgroundMusicSrc: document.getElementById('background-audio')?.querySelector('source')?.src || '',
     isBgMusicMuted: true,
-    viewMode: 'list' // 'list' o 'album'
+    viewMode: 'list' 
 };
 
 const bgAudio = document.getElementById('background-audio');
@@ -212,7 +213,6 @@ const filterContainer = document.getElementById('filter-container');
 const form = document.getElementById('contact-form');
 const formResult = document.getElementById('form-result');
 
-// GLOBAL SWITCH VIEW FUNCTION
 window.switchView = function(mode) {
     appState.viewMode = mode;
     document.getElementById('btn-list-view').classList.toggle('active', mode === 'list');
@@ -324,12 +324,11 @@ function handleSongListClick(e) {
     }
     const item = e.target.closest('.song-item');
     if (item) {
-        // Cerca brano nel dataset (gestione album view)
         let songUrl = item.dataset.songUrl;
         if (!songUrl) {
              const titleToFind = item.querySelector('.title').textContent;
-             const song = appState.allSongs.find(s => (s.titolo || s.title || s.Titolo) === titleToFind);
-             if (song) songUrl = song.url;
+             const song = appState.allSongs.find(s => (s.Titolo || s.titolo || s.title || s.Title) === titleToFind);
+             if (song) songUrl = song.url || song.URL;
         }
         
         if (songUrl) {
@@ -343,7 +342,8 @@ audioCta.addEventListener('click', () => { appState.isBgMusicMuted = !appState.i
 function updateMuteButton() { const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i'); const ctaText = document.querySelector('#audio-cta .cta-text'); muteBtnIcon.className = appState.isBgMusicMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up'; ctaText.textContent = appState.isBgMusicMuted ? 'Attiva la musica' : 'Disattiva musica'; audioCta.style.visibility = 'visible'; }
 
 async function loadMusicFromApi() {
-    const CACHE_KEY = 'ff_music_catalog_cache_v7_columns'; 
+    // AGGIORNATO CACHE KEY PER FORZARE REFRESH
+    const CACHE_KEY = 'ff_music_catalog_cache_v8_mapped'; 
     const CACHE_DURATION = 3600 * 1000; 
     const cachedData = localStorage.getItem(CACHE_KEY);
     let loadedFromCache = false;
@@ -368,9 +368,17 @@ async function loadMusicFromApi() {
         if (!response.ok) throw new Error(`Errore di rete`);
         let newSongs = await response.json();
         
-        // FILTRO: Mantiene solo brani che hanno un titolo e un URL validi
-        // (Opzionale: puoi rimettere il filtro "Fausto CD" se vuoi)
+        // Log per Debug (se serve, apri F12 -> Console)
+        if(newSongs && newSongs.length > 0) console.log("Primo brano scaricato:", newSongs[0]);
+
         if (Array.isArray(newSongs)) {
+            // Filtro Liste (Se vuoi filtrare, de-commenta sotto)
+            const listeDaMostrare = ["fausto cd", "fausto lp"]; 
+            newSongs = newSongs.filter(s => {
+                const stato = (getProp(s, 'Stato') || "").toLowerCase();
+                return listeDaMostrare.some(filtro => stato.includes(filtro));
+            });
+
             appState.allSongs = newSongs;
             localStorage.setItem(CACHE_KEY, JSON.stringify({ timestamp: new Date().getTime(), songs: newSongs }));
             createFilterButtons();
@@ -382,15 +390,20 @@ async function loadMusicFromApi() {
     }
 }
 
-// Helper per leggere le proprietà in modo sicuro e case-insensitive
+// Funzione intelligente per leggere proprietà ignorando maiuscole/minuscole
 function getProp(obj, keyName) {
     if (!obj || !keyName) return "";
-    const key = Object.keys(obj).find(k => k.toLowerCase() === keyName.toLowerCase());
+    // Cerca chiave esatta o case-insensitive
+    // Supporta anche pattern comuni come "Titolo_CD" -> "titolocd"
+    const key = Object.keys(obj).find(k => {
+        const kClean = k.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const targetClean = keyName.toLowerCase().replace(/[^a-z0-9]/g, '');
+        return kClean === targetClean || k.toLowerCase() === keyName.toLowerCase();
+    });
     return key ? obj[key] : "";
 }
 
 function createFilterButtons() {
-    // MAPPATURA FILTRI: Categoria e Argomento
     const getSafeTags = (keyName) => {
          const rawValues = appState.allSongs.map(s => getProp(s, keyName)).filter(Boolean);
          const splitTags = rawValues.flatMap(text => text.split(/[;,]+/).map(t => t.trim()));
@@ -412,7 +425,7 @@ function createFilterButtons() {
 function renderSongs() {
     songListContainer.innerHTML = '';
     
-    // Filtro logico
+    // Filtro
     const filteredSongs = appState.allSongs.filter(song => {
         const catVal = getProp(song, 'Categoria');
         const argVal = getProp(song, 'Argomento');
@@ -428,13 +441,13 @@ function renderSongs() {
     }
 
     if (appState.viewMode === 'list') {
-        // --- VISTA LISTA ---
+        // VISTA LISTA
         filteredSongs.forEach(song => {
             const title = getProp(song, 'Titolo') || "Titolo Sconosciuto";
             const video = getProp(song, 'Video_Link');
             const genre = getProp(song, 'Categoria');
             const duration = getProp(song, 'Durata');
-            const url = getProp(song, 'url'); // Questa arriva spesso come 'url' minuscolo dallo script google
+            const url = getProp(song, 'url');
 
             const item = document.createElement('div');
             item.className = 'song-item';
@@ -447,7 +460,7 @@ function renderSongs() {
                     <span class="title">${title}</span>
                     <div class="song-meta">
                         ${genre ? `<span><i class="fas fa-music"></i> ${genre}</span>` : ''}
-                        ${duration ? `<span><i class="fas fa-clock"></i> ${duration}</span>` : ''}
+                        ${duration ? `<span><i class="far fa-clock"></i> ${duration}</span>` : ''}
                     </div>
                 </div>
                 ${videoHtml}
@@ -457,16 +470,20 @@ function renderSongs() {
         });
 
     } else {
-        // --- VISTA ALBUM ---
+        // VISTA ALBUM
         const albums = {};
+        // Raggruppa brani che hanno lo stesso CD
         filteredSongs.forEach(song => {
-            const albumName = getProp(song, 'Titolo_CD') || "Singoli & Altro";
+            let albumName = getProp(song, 'Titolo_CD') || "Singoli & Altro";
+            // Normalizziamo il nome per evitare duplicati per spazi/case
+            albumName = albumName.trim(); 
             if (!albums[albumName]) albums[albumName] = [];
             albums[albumName].push(song);
         });
 
         for (const [albumName, songs] of Object.entries(albums)) {
-            const coverUrl = getProp(songs[0], 'Link_Thumbnail') || 'logo6.jpg'; // Usa Link_Thumbnail
+            // Cerca una cover valida nel gruppo (la prima che trova)
+            const coverUrl = songs.map(s => getProp(s, 'Link_Thumbnail')).find(url => url) || 'logo6.jpg';
             
             const albumCard = document.createElement('div');
             albumCard.className = 'album-card';
@@ -478,10 +495,10 @@ function renderSongs() {
                 const duration = getProp(song, 'Durata');
                 
                 tracksHtml += `
-                <div class="song-item" data-song-url="${url}">
-                    <span class="title" style="font-size:0.95em;">${title}</span>
-                    ${duration ? `<span style="font-size:0.8em; color:#888; margin-right:10px;">${duration}</span>` : ''}
-                    <div class="play-btn" style="width:28px; height:28px; font-size:0.8em;"><i class="fas fa-play"></i></div>
+                <div class="song-item" data-song-url="${url}" style="padding: 8px 10px; border:none; border-bottom:1px solid #333;">
+                    <span class="title" style="font-size:0.9em; flex-grow:1;">${title}</span>
+                    ${duration ? `<span style="font-size:0.8em; color:#777; margin-right:10px;">${duration}</span>` : ''}
+                    <div class="play-btn" style="width:28px; height:28px; font-size:0.8em; border-width:1px;"><i class="fas fa-play"></i></div>
                 </div>`;
             });
 
@@ -507,7 +524,6 @@ function handleFilterClick(e) {
         const { filterKey, filterValue } = e.target.dataset; 
         if(filterKey === 'categoria') appState.currentFilters.category = filterValue;
         if(filterKey === 'argomento') appState.currentFilters.argomento = filterValue;
-        
         e.target.parentElement.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active')); 
         e.target.classList.add('active'); 
         renderSongs(); 
