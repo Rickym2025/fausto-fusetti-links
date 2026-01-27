@@ -73,7 +73,7 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
 .song-item.playing { background-color: rgba(6, 147, 227, 0.2); border-left: 3px solid var(--primary-color); }
 .song-item.playing .play-btn { background-color: var(--primary-color); color: white; }
 
-/* DETTAGLI BRANO */
+/* DETTAGLI BRANO (TITOLO, GENERE, DURATA) */
 .song-info { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; margin: 0 10px; }
 .song-title { font-weight: 600; font-size: 1rem; color: #fff; margin-bottom: 4px; }
 .song-meta { font-size: 0.8rem; color: var(--text-gray); display: flex; flex-wrap: wrap; gap: 10px; }
@@ -161,7 +161,7 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
         <h2>Catalogo Musicale</h2>
         <div class="info-box"><i class="fas fa-headphones"></i> Esplora la discografia di Fausto.</div>
         
-        <!-- SWITCH VISTA: ALBUM Default -->
+        <!-- SWITCH VISTA -->
         <div class="view-switcher">
             <button class="view-btn" id="btn-list-view" onclick="switchView('list')"><i class="fas fa-list"></i> Lista</button>
             <button class="view-btn active" id="btn-album-view" onclick="switchView('album')"><i class="fas fa-compact-disc"></i> Album</button>
@@ -198,7 +198,7 @@ const appState = {
     currentFilters: { category: 'all', argomento: 'all' },
     backgroundMusicSrc: document.getElementById('background-audio')?.querySelector('source')?.src || '',
     isBgMusicMuted: true,
-    viewMode: 'album' // DEFAULT: ALBUM
+    viewMode: 'album' 
 };
 
 const bgAudio = document.getElementById('background-audio');
@@ -213,7 +213,6 @@ const filterContainer = document.getElementById('filter-container');
 const form = document.getElementById('contact-form');
 const formResult = document.getElementById('form-result');
 
-// GLOBAL SWITCH VIEW FUNCTION
 window.switchView = function(mode) {
     appState.viewMode = mode;
     document.getElementById('btn-list-view').classList.toggle('active', mode === 'list');
@@ -343,8 +342,7 @@ audioCta.addEventListener('click', () => { appState.isBgMusicMuted = !appState.i
 function updateMuteButton() { const muteBtnIcon = document.getElementById('mute-btn-icon').querySelector('i'); const ctaText = document.querySelector('#audio-cta .cta-text'); muteBtnIcon.className = appState.isBgMusicMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up'; ctaText.textContent = appState.isBgMusicMuted ? 'Attiva la musica' : 'Disattiva musica'; audioCta.style.visibility = 'visible'; }
 
 async function loadMusicFromApi() {
-    // AGGIORNATO CACHE KEY PER FORZARE REFRESH
-    const CACHE_KEY = 'ff_music_catalog_cache_v11_final'; 
+    const CACHE_KEY = 'ff_music_catalog_cache_v12_videos'; 
     const CACHE_DURATION = 3600 * 1000; 
     const cachedData = localStorage.getItem(CACHE_KEY);
     let loadedFromCache = false;
@@ -370,7 +368,6 @@ async function loadMusicFromApi() {
         let newSongs = await response.json();
         
         if (Array.isArray(newSongs)) {
-            // NESSUN FILTRO LOCALE: L'APPS SCRIPT GIÀ FILTRA PER "CATALOGO" = TRUE
             appState.allSongs = newSongs;
             localStorage.setItem(CACHE_KEY, JSON.stringify({ timestamp: new Date().getTime(), songs: newSongs }));
             createFilterButtons();
@@ -459,9 +456,8 @@ function renderSongs() {
         });
 
     } else {
-        // VISTA ALBUM
+        // VISTA ALBUM (CORRETTA CON VIDEO BUTTON)
         const albums = {};
-        // Raggruppa brani che hanno lo stesso CD
         filteredSongs.forEach(song => {
             let albumName = getProp(song, 'Titolo_CD') || "Singoli & Altro";
             albumName = albumName.trim(); 
@@ -470,7 +466,6 @@ function renderSongs() {
         });
 
         for (const [albumName, songs] of Object.entries(albums)) {
-            // Cerca una cover valida nel gruppo (la prima che trova)
             const coverUrl = songs.map(s => getProp(s, 'Link_Thumbnail')).find(url => url) || 'logo6.jpg';
             
             const albumCard = document.createElement('div');
@@ -481,11 +476,19 @@ function renderSongs() {
                 const title = getProp(song, 'Titolo');
                 const url = getProp(song, 'url');
                 const duration = getProp(song, 'Durata');
+                const video = getProp(song, 'Video_Link'); // LEGGI IL VIDEO
+                
+                // Genera HTML per il pulsante video se il link esiste
+                let videoHtml = '';
+                if (video && video.trim() !== '') {
+                    videoHtml = `<div class="video-btn" data-video-url="${video}" style="width:28px; height:28px; font-size:0.7em; margin-right:5px;"><i class="fas fa-video"></i></div>`;
+                }
                 
                 tracksHtml += `
                 <div class="song-item" data-song-url="${url}" style="padding: 8px 10px; border:none; border-bottom:1px solid #333;">
                     <span class="title" style="font-size:0.9em; flex-grow:1;">${title}</span>
                     ${duration ? `<span style="font-size:0.8em; color:#777; margin-right:10px;">${duration}</span>` : ''}
+                    ${videoHtml}
                     <div class="play-btn" style="width:28px; height:28px; font-size:0.8em; border-width:1px;"><i class="fas fa-play"></i></div>
                 </div>`;
             });
