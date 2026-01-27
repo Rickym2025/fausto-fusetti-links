@@ -343,7 +343,7 @@ function updateMuteButton() { const muteBtnIcon = document.getElementById('mute-
 
 async function loadMusicFromApi() {
     // AGGIORNATO CACHE KEY PER FORZARE REFRESH
-    const CACHE_KEY = 'ff_music_catalog_cache_v8_mapped'; 
+    const CACHE_KEY = 'ff_music_catalog_cache_v10_dynamic'; 
     const CACHE_DURATION = 3600 * 1000; 
     const cachedData = localStorage.getItem(CACHE_KEY);
     let loadedFromCache = false;
@@ -372,13 +372,10 @@ async function loadMusicFromApi() {
         if(newSongs && newSongs.length > 0) console.log("Primo brano scaricato:", newSongs[0]);
 
         if (Array.isArray(newSongs)) {
-            // Filtro Liste (Se vuoi filtrare, de-commenta sotto)
-            const listeDaMostrare = ["fausto cd", "fausto lp"]; 
-            newSongs = newSongs.filter(s => {
-                const stato = (getProp(s, 'Stato') || "").toLowerCase();
-                return listeDaMostrare.some(filtro => stato.includes(filtro));
-            });
-
+            // === NESSUN FILTRO RESTRITTIVO ===
+            // Carichiamo tutto quello che c'è nello sheet.
+            // Se in futuro vuoi nascondere qualcosa, usa la checkbox "Catalogo" nello sheet.
+            
             appState.allSongs = newSongs;
             localStorage.setItem(CACHE_KEY, JSON.stringify({ timestamp: new Date().getTime(), songs: newSongs }));
             createFilterButtons();
@@ -393,8 +390,6 @@ async function loadMusicFromApi() {
 // Funzione intelligente per leggere proprietà ignorando maiuscole/minuscole
 function getProp(obj, keyName) {
     if (!obj || !keyName) return "";
-    // Cerca chiave esatta o case-insensitive
-    // Supporta anche pattern comuni come "Titolo_CD" -> "titolocd"
     const key = Object.keys(obj).find(k => {
         const kClean = k.toLowerCase().replace(/[^a-z0-9]/g, '');
         const targetClean = keyName.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -524,6 +519,7 @@ function handleFilterClick(e) {
         const { filterKey, filterValue } = e.target.dataset; 
         if(filterKey === 'categoria') appState.currentFilters.category = filterValue;
         if(filterKey === 'argomento') appState.currentFilters.argomento = filterValue;
+        
         e.target.parentElement.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active')); 
         e.target.classList.add('active'); 
         renderSongs(); 
