@@ -549,8 +549,20 @@ if (cover.includes('suno.ai') && cover.includes('?')) {
         };
     }
 
-    // --- CHATBOT ---
-// --- CHATBOT MIGLIORATO ---
+    // ============================================================
+    //  LOGICA CHATBOT COMPLETA (UI + CHIPS + MEMORIA SESSIONE)
+    // ============================================================
+
+    // 1. GENERAZIONE ID SESSIONE (MEMORIA)
+    // Questo permette a n8n di ricordare cosa è stato detto prima.
+    // Lo salviamo nel browser così se l'utente ricarica la pagina, la chat continua.
+    let chatSessionId = localStorage.getItem('ff_chat_session_id');
+    if (!chatSessionId) {
+        // Crea un ID casuale tipo "sess_178234_abcde"
+        chatSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+        localStorage.setItem('ff_chat_session_id', chatSessionId);
+    }
+
     function setupChatbot() {
         const c = document.getElementById('chatbot-container');
         c.innerHTML = `
@@ -615,13 +627,12 @@ if (cover.includes('suno.ai') && cover.includes('?')) {
         
         if (isVisible) {
             w.classList.remove('visible');
-            setTimeout(() => { w.style.display = 'none'; }, 300); // Aspetta l'animazione
+            setTimeout(() => { w.style.display = 'none'; }, 300); 
         } else {
             w.style.display = 'flex';
-            // Piccolo timeout per permettere al display:flex di applicarsi prima dell'animazione
             setTimeout(() => { w.classList.add('visible'); }, 10);
             
-            // Inizializza i messaggi di benvenuto solo la prima volta
+            // Messaggi di benvenuto (solo la prima volta)
             if (!isChatInitialized) {
                 isChatInitialized = true;
                 setTimeout(() => {
@@ -629,7 +640,6 @@ if (cover.includes('suno.ai') && cover.includes('?')) {
                 }, 500);
                 
                 setTimeout(() => {
-                    // Qui aggiungiamo i pulsanti rapidi (Chips)
                     addChipsMsg("Come posso aiutarti oggi? Scegli un'opzione o scrivi tu:", [
                         "Consigliami una canzone d'amore ❤️",
                         "Voglio qualcosa di energico ⚡",
@@ -641,7 +651,6 @@ if (cover.includes('suno.ai') && cover.includes('?')) {
         }
     };
 
-    // Funzione speciale per aggiungere messaggi con pulsanti
     window.addChipsMsg = function(text, chips) {
         const c = document.getElementById('chatbot-messages');
         const div = document.createElement('div');
@@ -649,7 +658,6 @@ if (cover.includes('suno.ai') && cover.includes('?')) {
         
         let chipsHtml = `<div class="chips-container">`;
         chips.forEach(chipText => {
-            // Quando clicchi, simula l'invio del messaggio da parte dell'utente
             chipsHtml += `<span class="chat-chip" onclick="sendMsg('${chipText.replace(/'/g, "\\'")}')">${chipText}</span>`;
         });
         chipsHtml += `</div>`;
@@ -662,8 +670,6 @@ if (cover.includes('suno.ai') && cover.includes('?')) {
     window.addMsg = function(text, sender) {
         const div = document.createElement('div');
         div.className = `msg ${sender}`;
-        
-        // Rende cliccabili i link se presenti
         div.innerHTML = text; 
         
         const c = document.getElementById('chatbot-messages');
@@ -680,17 +686,17 @@ if (cover.includes('suno.ai') && cover.includes('?')) {
         }
     };
 
-    // Modificata per accettare testo opzionale (dai pulsanti)
+    // FUNZIONE SENDMSG AGGIORNATA CON SESSION ID
     window.sendMsg = async function(textOverride) {
         const input = document.getElementById('chat-input');
         const text = textOverride || input.value;
         
         if(!text.trim()) return;
         
-        input.value = ''; // Pulisce l'input
-        addMsg(text, 'user'); // Mostra quello che l'utente ha "detto"
+        input.value = ''; 
+        addMsg(text, 'user');
 
-        // Feedback visivo "sta scrivendo..."
+        // Loading
         const loadingId = 'loading-' + Date.now();
         const loadingDiv = document.createElement('div');
         loadingDiv.id = loadingId;
@@ -700,10 +706,12 @@ if (cover.includes('suno.ai') && cover.includes('?')) {
         document.getElementById('chatbot-messages').scrollTop = document.getElementById('chatbot-messages').scrollHeight;
 
         try {
-            const res = await fetch(`${CHATBOT_WEBHOOK}?user_message=${encodeURIComponent(text)}`, { method:'POST' });
+            // QUI INVIO IL SESSION ID AL WEBHOOK
+            const webhookUrl = `${CHATBOT_WEBHOOK}?user_message=${encodeURIComponent(text)}&sessionId=${chatSessionId}`;
+            
+            const res = await fetch(webhookUrl, { method:'POST' });
             const data = await res.json();
             
-            // Rimuovi icona caricamento
             document.getElementById(loadingId).remove();
             addMsg(data.response, 'bot');
             
