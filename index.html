@@ -22,7 +22,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@700&amp;family=Montserrat:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
 <style>
-/* STILI ORIGINALI */
+/* CSS STYLES */
 :root { --primary-color: #0693e3; --secondary-color: #e3a006; --jingle-color: #00e1ff; --text-gray: #aaa; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
@@ -31,12 +31,9 @@ body { font-family: 'Montserrat', sans-serif; color: #f0f0f0; text-align: center
 .container-wrapper { min-height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center; padding: 20px; padding-bottom: 60px; }
 .container { position: relative; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(10px); padding: 90px 30px 40px 30px; max-width: 680px; width: 100%; margin-top: 100px; margin-bottom: 40px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); z-index: 2; }
 @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-
-/* PULSANTE AUDIO RIPRISTINATO */
-#audio-cta { position: absolute; top: -25px; right: -20px; display: flex; align-items: center; background-color: rgba(6, 147, 227, 0.2); border: 1px solid var(--primary-color); padding: 8px 15px; border-radius: 30px; backdrop-filter: blur(5px); animation: pulse 2.5s infinite ease-in-out; z-index: 10; cursor: pointer; visibility: visible; }
+#audio-cta { position: absolute; top: -25px; right: -20px; display: flex; align-items: center; background-color: rgba(6, 147, 227, 0.2); border: 1px solid var(--primary-color); padding: 8px 15px; border-radius: 30px; backdrop-filter: blur(5px); animation: pulse 2.5s infinite ease-in-out; z-index: 10; cursor: pointer; visibility: hidden; }
 #audio-cta .cta-text { margin-right: 10px; font-weight: 500; color: #f0f0f0; }
 #mute-btn-icon { background: white; color: var(--primary-color); border-radius: 50%; width: 35px; height: 35px; font-size: 1em; display: flex; align-items: center; justify-content: center; }
-
 @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
 .profile-logo { width: 150px; height: 150px; border-radius: 50%; border: 4px solid rgba(255, 255, 255, 0.9); box-shadow: 0 0 20px var(--primary-color); object-fit: cover; position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); animation: spin 15s linear infinite; }
 h1 { font-size: 1.8em; margin-bottom: 15px; font-weight: 500; }
@@ -88,8 +85,8 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
 .video-btn { background: none; border: 2px solid var(--secondary-color); color: var(--secondary-color); border-radius: 50%; width: 35px; height: 35px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; margin-right: 8px; cursor: pointer; font-size: 0.8em; }
 .video-btn:hover { background-color: var(--secondary-color); color: white; }
 
-/* STILE ALBUM (ACCORDION) */
-.album-card { background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 10px; margin-bottom: 25px; overflow: hidden; }
+/* STILE ALBUM (ACCORDION - PUNTO 1) */
+.album-card { background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 10px; margin-bottom: 15px; overflow: hidden; }
 .album-header { padding: 15px; background: rgba(0,0,0,0.3); display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #444; cursor: pointer; transition: background 0.3s; }
 .album-header:hover { background: rgba(255,255,255,0.08); }
 .album-cover { width: 60px; height: 60px; border-radius: 5px; object-fit: cover; background: #222; border: 1px solid #555; }
@@ -97,8 +94,9 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
 .album-title { font-size: 1.2em; color: var(--primary-color); font-weight: bold; margin: 0; }
 .album-count { font-size: 0.9em; color: #888; }
 .album-toggle-icon { margin-left: auto; color: #888; transition: transform 0.3s; }
+/* Nascosto di default */
 .album-tracks { display: none; padding: 5px; border-top: 1px solid #444; background: rgba(0,0,0,0.1); }
-/* Logica apertura */
+/* Classe per aprire */
 .album-card.open .album-tracks { display: block; }
 .album-card.open .album-toggle-icon { transform: rotate(180deg); color: var(--primary-color); }
 
@@ -126,55 +124,50 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
 </style>
 </head>
 <body>
-
-<!-- MUSICA BACKGROUND -->
 <div id="audio-start-overlay">
-    <div id="audio-start-content">
-        <h2><i class="fas fa-music"></i> Benvenuto!</h2>
-        <p>Per la migliore esperienza, questa pagina include una musica di sottofondo. Clicca per attivarla.</p>
-        <button id="start-audio-btn">Avvia l'Esperienza Musicale</button>
-    </div>
+<div id="audio-start-content">
+<h2><i class="fas fa-music"></i> Benvenuto!</h2>
+<p>Per la migliore esperienza, questa pagina include una musica di sottofondo. Clicca per attivarla.</p>
+<button id="start-audio-btn">Avvia l'Esperienza Musicale</button>
+</div>
 </div>
 <video autoplay muted loop playsinline preload="auto" id="background-video" poster="immagine_sfondo.png"><source src="video_sfondo_compressed.mp4" type="video/mp4" /></video>
 <audio loop preload="auto" id="background-audio"><source src="7a-Controtempo-compresso.mp3" type="audio/mpeg" /></audio>
-
-<!-- CONTENITORE PRINCIPALE -->
+<div id="aphorism-container"></div>
 <div class="container-wrapper">
-    <div class="container">
-        <!-- PULSANTE AUDIO RIPRISTINATO -->
-        <div id="audio-cta"><span class="cta-text">Attiva musica</span><div id="mute-btn-icon"><i class="fas fa-volume-mute"></i></div></div>
-        
-        <img src="logo6.jpg" alt="Logo FF Musica" class="profile-logo">
-        <br><br><br><br>
-        <h1>Fausto Fusetti</h1>
-        <p class="bio">Piacere, sono Fausto Fusetti, in arte <strong>Fausto Miriani</strong>. Dal 1988 la musica è la mia vita.<br>Oggi metto questa esperienza al tuo servizio per creare <strong>canzoni e libri personalizzati</strong>.</p>
+<div class="container">
+<div id="audio-cta"><span class="cta-text">Attiva la musica</span><div id="mute-btn-icon"><i class="fas fa-volume-mute"></i></div></div>
+<img src="logo6.jpg" alt="Logo FF Musica" class="profile-logo">
+<h1>Fausto Fusetti</h1>
+<p class="bio">Piacere, sono Fausto Fusetti, in arte <strong>Fausto Miriani</strong>. Dal 1988 la musica è la mia vita: sono polistrumentista, cantante, compositore, paroliere e anche autore di libri.<br><br>La mia carriera è stata un viaggio entusiasmante sui palchi più prestigiosi, collaborando con icone come <strong>Fred Bongusto, Peppino di Capri e Califano</strong>.<br><br>Oggi metto questa esperienza al tuo servizio per creare <strong>canzoni e libri personalizzati</strong>, e continuo a investire sul futuro.</p>
 
-        <!-- MENU PULSANTI -->
-        <a href="https://rickym2025.github.io/jukebox-ff/" target="_blank" class="button jukebox"><i class="fas fa-compact-disc"></i> Area Riservata Jukebox</a>
-        <a href="https://rickym2025.github.io/JingleShop/" target="_blank" class="button jingle"><i class="fas fa-icons"></i> Jingle Shop & Royalty Free</a>
-        <button id="open-music-modal" class="button"><i class="fas fa-music"></i> Catalogo Musicale</button>
-        <button id="open-video-modal" class="button"><i class="fas fa-video"></i> Guarda i Video</button>
-        <button id="open-services-modal" class="button service-highlight"><i class="fas fa-heart"></i> Canzoni Personalizzate</button>
-        <button id="open-contact-modal" class="button collabora"><i class="fas fa-pencil-alt"></i> Contattami per un Progetto</button>
-        <button id="open-shop-modal" class="button"><i class="fas fa-shopping-cart"></i> Shop</button>
-        <a href="blog/index.html" class="button" style="border-color: #fff; color: #fff;"><i class="fas fa-newspaper"></i> Blog & News</a>  
-
-        <div class="social-icons">
-            <a href="https://www.instagram.com/faustofusetti/" target="_blank"><i class="fa-brands fa-instagram"></i></a>
-            <a href="https://www.facebook.com/fausto.fusetti.9" target="_blank"><i class="fa-brands fa-facebook"></i></a>
-            <a href="https://www.youtube.com/@faustofusetti5859" target="_blank"><i class="fa-brands fa-youtube"></i></a>
-        </div>
-    </div>
+<!-- PULSANTI -->
+<a href="https://rickym2025.github.io/jukebox-ff/" target="_blank" class="button jukebox"><i class="fas fa-compact-disc"></i> Area Riservata Jukebox</a>
+<a href="https://rickym2025.github.io/JingleShop/" target="_blank" class="button jingle"><i class="fas fa-icons"></i> Jingle Shop & Royalty Free</a>
+<button id="open-music-modal" class="button"><i class="fas fa-music"></i>Catalogo Musicale</button>
+<button id="open-video-modal" class="button"><i class="fas fa-video"></i>Guarda i Video</button>
+<button id="open-services-modal" class="button service-highlight"><i class="fas fa-heart"></i>Canzoni Personalizzate</button>
+<button id="open-contact-modal" class="button collabora"><i class="fas fa-pencil-alt"></i>Contattami per un Progetto</button>
+<button id="open-shop-modal" class="button"><i class="fas fa-shopping-cart"></i>Shop</button>
+<a href="blog/index.html" class="button" style="border-color: #fff; color: #fff;">
+    <i class="fas fa-newspaper"></i> Blog & News
+</a>  
+<div class="social-icons"><a href="https://www.instagram.com/faustofusetti/" target="_blank"><i class="fa-brands fa-instagram"></i></a><a href="https://www.facebook.com/fausto.fusetti.9" target="_blank"><i class="fa-brands fa-facebook"></i></a><a href="https://www.youtube.com/@faustofusetti5859" target="_blank"><i class="fa-brands fa-youtube"></i></a></div>
+</div>
 </div>
 
-<!-- MODALE CATALOGO -->
-<div id="music-modal" class="modal-overlay" style="display:none;">
+<!-- MODALI -->
+<div id="shop-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="shop-modal">&times;</span><h2><i class="fas fa-shopping-cart" style="color: var(--primary-color); margin-right: 10px;"></i> Shop / Supportami</h2><p style="margin: 15px 0; font-size: 0.9em; color: #ccc;"><i>Acquistando tramite questi link supporti il mio lavoro.</i></p><a href="https://www.amazon.it/hz/wishlist/ls/282CA0XU81D3C?tag=zero100store-21" target="_blank" class="button"><i class="fab fa-amazon"></i> La mia Attrezzatura</a><a href="https://www.amazon.it/gp/dmusic/promotions/AmazonMusicUnlimited?tag=zero100store-21" target="_blank" class="button"><i class="fas fa-music"></i> Prova Amazon Music Unlimited</a><a href="https://ff-music-store.printify.me/" target="_blank" class="button"><i class="fas fa-tshirt"></i> Merchandising Ufficiale</a></div></div>
+<div id="video-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="video-modal">&times;</span><h2>Video Selezionati</h2><a href="https://www.youtube.com/watch?v=7s3-7DV38IA" target="_blank" class="button">Produzioni Varie</a><a href="https://www.youtube.com/watch?v=Y8YqyCT7h5E" target="_blank" class="button">Ascolta "Noi"</a><a href="https://www.youtube.com/watch?v=igexCZ24Twg" target="_blank" class="button">Ascolta "Per Te"</a></div></div>
+
+<!-- CATALOGO MUSICALE -->
+<div id="music-modal" class="modal-overlay">
     <div class="modal-content music-catalog">
-        <span class="modal-close">&times;</span>
+        <span class="modal-close" data-target="music-modal">&times;</span>
         <h2>Catalogo Musicale</h2>
         <div class="info-box"><i class="fas fa-headphones"></i> Esplora la discografia di Fausto.</div>
         
-        <!-- SWITCHER VISTA -->
+        <!-- SWITCH VISTA -->
         <div class="view-switcher">
             <button class="view-btn active" id="btn-album-view" onclick="switchView('album')"><i class="fas fa-compact-disc"></i> Album</button>
             <button class="view-btn" id="btn-list-view" onclick="switchView('list')"><i class="fas fa-list"></i> Lista</button>
@@ -186,28 +179,26 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
     </div>
 </div>
 
-<!-- ALTRE MODALI -->
-<div id="shop-modal" class="modal-overlay" style="display:none;"><div class="modal-content"><span class="modal-close">&times;</span><h2><i class="fas fa-shopping-cart"></i> Shop / Supportami</h2><p>Acquista la mia attrezzatura o il merchandising ufficiale.</p><a href="https://www.amazon.it/hz/wishlist/ls/282CA0XU81D3C" target="_blank" class="button">La mia Attrezzatura</a><a href="https://ff-music-store.printify.me/" target="_blank" class="button">Merchandising Ufficiale</a></div></div>
-<div id="video-modal" class="modal-overlay" style="display:none;"><div class="modal-content"><span class="modal-close">&times;</span><h2>Video Selezionati</h2><a href="https://www.youtube.com/watch?v=7s3-7DV38IA" target="_blank" class="button">Produzioni Varie</a><a href="https://www.youtube.com/watch?v=Y8YqyCT7h5E" target="_blank" class="button">Ascolta "Noi"</a></div></div>
-<div id="services-modal" class="modal-overlay" style="display:none;"><div class="modal-content"><span class="modal-close">&times;</span><h2>Canzoni Personalizzate</h2><p>Regala un'emozione unica con una canzone scritta su misura.</p><button id="contact-for-custom-song" class="button collabora">Richiedi Info</button></div></div>
-<div id="contact-modal" class="modal-overlay" style="display:none;"><div class="modal-content"><span class="modal-close">&times;</span><h2>Contattami</h2><form id="contact-form" class="contact-form"><input type="hidden" name="access_key" value="9013a8d5-0901-42a0-b9e6-4c45553f960d"><input type="text" name="name" placeholder="Nome" required><input type="email" name="email" placeholder="Email" required><textarea name="message" rows="4" placeholder="Messaggio" required></textarea><button type="submit" class="button collabora">Invia</button></form><div id="form-result"></div></div></div>
-
-<!-- VIDEO PLAYER OVERLAY -->
-<div id="single-video-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:20000; align-items:center; justify-content:center; flex-direction:column;">
-    <div id="single-video-container" style="width:90%; max-width:900px; aspect-ratio:16/9; background:black;"></div>
-    <button id="close-single-video" style="margin-top:20px; background:none; border:1px solid white; color:white; padding:10px 20px; border-radius:30px; cursor:pointer;">Chiudi Video</button>
+<div id="services-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="services-modal">&times;</span><h2><i class="fas fa-heart" style="color: var(--secondary-color); margin-right: 10px;"></i>Canzoni Personalizzate</h2><div style="text-align: left; line-height: 1.6; margin-bottom: 20px;"><h3 style="color: var(--primary-color); margin-bottom: 10px;">✨ Servizi Esclusivi:</h3><ul style="list-style: none; padding-left: 0;"><li style="margin-bottom: 10px;"><i class="fas fa-heart" style="color: #e74c3c; margin-right: 8px;"></i> <strong>Canzoni per Coppie</strong></li><li style="margin-bottom: 10px;"><i class="fas fa-ring" style="color: #f39c12; margin-right: 8px;"></i> <strong>Anniversari</strong></li></ul><button id="contact-for-custom-song" class="button collabora">Richiedi la Tua Canzone</button></div></div></div>
+<div id="contact-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close" data-target="contact-modal">&times;</span><h2>Contattami per il tuo Progetto</h2><form id="contact-form" class="contact-form" autocomplete="on"><input type="hidden" name="access_key" value="9013a8d5-0901-42a0-b9e6-4c45553f960d"/><input type="text" name="name" placeholder="Il tuo Nome" required autocomplete="name"/><input type="email" name="email" placeholder="La tua Email" required autocomplete="email"/><select name="service_type"><option value="">Seleziona il tipo di servizio</option><option value="canzone_personalizzata">Canzone Personalizzata</option><option value="composizione_artista">Composizione per Artista</option><option value="altro">Altro</option></select><textarea name="message" rows="4" placeholder="Descrivi la tua idea o richiesta..." required></textarea><button type="submit" class="button collabora">Invia Messaggio</button></form><div id="form-result"></div></div></div>
+<div id="single-video-overlay">
+<div id="single-video-container">
+<div id="video-placeholder"></div>
 </div>
-
-<div class="info-footer">Iscrizione SIAE n. 189515 e 593874</div>
+<button id="close-single-video"><i class="fas fa-times"></i> Chiudi Video</button>
+</div>
+<div class="info-footer">
+Iscrizione SIAE n. 189515 e 593874
+</div>
 <div id="chatbot-container"></div>
 
-<!-- SCRIPTS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
     // === URL GOOGLE SCRIPT (AGGIORNA QUESTO!) ===
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw666DGD4BlSHuJwmVYcRLF9_qMJX2LXy_r6gCGVbjR_dXQDngQU-JttofSKOwUkIJZ/exec'; 
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyyvfsSlgx6J-dIeLaIi3Crd6eqG029DDsGzF3Wy8u1VIfwhTMDZJdTPS_ubYszUyFR/exec'; 
     
     // WEBHOOK N8N
     const CHATBOT_WEBHOOK = 'https://n8n.labottegadeldelta.it/webhook/ffausto-ai-chat';
@@ -225,16 +216,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const filterContainer = document.getElementById('filter-container');
     const bgAudio = document.getElementById('background-audio');
 
-    // --- INIT ---
+    // --- SETUP ---
     function init() {
         setupModals();
         setupAudio();
         setupVideoOverlay();
-        loadMusicFromApi(); // Carica catalogo
-        setupChatbot();     // Avvia Chatbot
+        loadMusicFromApi(); 
+        setupChatbot();
     }
 
-    // --- MODALI ---
     function setupModals() {
         const openModal = (id) => {
             mainPlayer.pause();
@@ -257,7 +247,6 @@ document.addEventListener('DOMContentLoaded', function() {
         );
     }
 
-    // --- AUDIO SOTTOFONDO ---
     function setupAudio() {
         const overlay = document.getElementById('audio-start-overlay');
         const btn = document.getElementById('start-audio-btn');
@@ -291,33 +280,40 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // --- CARICAMENTO DATI ---
     async function loadMusicFromApi() {
-        // Usa timestamp attuale per evitare cache browser aggressiva su URL
-        const scriptUrl = `${GOOGLE_SCRIPT_URL}?source=catalogo&t=${Date.now()}`;
+        const CACHE_KEY = 'ff_catalog_v15_final'; 
+        const cached = localStorage.getItem(CACHE_KEY);
         
+        if(cached) {
+            try {
+                const parsed = JSON.parse(cached);
+                if(new Date().getTime() - parsed.ts < 3600000) {
+                    appState.allSongs = parsed.data;
+                    renderCatalog();
+                    return;
+                }
+            } catch(e) {}
+        }
+
         songListContainer.innerHTML = '<p style="color:#aaa"><i class="fas fa-spinner fa-spin"></i> Caricamento...</p>';
         
         try {
-            const res = await fetch(scriptUrl);
-            if (!res.ok) throw new Error("Network error");
+            const res = await fetch(`${GOOGLE_SCRIPT_URL}?source=catalogo&t=${Date.now()}`);
             const data = await res.json();
-            
-            if(data.status === 'error') throw new Error(data.message);
             
             if(Array.isArray(data)) {
                 appState.allSongs = data;
+                localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: data }));
                 renderCatalog();
             } else {
                 throw new Error("Formato dati non valido");
             }
         } catch(e) {
             console.error(e);
-            songListContainer.innerHTML = `<p style='color:#ff5555'>Errore di connessione. Riprova più tardi.<br><small>${e.message}</small></p>`;
+            songListContainer.innerHTML = '<p>Errore di connessione.</p>';
         }
     }
 
-    // --- RENDERIZZAZIONE ---
     window.switchView = function(mode) {
         appState.viewMode = mode;
         document.getElementById('btn-list-view').classList.toggle('active', mode === 'list');
@@ -328,7 +324,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderCatalog() {
         createFilterButtons();
 
-        // Filtra i brani
         const filtered = appState.allSongs.filter(s => {
             const get = (k) => { 
                 const key = Object.keys(s).find(x => x.toLowerCase() === k.toLowerCase());
@@ -351,7 +346,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if(appState.viewMode === 'list') {
             filtered.forEach(song => songListContainer.appendChild(createSongRow(song)));
         } else {
-            // Raggruppa per Album
+            // VISTA ALBUM (PUNTO 1: ACCORDION)
             const albums = {};
             filtered.forEach(song => {
                 const get = (k) => { const key = Object.keys(song).find(x => x.toLowerCase() === k.toLowerCase()); return key ? song[key] : ""; };
@@ -366,6 +361,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const card = document.createElement('div');
                 card.className = 'album-card';
+                // PUNTO 4: Fix Immagine Corrotta (onerror)
                 card.innerHTML = `
                     <div class="album-header" onclick="this.parentElement.classList.toggle('open')">
                         <img src="${cover}" class="album-cover" onerror="this.src='logo6.jpg'">
@@ -397,6 +393,7 @@ document.addEventListener('DOMContentLoaded', function() {
             vidBtn = `<div class="video-btn" onclick="openVideo('${vidLink}', event)"><i class="fas fa-video"></i></div>`;
         }
 
+        // PUNTO 2: Genere visibile
         div.innerHTML = `
             <div class="song-info">
                 <span class="song-title">${get('Titolo') || 'Senza Titolo'}</span>
@@ -411,13 +408,15 @@ document.addEventListener('DOMContentLoaded', function() {
         return div;
     }
 
+    // PUNTO 5: FIX SPAZI VUOTI LISTA GENERI
     function createFilterButtons() {
         const extract = (keyName) => {
             const raw = appState.allSongs.map(s => {
                 const key = Object.keys(s).find(k => k.toLowerCase() === keyName.toLowerCase());
                 return key ? s[key] : "";
             }).filter(Boolean);
-            return [...new Set(raw.flatMap(t => t.split(/[;,]+/).map(x => x.trim()).filter(x => x)))].sort();
+            // Filtra stringhe vuote dopo il trim
+            return [...new Set(raw.flatMap(t => t.split(/[;,]+/).map(x => x.trim()).filter(x => x && x !== "")))].sort();
         };
 
         const cats = extract('Categoria');
@@ -444,6 +443,7 @@ document.addEventListener('DOMContentLoaded', function() {
         renderCatalog();
     };
 
+    // PUNTO 3: CONTATORE PLAY
     window.playSong = function(url, title, btn) {
         if(appState.currentPlayingItem) appState.currentPlayingItem.classList.remove('playing');
         const row = btn.closest('.song-item');
@@ -452,7 +452,6 @@ document.addEventListener('DOMContentLoaded', function() {
         mainPlayer.src = url;
         mainPlayer.play();
 
-        // TRACKING
         fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
             mode: 'no-cors', 
@@ -476,7 +475,7 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
 
-    // --- CHATBOT ORIGINALE (CON IMMAGINE E BUBBLE) ---
+    // --- CHATBOT ORIGINALE (CON IMMAGINE) ---
     function setupChatbot() {
         const c = document.getElementById('chatbot-container');
         c.innerHTML = `
@@ -486,7 +485,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 #chatbot-window-wrapper { position:fixed; bottom:100px; right:25px; width:350px; height:500px; background:white; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,0.3); z-index:9999; display:flex; flex-direction:column; overflow:hidden; }
                 #chatbot-window { display:flex; flex-direction:column; height:100%; }
                 .chatbot-header { background:var(--primary-color); color:white; padding:15px; text-align:center; font-weight:bold; position:relative; }
-                .chatbot-header-logo { width:60px; height:60px; border-radius:50%; border:3px solid white; position:absolute; top:40px; left:50%; transform:translateX(-50%); box-shadow:0 2px 5px rgba(0,0,0,0.2); }
+                .chatbot-header-logo { width:60px; height:60px; border-radius:50%; border:3px solid white; position:absolute; top:40px; left:50%; transform:translateX(-50%); box-shadow:0 2px 5px rgba(0,0,0,0.2); object-fit:cover; }
                 .chatbot-messages { flex-grow:1; padding:15px; padding-top:40px; overflow-y:auto; background:#f9f9f9; color:#333; text-align:left; }
                 .chatbot-input { border-top:1px solid #ddd; padding:10px; display:flex; background:white; }
                 .chatbot-input input { flex-grow:1; border:none; padding:10px; outline:none; font-size:1rem; }
@@ -559,7 +558,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // AVVIO
     init();
 });
 </script>
