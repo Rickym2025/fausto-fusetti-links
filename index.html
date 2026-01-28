@@ -32,7 +32,7 @@ body { font-family: 'Montserrat', sans-serif; color: #f0f0f0; text-align: center
 .container { position: relative; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(10px); padding: 90px 30px 40px 30px; max-width: 680px; width: 100%; margin-top: 100px; margin-bottom: 40px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); z-index: 2; }
 @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-/* PULSANTE AUDIO (POSIZIONAMENTO CORRETTO) */
+/* PULSANTE AUDIO */
 #audio-cta { 
     position: absolute; top: -25px; right: -20px; 
     display: flex; align-items: center; 
@@ -46,8 +46,9 @@ body { font-family: 'Montserrat', sans-serif; color: #f0f0f0; text-align: center
 #audio-cta .cta-text { margin-right: 10px; font-weight: 500; color: #f0f0f0; font-size: 0.9em; }
 #mute-btn-icon { background: white; color: var(--primary-color); border-radius: 50%; width: 30px; height: 30px; font-size: 0.9em; display: flex; align-items: center; justify-content: center; }
 
-@keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
 .profile-logo { width: 150px; height: 150px; border-radius: 50%; border: 4px solid rgba(255, 255, 255, 0.9); box-shadow: 0 0 20px var(--primary-color); object-fit: cover; position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); animation: spin 15s linear infinite; }
+@keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+
 h1 { font-size: 1.8em; margin-bottom: 15px; font-weight: 500; }
 p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1; }
 .button { display: block; margin: 18px auto; padding: 16px 30px; border: 2px solid var(--primary-color); border-radius: 30px; text-decoration: none; color: #f0f0f0; font-size: 1.2em; font-weight: 500; transition: all 0.3s ease; background-color: transparent; cursor: pointer; }
@@ -71,7 +72,7 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
 .filter-btn { padding: 8px 14px; border: 1px solid #555; border-radius: 20px; background: none; color: #f0f0f0; cursor: pointer; font-size: 0.9em; transition: all 0.2s ease; }
 .filter-btn.active { background: var(--primary-color); border-color: var(--primary-color); color: white; }
 
-/* VIEW SWITCHER (LISTA vs ALBUM) */
+/* VIEW SWITCHER */
 .view-switcher { display: flex; justify-content: center; margin-bottom: 20px; gap: 10px; border-bottom: 1px solid #333; padding-bottom: 15px; }
 .view-btn { background: transparent; border: 1px solid #555; color: #ccc; padding: 8px 16px; border-radius: 5px; cursor: pointer; transition: 0.3s; }
 .view-btn.active { background: var(--primary-color); border-color: var(--primary-color); color: white; }
@@ -106,9 +107,7 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
 .album-title { font-size: 1.2em; color: var(--primary-color); font-weight: bold; margin: 0; }
 .album-count { font-size: 0.9em; color: #888; }
 .album-toggle-icon { margin-left: auto; color: #888; transition: transform 0.3s; }
-/* Nascosto di default */
 .album-tracks { display: none; padding: 5px; border-top: 1px solid #444; background: rgba(0,0,0,0.1); }
-/* Classe per aprire */
 .album-card.open .album-tracks { display: block; }
 .album-card.open .album-toggle-icon { transform: rotate(180deg); color: var(--primary-color); }
 
@@ -216,8 +215,8 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
-    // === AGGIORNA QUI SOTTO CON IL TUO NUOVO URL DI APPS SCRIPT ===
-    // (Devi fare: Gestisci Deployment > Matita > Nuova Versione > Deployment)
+    // === URL GOOGLE SCRIPT ===
+    // Assicurati che questo sia l'URL che hai copiato dall'ultimo "Deployment" -> "Nuova Versione"
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxBC8jTB6iaaqaSE8LcGCH6gG_X0edt5xooY4pr7RgXlQCD2oDr7OaFA65W0rla_pbX/exec'; 
     
     // WEBHOOK N8N
@@ -237,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const filterContainer = document.getElementById('filter-container');
     const bgAudio = document.getElementById('background-audio');
 
-    // --- SETUP INIZIALE ---
+    // --- INIT ---
     function init() {
         setupModals();
         setupAudio();
@@ -326,7 +325,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch(e) {
             console.error(e);
-            songListContainer.innerHTML = `<p style='color:#ff5555'>Errore catalogo: ${e.message}<br>Aggiorna il deployment dello script Google.</p>`;
+            songListContainer.innerHTML = `<p style='color:#ff5555'>Errore catalogo: ${e.message}</p>`;
         }
     }
 
@@ -347,6 +346,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const key = Object.keys(s).find(x => x.toLowerCase() === k.toLowerCase());
                 return key ? s[key] : "";
             };
+            
             const cat = get('Categoria');
             const arg = get('Argomento');
             
@@ -364,7 +364,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if(appState.viewMode === 'list') {
             filtered.forEach(song => songListContainer.appendChild(createSongRow(song)));
         } else {
-            // VISTA ALBUM
+            // Raggruppa per Album
             const albums = {};
             filtered.forEach(song => {
                 const get = (k) => { const key = Object.keys(song).find(x => x.toLowerCase() === k.toLowerCase()); return key ? song[key] : ""; };
@@ -399,6 +399,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function createSongRow(song) {
+        // Helper per lettura sicura
         const get = (k) => { const key = Object.keys(song).find(x => x.toLowerCase() === k.toLowerCase()); return key ? song[key] : ""; };
         
         const div = document.createElement('div');
@@ -410,6 +411,7 @@ document.addEventListener('DOMContentLoaded', function() {
             vidBtn = `<div class="video-btn" onclick="openVideo('${vidLink}', event)"><i class="fas fa-video"></i></div>`;
         }
 
+        // PUNTO 2: Genere Visibile
         div.innerHTML = `
             <div class="song-info">
                 <span class="song-title">${get('Titolo') || 'Senza Titolo'}</span>
@@ -431,7 +433,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const key = Object.keys(s).find(k => k.toLowerCase() === keyName.toLowerCase());
                 return key ? s[key] : "";
             }).filter(Boolean);
-            // Filtra stringhe vuote
+            // PUNTO 5: FIX SPAZI VUOTI
             return [...new Set(raw.flatMap(t => t.split(/[;,]+/).map(x => x.trim()).filter(x => x && x !== "")))].sort();
         };
 
@@ -468,7 +470,7 @@ document.addEventListener('DOMContentLoaded', function() {
         mainPlayer.src = url;
         mainPlayer.play();
 
-        // Invio Tracking
+        // PUNTO 3: CONTATORE PLAY
         fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
             mode: 'no-cors', 
