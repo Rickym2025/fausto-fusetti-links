@@ -550,57 +550,122 @@ if (cover.includes('suno.ai') && cover.includes('?')) {
     }
 
     // --- CHATBOT ---
+// --- CHATBOT MIGLIORATO ---
     function setupChatbot() {
         const c = document.getElementById('chatbot-container');
         c.innerHTML = `
             <style>
+                /* Stili Base */
                 #chatbot-bubble { position:fixed; bottom:25px; right:25px; width:65px; height:65px; border-radius:50%; box-shadow:0 4px 12px rgba(0,0,0,0.3); cursor:pointer; background-image:url(fausto_immagine.jpg); background-size:cover; background-position:center; border:3px solid var(--primary-color); z-index:9999; transition:transform 0.3s; }
                 #chatbot-bubble:hover { transform:scale(1.1); }
-                #chatbot-window-wrapper { position:fixed; bottom:100px; right:25px; width:350px; height:500px; background:white; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,0.3); z-index:9999; display:flex; flex-direction:column; overflow:hidden; }
+                
+                #chatbot-window-wrapper { position:fixed; bottom:100px; right:25px; width:350px; height:500px; background:white; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,0.3); z-index:9999; display:flex; flex-direction:column; overflow:hidden; transform: translateY(20px); opacity: 0; transition: all 0.3s ease; pointer-events: none; }
+                #chatbot-window-wrapper.visible { transform: translateY(0); opacity: 1; pointer-events: all; }
+                
                 #chatbot-window { display:flex; flex-direction:column; height:100%; }
                 .chatbot-header { background:var(--primary-color); color:white; padding:15px; text-align:center; font-weight:bold; position:relative; }
-                .chatbot-header-logo { width:60px; height:60px; border-radius:50%; border:3px solid white; position:absolute; top:40px; left:50%; transform:translateX(-50%); box-shadow:0 2px 5px rgba(0,0,0,0.2); object-fit:cover; }
-                .chatbot-messages { flex-grow:1; padding:15px; padding-top:40px; overflow-y:auto; background:#f9f9f9; color:#333; text-align:left; }
+                .chatbot-header-logo { width:60px; height:60px; border-radius:50%; border:3px solid white; position:absolute; top:40px; left:50%; transform:translateX(-50%); box-shadow:0 2px 5px rgba(0,0,0,0.2); object-fit:cover; background: #000; }
+                
+                .chatbot-messages { flex-grow:1; padding:15px; padding-top:40px; overflow-y:auto; background:#f9f9f9; color:#333; text-align:left; display: flex; flex-direction: column; gap: 10px; }
+                
                 .chatbot-input { border-top:1px solid #ddd; padding:10px; display:flex; background:white; }
                 .chatbot-input input { flex-grow:1; border:none; padding:10px; outline:none; font-size:1rem; }
-                .chatbot-input button { background:none; border:none; color:var(--primary-color); padding:0 10px; cursor:pointer; }
-                .msg { margin-bottom:10px; padding:8px 12px; border-radius:15px; max-width:80%; font-size:0.9em; word-wrap: break-word; }
-                .msg.bot { background:rgba(6, 147, 227, 0.1); border:1px solid #ddd; align-self:flex-start; margin-right:auto; }
-                .msg.user { background:var(--primary-color); color:white; align-self:flex-end; margin-left:auto; }
-                .chatbot-song-link { display:block; color:var(--primary-color); text-decoration:none; margin:5px 0; border-bottom:1px dashed #ccc; }
+                .chatbot-input button { background:none; border:none; color:var(--primary-color); padding:0 10px; cursor:pointer; font-size: 1.2em; }
+                
+                /* Messaggi */
+                .msg { padding:10px 14px; border-radius:15px; max-width:85%; font-size:0.95em; word-wrap: break-word; line-height: 1.4; animation: popIn 0.3s ease; }
+                .msg.bot { background:rgba(6, 147, 227, 0.15); border-bottom-left-radius: 2px; align-self:flex-start; margin-right:auto; color: #333; }
+                .msg.user { background:var(--primary-color); color:white; border-bottom-right-radius: 2px; align-self:flex-end; margin-left:auto; }
+                
+                /* Link canzoni nel bot */
+                .chatbot-song-link { display:inline-block; background: white; border: 1px solid var(--primary-color); color:var(--primary-color); text-decoration:none; margin-top:5px; padding: 5px 10px; border-radius: 15px; font-weight: 500; font-size: 0.9em; transition: 0.2s; cursor: pointer; }
+                .chatbot-song-link:hover { background: var(--primary-color); color: white; }
+
+                /* CHIPS (Pulsanti rapidi) */
+                .chips-container { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
+                .chat-chip { background: #fff; border: 1px solid var(--secondary-color); color: #333; padding: 6px 12px; border-radius: 20px; font-size: 0.85em; cursor: pointer; transition: 0.2s; white-space: nowrap; }
+                .chat-chip:hover { background: var(--secondary-color); color: white; border-color: var(--secondary-color); }
+                
+                @keyframes popIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
             </style>
             
             <div id="chatbot-bubble" onclick="toggleChat()"></div>
-            <div id="chatbot-window-wrapper" style="display:none">
+            <div id="chatbot-window-wrapper">
                 <div id="chatbot-window">
                     <div class="chatbot-header">
                         Fausto AI
                         <span onclick="toggleChat()" style="float:right; cursor:pointer; font-size:1.5em;">&times;</span>
                     </div>
-                    <img src="fausto_immagine.jpg" class="chatbot-header-logo">
+                    <img src="fausto_immagine.jpg" class="chatbot-header-logo" onerror="this.src='logo6.jpg'">
                     <div id="chatbot-messages" class="chatbot-messages"></div>
                     <div class="chatbot-input">
-                        <input type="text" id="chat-input" placeholder="Scrivi qui..." onkeypress="if(event.key==='Enter') sendMsg()">
+                        <input type="text" id="chat-input" placeholder="Scrivi o scegli un'opzione..." onkeypress="if(event.key==='Enter') sendMsg()">
                         <button onclick="sendMsg()"><i class="fas fa-paper-plane"></i></button>
                     </div>
                 </div>
             </div>
         `;
-
-        setTimeout(() => {
-            addMsg("Ciao! Sono l'assistente virtuale. Posso aiutarti a trovare una canzone?", 'bot');
-        }, 1000);
     }
+
+    let isChatInitialized = false;
 
     window.toggleChat = function() {
         const w = document.getElementById('chatbot-window-wrapper');
-        w.style.display = w.style.display === 'none' ? 'flex' : 'none';
+        const isVisible = w.classList.contains('visible');
+        
+        if (isVisible) {
+            w.classList.remove('visible');
+            setTimeout(() => { w.style.display = 'none'; }, 300); // Aspetta l'animazione
+        } else {
+            w.style.display = 'flex';
+            // Piccolo timeout per permettere al display:flex di applicarsi prima dell'animazione
+            setTimeout(() => { w.classList.add('visible'); }, 10);
+            
+            // Inizializza i messaggi di benvenuto solo la prima volta
+            if (!isChatInitialized) {
+                isChatInitialized = true;
+                setTimeout(() => {
+                    addMsg("Ciao! 🎸 Sono l'assistente virtuale di Fausto.", 'bot');
+                }, 500);
+                
+                setTimeout(() => {
+                    // Qui aggiungiamo i pulsanti rapidi (Chips)
+                    addChipsMsg("Come posso aiutarti oggi? Scegli un'opzione o scrivi tu:", [
+                        "Consigliami una canzone d'amore ❤️",
+                        "Voglio qualcosa di energico ⚡",
+                        "Fammi una sorpresa 🎲",
+                        "Parlami di Fausto 📖"
+                    ]);
+                }, 1500);
+            }
+        }
+    };
+
+    // Funzione speciale per aggiungere messaggi con pulsanti
+    window.addChipsMsg = function(text, chips) {
+        const c = document.getElementById('chatbot-messages');
+        const div = document.createElement('div');
+        div.className = 'msg bot';
+        
+        let chipsHtml = `<div class="chips-container">`;
+        chips.forEach(chipText => {
+            // Quando clicchi, simula l'invio del messaggio da parte dell'utente
+            chipsHtml += `<span class="chat-chip" onclick="sendMsg('${chipText.replace(/'/g, "\\'")}')">${chipText}</span>`;
+        });
+        chipsHtml += `</div>`;
+
+        div.innerHTML = text + chipsHtml;
+        c.appendChild(div);
+        c.scrollTop = c.scrollHeight;
     };
 
     window.addMsg = function(text, sender) {
         const div = document.createElement('div');
         div.className = `msg ${sender}`;
+        
+        // Rende cliccabili i link se presenti
         div.innerHTML = text; 
+        
         const c = document.getElementById('chatbot-messages');
         c.appendChild(div);
         c.scrollTop = c.scrollHeight;
@@ -609,26 +674,42 @@ if (cover.includes('suno.ai') && cover.includes('?')) {
             div.querySelectorAll('.chatbot-song-link').forEach(link => {
                 link.onclick = (e) => {
                     e.preventDefault();
-                    playSong(link.dataset.src, link.innerText, document.body); // Play dummy
+                    playSong(link.dataset.src, link.innerText, document.body); 
                 };
             });
         }
     };
 
-    window.sendMsg = async function() {
+    // Modificata per accettare testo opzionale (dai pulsanti)
+    window.sendMsg = async function(textOverride) {
         const input = document.getElementById('chat-input');
-        const text = input.value;
+        const text = textOverride || input.value;
+        
         if(!text.trim()) return;
         
-        input.value = '';
-        addMsg(text, 'user');
+        input.value = ''; // Pulisce l'input
+        addMsg(text, 'user'); // Mostra quello che l'utente ha "detto"
+
+        // Feedback visivo "sta scrivendo..."
+        const loadingId = 'loading-' + Date.now();
+        const loadingDiv = document.createElement('div');
+        loadingDiv.id = loadingId;
+        loadingDiv.className = 'msg bot';
+        loadingDiv.innerHTML = '<i class="fas fa-ellipsis-h fa-beat"></i>';
+        document.getElementById('chatbot-messages').appendChild(loadingDiv);
+        document.getElementById('chatbot-messages').scrollTop = document.getElementById('chatbot-messages').scrollHeight;
 
         try {
             const res = await fetch(`${CHATBOT_WEBHOOK}?user_message=${encodeURIComponent(text)}`, { method:'POST' });
             const data = await res.json();
+            
+            // Rimuovi icona caricamento
+            document.getElementById(loadingId).remove();
             addMsg(data.response, 'bot');
+            
         } catch(e) {
-            addMsg("Errore di connessione.", 'bot');
+            document.getElementById(loadingId).remove();
+            addMsg("Mi dispiace, la mia connessione musicale ha avuto un intoppo. Riprova! 🎵", 'bot');
         }
     };
 
