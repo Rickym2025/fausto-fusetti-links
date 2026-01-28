@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fausto Fusetti | Jingle Shop</title>
+  
+  <!-- FAVICONS -->
+  <link rel="icon" href="logo.png?v=2" type="image/png">
+  <link rel="icon" href="logo.png?v=2" sizes="32x32" type="image/png">
+  <link rel="icon" href="logo.png?v=2" sizes="192x192" type="image/png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=3">
+
+  <!-- FONTS & ICONS -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <style>
+    /* SCHEMA COLORI NEON AZZURRO */
+    :root { 
+        --primary: #00e1ff;       
+        --primary-dim: #00b3cc;   
+        --bg: #0a0a0a;            
+        --card: #141414;          
+        --text: #ffffff; 
+        --text-sec: #b0b0b0; 
+        --border: #333;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding-bottom: 80px; }
+    
+    /* HEADER */
+    header { 
+        background: rgba(10, 10, 10, 0.95); 
+        backdrop-filter: blur(15px); 
+        position: sticky; 
+        top: 0; 
+        z-index: 100; 
+        padding: 15px 20px; 
+        border-bottom: 1px solid var(--border); 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        box-shadow: 0 4px 20px rgba(0, 225, 255, 0.1); 
+        gap: 15px;
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .home-btn {
+        text-decoration: none;
+        color: var(--text-sec);
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: color 0.3s;
+        border: 1px solid #333;
+        padding: 8px 12px;
+        border-radius: 20px;
+    }
+    .home-btn:hover { color: var(--primary); border-color: var(--primary); }
+
+    .logo-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+    }
+
+    .logo-img {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 0 10px rgba(0, 225, 255, 0.4); 
+        border: 2px solid var(--primary);
+    }
+
+    .logo-text { 
+        font-weight: 800; 
+        font-size: 1.2rem; 
+        color: var(--text); 
+        text-transform: uppercase; 
+        letter-spacing: -0.5px; 
+        display: none; /* Nascosto su mobile per spazio */
+    }
+    @media(min-width: 600px) { .logo-text { display: block; } }
+    
+    .logo-text span { color: var(--primary); font-weight: 400; }
+
+    /* CART BUTTON */
+    .cart-btn { 
+        background: transparent; 
+        border: 2px solid var(--primary); 
+        color: var(--primary); 
+        padding: 8px 16px; 
+        border-radius: 30px; 
+        cursor: pointer; 
+        font-weight: 700; 
+        display: flex; 
+        align-items: center; 
+        gap: 10px; 
+        transition: all 0.3s ease; 
+        box-shadow: 0 0 5px rgba(0, 225, 255, 0.2);
+    }
+    
+    .cart-btn:hover { 
+        background: var(--primary); 
+        color: #000; 
+        box-shadow: 0 0 20px rgba(0, 225, 255, 0.6);
+        transform: translateY(-2px);
+    }
+    
+    .cart-count { 
+        background: var(--text); 
+        color: #000; 
+        padding: 2px 6px; 
+        border-radius: 10px; 
+        font-size: 0.8rem; 
+        font-weight: 800;
+    }
+
+    /* FILTERS */
+    .filters { padding: 25px 20px; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr auto; gap: 15px; }
+    input, select { 
+        background: var(--card); 
+        border: 1px solid var(--border); 
+        color: white; 
+        padding: 12px 15px; 
+        border-radius: 8px; 
+        width: 100%; 
+        outline: none; 
+        transition: border-color 0.3s;
+    }
+    input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(0, 225, 255, 0.2); }
+
+    /* LIST */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    .song-list { display: grid; gap: 12px; }
+    
+    .song-row { 
+        background: var(--card); 
+        padding: 15px; 
+        border-radius: 12px; 
+        display: grid; 
+        grid-template-columns: auto 1fr auto auto; 
+        align-items: center; 
+        gap: 20px; 
+        border: 1px solid transparent; 
+        transition: all 0.2s; 
+    }
+    
+    .song-row:hover { 
+        border-color: var(--primary); 
+        background: #1a1a1a;
+        transform: translateX(5px);
+    }
+    
+    .play-btn { 
+        width: 48px; 
+        height: 48px; 
+        border-radius: 50%; 
+        border: 2px solid var(--primary); 
+        background: transparent; 
+        color: var(--primary); 
+        cursor: pointer; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        font-size: 1.2rem; 
+        transition: all 0.2s; 
+        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    
+    .play-btn:hover, .play-btn.playing { 
+        background: var(--primary); 
+        color: #000; 
+        box-shadow: 0 0 15px rgba(0, 225, 255, 0.5);
+    }
+    
+    .info h3 { font-size: 1.1rem; margin-bottom: 6px; font-weight: 700; color: #fff; }
+    .meta { font-size: 0.85rem; color: var(--text-sec); display: flex; gap: 10px; flex-wrap: wrap; }
+    .tag { 
+        background: #252525; 
+        padding: 4px 10px; 
+        border-radius: 4px; 
+        font-size: 0.75rem; 
+        border: 1px solid #333;
+        color: #ccc;
+    }
+
+    .price { font-weight: 700; font-size: 1.2rem; color: var(--primary); text-shadow: 0 0 5px rgba(0,225,255,0.3); }
+    
+    .add-btn { 
+        background: transparent; 
+        border: 1px solid var(--text-sec); 
+        color: var(--text-sec); 
+        padding: 8px 18px; 
+        border-radius: 6px; 
+        cursor: pointer; 
+        transition: all 0.2s; 
+        font-weight: 600;
+    }
+    
+    .add-btn:hover { border-color: white; color: white; }
+    
+    .add-btn.in-cart { 
+        background: var(--primary); 
+        border-color: var(--primary); 
+        color: #000; 
+        box-shadow: 0 0 10px rgba(0, 225, 255, 0.3);
+    }
+
+    /* PAGINATION */
+    .pagination { display: flex; justify-content: center; gap: 10px; margin: 40px 0; }
+    .page-btn { background: var(--card); border: 1px solid var(--border); color: white; padding: 10px 16px; cursor: pointer; border-radius: 8px; transition: all 0.2s; }
+    .page-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .page-btn.active { background: var(--primary); border-color: var(--primary); color: #000; font-weight: bold; }
+    .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    /* PLAYER FOOTER */
+    .player-bar { 
+        position: fixed; 
+        bottom: 0; 
+        left: 0; 
+        right: 0; 
+        background: rgba(10, 10, 10, 0.95); 
+        backdrop-filter: blur(10px);
+        border-top: 1px solid var(--primary); 
+        padding: 15px 20px; 
+        display: flex; 
+        align-items: center; 
+        gap: 20px; 
+        transform: translateY(100%); 
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        z-index: 200; 
+        box-shadow: 0 -5px 30px rgba(0,0,0,0.5);
+    }
+    .player-bar.visible { transform: translateY(0); }
+    .player-info { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: 600; color: var(--primary); }
+    
+    /* Stile Audio Player customizzato (Webkit) */
+    audio { width: 100%; max-width: 400px; height: 35px; border-radius: 20px; }
+    audio::-webkit-media-controls-panel { background-color: #222; }
+    audio::-webkit-media-controls-current-time-display,
+    audio::-webkit-media-controls-time-remaining-display { color: #fff; }
+
+    /* MOBILE */
+    @media (max-width: 768px) {
+        .filters { grid-template-columns: 1fr; }
+        .song-row { grid-template-columns: auto 1fr; gap: 12px; position: relative; }
+        .price { position: absolute; top: 15px; right: 15px; font-size: 1rem; }
+        .add-btn { grid-column: span 2; width: 100%; text-align: center; margin-top: 5px; padding: 12px; }
+        .meta { margin-top: 5px; }
+        .tag { font-size: 0.7rem; padding: 2px 6px; }
+    }
+    
+    /* LOADING */
+    .loader { text-align: center; padding: 50px; color: var(--primary); font-size: 1.2rem; }
+  </style>
+</head>
+<body>
+
+<header>
+    <div class="header-left">
+        <!-- PULSANTE TORNA AL SITO PRINCIPALE -->
+        <a href="https://rickym2025.github.io/fausto-fusetti-links/" class="home-btn">
+            <i class="fas fa-arrow-left"></i> Home
+        </a>
+
+        <a href="#" class="logo-container">
+            <!-- LOGO: Assicurati che logo.png sia nella repo Jingle -->
+            <img src="logo.png" alt="FF Logo" class="logo-img">
+            <div class="logo-text">FF <span>Jingles</span></div>
+        </a>
+    </div>
+    
+    <button class="cart-btn" onclick="checkout()">
+        <i class="fas fa-shopping-cart"></i> 
+        <span id="cart-total">0.00€</span>
+        <span class="cart-count" id="cart-count">0</span>
+    </button>
+</header>
+
+<div class="filters">
+    <input type="text" id="search" placeholder="🔍 Cerca titolo, mood..." oninput="filterSongs()">
+    <select id="cat-filter" onchange="filterSongs()">
+        <option value="">📂 Tutte le Categorie</option>
+    </select>
+    <select id="sort-filter" onchange="filterSongs()">
+        <option value="newest">🕒 Più Recenti</option>
+        <option value="price-asc">💶 Prezzo: Basso-Alto</option>
+        <option value="price-desc">💶 Prezzo: Alto-Basso</option>
+    </select>
+</div>
+
+<div class="container">
+    <div id="song-list" class="song-list">
+        <div class="loader"><i class="fas fa-circle-notch fa-spin"></i> Caricamento Jingle...</div>
+    </div>
+    <div class="pagination" id="pagination"></div>
+</div>
+
+<div class="player-bar" id="player-bar">
+    <div class="player-info" id="player-title">Titolo Brano</div>
+    <audio id="audio-player" controls controlsList="nodownload"></audio>
+</div>
+
+<script>
+    // --- CONFIGURAZIONE ---
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw666DGD4BlSHuJwmVYcRLF9_qMJX2LXy_r6gCGVbjR_dXQDngQU-JttofSKOwUkIJZ/exec?source=jingles"; 
+    const N8N_CHECKOUT_URL = "https://n8n.labottegadeldelta.it/webhook/checkout-jingle"; 
+    const ITEMS_PER_PAGE = 50;
+
+    let allSongs = [];
+    let filteredSongs = [];
+    let cart = [];
+    let currentPage = 1;
+    let currentAudio = null;
+
+    async function init() {
+        try {
+            const res = await fetch(APPS_SCRIPT_URL);
+            const data = await res.json();
+            
+            if (data.status === 'ok') {
+                allSongs = data.songs.reverse();
+                populateCategories();
+                filterSongs();
+            } else {
+                document.getElementById('song-list').innerHTML = '<div class="loader" style="color:red">Errore caricamento dati dal Server.</div>';
+            }
+        } catch (e) {
+            console.error(e);
+            document.getElementById('song-list').innerHTML = '<div class="loader" style="color:red">Errore connessione API. Verifica App Script.</div>';
+        }
+    }
+
+    function populateCategories() {
+        const cats = [...new Set(allSongs.map(s => s.categoria).filter(Boolean))].sort();
+        const select = document.getElementById('cat-filter');
+        cats.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c;
+            opt.innerText = c;
+            select.appendChild(opt);
+        });
+    }
+
+    function filterSongs() {
+        const query = document.getElementById('search').value.toLowerCase();
+        const cat = document.getElementById('cat-filter').value;
+        const sort = document.getElementById('sort-filter').value;
+
+        filteredSongs = allSongs.filter(s => {
+            const matchText = (s.titolo).toLowerCase().includes(query);
+            const matchCat = cat ? s.categoria === cat : true;
+            return matchText && matchCat;
+        });
+
+        if (sort === 'price-asc') filteredSongs.sort((a,b) => a.prezzo - b.prezzo);
+        if (sort === 'price-desc') filteredSongs.sort((a,b) => b.prezzo - a.prezzo);
+
+        currentPage = 1;
+        renderPage();
+        renderPagination();
+    }
+
+    function renderPage() {
+        const start = (currentPage - 1) * ITEMS_PER_PAGE;
+        const end = start + ITEMS_PER_PAGE;
+        const pageItems = filteredSongs.slice(start, end);
+        
+        const container = document.getElementById('song-list');
+        container.innerHTML = '';
+
+        if (pageItems.length === 0) {
+            container.innerHTML = '<div class="loader">Nessun brano trovato.</div>';
+            return;
+        }
+
+        pageItems.forEach(song => {
+            const inCart = cart.some(c => c.id === song.id);
+            const div = document.createElement('div');
+            div.className = 'song-row';
+            
+            // Gestione titolo con caratteri speciali
+            let safeTitle = song.titolo.replace(/'/g, "\\'");
+            
+            // DEBUG: Controlliamo se c'è il link
+            if (!song.preview) console.warn("Link audio mancante per:", song.titolo);
+
+            let playAction = `playSong('${song.preview}', '${safeTitle}', this)`;
+            
+            div.innerHTML = `
+                <button class="play-btn" onclick="${playAction}">
+                    <i class="fas fa-play"></i>
+                </button>
+                <div class="info">
+                    <h3>${song.titolo}</h3>
+                    <div class="meta">
+                        <span class="tag" style="color:var(--primary); border-color:var(--primary)">${song.categoria}</span>
+                        ${song.bpm ? `<span><i class="fas fa-tachometer-alt"></i> ${song.bpm}</span>` : ''}
+                        ${song.durata ? `<span><i class="far fa-clock"></i> ${song.durata}</span>` : ''}
+                    </div>
+                </div>
+                <div class="price">${parseFloat(song.prezzo).toFixed(2)}€</div>
+                <button class="add-btn ${inCart ? 'in-cart' : ''}" onclick="toggleCart('${song.id}')">
+                    ${inCart ? '<i class="fas fa-check"></i> Aggiunto' : '<i class="fas fa-plus"></i> Carrello'}
+                </button>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function renderPagination() {
+        const pages = Math.ceil(filteredSongs.length / ITEMS_PER_PAGE);
+        const container = document.getElementById('pagination');
+        container.innerHTML = '';
+        if (pages <= 1) return;
+
+        const prev = document.createElement('button');
+        prev.className = 'page-btn';
+        prev.innerHTML = '<i class="fas fa-chevron-left"></i>';
+        prev.disabled = currentPage === 1;
+        prev.onclick = () => { currentPage--; renderPage(); renderPagination(); window.scrollTo(0,0); };
+        container.appendChild(prev);
+
+        const info = document.createElement('span');
+        info.style.padding = '10px';
+        info.style.color = '#fff';
+        info.innerText = `Pag ${currentPage} di ${pages}`;
+        container.appendChild(info);
+
+        const next = document.createElement('button');
+        next.className = 'page-btn';
+        next.innerHTML = '<i class="fas fa-chevron-right"></i>';
+        next.disabled = currentPage === pages;
+        next.onclick = () => { currentPage++; renderPage(); renderPagination(); window.scrollTo(0,0); };
+        container.appendChild(next);
+    }
+
+    function playSong(url, title, btn) {
+        const player = document.getElementById('audio-player');
+        const bar = document.getElementById('player-bar');
+        
+        console.log("Tentativo di riproduzione:", url); // DEBUG LOG
+
+        // Se l'URL è vuoto
+        if (!url || url.trim() === '') {
+            alert("ERRORE: Link audio mancante nel database per questo brano.");
+            return;
+        }
+
+        document.querySelectorAll('.play-btn').forEach(b => {
+            b.classList.remove('playing');
+            b.innerHTML = '<i class="fas fa-play"></i>';
+        });
+
+        if (currentAudio === url && !player.paused) {
+            player.pause();
+            return;
+        }
+
+        player.src = url;
+        player.play().catch(e => {
+            console.error("Errore play:", e);
+            alert("Impossibile riprodurre l'audio.\n1. Verifica che il link sia un MP3 diretto (non pagina Dropbox/Drive).\n2. Verifica che inizi con https://");
+        });
+        currentAudio = url;
+        
+        document.getElementById('player-title').innerText = title;
+        bar.classList.add('visible');
+        
+        btn.classList.add('playing');
+        btn.innerHTML = '<i class="fas fa-pause"></i>';
+
+        player.onended = () => {
+            btn.classList.remove('playing');
+            btn.innerHTML = '<i class="fas fa-play"></i>';
+        };
+    }
+
+    function toggleCart(id) {
+        const song = allSongs.find(s => s.id === id);
+        const index = cart.findIndex(c => c.id === id);
+        if (index > -1) {
+            cart.splice(index, 1);
+        } else {
+            cart.push(song);
+        }
+        updateCartUI();
+        renderPage(); 
+    }
+
+    function updateCartUI() {
+        const countSpan = document.getElementById('cart-count');
+        countSpan.innerText = cart.length;
+        if(cart.length > 0) {
+            countSpan.style.background = "#fff";
+            countSpan.style.color = "#000";
+        }
+        const total = cart.reduce((acc, item) => acc + parseFloat(item.prezzo), 0);
+        document.getElementById('cart-total').innerText = total.toFixed(2) + '€';
+    }
+
+    function checkout() {
+        if (cart.length === 0) return alert("Il carrello è vuoto");
+        
+        const btn = document.querySelector('.cart-btn');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Attendi...';
+
+        // 1. Prepariamo i dati minimi (ID, Titolo, Prezzo)
+        const simplifiedCart = cart.map(c => ({
+            id: c.id,
+            title: c.titolo,
+            price: c.prezzo
+        }));
+
+        // 2. Convertiamo in stringa JSON
+        const cartString = JSON.stringify(simplifiedCart);
+
+        // 3. Costruiamo l'URL del Webhook n8n con i dati appesi come parametro query
+        // NOTA: encodeURIComponent è essenziale per evitare errori URL
+        const redirectUrl = `${N8N_CHECKOUT_URL}?cart=${encodeURIComponent(cartString)}`;
+
+        // 4. Reindirizziamo l'utente (n8n poi lo manderà a Stripe)
+        window.location.href = redirectUrl;
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('status') === 'success') {
+        cart = []; 
+        updateCartUI();
+        const msg = document.createElement('div');
+        msg.style.cssText = "position:fixed; top:20%; left:50%; transform:translate(-50%,-50%); background:#111; color:#00e1ff; padding:30px; border:2px solid #00e1ff; border-radius:15px; text-align:center; z-index:1000; box-shadow:0 0 50px rgba(0,225,255,0.3);";
+        msg.innerHTML = "<h2><i class='fas fa-check-circle'></i> Pagamento Riuscito!</h2><br><p style='color:white'>Riceverai a breve un'email con i link per scaricare i tuoi brani.</p><br><button onclick='this.parentElement.remove()' style='background:#00e1ff; color:black; border:none; padding:10px 20px; font-weight:bold; cursor:pointer; border-radius:5px;'>Chiudi</button>";
+        document.body.appendChild(msg);
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    init();
+</script>
+
+</body>
+</html>
