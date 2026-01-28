@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <!-- Google Analytics -->
+  <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-KD9H9P2RKT"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -12,17 +12,17 @@
 <meta charset="UTF-8" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <link rel="preload" as="image" href="logo6.jpg">        
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Fausto Fusetti - FF Musica</title>
 <link rel="icon" href="favicon.ico?v=2" sizes="any" type="image/x-icon">
 <link rel="icon" href="icon-192.png?v=2" sizes="192x192" type="image/png">
-<!-- FONT AWESOME STABILE -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@700&amp;family=Montserrat:wght@400;500;600&amp;display=swap" rel="stylesheet">
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
 <style>
-/* STILI */
+/* CSS STYLES */
 :root { --primary-color: #0693e3; --secondary-color: #e3a006; --jingle-color: #00e1ff; --text-gray: #aaa; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
@@ -70,7 +70,7 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
 .filter-group .filter-label { text-align: left; margin-bottom: 8px; font-weight: 500; color: var(--primary-color); }
 .filter-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
 .filter-btn { padding: 8px 14px; border: 1px solid #555; border-radius: 20px; background: none; color: #f0f0f0; cursor: pointer; font-size: 0.9em; transition: all 0.2s ease; }
-.filter-btn.active { background-color: var(--primary-color); border-color: var(--primary-color); color: white; }
+.filter-btn.active { background: var(--primary-color); border-color: var(--primary-color); color: white; }
 
 /* VIEW SWITCHER */
 .view-switcher { display: flex; justify-content: center; margin-bottom: 20px; gap: 10px; border-bottom: 1px solid #333; padding-bottom: 15px; }
@@ -84,7 +84,9 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
 .song-item:last-child { border-bottom: none; }
 .song-item:hover { background-color: rgba(255,255,255,0.05); }
 .song-item.playing { background-color: rgba(6, 147, 227, 0.2); border-left: 3px solid var(--primary-color); }
-.song-item.playing .play-btn { background-color: var(--primary-color); color: white; }
+/* Importante: Icona Play cambia colore quando attiva */
+.song-item.playing .play-btn i { color: white; } 
+.song-item.playing .play-btn { background-color: var(--primary-color); border-color: var(--primary-color); }
 
 /* DETTAGLI BRANO */
 .song-info { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; margin: 0 10px; }
@@ -156,7 +158,7 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
         <img src="logo6.jpg" alt="Logo FF Musica" class="profile-logo">
         <br><br><br><br>
         <h1>Fausto Fusetti</h1>
-        <p class="bio">Piacere, sono Fausto Fusetti, in arte <strong>Fausto Miriani</strong>. Dal 1988 la musica è la mia vita.<br>Oggi metto questa esperienza al tuo servizio per creare <strong>canzoni e libri personalizzati</strong>.</p>
+        <p class="bio">Piacere, sono Fausto Fusetti, in arte <strong>Fausto Miriani</strong>. Dal 1988 la musica è la mia vita: sono polistrumentista, cantante, compositore, paroliere e anche autore di libri.<br><br>La mia carriera è stata un viaggio entusiasmante sui palchi più prestigiosi, collaborando con icone come <strong>Fred Bongusto, Peppino di Capri e Califano</strong>.<br><br>Oggi metto questa esperienza al tuo servizio per creare <strong>canzoni e libri personalizzati</strong>, e continuo a investire sul futuro.</p>
 
         <!-- MENU PULSANTI -->
         <a href="https://rickym2025.github.io/jukebox-ff/" target="_blank" class="button jukebox"><i class="fas fa-compact-disc"></i> Area Riservata Jukebox</a>
@@ -215,7 +217,8 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
-    // === URL GOOGLE SCRIPT (INSERISCI IL TUO NUOVO URL QUI) ===
+    // === URL GOOGLE SCRIPT ===
+    // INSERISCI QUI IL TUO NUOVO URL DEL DEPLOYMENT (finisce con /exec)
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxBC8jTB6iaaqaSE8LcGCH6gG_X0edt5xooY4pr7RgXlQCD2oDr7OaFA65W0rla_pbX/exec'; 
     
     // WEBHOOK N8N
@@ -243,7 +246,6 @@ document.addEventListener('DOMContentLoaded', function() {
         setupChatbot();
     }
 
-    // --- MODALI ---
     function setupModals() {
         const openModal = (id) => {
             mainPlayer.pause();
@@ -302,31 +304,41 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- CARICAMENTO DATI ---
     async function loadMusicFromApi() {
-        // Usa timestamp per evitare cache browser
-        const scriptUrl = `${GOOGLE_SCRIPT_URL}?source=catalogo&t=${Date.now()}`;
+        const CACHE_KEY = 'ff_catalog_v17_playfix'; 
+        const cached = localStorage.getItem(CACHE_KEY);
         
+        if(cached) {
+            try {
+                const parsed = JSON.parse(cached);
+                if(new Date().getTime() - parsed.ts < 3600000) {
+                    appState.allSongs = parsed.data;
+                    renderCatalog();
+                    return;
+                }
+            } catch(e) {}
+        }
+
         songListContainer.innerHTML = '<p style="color:#aaa"><i class="fas fa-spinner fa-spin"></i> Caricamento...</p>';
         
         try {
-            const res = await fetch(scriptUrl);
-            if (!res.ok) throw new Error("Errore di rete. Controlla deployment script.");
+            const res = await fetch(`${GOOGLE_SCRIPT_URL}?source=catalogo&t=${Date.now()}`);
             const data = await res.json();
             
             if(data.status === 'error') throw new Error(data.message);
             
             if(Array.isArray(data)) {
                 appState.allSongs = data;
+                localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: data }));
                 renderCatalog();
             } else {
                 throw new Error("Formato dati non valido");
             }
         } catch(e) {
             console.error(e);
-            songListContainer.innerHTML = `<p style='color:#ff5555'>Errore catalogo: ${e.message}</p>`;
+            songListContainer.innerHTML = `<p style='color:#ff5555'>Errore caricamento dati.<br>Verifica la connessione.</p>`;
         }
     }
 
-    // --- RENDERIZZAZIONE ---
     window.switchView = function(mode) {
         appState.viewMode = mode;
         document.getElementById('btn-list-view').classList.toggle('active', mode === 'list');
@@ -335,8 +347,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     function renderCatalog() {
-        // FIX: Genera filtri SOLO la prima volta o se vuoti
-        if(filterContainer.innerHTML === '') createFilterButtons();
+        createFilterButtons();
 
         const filtered = appState.allSongs.filter(s => {
             const get = (k) => { 
@@ -375,10 +386,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const card = document.createElement('div');
                 card.className = 'album-card';
-                // FIX IMMAGINE: usa onerror per fallback
+                // FIX: Immagine con referrer policy
                 card.innerHTML = `
                     <div class="album-header" onclick="this.parentElement.classList.toggle('open')">
-                        <img src="${cover}" class="album-cover" onerror="this.src='logo6.jpg'; this.onerror=null;">
+                        <img src="${cover}" class="album-cover" referrerpolicy="no-referrer" onerror="this.src='logo6.jpg'; this.onerror=null;">
                         <div class="album-info">
                             <h3 class="album-title">${name}</h3>
                             <span class="album-count">${songs.length} brani</span>
@@ -407,7 +418,6 @@ document.addEventListener('DOMContentLoaded', function() {
             vidBtn = `<div class="video-btn" onclick="openVideo('${vidLink}', event)"><i class="fas fa-video"></i></div>`;
         }
 
-        // FIX: Genere visibile
         div.innerHTML = `
             <div class="song-info">
                 <span class="song-title">${get('Titolo') || 'Senza Titolo'}</span>
@@ -451,29 +461,58 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.applyFilter = function(type, val, btn) {
         appState.currentFilters[type] = val;
-        // FIX: Seleziona solo i bottoni dentro lo stesso gruppo per rimuovere active
-        const group = btn.closest('.filter-group');
-        group.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         renderCatalog();
     };
 
-    // --- PLAYER & TRACKING ---
+    // --- PLAYER & TRACKING (PAUSA AGGIUNTA) ---
     window.playSong = function(url, title, btn) {
-        if(appState.currentPlayingItem) appState.currentPlayingItem.classList.remove('playing');
+        // Se clicco sullo stesso brano
+        if(appState.currentPlayingItem === btn.closest('.song-item')) {
+            if(mainPlayer.paused) {
+                mainPlayer.play();
+                btn.innerHTML = '<i class="fas fa-pause"></i>';
+                btn.closest('.song-item').classList.add('playing');
+            } else {
+                mainPlayer.pause();
+                btn.innerHTML = '<i class="fas fa-play"></i>';
+                btn.closest('.song-item').classList.remove('playing');
+            }
+            return;
+        }
+
+        // Se clicco su un brano diverso, resetta il vecchio
+        if(appState.currentPlayingItem) {
+            appState.currentPlayingItem.classList.remove('playing');
+            appState.currentPlayingItem.querySelector('.play-btn').innerHTML = '<i class="fas fa-play"></i>';
+        }
+        
+        // Avvia il nuovo
         const row = btn.closest('.song-item');
         row.classList.add('playing');
         appState.currentPlayingItem = row;
+        btn.innerHTML = '<i class="fas fa-pause"></i>'; // Icona Pausa
+
         mainPlayer.src = url;
         mainPlayer.play();
 
-        // FIX: Tracking Play
+        // Tracking
         fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
             mode: 'no-cors', 
             body: JSON.stringify({ action: 'increment', title: title })
         }).catch(e => console.log("Tracking error", e));
     };
+
+    // Reset icona alla fine del brano
+    mainPlayer.addEventListener('ended', () => {
+        if(appState.currentPlayingItem) {
+            appState.currentPlayingItem.classList.remove('playing');
+            appState.currentPlayingItem.querySelector('.play-btn').innerHTML = '<i class="fas fa-play"></i>';
+            appState.currentPlayingItem = null;
+        }
+    });
 
     window.openVideo = function(url, e) {
         e.stopPropagation();
@@ -491,7 +530,7 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
 
-    // --- CHATBOT ORIGINALE ---
+    // --- CHATBOT ---
     function setupChatbot() {
         const c = document.getElementById('chatbot-container');
         c.innerHTML = `
@@ -551,7 +590,7 @@ document.addEventListener('DOMContentLoaded', function() {
             div.querySelectorAll('.chatbot-song-link').forEach(link => {
                 link.onclick = (e) => {
                     e.preventDefault();
-                    playSong(link.dataset.src, link.innerText, document.body);
+                    playSong(link.dataset.src, link.innerText, document.body); // Play dummy
                 };
             });
         }
