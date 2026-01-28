@@ -550,18 +550,16 @@ if (cover.includes('suno.ai') && cover.includes('?')) {
     }
 
     // ============================================================
-    //  LOGICA CHATBOT COMPLETA (UI + CHIPS + MEMORIA SESSIONE)
+    //  LOGICA CHATBOT CORRETTA (FIX CSS IMMAGINE + SESSIONE)
     // ============================================================
 
-    // 1. GENERAZIONE ID SESSIONE (MEMORIA)
-    // Questo permette a n8n di ricordare cosa è stato detto prima.
-    // Lo salviamo nel browser così se l'utente ricarica la pagina, la chat continua.
-    let chatSessionId = localStorage.getItem('ff_chat_session_id');
-    if (!chatSessionId) {
-        // Crea un ID casuale tipo "sess_178234_abcde"
-        chatSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-        localStorage.setItem('ff_chat_session_id', chatSessionId);
+    // FIX 1: Definiamo l'ID globalmente su window per essere sicuri al 100% che sendMsg lo veda
+    window.chatSessionId = localStorage.getItem('ff_chat_session_id');
+    if (!window.chatSessionId) {
+        window.chatSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+        localStorage.setItem('ff_chat_session_id', window.chatSessionId);
     }
+    console.log("Chat Session ID attivo:", window.chatSessionId); // Controllo in console
 
     function setupChatbot() {
         const c = document.getElementById('chatbot-container');
@@ -575,10 +573,37 @@ if (cover.includes('suno.ai') && cover.includes('?')) {
                 #chatbot-window-wrapper.visible { transform: translateY(0); opacity: 1; pointer-events: all; }
                 
                 #chatbot-window { display:flex; flex-direction:column; height:100%; }
-                .chatbot-header { background:var(--primary-color); color:white; padding:15px; text-align:center; font-weight:bold; position:relative; }
-                .chatbot-header-logo { width:60px; height:60px; border-radius:50%; border:3px solid white; position:absolute; top:40px; left:50%; transform:translateX(-50%); box-shadow:0 2px 5px rgba(0,0,0,0.2); object-fit:cover; background: #000; }
                 
-                .chatbot-messages { flex-grow:1; padding:15px; padding-top:40px; overflow-y:auto; background:#f9f9f9; color:#333; text-align:left; display: flex; flex-direction: column; gap: 10px; }
+                /* FIX 2: Header ridisegnato con Flexbox. Immagine allineata correttamente */
+                .chatbot-header { 
+                    background:var(--primary-color); 
+                    color:white; 
+                    padding: 15px; 
+                    display: flex; 
+                    align-items: center; 
+                    gap: 15px; /* Spazio tra foto e testo */
+                    border-bottom: 1px solid rgba(0,0,0,0.1);
+                }
+                
+                /* L'immagine ora è contenuta nella barra, non galleggia */
+                .chatbot-header-logo { 
+                    width: 45px; 
+                    height: 45px; 
+                    border-radius: 50%; 
+                    border: 2px solid white; 
+                    object-fit: cover; 
+                    background: #000;
+                    flex-shrink: 0;
+                }
+
+                .chatbot-header-text {
+                    flex-grow: 1;
+                    font-weight: bold;
+                    font-size: 1.1em;
+                    text-align: left;
+                }
+                
+                .chatbot-messages { flex-grow:1; padding:15px; overflow-y:auto; background:#f9f9f9; color:#333; text-align:left; display: flex; flex-direction: column; gap: 10px; }
                 
                 .chatbot-input { border-top:1px solid #ddd; padding:10px; display:flex; background:white; }
                 .chatbot-input input { flex-grow:1; border:none; padding:10px; outline:none; font-size:1rem; }
@@ -589,11 +614,10 @@ if (cover.includes('suno.ai') && cover.includes('?')) {
                 .msg.bot { background:rgba(6, 147, 227, 0.15); border-bottom-left-radius: 2px; align-self:flex-start; margin-right:auto; color: #333; }
                 .msg.user { background:var(--primary-color); color:white; border-bottom-right-radius: 2px; align-self:flex-end; margin-left:auto; }
                 
-                /* Link canzoni nel bot */
                 .chatbot-song-link { display:inline-block; background: white; border: 1px solid var(--primary-color); color:var(--primary-color); text-decoration:none; margin-top:5px; padding: 5px 10px; border-radius: 15px; font-weight: 500; font-size: 0.9em; transition: 0.2s; cursor: pointer; }
                 .chatbot-song-link:hover { background: var(--primary-color); color: white; }
 
-                /* CHIPS (Pulsanti rapidi) */
+                /* CHIPS */
                 .chips-container { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
                 .chat-chip { background: #fff; border: 1px solid var(--secondary-color); color: #333; padding: 6px 12px; border-radius: 20px; font-size: 0.85em; cursor: pointer; transition: 0.2s; white-space: nowrap; }
                 .chat-chip:hover { background: var(--secondary-color); color: white; border-color: var(--secondary-color); }
@@ -605,10 +629,11 @@ if (cover.includes('suno.ai') && cover.includes('?')) {
             <div id="chatbot-window-wrapper">
                 <div id="chatbot-window">
                     <div class="chatbot-header">
-                        Fausto AI
-                        <span onclick="toggleChat()" style="float:right; cursor:pointer; font-size:1.5em;">&times;</span>
+                        <img src="fausto_immagine.jpg" class="chatbot-header-logo" onerror="this.src='logo6.jpg'">
+                        <div class="chatbot-header-text">Fausto AI</div>
+                        <span onclick="toggleChat()" style="cursor:pointer; font-size:1.5em;">&times;</span>
                     </div>
-                    <img src="fausto_immagine.jpg" class="chatbot-header-logo" onerror="this.src='logo6.jpg'">
+                    
                     <div id="chatbot-messages" class="chatbot-messages"></div>
                     <div class="chatbot-input">
                         <input type="text" id="chat-input" placeholder="Scrivi o scegli un'opzione..." onkeypress="if(event.key==='Enter') sendMsg()">
@@ -632,7 +657,6 @@ if (cover.includes('suno.ai') && cover.includes('?')) {
             w.style.display = 'flex';
             setTimeout(() => { w.classList.add('visible'); }, 10);
             
-            // Messaggi di benvenuto (solo la prima volta)
             if (!isChatInitialized) {
                 isChatInitialized = true;
                 setTimeout(() => {
@@ -686,7 +710,7 @@ if (cover.includes('suno.ai') && cover.includes('?')) {
         }
     };
 
-    // FUNZIONE SENDMSG AGGIORNATA CON SESSION ID
+    // FIX 3: La funzione usa window.chatSessionId che siamo sicuri esista
     window.sendMsg = async function(textOverride) {
         const input = document.getElementById('chat-input');
         const text = textOverride || input.value;
@@ -696,7 +720,6 @@ if (cover.includes('suno.ai') && cover.includes('?')) {
         input.value = ''; 
         addMsg(text, 'user');
 
-        // Loading
         const loadingId = 'loading-' + Date.now();
         const loadingDiv = document.createElement('div');
         loadingDiv.id = loadingId;
@@ -706,8 +729,10 @@ if (cover.includes('suno.ai') && cover.includes('?')) {
         document.getElementById('chatbot-messages').scrollTop = document.getElementById('chatbot-messages').scrollHeight;
 
         try {
-            // QUI INVIO IL SESSION ID AL WEBHOOK
-            const webhookUrl = `${CHATBOT_WEBHOOK}?user_message=${encodeURIComponent(text)}&sessionId=${chatSessionId}`;
+            // Log per debug (vedi nella console del browser se l'ID c'è)
+            console.log("Invio messaggio con ID:", window.chatSessionId);
+
+            const webhookUrl = `${CHATBOT_WEBHOOK}?user_message=${encodeURIComponent(text)}&sessionId=${window.chatSessionId}`;
             
             const res = await fetch(webhookUrl, { method:'POST' });
             const data = await res.json();
@@ -716,6 +741,7 @@ if (cover.includes('suno.ai') && cover.includes('?')) {
             addMsg(data.response, 'bot');
             
         } catch(e) {
+            console.error(e);
             document.getElementById(loadingId).remove();
             addMsg("Mi dispiace, la mia connessione musicale ha avuto un intoppo. Riprova! 🎵", 'bot');
         }
