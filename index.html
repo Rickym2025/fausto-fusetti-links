@@ -383,7 +383,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
             for(const [name, songs] of Object.entries(albums)) {
                 const getFirst = (k) => { const key = Object.keys(songs[0]).find(x => x.toLowerCase() === k.toLowerCase()); return key ? songs[0][key] : ""; };
-                const cover = getFirst('Link_Thumbnail') || 'logo6.jpg';
+                let cover = getFirst('Link_Thumbnail') || 'logo6.jpg';
+
+// FIX: Rimuove i parametri extra dai link Suno che spesso causano errori 403
+if (cover.includes('suno.ai') && cover.includes('?')) {
+    cover = cover.split('?')[0]; 
+}
 
                 const card = document.createElement('div');
                 card.className = 'album-card';
