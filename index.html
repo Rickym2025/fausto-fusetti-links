@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <!-- Google tag (gtag.js) -->
+  <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-KD9H9P2RKT"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -10,31 +10,45 @@
   gtag('config', 'G-KD9H9P2RKT');
 </script>
 <meta charset="UTF-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="image" href="logo6.jpg">        
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Fausto Fusetti - FF Musica</title>
 <link rel="icon" href="favicon.ico?v=2" sizes="any" type="image/x-icon">
 <link rel="icon" href="icon-192.png?v=2" sizes="192x192" type="image/png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
+<!-- FONT AWESOME STABILE -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@700&amp;family=Montserrat:wght@400;500;600&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
+
 <style>
-/* CSS STYLES */
+/* STILI */
 :root { --primary-color: #0693e3; --secondary-color: #e3a006; --jingle-color: #00e1ff; --text-gray: #aaa; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { font-family: 'Montserrat', sans-serif; color: #f0f0f0; text-align: center; background-color: #121212; }
+body { font-family: 'Montserrat', sans-serif; color: #f0f0f0; text-align: center; }
 #background-video { position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; width: auto; height: auto; z-index: -100; object-fit: cover; filter: brightness(0.5); }
 .container-wrapper { min-height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center; padding: 20px; padding-bottom: 60px; }
 .container { position: relative; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(10px); padding: 90px 30px 40px 30px; max-width: 680px; width: 100%; margin-top: 100px; margin-bottom: 40px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); z-index: 2; }
 @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
 /* PULSANTE AUDIO */
-#audio-cta { position: absolute; top: -25px; right: -20px; display: flex; align-items: center; background-color: rgba(6, 147, 227, 0.2); border: 1px solid var(--primary-color); padding: 8px 15px; border-radius: 30px; backdrop-filter: blur(5px); animation: pulse 2.5s infinite ease-in-out; z-index: 100; cursor: pointer; visibility: visible; }
+#audio-cta { 
+    position: absolute; top: -25px; right: -20px; 
+    display: flex; align-items: center; 
+    background-color: rgba(6, 147, 227, 0.2); 
+    border: 1px solid var(--primary-color); 
+    padding: 8px 15px; border-radius: 30px; 
+    backdrop-filter: blur(5px); 
+    animation: pulse 2.5s infinite ease-in-out; 
+    z-index: 100; cursor: pointer; visibility: visible; 
+}
 #audio-cta .cta-text { margin-right: 10px; font-weight: 500; color: #f0f0f0; font-size: 0.9em; }
 #mute-btn-icon { background: white; color: var(--primary-color); border-radius: 50%; width: 30px; height: 30px; font-size: 0.9em; display: flex; align-items: center; justify-content: center; }
 
-@keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
 .profile-logo { width: 150px; height: 150px; border-radius: 50%; border: 4px solid rgba(255, 255, 255, 0.9); box-shadow: 0 0 20px var(--primary-color); object-fit: cover; position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); animation: spin 15s linear infinite; }
+@keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+
 h1 { font-size: 1.8em; margin-bottom: 15px; font-weight: 500; }
 p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1; }
 .button { display: block; margin: 18px auto; padding: 16px 30px; border: 2px solid var(--primary-color); border-radius: 30px; text-decoration: none; color: #f0f0f0; font-size: 1.2em; font-weight: 500; transition: all 0.3s ease; background-color: transparent; cursor: pointer; }
@@ -56,7 +70,7 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
 .filter-group .filter-label { text-align: left; margin-bottom: 8px; font-weight: 500; color: var(--primary-color); }
 .filter-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
 .filter-btn { padding: 8px 14px; border: 1px solid #555; border-radius: 20px; background: none; color: #f0f0f0; cursor: pointer; font-size: 0.9em; transition: all 0.2s ease; }
-.filter-btn.active { background: var(--primary-color); border-color: var(--primary-color); color: white; }
+.filter-btn.active { background-color: var(--primary-color); border-color: var(--primary-color); color: white; }
 
 /* VIEW SWITCHER */
 .view-switcher { display: flex; justify-content: center; margin-bottom: 20px; gap: 10px; border-bottom: 1px solid #333; padding-bottom: 15px; }
@@ -142,7 +156,7 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
         <img src="logo6.jpg" alt="Logo FF Musica" class="profile-logo">
         <br><br><br><br>
         <h1>Fausto Fusetti</h1>
-        <p class="bio">Piacere, sono Fausto Fusetti, in arte <strong>Fausto Miriani</strong>. Dal 1988 la musica è la mia vita: sono polistrumentista, cantante, compositore, paroliere e anche autore di libri.<br><br>La mia carriera è stata un viaggio entusiasmante sui palchi più prestigiosi, collaborando con icone come <strong>Fred Bongusto, Peppino di Capri e Califano</strong>.<br><br>Oggi metto questa esperienza al tuo servizio per creare <strong>canzoni e libri personalizzati</strong>, e continuo a investire sul futuro.</p>
+        <p class="bio">Piacere, sono Fausto Fusetti, in arte <strong>Fausto Miriani</strong>. Dal 1988 la musica è la mia vita.<br>Oggi metto questa esperienza al tuo servizio per creare <strong>canzoni e libri personalizzati</strong>.</p>
 
         <!-- MENU PULSANTI -->
         <a href="https://rickym2025.github.io/jukebox-ff/" target="_blank" class="button jukebox"><i class="fas fa-compact-disc"></i> Area Riservata Jukebox</a>
@@ -220,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const filterContainer = document.getElementById('filter-container');
     const bgAudio = document.getElementById('background-audio');
 
-    // --- SETUP ---
+    // --- INIT ---
     function init() {
         setupModals();
         setupAudio();
@@ -229,6 +243,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setupChatbot();
     }
 
+    // --- MODALI ---
     function setupModals() {
         const openModal = (id) => {
             mainPlayer.pause();
@@ -251,6 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
         );
     }
 
+    // --- AUDIO SOTTOFONDO ---
     function setupAudio() {
         const overlay = document.getElementById('audio-start-overlay');
         const btn = document.getElementById('start-audio-btn');
@@ -284,40 +300,33 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // --- CARICAMENTO DATI ---
     async function loadMusicFromApi() {
-        const CACHE_KEY = 'ff_catalog_v16_final'; // Nuova chiave per forzare refresh
-        const cached = localStorage.getItem(CACHE_KEY);
+        // Usa timestamp per evitare cache browser
+        const scriptUrl = `${GOOGLE_SCRIPT_URL}?source=catalogo&t=${Date.now()}`;
         
-        if(cached) {
-            try {
-                const parsed = JSON.parse(cached);
-                if(new Date().getTime() - parsed.ts < 3600000) {
-                    appState.allSongs = parsed.data;
-                    renderCatalog();
-                    return;
-                }
-            } catch(e) {}
-        }
-
         songListContainer.innerHTML = '<p style="color:#aaa"><i class="fas fa-spinner fa-spin"></i> Caricamento...</p>';
         
         try {
-            const res = await fetch(`${GOOGLE_SCRIPT_URL}?source=catalogo&t=${Date.now()}`);
+            const res = await fetch(scriptUrl);
+            if (!res.ok) throw new Error("Errore di rete. Controlla deployment script.");
             const data = await res.json();
+            
+            if(data.status === 'error') throw new Error(data.message);
             
             if(Array.isArray(data)) {
                 appState.allSongs = data;
-                localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: data }));
                 renderCatalog();
             } else {
                 throw new Error("Formato dati non valido");
             }
         } catch(e) {
             console.error(e);
-            songListContainer.innerHTML = `<p style='color:#ff5555'>Errore caricamento dati.<br>Verifica la connessione o riprova più tardi.</p>`;
+            songListContainer.innerHTML = `<p style='color:#ff5555'>Errore catalogo: ${e.message}</p>`;
         }
     }
 
+    // --- RENDERIZZAZIONE ---
     window.switchView = function(mode) {
         appState.viewMode = mode;
         document.getElementById('btn-list-view').classList.toggle('active', mode === 'list');
@@ -326,7 +335,8 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     function renderCatalog() {
-        createFilterButtons();
+        // FIX: Genera filtri SOLO la prima volta o se vuoti
+        if(filterContainer.innerHTML === '') createFilterButtons();
 
         const filtered = appState.allSongs.filter(s => {
             const get = (k) => { 
@@ -397,7 +407,7 @@ document.addEventListener('DOMContentLoaded', function() {
             vidBtn = `<div class="video-btn" onclick="openVideo('${vidLink}', event)"><i class="fas fa-video"></i></div>`;
         }
 
-        // FIX: Genere visibile anche in lista
+        // FIX: Genere visibile
         div.innerHTML = `
             <div class="song-info">
                 <span class="song-title">${get('Titolo') || 'Senza Titolo'}</span>
@@ -439,10 +449,11 @@ document.addEventListener('DOMContentLoaded', function() {
         return h;
     }
 
-    // FIX: Funzione globale su window per onclick
     window.applyFilter = function(type, val, btn) {
         appState.currentFilters[type] = val;
-        btn.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        // FIX: Seleziona solo i bottoni dentro lo stesso gruppo per rimuovere active
+        const group = btn.closest('.filter-group');
+        group.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         renderCatalog();
     };
