@@ -486,8 +486,8 @@ if (cover.includes('suno.ai') && cover.includes('?')) {
     };
 
     // --- PLAYER & TRACKING (PAUSA AGGIUNTA) ---
-    window.playSong = function(url, title, btn) {
-        // Se clicco sullo stesso brano
+window.playSong = function(url, title, btn) {
+        // SCENARIO 1: Clicco sullo stesso brano (Pausa/Riprendi)
         if(appState.currentPlayingItem === btn.closest('.song-item')) {
             if(mainPlayer.paused) {
                 mainPlayer.play();
@@ -501,27 +501,38 @@ if (cover.includes('suno.ai') && cover.includes('?')) {
             return;
         }
 
-        // Se clicco su un brano diverso, resetta il vecchio
+        // SCENARIO 2: Clicco su un brano diverso (Nuovo Play)
+        
+        // Resetta il brano precedente (se c'era)
         if(appState.currentPlayingItem) {
             appState.currentPlayingItem.classList.remove('playing');
             appState.currentPlayingItem.querySelector('.play-btn').innerHTML = '<i class="fas fa-play"></i>';
         }
         
-        // Avvia il nuovo
+        // Imposta grafica nuovo brano
         const row = btn.closest('.song-item');
         row.classList.add('playing');
         appState.currentPlayingItem = row;
         btn.innerHTML = '<i class="fas fa-pause"></i>'; // Icona Pausa
 
+        // Avvia audio
         mainPlayer.src = url;
         mainPlayer.play();
 
-        // Tracking
+        // --- TRACKING 1: GOOGLE SHEET (Contatore ascolti) ---
         fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
             mode: 'no-cors', 
             body: JSON.stringify({ action: 'increment', title: title })
-        }).catch(e => console.log("Tracking error", e));
+        }).catch(e => console.log("Tracking Sheet error", e));
+
+        // --- TRACKING 2: GOOGLE ANALYTICS (NUOVO) ---
+        // Invia l'evento 'song_play' con il titolo del brano
+        if (typeof gtag === 'function') {
+            gtag('event', 'song_play', {
+                'song_title': title
+            });
+        }
     };
 
     // Reset icona alla fine del brano
