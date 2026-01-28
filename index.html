@@ -10,6 +10,7 @@
   gtag('config', 'G-KD9H9P2RKT');
 </script>
 <meta charset="UTF-8" />
+<meta name="referrer" content="no-referrer" />  
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
@@ -388,16 +389,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 card.className = 'album-card';
                 // FIX: Immagine con referrer policy
                 card.innerHTML = `
-                    <div class="album-header" onclick="this.parentElement.classList.toggle('open')">
-                        <img src="${cover}" class="album-cover" referrerpolicy="no-referrer" onerror="this.src='logo6.jpg'; this.onerror=null;">
-                        <div class="album-info">
-                            <h3 class="album-title">${name}</h3>
-                            <span class="album-count">${songs.length} brani</span>
-                        </div>
-                        <i class="fas fa-chevron-down album-toggle-icon"></i>
-                    </div>
-                    <div class="album-tracks"></div>
-                `;
+    <div class="album-header" onclick="this.parentElement.classList.toggle('open')">
+        <img src="${cover}" class="album-cover" 
+             referrerpolicy="no-referrer" 
+             onerror="this.onerror=null; this.src='logo6.jpg';">
+        <div class="album-info">
+            <h3 class="album-title">${name}</h3>
+            <span class="album-count">${songs.length} brani</span>
+        </div>
+        <i class="fas fa-chevron-down album-toggle-icon"></i>
+    </div>
+    <div class="album-tracks"></div>
+`;
                 
                 const trackContainer = card.querySelector('.album-tracks');
                 songs.forEach(s => trackContainer.appendChild(createSongRow(s)));
@@ -452,18 +455,29 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderFilterGroup(label, type, values) {
+        // Controllo quale filtro è attivo in questo momento
+        const currentVal = appState.currentFilters[type];
+        
         let h = `<div class="filter-group"><div class="filter-label">${label}</div><div class="filter-buttons">`;
-        h += `<button class="filter-btn active" onclick="applyFilter('${type}', 'all', this)">Tutti</button>`;
-        values.forEach(v => h += `<button class="filter-btn" onclick="applyFilter('${type}', '${v}', this)">${v}</button>`);
+        
+        // Pulsante Tutti: attivo se il filtro corrente è 'all'
+        const allActive = currentVal === 'all' ? 'active' : '';
+        h += `<button class="filter-btn ${allActive}" onclick="applyFilter('${type}', 'all')">Tutti</button>`;
+        
+        values.forEach(v => {
+            // Pulsante specifico: attivo se corrisponde al valore corrente
+            const isActive = currentVal === v ? 'active' : '';
+            h += `<button class="filter-btn ${isActive}" onclick="applyFilter('${type}', '${v}')">${v}</button>`;
+        });
+        
         h += `</div></div>`;
         return h;
     }
 
-    window.applyFilter = function(type, val, btn) {
+    // Semplifichiamo anche applyFilter (rimuoviamo la manipolazione DOM manuale inutile)
+    window.applyFilter = function(type, val) {
         appState.currentFilters[type] = val;
-        btn.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        renderCatalog();
+        renderCatalog(); // Questo ora ricreerà i bottoni con la classe giusta
     };
 
     // --- PLAYER & TRACKING (PAUSA AGGIUNTA) ---
