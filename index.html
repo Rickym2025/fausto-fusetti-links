@@ -10,10 +10,6 @@
   gtag('config', 'G-KD9H9P2RKT');
 </script>
 <meta charset="UTF-8" />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://cdnjs.cloudflare.com">
-<link rel="preload" as="image" href="logo6.jpg">        
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Fausto Fusetti - FF Musica</title>
 <link rel="icon" href="favicon.ico?v=2" sizes="any" type="image/x-icon">
@@ -26,29 +22,19 @@
 :root { --primary-color: #0693e3; --secondary-color: #e3a006; --jingle-color: #00e1ff; --text-gray: #aaa; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { font-family: 'Montserrat', sans-serif; color: #f0f0f0; text-align: center; }
+body { font-family: 'Montserrat', sans-serif; color: #f0f0f0; text-align: center; background-color: #121212; }
 #background-video { position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; width: auto; height: auto; z-index: -100; object-fit: cover; filter: brightness(0.5); }
 .container-wrapper { min-height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center; padding: 20px; padding-bottom: 60px; }
 .container { position: relative; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(10px); padding: 90px 30px 40px 30px; max-width: 680px; width: 100%; margin-top: 100px; margin-bottom: 40px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); z-index: 2; }
 @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
 /* PULSANTE AUDIO */
-#audio-cta { 
-    position: absolute; top: -25px; right: -20px; 
-    display: flex; align-items: center; 
-    background-color: rgba(6, 147, 227, 0.2); 
-    border: 1px solid var(--primary-color); 
-    padding: 8px 15px; border-radius: 30px; 
-    backdrop-filter: blur(5px); 
-    animation: pulse 2.5s infinite ease-in-out; 
-    z-index: 100; cursor: pointer; visibility: visible; 
-}
+#audio-cta { position: absolute; top: -25px; right: -20px; display: flex; align-items: center; background-color: rgba(6, 147, 227, 0.2); border: 1px solid var(--primary-color); padding: 8px 15px; border-radius: 30px; backdrop-filter: blur(5px); animation: pulse 2.5s infinite ease-in-out; z-index: 100; cursor: pointer; visibility: visible; }
 #audio-cta .cta-text { margin-right: 10px; font-weight: 500; color: #f0f0f0; font-size: 0.9em; }
 #mute-btn-icon { background: white; color: var(--primary-color); border-radius: 50%; width: 30px; height: 30px; font-size: 0.9em; display: flex; align-items: center; justify-content: center; }
 
-.profile-logo { width: 150px; height: 150px; border-radius: 50%; border: 4px solid rgba(255, 255, 255, 0.9); box-shadow: 0 0 20px var(--primary-color); object-fit: cover; position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); animation: spin 15s linear infinite; }
 @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
-
+.profile-logo { width: 150px; height: 150px; border-radius: 50%; border: 4px solid rgba(255, 255, 255, 0.9); box-shadow: 0 0 20px var(--primary-color); object-fit: cover; position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); animation: spin 15s linear infinite; }
 h1 { font-size: 1.8em; margin-bottom: 15px; font-weight: 500; }
 p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1; }
 .button { display: block; margin: 18px auto; padding: 16px 30px; border: 2px solid var(--primary-color); border-radius: 30px; text-decoration: none; color: #f0f0f0; font-size: 1.2em; font-weight: 500; transition: all 0.3s ease; background-color: transparent; cursor: pointer; }
@@ -102,7 +88,7 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
 .album-card { background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 10px; margin-bottom: 15px; overflow: hidden; }
 .album-header { padding: 15px; background: rgba(0,0,0,0.3); display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #444; cursor: pointer; transition: background 0.3s; }
 .album-header:hover { background: rgba(255,255,255,0.08); }
-.album-cover { width: 60px; height: 60px; border-radius: 5px; object-fit: cover; background: #222; border: 1px solid #555; }
+.album-cover { width: 60px; height: 60px; border-radius: 5px; object-fit: cover; background: #222; border: 1px solid #555; flex-shrink: 0; }
 .album-info { text-align: left; flex-grow: 1; }
 .album-title { font-size: 1.2em; color: var(--primary-color); font-weight: bold; margin: 0; }
 .album-count { font-size: 0.9em; color: #888; }
@@ -215,8 +201,7 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
-    // === URL GOOGLE SCRIPT ===
-    // Assicurati che questo sia l'URL che hai copiato dall'ultimo "Deployment" -> "Nuova Versione"
+    // === URL GOOGLE SCRIPT (INSERISCI IL TUO NUOVO URL QUI) ===
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxBC8jTB6iaaqaSE8LcGCH6gG_X0edt5xooY4pr7RgXlQCD2oDr7OaFA65W0rla_pbX/exec'; 
     
     // WEBHOOK N8N
@@ -230,22 +215,20 @@ document.addEventListener('DOMContentLoaded', function() {
         isBgMusicMuted: true
     };
 
-    // ELEMENTI DOM
     const mainPlayer = document.getElementById('catalog-audio-player');
     const songListContainer = document.getElementById('song-list-container');
     const filterContainer = document.getElementById('filter-container');
     const bgAudio = document.getElementById('background-audio');
 
-    // --- INIT ---
+    // --- SETUP ---
     function init() {
         setupModals();
         setupAudio();
         setupVideoOverlay();
-        loadMusicFromApi(); // Carica catalogo
-        setupChatbot();     // Avvia Chatbot
+        loadMusicFromApi(); 
+        setupChatbot();
     }
 
-    // --- MODALI ---
     function setupModals() {
         const openModal = (id) => {
             mainPlayer.pause();
@@ -253,7 +236,6 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         const closeModal = (id) => {
             document.getElementById(id).style.display = 'none';
-            // Riprendi musica background solo se era attiva e non mutata
             if(!appState.isBgMusicMuted && bgAudio && bgAudio.paused) bgAudio.play().catch(()=>{});
         };
 
@@ -269,7 +251,6 @@ document.addEventListener('DOMContentLoaded', function() {
         );
     }
 
-    // --- AUDIO SOTTOFONDO ---
     function setupAudio() {
         const overlay = document.getElementById('audio-start-overlay');
         const btn = document.getElementById('start-audio-btn');
@@ -303,33 +284,40 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // --- CARICAMENTO DATI ---
     async function loadMusicFromApi() {
-        // Usa timestamp per evitare cache browser
-        const scriptUrl = `${GOOGLE_SCRIPT_URL}?source=catalogo&t=${Date.now()}`;
+        const CACHE_KEY = 'ff_catalog_v16_final'; // Nuova chiave per forzare refresh
+        const cached = localStorage.getItem(CACHE_KEY);
         
+        if(cached) {
+            try {
+                const parsed = JSON.parse(cached);
+                if(new Date().getTime() - parsed.ts < 3600000) {
+                    appState.allSongs = parsed.data;
+                    renderCatalog();
+                    return;
+                }
+            } catch(e) {}
+        }
+
         songListContainer.innerHTML = '<p style="color:#aaa"><i class="fas fa-spinner fa-spin"></i> Caricamento...</p>';
         
         try {
-            const res = await fetch(scriptUrl);
-            if (!res.ok) throw new Error("Errore di rete. Controlla deployment script.");
+            const res = await fetch(`${GOOGLE_SCRIPT_URL}?source=catalogo&t=${Date.now()}`);
             const data = await res.json();
-            
-            if(data.status === 'error') throw new Error(data.message);
             
             if(Array.isArray(data)) {
                 appState.allSongs = data;
+                localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: data }));
                 renderCatalog();
             } else {
                 throw new Error("Formato dati non valido");
             }
         } catch(e) {
             console.error(e);
-            songListContainer.innerHTML = `<p style='color:#ff5555'>Errore catalogo: ${e.message}</p>`;
+            songListContainer.innerHTML = `<p style='color:#ff5555'>Errore caricamento dati.<br>Verifica la connessione o riprova più tardi.</p>`;
         }
     }
 
-    // --- RENDERIZZAZIONE ---
     window.switchView = function(mode) {
         appState.viewMode = mode;
         document.getElementById('btn-list-view').classList.toggle('active', mode === 'list');
@@ -340,13 +328,11 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderCatalog() {
         createFilterButtons();
 
-        // Filtra i brani
         const filtered = appState.allSongs.filter(s => {
             const get = (k) => { 
                 const key = Object.keys(s).find(x => x.toLowerCase() === k.toLowerCase());
                 return key ? s[key] : "";
             };
-            
             const cat = get('Categoria');
             const arg = get('Argomento');
             
@@ -364,7 +350,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if(appState.viewMode === 'list') {
             filtered.forEach(song => songListContainer.appendChild(createSongRow(song)));
         } else {
-            // Raggruppa per Album
+            // VISTA ALBUM
             const albums = {};
             filtered.forEach(song => {
                 const get = (k) => { const key = Object.keys(song).find(x => x.toLowerCase() === k.toLowerCase()); return key ? song[key] : ""; };
@@ -379,9 +365,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const card = document.createElement('div');
                 card.className = 'album-card';
+                // FIX IMMAGINE: usa onerror per fallback
                 card.innerHTML = `
                     <div class="album-header" onclick="this.parentElement.classList.toggle('open')">
-                        <img src="${cover}" class="album-cover" onerror="this.src='logo6.jpg'">
+                        <img src="${cover}" class="album-cover" onerror="this.src='logo6.jpg'; this.onerror=null;">
                         <div class="album-info">
                             <h3 class="album-title">${name}</h3>
                             <span class="album-count">${songs.length} brani</span>
@@ -399,7 +386,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function createSongRow(song) {
-        // Helper per lettura sicura
         const get = (k) => { const key = Object.keys(song).find(x => x.toLowerCase() === k.toLowerCase()); return key ? song[key] : ""; };
         
         const div = document.createElement('div');
@@ -411,7 +397,7 @@ document.addEventListener('DOMContentLoaded', function() {
             vidBtn = `<div class="video-btn" onclick="openVideo('${vidLink}', event)"><i class="fas fa-video"></i></div>`;
         }
 
-        // PUNTO 2: Genere Visibile
+        // FIX: Genere visibile anche in lista
         div.innerHTML = `
             <div class="song-info">
                 <span class="song-title">${get('Titolo') || 'Senza Titolo'}</span>
@@ -433,7 +419,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 const key = Object.keys(s).find(k => k.toLowerCase() === keyName.toLowerCase());
                 return key ? s[key] : "";
             }).filter(Boolean);
-            // PUNTO 5: FIX SPAZI VUOTI
             return [...new Set(raw.flatMap(t => t.split(/[;,]+/).map(x => x.trim()).filter(x => x && x !== "")))].sort();
         };
 
@@ -454,6 +439,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return h;
     }
 
+    // FIX: Funzione globale su window per onclick
     window.applyFilter = function(type, val, btn) {
         appState.currentFilters[type] = val;
         btn.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -470,7 +456,7 @@ document.addEventListener('DOMContentLoaded', function() {
         mainPlayer.src = url;
         mainPlayer.play();
 
-        // PUNTO 3: CONTATORE PLAY
+        // FIX: Tracking Play
         fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
             mode: 'no-cors', 
