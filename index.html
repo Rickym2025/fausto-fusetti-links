@@ -1,134 +1,138 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fausto Fusetti - FF Musica</title>
-    
-    <!-- FAVICON -->
-    <link rel="icon" href="favicon.ico?v=2" sizes="any" type="image/x-icon">
-    <link rel="icon" href="icon-192.png?v=2" sizes="192x192" type="image/png">
-    <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-KD9H9P2RKT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-KD9H9P2RKT');
+</script>
+<meta charset="UTF-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="preload" as="image" href="logo6.jpg">        
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Fausto Fusetti - FF Musica</title>
+<link rel="icon" href="favicon.ico?v=2" sizes="any" type="image/x-icon">
+<link rel="icon" href="icon-192.png?v=2" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
+<link href="https://fonts.googleapis.com/css2?family=Arvo:wght@700&amp;family=Montserrat:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
+<style>
+/* CSS STYLES */
+:root { --primary-color: #0693e3; --secondary-color: #e3a006; --jingle-color: #00e1ff; --text-gray: #aaa; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Montserrat', sans-serif; color: #f0f0f0; text-align: center; }
+#background-video { position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; width: auto; height: auto; z-index: -100; object-fit: cover; filter: brightness(0.5); }
+.container-wrapper { min-height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center; padding: 20px; padding-bottom: 60px; }
+.container { position: relative; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(10px); padding: 90px 30px 40px 30px; max-width: 680px; width: 100%; margin-top: 100px; margin-bottom: 40px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); z-index: 2; }
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-    <!-- GOOGLE ANALYTICS -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KD9H9P2RKT"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-KD9H9P2RKT');
-    </script>
+/* PULSANTE AUDIO RIPRISTINATO */
+#audio-cta { position: absolute; top: -25px; right: -20px; display: flex; align-items: center; background-color: rgba(6, 147, 227, 0.2); border: 1px solid var(--primary-color); padding: 8px 15px; border-radius: 30px; backdrop-filter: blur(5px); animation: pulse 2.5s infinite ease-in-out; z-index: 10; cursor: pointer; visibility: visible; }
+#audio-cta .cta-text { margin-right: 10px; font-weight: 500; color: #f0f0f0; font-size: 0.9em; }
+#mute-btn-icon { background: white; color: var(--primary-color); border-radius: 50%; width: 30px; height: 30px; font-size: 0.9em; display: flex; align-items: center; justify-content: center; }
 
-    <!-- FONTS -->
-    <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@700&amp;family=Montserrat:wght@400;500;600&amp;display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
+@keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+.profile-logo { width: 150px; height: 150px; border-radius: 50%; border: 4px solid rgba(255, 255, 255, 0.9); box-shadow: 0 0 20px var(--primary-color); object-fit: cover; position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); animation: spin 15s linear infinite; }
+h1 { font-size: 1.8em; margin-bottom: 15px; font-weight: 500; }
+p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1; }
+.button { display: block; margin: 18px auto; padding: 16px 30px; border: 2px solid var(--primary-color); border-radius: 30px; text-decoration: none; color: #f0f0f0; font-size: 1.2em; font-weight: 500; transition: all 0.3s ease; background-color: transparent; cursor: pointer; }
+.button:hover { background: var(--primary-color); color: white; transform: translateY(-3px); box-shadow: 0 4px 15px rgba(6, 147, 227, 0.4); }
+.button.collabora { border-color: var(--secondary-color); } .button.collabora:hover { background: var(--secondary-color); box-shadow: 0 4px 15px rgba(227, 160, 6, 0.4); }
+.button.jukebox { border-color: var(--secondary-color); } .button.jukebox:hover { background: var(--secondary-color); box-shadow: 0 4px 15px rgba(227, 160, 6, 0.4); }
+.button.jingle { border-color: var(--jingle-color); color: var(--jingle-color); } 
+.button.jingle:hover { background: var(--jingle-color); color: #000; box-shadow: 0 4px 20px rgba(0, 225, 255, 0.6); border-color: var(--jingle-color); }
+.button i { margin-right: 10px; }
+.social-icons { display: flex; justify-content: center; gap: 30px; margin: 40px 0 20px; }
+.social-icons a { color: #c7c7c7; font-size: 2.2em; transition: all 0.3s ease; }
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
+.modal-content { background: #1e1e1e; padding: 30px; border-radius: 15px; width: 100%; max-width: 650px; position: relative; max-height: 90vh; overflow-y: auto; }
+.modal-close { position: absolute; top: 15px; right: 20px; font-size: 2em; color: white; cursor: pointer; line-height: 1; }
+.music-catalog .info-box { background: rgba(6, 147, 227, 0.1); border: 1px solid var(--primary-color); padding: 15px; border-radius: 10px; margin-bottom: 25px; font-size: 1.1em; }
 
-    <style>
-        /* --- STILI PRINCIPALI --- */
-        :root { --primary-color: #0693e3; --secondary-color: #e3a006; --jingle-color: #00e1ff; --text-gray: #aaa; --bg-dark: #121212; --panel-bg: #1e1e1e; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
-        body { font-family: 'Montserrat', sans-serif; color: #f0f0f0; text-align: center; background-color: var(--bg-dark); }
-        
-        #background-video { position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; width: auto; height: auto; z-index: -100; object-fit: cover; filter: brightness(0.5); }
-        
-        .container-wrapper { min-height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center; padding: 20px; padding-bottom: 60px; }
-        .container { position: relative; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(10px); padding: 90px 30px 40px 30px; max-width: 680px; width: 100%; margin-top: 100px; margin-bottom: 40px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); z-index: 2; }
-        
-        /* HEADER & PROFILE */
-        .profile-logo { width: 150px; height: 150px; border-radius: 50%; border: 4px solid rgba(255, 255, 255, 0.9); box-shadow: 0 0 20px var(--primary-color); object-fit: cover; position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); animation: spin 60s linear infinite; }
-        @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
-        
-        h1 { font-size: 1.8em; margin-bottom: 15px; font-weight: 500; }
-        p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1; }
-        
-        /* PULSANTI */
-        .button { display: block; margin: 18px auto; padding: 16px 30px; border: 2px solid var(--primary-color); border-radius: 30px; text-decoration: none; color: #f0f0f0; font-size: 1.2em; font-weight: 500; transition: all 0.3s ease; background-color: transparent; cursor: pointer; }
-        .button:hover { background: var(--primary-color); color: white; transform: translateY(-3px); box-shadow: 0 4px 15px rgba(6, 147, 227, 0.4); }
-        .button.collabora { border-color: var(--secondary-color); } .button.collabora:hover { background: var(--secondary-color); }
-        .button.jukebox { border-color: var(--secondary-color); } .button.jukebox:hover { background: var(--secondary-color); }
-        .button.jingle { border-color: var(--jingle-color); color: var(--jingle-color); } .button.jingle:hover { background: var(--jingle-color); color: #000; }
-        
-        .social-icons { display: flex; justify-content: center; gap: 30px; margin: 40px 0 20px; }
-        .social-icons a { color: #c7c7c7; font-size: 2.2em; transition: all 0.3s ease; }
+/* FILTRI E CONTROLLI */
+.filter-group { margin-bottom: 15px; }
+.filter-group .filter-label { text-align: left; margin-bottom: 8px; font-weight: 500; color: var(--primary-color); }
+.filter-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+.filter-btn { padding: 8px 14px; border: 1px solid #555; border-radius: 20px; background: none; color: #f0f0f0; cursor: pointer; font-size: 0.9em; transition: all 0.2s ease; }
+.filter-btn.active { background: var(--primary-color); border-color: var(--primary-color); color: white; }
 
-        /* MODALI */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
-        .modal-content { background: var(--panel-bg); padding: 30px; border-radius: 15px; width: 100%; max-width: 650px; position: relative; max-height: 90vh; overflow-y: auto; border: 1px solid #333; }
-        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 2em; color: white; cursor: pointer; line-height: 1; }
-        
-        /* STILI CATALOGO MUSICALE */
-        .music-catalog .info-box { background: rgba(6, 147, 227, 0.1); border: 1px solid var(--primary-color); padding: 15px; border-radius: 10px; margin-bottom: 25px; font-size: 1em; }
-        
-        /* Switch Vista */
-        .view-switcher { display: flex; justify-content: center; margin-bottom: 20px; gap: 10px; border-bottom: 1px solid #333; padding-bottom: 15px; }
-        .view-btn { background: transparent; border: 1px solid #555; color: #ccc; padding: 8px 16px; border-radius: 5px; cursor: pointer; transition: 0.3s; }
-        .view-btn.active { background: var(--primary-color); border-color: var(--primary-color); color: white; }
-        
-        /* Filtri */
-        .filter-group { margin-bottom: 15px; }
-        .filter-group .filter-label { text-align: left; margin-bottom: 8px; font-weight: 500; color: var(--primary-color); }
-        .filter-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
-        .filter-btn { padding: 6px 12px; border: 1px solid #555; border-radius: 20px; background: none; color: #f0f0f0; cursor: pointer; font-size: 0.85em; transition: all 0.2s ease; }
-        .filter-btn.active { background-color: var(--primary-color); border-color: var(--primary-color); color: white; }
+/* VIEW SWITCHER (LISTA vs ALBUM) */
+.view-switcher { display: flex; justify-content: center; margin-bottom: 20px; gap: 10px; border-bottom: 1px solid #333; padding-bottom: 15px; }
+.view-btn { background: transparent; border: 1px solid #555; color: #ccc; padding: 8px 16px; border-radius: 5px; cursor: pointer; transition: 0.3s; }
+.view-btn.active { background: var(--primary-color); border-color: var(--primary-color); color: white; }
+.view-btn:hover { border-color: var(--primary-color); }
 
-        /* Lista Brani */
-        .song-list-container { max-height: 55vh; overflow-y: auto; margin-top: 20px; }
-        .song-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #333; transition: background 0.2s; border-radius: 5px; text-align: left; }
-        .song-item:hover { background-color: rgba(255,255,255,0.05); }
-        .song-item.playing { background-color: rgba(6, 147, 227, 0.2); border-left: 3px solid var(--primary-color); }
-        
-        .song-info { flex-grow: 1; margin: 0 10px; display: flex; flex-direction: column; justify-content: center; }
-        .song-title { font-weight: 600; font-size: 0.95rem; color: #fff; display: block; }
-        .song-meta { font-size: 0.75rem; color: var(--text-gray); margin-top: 3px; display: flex; gap: 10px; align-items: center; }
-        .song-meta i { color: var(--primary-color); margin-right: 3px; }
-        
-        .play-btn { background: none; border: 2px solid var(--primary-color); color: var(--primary-color); border-radius: 50%; width: 32px; height: 32px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
-        .play-btn:hover { background: var(--primary-color); color: white; }
-        
-        .video-btn { color: var(--secondary-color); border: 2px solid var(--secondary-color); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; margin-right: 8px; cursor: pointer; transition: 0.2s; }
-        .video-btn:hover { background: var(--secondary-color); color: white; }
+/* LISTA BRANI */
+.song-list-container { max-height: 50vh; overflow-y: auto; margin-top: 20px; }
+.song-item { display: flex; align-items: center; padding: 12px 10px; border-bottom: 1px solid #333; transition: background-color 0.3s ease; border-radius: 5px; text-align: left; }
+.song-item:last-child { border-bottom: none; }
+.song-item:hover { background-color: rgba(255,255,255,0.05); }
+.song-item.playing { background-color: rgba(6, 147, 227, 0.2); border-left: 3px solid var(--primary-color); }
+.song-item.playing .play-btn { background-color: var(--primary-color); color: white; }
 
-        /* CARD ALBUM (Accordion) */
-        .album-card { background: rgba(255,255,255,0.03); border: 1px solid #444; border-radius: 10px; margin-bottom: 15px; overflow: hidden; }
-        .album-header { padding: 12px; background: rgba(0,0,0,0.2); display: flex; align-items: center; gap: 15px; cursor: pointer; transition: background 0.3s; }
-        .album-header:hover { background: rgba(255,255,255,0.08); }
-        .album-cover { width: 50px; height: 50px; border-radius: 4px; object-fit: cover; background: #222; border: 1px solid #555; }
-        .album-info { text-align: left; flex-grow: 1; }
-        .album-title { font-size: 1.1em; color: var(--primary-color); font-weight: bold; margin: 0; }
-        .album-count { font-size: 0.85em; color: #888; }
-        .album-toggle-icon { margin-left: auto; color: #888; transition: transform 0.3s; }
-        .album-tracks { display: none; padding: 5px; border-top: 1px solid #444; background: rgba(0,0,0,0.1); }
-        /* Classe per aprire l'accordion */
-        .album-card.open .album-tracks { display: block; }
-        .album-card.open .album-toggle-icon { transform: rotate(180deg); color: var(--primary-color); }
-        .album-card.open .album-header { background: rgba(6, 147, 227, 0.1); }
+/* DETTAGLI BRANO (TITOLO, GENERE, DURATA) */
+.song-info { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; margin: 0 10px; }
+.song-title { font-weight: 600; font-size: 1rem; color: #fff; margin-bottom: 4px; }
+.song-meta { font-size: 0.8rem; color: var(--text-gray); display: flex; flex-wrap: wrap; gap: 10px; }
+.song-meta span { display: flex; align-items: center; gap: 4px; }
+.song-meta i { font-size: 0.75rem; color: var(--primary-color); }
 
-        /* ALTRI ELEMENTI */
-        .contact-form input, .contact-form textarea, .contact-form select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #555; background-color: #2c2c2c; color: #f0f0f0; font-size: 1em; margin-bottom: 15px; }
-        .info-footer { position: fixed; bottom: 0; left: 0; width: 100%; background-color: rgba(0, 0, 0, 0.85); color: #ccc; padding: 12px; text-align: center; font-size: 0.9em; z-index: 100; }
-        
-        #audio-cta { position: absolute; top: -25px; right: -20px; display: flex; align-items: center; background-color: rgba(6, 147, 227, 0.2); border: 1px solid var(--primary-color); padding: 8px 15px; border-radius: 30px; backdrop-filter: blur(5px); animation: pulse 2.5s infinite ease-in-out; z-index: 10; cursor: pointer; visibility: hidden; }
-        #mute-btn-icon { background: white; color: var(--primary-color); border-radius: 50%; width: 35px; height: 35px; font-size: 1em; display: flex; align-items: center; justify-content: center; }
+/* PULSANTI PLAY/VIDEO */
+.play-btn { background: none; border: 2px solid var(--primary-color); color: var(--primary-color); border-radius: 50%; width: 35px; height: 35px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; cursor: pointer; }
+.video-btn { background: none; border: 2px solid var(--secondary-color); color: var(--secondary-color); border-radius: 50%; width: 35px; height: 35px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; margin-right: 8px; cursor: pointer; font-size: 0.8em; }
+.video-btn:hover { background-color: var(--secondary-color); color: white; }
 
-        /* SUGGERIMENTO CHATBOT */
-        .chat-suggestion { background: rgba(255, 255, 255, 0.1); border: 1px solid var(--primary-color); color: #fff; padding: 8px 15px; border-radius: 20px; cursor: pointer; margin-top: 10px; display: inline-block; font-size: 0.9em; transition: 0.3s; }
-        .chat-suggestion:hover { background: var(--primary-color); }
+/* STILE ALBUM */
+.album-card { background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 10px; margin-bottom: 25px; overflow: hidden; }
+.album-header { padding: 15px; background: rgba(0,0,0,0.3); display: flex; align-items: center; gap: 15px; cursor: pointer; transition: background 0.2s; }
+.album-header:hover { background: rgba(255,255,255,0.1); }
+.album-cover { width: 80px; height: 80px; border-radius: 5px; object-fit: cover; background: #222; border: 1px solid #555; }
+.album-info { text-align: left; flex-grow: 1; }
+.album-title { font-size: 1.2em; color: var(--primary-color); font-weight: bold; margin: 0 0 5px 0; }
+.album-count { font-size: 0.9em; color: #888; }
+.album-toggle-icon { margin-left: auto; color: #888; transition: transform 0.3s; }
+.album-tracks { display: none; padding: 5px; border-top: 1px solid #444; background: rgba(0,0,0,0.2); }
+/* Classe per aprire */
+.album-card.open .album-tracks { display: block; }
+.album-card.open .album-toggle-icon { transform: rotate(180deg); color: var(--primary-color); }
 
-        @media (max-width: 600px) {
-            .album-title { font-size: 1em; }
-            .song-title { font-size: 0.9rem; }
-        }
-    </style>
+/* MODALI E ALTRO */
+.contact-form { display: flex; flex-direction: column; gap: 15px; text-align: left; }
+.contact-form input, .contact-form textarea, .contact-form select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #555; background-color: #2c2c2c; color: #f0f0f0; font-size: 1em; }
+#form-result { margin-top: 15px; font-weight: bold; }
+.service-highlight { background: linear-gradient(135deg, rgba(6, 147, 227, 0.1), rgba(227, 160, 6, 0.1)); border: 2px solid transparent; background-clip: padding-box; position: relative; }
+.service-highlight::before { content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); border-radius: inherit; z-index: -1; }
+#aphorism-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; pointer-events: none; }
+@keyframes fadeInOut { 0% { opacity: 0; transform: var(--transform-start); } 15% { opacity: 1; transform: var(--transform-end); } 85% { opacity: 1; transform: var(--transform-end); } 100% { opacity: 0; transform: var(--transform-start); } }
+.aphorism-postit { position: absolute; background-color: #fefabc; color: #333; padding: 15px; border-radius: 5px; box-shadow: 5px 5px 15px rgba(0,0,0,0.3); max-width: 250px; font-family: 'Georgia', serif; animation: fadeInOut 10s ease-in-out forwards; }
+#audio-start-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.9); display: flex; align-items: center; justify-content: center; z-index: 100000; backdrop-filter: blur(10px); }
+#audio-start-content { background: rgba(6, 147, 227, 0.1); border: 2px solid var(--primary-color); padding: 40px; border-radius: 20px; text-align: center; max-width: 500px; margin: 20px; }
+#audio-start-content h2 { color: var(--primary-color); margin-bottom: 15px; font-size: 1.8em; }
+#audio-start-content p { margin-bottom: 25px; font-size: 1.1em; line-height: 1.6; }
+#start-audio-btn { background: var(--primary-color); color: white; border: none; padding: 15px 30px; border-radius: 30px; font-size: 1.2em; cursor: pointer; transition: all 0.3s ease; }
+#start-audio-btn:hover { background: var(--secondary-color); transform: translateY(-2px); }
+.info-footer { position: fixed; bottom: 0; left: 0; width: 100%; background-color: rgba(0, 0, 0, 0.85); color: #ccc; padding: 12px; text-align: center; font-size: 0.9em; z-index: 100; }
+#single-video-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 20000; display: none; align-items: center; justify-content: center; flex-direction: column; }
+#single-video-container { width: 90%; max-width: 900px; aspect-ratio: 16 / 9; position: relative; background: black; box-shadow: 0 0 30px rgba(6, 147, 227, 0.3); }
+#single-video-container iframe { width: 100%; height: 100%; border: none; }
+#close-single-video { margin-top: 20px; background: none; border: 1px solid white; color: white; padding: 10px 20px; border-radius: 30px; cursor: pointer; font-size: 1.2em; transition: all 0.3s; }
+#close-single-video:hover { background: white; color: black; }
+</style>
 </head>
 <body>
 
 <!-- MUSICA BACKGROUND -->
-<div id="audio-start-overlay" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.9); display:flex; align-items:center; justify-content:center; z-index:100000; backdrop-filter:blur(10px);">
-    <div style="background:rgba(6,147,227,0.1); border:2px solid var(--primary-color); padding:40px; border-radius:20px; text-align:center; max-width:500px; margin:20px;">
-        <h2 style="color:var(--primary-color); margin-bottom:15px;">Benvenuto!</h2>
-        <p style="margin-bottom:25px;">Per la migliore esperienza, questa pagina include una musica di sottofondo.</p>
-        <button id="start-audio-btn" class="button">Avvia l'Esperienza Musicale</button>
+<div id="audio-start-overlay">
+    <div id="audio-start-content">
+        <h2><i class="fas fa-music"></i> Benvenuto!</h2>
+        <p>Per la migliore esperienza, questa pagina include una musica di sottofondo. Clicca per attivarla.</p>
+        <button id="start-audio-btn">Avvia l'Esperienza Musicale</button>
     </div>
 </div>
 <video autoplay muted loop playsinline preload="auto" id="background-video" poster="immagine_sfondo.png"><source src="video_sfondo_compressed.mp4" type="video/mp4" /></video>
@@ -137,11 +141,13 @@
 <!-- CONTENITORE PRINCIPALE -->
 <div class="container-wrapper">
     <div class="container">
-        <div id="audio-cta"><span class="cta-text">Attiva la musica</span><div id="mute-btn-icon"><i class="fas fa-volume-mute"></i></div></div>
+        <!-- PULSANTE AUDIO RIPRISTINATO -->
+        <div id="audio-cta"><span class="cta-text">Attiva musica</span><div id="mute-btn-icon"><i class="fas fa-volume-mute"></i></div></div>
+        
         <img src="logo6.jpg" alt="Logo FF Musica" class="profile-logo">
         <br><br><br><br>
         <h1>Fausto Fusetti</h1>
-        <p class="bio">Piacere, sono Fausto Fusetti, in arte <strong>Fausto Miriani</strong>. Dal 1988 la musica è la mia vita.<br>Oggi creo <strong>canzoni e libri personalizzati</strong> per rendere unici i tuoi momenti.</p>
+        <p class="bio">Piacere, sono Fausto Fusetti, in arte <strong>Fausto Miriani</strong>. Dal 1988 la musica è la mia vita: sono polistrumentista, cantante, compositore, paroliere e anche autore di libri.<br><br>La mia carriera è stata un viaggio entusiasmante sui palchi più prestigiosi, collaborando con icone come <strong>Fred Bongusto, Peppino di Capri e Califano</strong>.<br><br>Oggi metto questa esperienza al tuo servizio per creare <strong>canzoni e libri personalizzati</strong>, e continuo a investire sul futuro.</p>
 
         <!-- MENU PULSANTI -->
         <a href="https://rickym2025.github.io/jukebox-ff/" target="_blank" class="button jukebox"><i class="fas fa-compact-disc"></i> Area Riservata Jukebox</a>
@@ -166,7 +172,7 @@
     <div class="modal-content music-catalog">
         <span class="modal-close">&times;</span>
         <h2>Catalogo Musicale</h2>
-        <div class="info-box"><i class="fas fa-headphones"></i> Esplora la discografia. Clicca sui titoli per ascoltare.</div>
+        <div class="info-box"><i class="fas fa-headphones"></i> Esplora la discografia di Fausto.</div>
         
         <!-- SWITCHER -->
         <div class="view-switcher">
@@ -200,11 +206,10 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
-    // === CONFIGURAZIONE ===
-    // INCOLLA QUI IL NUOVO URL DEL TUO SCRIPT GOOGLE (quello che finisce con /exec)
+    // === URL GOOGLE SCRIPT (INSERISCI IL TUO NUOVO URL QUI) ===
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw666DGD4BlSHuJwmVYcRLF9_qMJX2LXy_r6gCGVbjR_dXQDngQU-JttofSKOwUkIJZ/exec'; 
     
-    // WEBHOOK N8N (Il tuo attuale è corretto)
+    // WEBHOOK N8N
     const CHATBOT_WEBHOOK = 'https://n8n.labottegadeldelta.it/webhook/ffausto-ai-chat';
 
     const appState = {
@@ -238,7 +243,7 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         const closeModal = (id) => {
             document.getElementById(id).style.display = 'none';
-            if(!appState.isBgMusicMuted) bgAudio.play().catch(()=>{});
+            if(!appState.isBgMusicMuted && bgAudio) bgAudio.play().catch(()=>{});
         };
 
         document.getElementById('open-music-modal').onclick = () => openModal('music-modal');
@@ -289,10 +294,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- CARICAMENTO DATI ---
     async function loadMusicFromApi() {
-        const CACHE_KEY = 'ff_catalog_v15_final';
+        const CACHE_KEY = 'ff_catalog_v14_fix'; // Nuova chiave cache
         const cached = localStorage.getItem(CACHE_KEY);
         
-        // Se c'è cache recente (< 1 ora), usala
         if(cached) {
             try {
                 const parsed = JSON.parse(cached);
@@ -319,7 +323,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch(e) {
             console.error(e);
-            songListContainer.innerHTML = '<p>Errore di connessione al catalogo.</p>';
+            songListContainer.innerHTML = '<p>Errore di connessione al catalogo. Verifica lo script.</p>';
         }
     }
 
@@ -337,7 +341,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // 2. Filtra i brani
         const filtered = appState.allSongs.filter(s => {
-            // Helper per leggere proprietà in modo sicuro (case-insensitive)
             const get = (k) => { 
                 const key = Object.keys(s).find(x => x.toLowerCase() === k.toLowerCase());
                 return key ? s[key] : "";
