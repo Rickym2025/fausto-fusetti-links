@@ -1,0 +1,16 @@
+# Fausto Fusetti - Canzoni Personalizzate e Produzioni Musicali
+
+> Sito ufficiale di Fausto Fusetti. Musicista e compositore specializzato nella creazione di canzoni su misura, jingle pubblicitari e brani inediti.
+
+## Cosa Offriamo
+
+- **Canzoni Personalizzate**: Scriviamo e componiamo brani unici dedicati a persone, eventi o storie specifiche. Un regalo originale ed eterno.
+- **Jingle e Identità Sonore**: Produzione professionale di sigle e jingle per radio, podcast e brand.
+- **Area Jukebox**: Catalogo esclusivo di brani originali da ascoltare.
+
+## Mappa del Sito
+
+- [Home Page & Contatti](https://rickym2025.github.io/fausto-fusetti-links/index.html)
+- [Blog & News Musicali](https://rickym2025.github.io/fausto-fusetti-links/blog/index.html)
+- [Area Jukebox (Ascolto)](https://rickym2025.github.io/fausto-fusetti-links/jukebox/index.html)
+- [Jingle Shop](https://rickym2025.github.io/fausto-fusetti-links/jingle/index.html)
