@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Meta Tag per Analytics -->
+    
+    <!-- FIX SEO: Meta Tag per tracciamento corretto Analytics -->
     <meta name="referrer" content="origin-when-cross-origin" />
 
     <title>Blog & News - Fausto Fusetti</title>
@@ -22,7 +23,7 @@
       gtag('config', 'G-KD9H9P2RKT');
     </script>
 
-    <!-- DATI STRUTTURATI (SEO) -->
+    <!-- DATI STRUTTURATI JSON-LD (SEO) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -43,7 +44,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     
     <style>
-        /* CONFIGURAZIONE COLORI (DARK MODE) */
+        /* --- STILE ORIGINALE RIPRISTINATO --- */
         :root { 
             --primary: #0693e3; 
             --secondary: #e3a006; 
@@ -66,7 +67,7 @@
         
         a { text-decoration: none; color: inherit; transition: 0.3s; }
         
-        /* HEADER STICKY */
+        /* HEADER */
         header { 
             background: rgba(10,10,10,0.95); 
             padding: 15px 20px; 
@@ -85,31 +86,37 @@
         .nav-btn.special { border-color: var(--accent); color: var(--accent); }
         .nav-btn.shop { border-color: var(--secondary); color: var(--secondary); }
 
-        /* LAYOUT PRINCIPALE */
-        .container { 
-            max-width: 1200px; /* Larghezza contenuta per non "spalmare" tutto */
-            margin: 0 auto; 
-            padding: 20px; 
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        
+        .page-title { text-align: center; margin: 40px 0; font-size: 2.5rem; color: var(--primary); }
+        
+        /* FILTRI CATEGORIA (Stile Ripristinato) */
+        .filter-container { 
+            display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-bottom: 40px; 
+        }
+        .filter-btn { 
+            background: transparent; border: 1px solid var(--border); color: #ccc; 
+            padding: 8px 20px; border-radius: 25px; cursor: pointer; transition: 0.3s; font-size: 0.9rem; 
+        }
+        .filter-btn:hover, .filter-btn.active { 
+            background: var(--primary); border-color: var(--primary); color: white; transform: translateY(-2px); 
         }
 
-        /* GRIGLIA ARTICOLI (Questo è ciò che mancava!) */
+        /* GRIGLIA ARTICOLI (Layout originale affiancato) */
         #articles-list {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Crea colonne automatiche */
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 25px;
-            margin-top: 30px;
         }
-        
-        /* STYLE CARD */
+
+        /* STILE CARD */
         .article-card { 
             background: var(--card); 
             border: 1px solid var(--border); 
             border-radius: 12px; 
             overflow: hidden; 
-            height: 100%; /* Altezza uniforme */
-            display: flex;
-            flex-direction: column;
             transition: transform 0.3s ease, box-shadow 0.3s ease; 
+            display: flex; flex-direction: column; height: 100%;
         }
         .article-card:hover { 
             transform: translateY(-5px); 
@@ -130,20 +137,14 @@
             font-size: 0.75rem; font-weight: 700; text-transform: uppercase; 
         }
         
-        .card-content { 
-            padding: 20px; 
-            display: flex; 
-            flex-direction: column; 
-            flex-grow: 1; 
-        }
+        .card-content { padding: 20px; display: flex; flex-direction: column; flex-grow: 1; }
         .card-meta { color: #888; font-size: 0.85rem; margin-bottom: 10px; display: flex; gap: 10px; }
         .card-title { font-size: 1.25rem; margin-bottom: 10px; line-height: 1.3; color: white; }
         .card-excerpt { color: #ccc; font-size: 0.95rem; margin-bottom: 20px; flex-grow: 1; }
         
         .read-btn { 
             color: var(--primary); font-weight: 700; font-size: 0.9rem; 
-            display: flex; align-items: center; gap: 5px; transition: gap 0.2s; 
-            margin-top: auto;
+            display: flex; align-items: center; gap: 5px; transition: gap 0.2s; margin-top: auto; 
         }
         .article-card:hover .read-btn { gap: 10px; }
 
@@ -204,21 +205,6 @@
                     <div class="card-meta"><span><i class="far fa-calendar"></i> 04-02-2026</span></div>
                     <h2 class="card-title">La scomparsa di Billy Bass: un capitolo chiuso nella storia dei Parliament-Funkadelic</h2>
                     <p class="card-excerpt">Il bassista dei Parliament-Funkadelic, Billy Bass, è morto all'età di 75 anni. La sua scomparsa lascia un vuoto incolmabile nella scena funk e soul.</p>
-                    <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
-                </div>
-            </article>
-        </a>
-
-            <!-- ARTICOLO 10-dischi-italiani-da-cui-ripartire-nel-2026 -->
-        <a href="10-dischi-italiani-da-cui-ripartire-nel-2026.html" class="article-card-link" data-cat="News" style="display:block; text-decoration:none; color:inherit;">
-            <article class="article-card">
-                <div class="card-img" style="background-image: url('img/10-dischi-italiani-da-cui-ripartire-nel-2026.jpg')">
-                    <span class="card-cat">News</span>
-                </div>
-                <div class="card-content">
-                    <div class="card-meta"><span><i class="far fa-calendar"></i> 04-02-2026</span></div>
-                    <h2 class="card-title">10 dischi italiani da cui ripartire nel 2026</h2>
-                    <p class="card-excerpt">Scopri i 10 dischi italiani che potrebbero essere il punto di partenza per una nuova era nella musica italiana.</p>
                     <div class="read-btn">Leggi <i class="fas fa-arrow-right"></i></div>
                 </div>
             </article>
