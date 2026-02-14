@@ -294,358 +294,379 @@
         <audio id="global-player" controls controlsList="nodownload" style="width: 100%; max-width: 400px;"></audio>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
-    <script>
-        // === CONFIGURAZIONE ===
-        const GAS_URL = 'https://script.google.com/macros/s/AKfycbzToW5jq4pVJ5so_ISZnL3ocCudihMucgQP_t60ioM4yqIAzcsyEeh_mv3rrNsgwrA/exec'; 
-        const CHECKOUT_URL = 'https://n8n.labottegadeldelta.it/webhook/crea-checkout-sfx';
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+<script>
+    // === CONFIGURAZIONE ===
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbzToW5jq4pVJ5so_ISZnL3ocCudihMucgQP_t60ioM4yqIAzcsyEeh_mv3rrNsgwrA/exec'; 
+    const CHECKOUT_URL = 'https://n8n.labottegadeldelta.it/webhook/crea-checkout-sfx';
 
-        // TRADUZIONI
-        const translations = {
-            en: {
-                nav_home: "Home", nav_jukebox: "Jukebox", nav_jingle: "Jingles", nav_blog: "Blog",
-                title: "Pro SFX Library", subtitle: "Professional Sound Effects.",
-                select_pack: "Select Volume / Pack", loading: "Loading...",
-                search_label: "Search Sound", search_placeholder: "e.g. Coin, Laser...",
-                connecting: "Connecting...", buy_pack: "Buy Full Pack",
-                buy_pack_bottom: "Get the Complete Pack Now",
-                buy_single: "Add", cart_title: "Your Cart", checkout_btn: "Proceed to Checkout",
-                empty_cart: "Cart is empty.", empty_search: "No sounds found.",
-                play_now: "Playing:", buy_now: "Buy Now"
-            },
-            it: {
-                nav_home: "Home", nav_jukebox: "Jukebox", nav_jingle: "Jingles", nav_blog: "Blog",
-                title: "Libreria Effetti Sonori", subtitle: "Effetti sonori professionali.",
-                select_pack: "Seleziona Volume / Pacchetto", loading: "Caricamento...",
-                search_label: "Cerca Suono", search_placeholder: "es. Moneta, Laser...",
-                connecting: "Connessione...", buy_pack: "Compra Tutto il Pack",
-                buy_pack_bottom: "Ottieni il Pacchetto Completo",
-                buy_single: "Aggiungi", cart_title: "Il tuo Carrello", checkout_btn: "Procedi al Checkout",
-                empty_cart: "Il carrello è vuoto.", empty_search: "Nessun suono trovato.",
-                play_now: "In riproduzione:", buy_now: "Compra Ora"
-            }
-        };
+    // TRADUZIONI
+    const translations = {
+        en: {
+            nav_home: "Home", nav_jukebox: "Jukebox", nav_jingle: "Jingles", nav_blog: "Blog",
+            title: "Pro SFX Library", subtitle: "Professional Sound Effects.",
+            select_pack: "Select Volume / Pack", loading: "Loading...",
+            search_label: "Search Sound", search_placeholder: "e.g. Coin, Laser...",
+            connecting: "Connecting...", buy_pack: "Buy Full Pack",
+            buy_pack_bottom: "Get the Complete Pack Now",
+            buy_single: "Add", cart_title: "Your Cart", checkout_btn: "Proceed to Checkout",
+            empty_cart: "Cart is empty.", empty_search: "No sounds found.",
+            play_now: "Playing:", buy_now: "Buy Now",
+            load_more: "Load More Sounds", showing: "Showing"
+        },
+        it: {
+            nav_home: "Home", nav_jukebox: "Jukebox", nav_jingle: "Jingles", nav_blog: "Blog",
+            title: "Libreria Effetti Sonori", subtitle: "Effetti sonori professionali.",
+            select_pack: "Seleziona Volume / Pacchetto", loading: "Caricamento...",
+            search_label: "Cerca Suono", search_placeholder: "es. Moneta, Laser...",
+            connecting: "Connessione...", buy_pack: "Compra Tutto il Pack",
+            buy_pack_bottom: "Ottieni il Pacchetto Completo",
+            buy_single: "Aggiungi", cart_title: "Il tuo Carrello", checkout_btn: "Procedi al Checkout",
+            empty_cart: "Il carrello è vuoto.", empty_search: "Nessun suono trovato.",
+            play_now: "In riproduzione:", buy_now: "Compra Ora",
+            load_more: "Carica Altri Suoni", showing: "Mostrati"
+        }
+    };
 
-        // STATO
-        let currentLang = 'en';
-        let allData = [];
-        let currentPackData = [];
-        let shoppingCart = [];
-        let activeAudioBtn = null;
-        let currentPackInfo = { name: '', price: 0 };
+    // STATO
+    let currentLang = 'en';
+    let allData = [];
+    let currentPackData = [];
+    let shoppingCart = [];
+    let activeAudioBtn = null;
+    let currentPackInfo = { name: '', price: 0 };
+    
+    // NUOVA VARIABILE PER IL LIMITE VISIVO
+    let displayLimit = 100; 
 
-        const player = document.getElementById('global-player');
+    const player = document.getElementById('global-player');
+    
+    async function init() {
+        updateLanguageUI();
+        try {
+            const res = await fetch(GAS_URL);
+            const data = await res.json();
+            if(!Array.isArray(data)) throw new Error("Invalid Data");
+            allData = data;
+            document.getElementById('loader').style.display = 'none';
+            setupDropdown();
+        } catch (e) {
+            console.error(e);
+            document.getElementById('loader').innerHTML = `<span style="color:#ff5252">System Error. Reload page.</span>`;
+        }
+    }
+
+    window.toggleLanguage = function() {
+        currentLang = currentLang === 'en' ? 'it' : 'en';
+        updateLanguageUI();
+        if (currentPackInfo.name) {
+            loadPack(currentPackInfo.name);
+        }
+    };
+
+    function updateLanguageUI() {
+        document.getElementById('lang-toggle').innerText = currentLang === 'en' ? "🇮🇹 IT" : "🇬🇧 EN";
+        const t = translations[currentLang];
+        document.querySelectorAll('[data-tr]').forEach(el => {
+            const key = el.getAttribute('data-tr');
+            if(t[key]) el.innerText = t[key];
+        });
+        document.getElementById('search-box').placeholder = t.search_placeholder;
+    }
+
+    function setupDropdown() {
+        const select = document.getElementById('pack-select');
+        const packs = [...new Set(allData.map(d => d.PACK_NAME))].filter(Boolean).sort();
         
-        async function init() {
-            updateLanguageUI();
+        select.innerHTML = `<option value="">${currentLang==='en'?"-- Select Volume --":"-- Seleziona Volume --"}</option>`;
+        packs.forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p;
+            opt.textContent = p;
+            select.appendChild(opt);
+        });
+        select.addEventListener('change', (e) => loadPack(e.target.value));
+        document.getElementById('search-box').addEventListener('input', (e) => filterList(e.target.value));
+        document.getElementById('search-box').disabled = false;
+    }
+
+    function loadPack(packName) {
+        const hero = document.getElementById('pack-hero');
+        const bottomCta = document.getElementById('bottom-cta');
+        const sticky = document.getElementById('sticky-pack-cta');
+        const container = document.getElementById('sfx-list');
+        const search = document.getElementById('search-box');
+
+        if(!packName) {
+            hero.style.display = 'none';
+            bottomCta.style.display = 'none';
+            sticky.classList.remove('visible');
+            container.innerHTML = '';
+            search.value = '';
+            return;
+        }
+
+        currentPackData = allData.filter(d => d.PACK_NAME === packName);
+        
+        // RESETTA IL LIMITE QUANDO CAMBI PACK
+        displayLimit = 100; 
+
+        const firstItem = currentPackData[0];
+        let packPrice = parseFloat(firstItem.Prezzo);
+        if(isNaN(packPrice) || packPrice <= 0) packPrice = 49.00; 
+
+        currentPackInfo = { name: packName, price: packPrice };
+
+        document.getElementById('hero-title').textContent = packName;
+        
+        let descHtml = "";
+        if (currentLang === 'it' && firstItem.STORE_DESCRIPTION_IT) {
+            descHtml = firstItem.STORE_DESCRIPTION_IT;
+        } else {
+            descHtml = firstItem.STORE_DESCRIPTION;
+        }
+        
+        document.getElementById('hero-desc').innerHTML = DOMPurify.sanitize(descHtml || "");
+        document.getElementById('hero-price').textContent = packPrice.toFixed(2) + "€";
+        document.getElementById('sticky-pack-name').textContent = packName;
+        document.getElementById('sticky-pack-price').textContent = packPrice.toFixed(2) + "€";
+        
+        hero.style.display = 'block';
+        bottomCta.style.display = 'block';
+        sticky.classList.add('visible');
+        document.getElementById('audio-bar').style.bottom = "50px"; 
+
+        renderList(currentPackData);
+    }
+
+    function filterList(term) {
+        term = term.toLowerCase();
+        // Se c'è una ricerca, mostriamo più risultati perché sono filtrati
+        displayLimit = term ? 500 : 100; 
+        
+        const filtered = currentPackData.filter(item => 
+            (item.FILE_TITLE && item.FILE_TITLE.toLowerCase().includes(term)) ||
+            (item.TAGS && item.TAGS.toLowerCase().includes(term))
+        );
+        renderList(filtered);
+    }
+
+    function fixSunoUrl(url) {
+        if (!url) return "";
+        if (url.includes("suno.com/song/")) {
             try {
-                const res = await fetch(GAS_URL);
-                const data = await res.json();
-                if(!Array.isArray(data)) throw new Error("Invalid Data");
-                allData = data;
-                document.getElementById('loader').style.display = 'none';
-                setupDropdown();
-            } catch (e) {
-                console.error(e);
-                document.getElementById('loader').innerHTML = `<span style="color:#ff5252">System Error. Reload page.</span>`;
+                const parts = url.split("song/");
+                const uuid = parts[1].split("/")[0].split("?")[0]; 
+                return `https://cdn1.suno.ai/${uuid}.mp3`;
+            } catch(e) {
+                console.error("Errore parsing Suno URL", e);
+                return url; 
             }
         }
+        return url;
+    }
 
-        window.toggleLanguage = function() {
-            currentLang = currentLang === 'en' ? 'it' : 'en';
-            updateLanguageUI();
-            
-            // Se c'è un pack attivo, ricarichiamo i testi (es. descrizione)
-            if (currentPackInfo.name) {
-                loadPack(currentPackInfo.name);
-            }
-        };
+    // === NUOVA FUNZIONE RENDER CON "LOAD MORE" ===
+    function renderList(items) {
+        const container = document.getElementById('sfx-list');
+        container.innerHTML = '';
+        const t = translations[currentLang];
+        
+        // Usa la variabile displayLimit per decidere quanti mostrarne
+        const visibleItems = items.slice(0, displayLimit);
 
-        function updateLanguageUI() {
-            document.getElementById('lang-toggle').innerText = currentLang === 'en' ? "🇮🇹 IT" : "🇬🇧 EN";
-            const t = translations[currentLang];
-            document.querySelectorAll('[data-tr]').forEach(el => {
-                const key = el.getAttribute('data-tr');
-                if(t[key]) el.innerText = t[key];
-            });
-            document.getElementById('search-box').placeholder = t.search_placeholder;
+        if(visibleItems.length === 0) {
+            container.innerHTML = `<p style="grid-column:1/-1; color:#777; text-align:center;">${t.empty_search}</p>`;
+            return;
         }
 
-        function setupDropdown() {
-            const select = document.getElementById('pack-select');
-            const packs = [...new Set(allData.map(d => d.PACK_NAME))].filter(Boolean).sort();
+        visibleItems.forEach(item => {
+            let price = parseFloat(item.Prezzo);
+            if(isNaN(price) || price <= 0) price = 0.99;
             
-            select.innerHTML = `<option value="">${currentLang==='en'?"-- Select Volume --":"-- Seleziona Volume --"}</option>`;
-            packs.forEach(p => {
-                const opt = document.createElement('option');
-                opt.value = p;
-                opt.textContent = p;
-                select.appendChild(opt);
-            });
-            select.addEventListener('change', (e) => loadPack(e.target.value));
-            document.getElementById('search-box').addEventListener('input', (e) => filterList(e.target.value));
-            document.getElementById('search-box').disabled = false;
+            const rawUrl = item.link_lungo; 
+            const audioUrl = fixSunoUrl(rawUrl);
+
+            const div = document.createElement('div');
+            div.className = 'sfx-item';
+            div.innerHTML = `
+                <button class="play-btn" onclick="playSong('${audioUrl}', '${item.FILE_TITLE.replace(/'/g, "\\'")}', this)">
+                    <i class="fas fa-play"></i>
+                </button>
+                <div class="sfx-info">
+                    <span class="sfx-title" title="${item.FILE_TITLE}">${item.FILE_TITLE}</span>
+                    <div class="sfx-meta">
+                        <span><i class="far fa-clock"></i> ${item.Durata || ''}</span>
+                        <span><i class="fas fa-tag"></i> ${item.CATEGORY || 'SFX'}</span>
+                    </div>
+                </div>
+                <button class="buy-single-btn" onclick="addToCart('${item.ID}', '${item.FILE_TITLE.replace(/'/g, "\\'")}', ${price})">
+                    ${t.buy_single} ${price.toFixed(2)}€
+                </button>
+            `;
+            container.appendChild(div);
+        });
+
+        // SE CI SONO PIÙ ELEMENTI DI QUELLI VISUALIZZATI, MOSTRA IL BOTTONE "LOAD MORE"
+        if (items.length > displayLimit) {
+            const remaining = items.length - displayLimit;
+            const loadMoreDiv = document.createElement('div');
+            loadMoreDiv.style.gridColumn = "1/-1";
+            loadMoreDiv.style.textAlign = "center";
+            loadMoreDiv.style.marginTop = "20px";
+            loadMoreDiv.innerHTML = `
+                <p style="color:#777; font-size:0.9em; margin-bottom:10px;">
+                    ${t.showing} ${visibleItems.length} / ${items.length}
+                </p>
+                <button onclick="loadMoreItems()" style="
+                    background: transparent; border: 1px solid var(--primary-color); color: var(--primary-color);
+                    padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight:bold; transition:0.2s;">
+                    <i class="fas fa-plus-circle"></i> ${t.load_more} (+100)
+                </button>
+            `;
+            container.appendChild(loadMoreDiv);
         }
+    }
 
-        function loadPack(packName) {
-            const hero = document.getElementById('pack-hero');
-            const bottomCta = document.getElementById('bottom-cta');
-            const sticky = document.getElementById('sticky-pack-cta');
-            const container = document.getElementById('sfx-list');
-            const search = document.getElementById('search-box');
-
-            if(!packName) {
-                hero.style.display = 'none';
-                bottomCta.style.display = 'none';
-                sticky.classList.remove('visible');
-                container.innerHTML = '';
-                search.value = '';
-                return;
-            }
-
-            currentPackData = allData.filter(d => d.PACK_NAME === packName);
-            
-            // --- LOGICA PREZZI ---
-            const firstItem = currentPackData[0];
-            let packPrice = parseFloat(firstItem.Prezzo);
-            // Se il prezzo è mancante, 0 o NaN, usa 49.00 come fallback di sicurezza
-            if(isNaN(packPrice) || packPrice <= 0) packPrice = 49.00; 
-
-            currentPackInfo = { name: packName, price: packPrice };
-
-            // UI Updates
-            document.getElementById('hero-title').textContent = packName;
-            
-            // --- LOGICA TRADUZIONE DESCRIZIONE ---
-            // Cerca la colonna STORE_DESCRIPTION_IT se siamo in Italiano, altrimenti usa STORE_DESCRIPTION
-            let descHtml = "";
-            if (currentLang === 'it' && firstItem.STORE_DESCRIPTION_IT) {
-                descHtml = firstItem.STORE_DESCRIPTION_IT;
-            } else {
-                descHtml = firstItem.STORE_DESCRIPTION;
-            }
-            
-            document.getElementById('hero-desc').innerHTML = DOMPurify.sanitize(descHtml || "");
-            
-            document.getElementById('hero-price').textContent = packPrice.toFixed(2) + "€";
-            document.getElementById('sticky-pack-name').textContent = packName;
-            document.getElementById('sticky-pack-price').textContent = packPrice.toFixed(2) + "€";
-            
-            hero.style.display = 'block';
-            bottomCta.style.display = 'block';
-            sticky.classList.add('visible');
-            
-            document.getElementById('audio-bar').style.bottom = "50px"; 
-
+    // NUOVA FUNZIONE PER CARICARNE ALTRI
+    window.loadMoreItems = function() {
+        displayLimit += 100; // Ne aggiunge altri 100
+        // Se c'è una ricerca attiva, ri-filtriamo, altrimenti prendiamo tutto il pack
+        const searchTerm = document.getElementById('search-box').value.toLowerCase();
+        if (searchTerm) {
+            filterList(searchTerm);
+        } else {
             renderList(currentPackData);
         }
+    };
 
-        function filterList(term) {
-            term = term.toLowerCase();
-            const filtered = currentPackData.filter(item => 
-                (item.FILE_TITLE && item.FILE_TITLE.toLowerCase().includes(term)) ||
-                (item.TAGS && item.TAGS.toLowerCase().includes(term))
-            );
-            renderList(filtered);
+    // --- AUDIO PLAYER ---
+    function playSong(url, title, btn) {
+        const bar = document.getElementById('audio-bar');
+        
+        if (!url || url === 'undefined' || url.length < 5) {
+            alert("Audio preview not available.");
+            return;
         }
 
-        // --- FUNZIONE FIX URL SUNO ---
-        // Converte link pagina web Suno in link CDN MP3
-        function fixSunoUrl(url) {
-            if (!url) return "";
-            if (url.includes("suno.com/song/")) {
-                // Estrai ID: https://suno.com/song/UUID -> UUID
-                try {
-                    const parts = url.split("song/");
-                    const uuid = parts[1].split("/")[0].split("?")[0]; 
-                    return `https://cdn1.suno.ai/${uuid}.mp3`;
-                } catch(e) {
-                    console.error("Errore parsing Suno URL", e);
-                    return url; // Ritorna originale se fallisce
-                }
-            }
-            return url;
+        document.querySelectorAll('.play-btn').forEach(b => {
+            b.classList.remove('playing');
+            b.innerHTML = '<i class="fas fa-play"></i>';
+        });
+
+        if (activeAudioBtn === btn && !player.paused) {
+            player.pause();
+            activeAudioBtn = null;
+            return;
         }
 
-        function renderList(items) {
-            const container = document.getElementById('sfx-list');
-            container.innerHTML = '';
-            const t = translations[currentLang];
-            const limit = document.getElementById('search-box').value ? items.length : 100;
-            const displayItems = items.slice(0, limit);
+        player.src = url;
+        player.play().catch(e => {
+            console.error("Play error", e);
+            alert("Playback error. Check format.");
+        });
+        
+        document.getElementById('playing-now-text').textContent = title;
+        bar.classList.add('visible');
+        
+        btn.classList.add('playing');
+        btn.innerHTML = '<i class="fas fa-pause"></i>';
+        activeAudioBtn = btn;
 
-            if(displayItems.length === 0) {
-                container.innerHTML = `<p style="grid-column:1/-1; color:#777; text-align:center;">${t.empty_search}</p>`;
-                return;
-            }
+        player.onended = () => {
+            btn.classList.remove('playing');
+            btn.innerHTML = '<i class="fas fa-play"></i>';
+            activeAudioBtn = null;
+        };
+    }
 
-            displayItems.forEach(item => {
-                let price = parseFloat(item.Prezzo);
-                // Fallback prezzo singolo a 0.99 se vuoto nello sheet
-                if(isNaN(price) || price <= 0) price = 0.99;
-                
-                // FIX URL AUDIO
-                const rawUrl = item.link_lungo; 
-                const audioUrl = fixSunoUrl(rawUrl);
+    // --- CARRELLO ---
+    window.addToCart = function(id, title, price) {
+        shoppingCart.push({ id: id, title: title, price: price });
+        updateCartBadge();
+    };
 
+    window.addFullPackToCart = function() {
+        shoppingCart.push({
+            id: 'PACK-' + currentPackInfo.name.replace(/\s+/g, '-').toUpperCase(),
+            title: 'FULL PACK: ' + currentPackInfo.name,
+            price: currentPackInfo.price
+        });
+        updateCartBadge();
+        openCartModal(); 
+    };
+
+    function updateCartBadge() {
+        const badge = document.getElementById('cart-badge');
+        const count = document.getElementById('cart-count');
+        if(shoppingCart.length > 0) {
+            badge.style.display = 'flex';
+            count.innerText = shoppingCart.length;
+            badge.style.animation = 'none';
+            badge.offsetHeight; 
+            badge.style.animation = 'popIn 0.3s';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    window.openCartModal = function() {
+        const container = document.getElementById('cart-items-container');
+        const totalEl = document.getElementById('modal-cart-total');
+        const t = translations[currentLang];
+        container.innerHTML = '';
+        if(shoppingCart.length === 0) {
+            container.innerHTML = `<p style="color:#777; text-align:center;">${t.empty_cart}</p>`;
+            totalEl.innerText = "0.00€";
+        } else {
+            let total = 0;
+            shoppingCart.forEach((item, index) => {
+                total += item.price;
                 const div = document.createElement('div');
-                div.className = 'sfx-item';
+                div.className = 'cart-item';
                 div.innerHTML = `
-                    <button class="play-btn" onclick="playSong('${audioUrl}', '${item.FILE_TITLE.replace(/'/g, "\\'")}', this)">
-                        <i class="fas fa-play"></i>
-                    </button>
-                    <div class="sfx-info">
-                        <span class="sfx-title" title="${item.FILE_TITLE}">${item.FILE_TITLE}</span>
-                        <div class="sfx-meta">
-                            <span><i class="far fa-clock"></i> ${item.Durata || ''}</span>
-                            <span><i class="fas fa-tag"></i> ${item.CATEGORY || 'SFX'}</span>
-                        </div>
+                    <div class="cart-item-info">
+                        <strong>${item.title}</strong><br>
+                        <span style="color:#888;">${item.price.toFixed(2)}€</span>
                     </div>
-                    <button class="buy-single-btn" onclick="addToCart('${item.ID}', '${item.FILE_TITLE.replace(/'/g, "\\'")}', ${price})">
-                        ${t.buy_single} ${price.toFixed(2)}€
+                    <button class="cart-remove-btn" onclick="removeFromCart(${index})">
+                        <i class="fas fa-times"></i>
                     </button>
                 `;
                 container.appendChild(div);
             });
+            totalEl.innerText = total.toFixed(2) + "€";
         }
+        document.getElementById('cart-modal').style.display = 'flex';
+    };
 
-        // --- AUDIO PLAYER ---
-        function playSong(url, title, btn) {
-            const bar = document.getElementById('audio-bar');
-            
-            // Validazione URL
-            if (!url || url === 'undefined' || url.length < 5) {
-                alert("Audio preview not available.");
-                return;
-            }
+    window.closeCartModal = function() {
+        document.getElementById('cart-modal').style.display = 'none';
+    };
 
-            // Reset UI precedente
-            document.querySelectorAll('.play-btn').forEach(b => {
-                b.classList.remove('playing');
-                b.innerHTML = '<i class="fas fa-play"></i>';
-            });
+    window.removeFromCart = function(index) {
+        shoppingCart.splice(index, 1);
+        updateCartBadge();
+        openCartModal(); 
+    };
 
-            // Toggle Pausa se stesso brano
-            if (activeAudioBtn === btn && !player.paused) {
-                player.pause();
-                activeAudioBtn = null;
-                return;
-            }
+    window.proceedToCheckout = function() {
+        if(shoppingCart.length === 0) return;
+        const btn = document.querySelector('.checkout-btn');
+        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Wait...`;
+        const cartParam = encodeURIComponent(JSON.stringify(shoppingCart));
+        window.location.href = `${CHECKOUT_URL}?cart=${cartParam}`;
+    };
 
-            // Avvio nuovo brano
-            player.src = url;
-            player.play().catch(e => {
-                console.error("Play error", e);
-                // Se è un errore di formato Suno, proviamo un ultimo tentativo con link diretto se fallisce
-                alert("Playback error. Check format.");
-            });
-            
-            document.getElementById('playing-now-text').textContent = title;
-            bar.classList.add('visible');
-            
-            btn.classList.add('playing');
-            btn.innerHTML = '<i class="fas fa-pause"></i>';
-            activeAudioBtn = btn;
+    window.onclick = function(event) {
+        const modal = document.getElementById('cart-modal');
+        if (event.target == modal) closeCartModal();
+    }
 
-            player.onended = () => {
-                btn.classList.remove('playing');
-                btn.innerHTML = '<i class="fas fa-play"></i>';
-                activeAudioBtn = null;
-            };
-        }
-
-        // --- GESTIONE CARRELLO (MODALE) ---
-        window.addToCart = function(id, title, price) {
-            shoppingCart.push({ id: id, title: title, price: price });
-            updateCartBadge();
-        };
-
-        window.addFullPackToCart = function() {
-            shoppingCart.push({
-                id: 'PACK-' + currentPackInfo.name.replace(/\s+/g, '-').toUpperCase(),
-                title: 'FULL PACK: ' + currentPackInfo.name,
-                price: currentPackInfo.price
-            });
-            updateCartBadge();
-            openCartModal(); 
-        };
-
-        function updateCartBadge() {
-            const badge = document.getElementById('cart-badge');
-            const count = document.getElementById('cart-count');
-            
-            if(shoppingCart.length > 0) {
-                badge.style.display = 'flex';
-                count.innerText = shoppingCart.length;
-                badge.style.animation = 'none';
-                badge.offsetHeight; 
-                badge.style.animation = 'popIn 0.3s';
-            } else {
-                badge.style.display = 'none';
-            }
-        }
-
-        window.openCartModal = function() {
-            const container = document.getElementById('cart-items-container');
-            const totalEl = document.getElementById('modal-cart-total');
-            const t = translations[currentLang];
-            
-            container.innerHTML = '';
-            
-            if(shoppingCart.length === 0) {
-                container.innerHTML = `<p style="color:#777; text-align:center;">${t.empty_cart}</p>`;
-                totalEl.innerText = "0.00€";
-            } else {
-                let total = 0;
-                shoppingCart.forEach((item, index) => {
-                    total += item.price;
-                    const div = document.createElement('div');
-                    div.className = 'cart-item';
-                    div.innerHTML = `
-                        <div class="cart-item-info">
-                            <strong>${item.title}</strong><br>
-                            <span style="color:#888;">${item.price.toFixed(2)}€</span>
-                        </div>
-                        <button class="cart-remove-btn" onclick="removeFromCart(${index})">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    `;
-                    container.appendChild(div);
-                });
-                totalEl.innerText = total.toFixed(2) + "€";
-            }
-            
-            document.getElementById('cart-modal').style.display = 'flex';
-        };
-
-        window.closeCartModal = function() {
-            document.getElementById('cart-modal').style.display = 'none';
-        };
-
-        window.removeFromCart = function(index) {
-            shoppingCart.splice(index, 1);
-            updateCartBadge();
-            openCartModal(); 
-        };
-
-        window.proceedToCheckout = function() {
-            if(shoppingCart.length === 0) return;
-            
-            const btn = document.querySelector('.checkout-btn');
-            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Wait...`;
-            
-            const cartParam = encodeURIComponent(JSON.stringify(shoppingCart));
-            window.location.href = `${CHECKOUT_URL}?cart=${cartParam}`;
-        };
-
-        window.onclick = function(event) {
-            const modal = document.getElementById('cart-modal');
-            if (event.target == modal) closeCartModal();
-        }
-
-        init();
-    </script>
+    init();
+</script>
 </body>
 </html>
+
 
 
