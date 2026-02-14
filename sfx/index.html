@@ -335,8 +335,6 @@
     let shoppingCart = [];
     let activeAudioBtn = null;
     let currentPackInfo = { name: '', price: 0 };
-    
-    // NUOVA VARIABILE PER IL LIMITE VISIVO
     let displayLimit = 100; 
 
     const player = document.getElementById('global-player');
@@ -407,8 +405,6 @@
         }
 
         currentPackData = allData.filter(d => d.PACK_NAME === packName);
-        
-        // RESETTA IL LIMITE QUANDO CAMBI PACK
         displayLimit = 100; 
 
         const firstItem = currentPackData[0];
@@ -441,7 +437,6 @@
 
     function filterList(term) {
         term = term.toLowerCase();
-        // Se c'è una ricerca, mostriamo più risultati perché sono filtrati
         displayLimit = term ? 500 : 100; 
         
         const filtered = currentPackData.filter(item => 
@@ -466,13 +461,12 @@
         return url;
     }
 
-    // === NUOVA FUNZIONE RENDER CON "LOAD MORE" ===
+    // === RENDER LIST CON METADATI AGGIUNTIVI ===
     function renderList(items) {
         const container = document.getElementById('sfx-list');
         container.innerHTML = '';
         const t = translations[currentLang];
         
-        // Usa la variabile displayLimit per decidere quanti mostrarne
         const visibleItems = items.slice(0, displayLimit);
 
         if(visibleItems.length === 0) {
@@ -487,6 +481,7 @@
             const rawUrl = item.link_lungo; 
             const audioUrl = fixSunoUrl(rawUrl);
 
+            // QUI SOTTO HO AGGIUNTO SUB_CATEGORY E MODE
             const div = document.createElement('div');
             div.className = 'sfx-item';
             div.innerHTML = `
@@ -496,8 +491,10 @@
                 <div class="sfx-info">
                     <span class="sfx-title" title="${item.FILE_TITLE}">${item.FILE_TITLE}</span>
                     <div class="sfx-meta">
-                        <span><i class="far fa-clock"></i> ${item.Durata || ''}</span>
+                        <span><i class="far fa-clock"></i> ${item.Durata || '--'}</span>
                         <span><i class="fas fa-tag"></i> ${item.CATEGORY || 'SFX'}</span>
+                        ${item.SUB_CATEGORY ? `<span><i class="fas fa-folder-open"></i> ${item.SUB_CATEGORY}</span>` : ''}
+                        ${item.MODE ? `<span><i class="fas fa-wave-square"></i> ${item.MODE}</span>` : ''}
                     </div>
                 </div>
                 <button class="buy-single-btn" onclick="addToCart('${item.ID}', '${item.FILE_TITLE.replace(/'/g, "\\'")}', ${price})">
@@ -507,9 +504,7 @@
             container.appendChild(div);
         });
 
-        // SE CI SONO PIÙ ELEMENTI DI QUELLI VISUALIZZATI, MOSTRA IL BOTTONE "LOAD MORE"
         if (items.length > displayLimit) {
-            const remaining = items.length - displayLimit;
             const loadMoreDiv = document.createElement('div');
             loadMoreDiv.style.gridColumn = "1/-1";
             loadMoreDiv.style.textAlign = "center";
@@ -528,10 +523,8 @@
         }
     }
 
-    // NUOVA FUNZIONE PER CARICARNE ALTRI
     window.loadMoreItems = function() {
-        displayLimit += 100; // Ne aggiunge altri 100
-        // Se c'è una ricerca attiva, ri-filtriamo, altrimenti prendiamo tutto il pack
+        displayLimit += 100;
         const searchTerm = document.getElementById('search-box').value.toLowerCase();
         if (searchTerm) {
             filterList(searchTerm);
@@ -667,6 +660,7 @@
 </script>
 </body>
 </html>
+
 
 
 
