@@ -10,215 +10,230 @@
       gtag('config', 'G-KD9H9P2RKT');
     </script>
 
-    <!-- Dati Strutturati per Google (JSON-LD) - ADATTATI PER SFX -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "MusicGroup",
-      "name": "Fausto Fusetti",
+      "name": "Fausto Fusetti SFX",
       "url": "https://rickym2025.github.io/fausto-fusetti-links/sfx/index.html",
       "image": "https://rickym2025.github.io/fausto-fusetti-links/logo6.jpg",
-      "description": "Libreria di effetti sonori (SFX) professionali per sviluppatori di videogiochi e creatori di contenuti.",
-      "offers": {
-        "@type": "Offer",
-        "itemOffered": {
-          "@type": "Service",
-          "name": "SFX Sound Library & Packs"
-        }
-      }
+      "description": "Professional SFX Library for Game Devs & Creators.",
+      "offers": { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "SFX Sound Packs" } }
     }
     </script>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="referrer" content="origin-when-cross-origin" />
     <title>SFX Sound Library - Fausto Fusetti</title>
     
-    <!-- FAVICONS (Percorsi relativi ../) -->
     <link rel="icon" href="../favicon.ico?v=2" sizes="any" type="image/x-icon">
     <link rel="icon" href="../icon-192.png?v=2" sizes="192x192" type="image/png">
     <link rel="apple-touch-icon" href="../apple-touch-icon.png?v=2">
 
-    <!-- FONTS & ICONS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
         :root { 
-            --primary-color: #9d4edd; /* Viola SFX */
+            --primary-color: #9d4edd; 
             --accent-color: #e0aaff; 
             --bg-dark: #0a0a0a; 
-            --card-bg: rgba(20, 20, 20, 0.85);
+            --card-bg: rgba(20, 20, 20, 0.9);
             --text-gray: #ccc;
             --success-color: #00e676;
+            --danger-color: #ff5252;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Montserrat', sans-serif; background-color: var(--bg-dark); color: #f0f0f0; overflow-x: hidden; min-height: 100vh; padding-top: 80px; }
+        body { font-family: 'Montserrat', sans-serif; background-color: var(--bg-dark); color: #f0f0f0; overflow-x: hidden; min-height: 100vh; padding-top: 80px; padding-bottom: 120px; }
         
-        /* VIDEO BACKGROUND - OTTIMIZZATO PER SFX (Più scuro e sfocato) */
         #background-video { 
             position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; 
-            z-index: -100; object-fit: cover; 
-            filter: brightness(0.25) blur(3px); /* Sfocatura per renderlo più astratto */
-            transform: scale(1.05); /* Evita bordi sfocati */
+            z-index: -100; object-fit: cover; filter: brightness(0.25) blur(3px); transform: scale(1.05); 
         }
 
-        /* NAVIGATION BAR */
+        /* NAVBAR */
         .navbar {
             position: fixed; top: 0; left: 0; width: 100%; 
-            background: rgba(0,0,0,0.9); backdrop-filter: blur(10px);
-            border-bottom: 1px solid #333; z-index: 1000;
+            background: rgba(0,0,0,0.95); border-bottom: 1px solid #333; z-index: 1000;
             padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
         }
         .nav-links { display: flex; gap: 15px; }
-        .nav-btn { 
-            color: #fff; text-decoration: none; font-size: 0.9em; 
-            padding: 8px 15px; border: 1px solid #444; border-radius: 20px;
-            transition: 0.3s;
-        }
+        .nav-btn { color: #fff; text-decoration: none; font-size: 0.9em; padding: 8px 15px; border: 1px solid #444; border-radius: 20px; transition: 0.3s; }
         .nav-btn:hover { background: var(--primary-color); border-color: var(--primary-color); }
-        .nav-btn.active { background: var(--primary-color); border-color: var(--primary-color); }
+        
+        #lang-toggle { background: transparent; border: 1px solid #fff; color: #fff; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.9em; }
 
-        /* LANGUAGE SWITCHER */
-        #lang-toggle {
-            background: transparent; border: 1px solid #fff; color: #fff;
-            padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.9em;
-        }
-        #lang-toggle:hover { background: #fff; color: #000; }
-
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; padding-bottom: 120px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
         
         /* HEADER */
-        header { text-align: center; margin-bottom: 40px; margin-top: 20px; }
-        .logo { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary-color); margin-bottom: 15px; box-shadow: 0 0 25px rgba(157, 78, 221, 0.4); object-fit: cover; }
-        h1 { font-size: 2.5em; color: white; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
-        p.subtitle { color: var(--text-gray); font-size: 1.1em; max-width: 700px; margin: 0 auto; }
+        header { text-align: center; margin-bottom: 30px; margin-top: 10px; }
+        .logo { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--primary-color); margin-bottom: 10px; box-shadow: 0 0 20px rgba(157, 78, 221, 0.4); object-fit: cover; }
+        h1 { font-size: 2.2em; color: white; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* CARRELLO FLOTTANTE */
-        #cart-status { 
-            position: fixed; bottom: 90px; right: 20px; 
-            background: linear-gradient(135deg, var(--primary-color), #5a189a); 
-            color: white; padding: 15px 25px; border-radius: 50px; 
-            box-shadow: 0 5px 20px rgba(0,0,0,0.6); 
-            cursor: pointer; font-weight: 700; z-index: 2000; 
-            border: 2px solid rgba(255,255,255,0.2); 
-            display: none; animation: popIn 0.3s;
+        /* CARRELLO FLOTTANTE (Badge) */
+        #cart-badge { 
+            position: fixed; top: 85px; right: 20px; 
+            background: var(--primary-color); color: white; 
+            padding: 10px 20px; border-radius: 30px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5); 
+            cursor: pointer; font-weight: 700; z-index: 900; 
+            display: none; align-items: center; gap: 10px;
+            animation: popIn 0.3s;
         }
-        #cart-status:hover { transform: scale(1.05); box-shadow: 0 0 25px var(--primary-color); }
+        #cart-badge:hover { transform: scale(1.05); }
 
-        /* CONTROLLI SELEZIONE */
-        .controls-card { background: var(--card-bg); padding: 25px; border-radius: 15px; border: 1px solid #333; margin-bottom: 30px; }
-        .selector-group { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end; }
+        /* CONTROLLI */
+        .controls-card { background: var(--card-bg); padding: 20px; border-radius: 15px; border: 1px solid #333; margin-bottom: 30px; }
+        .selector-group { display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end; }
         .input-wrapper { flex: 1; min-width: 280px; }
-        label { display: block; margin-bottom: 8px; font-size: 0.85em; color: var(--accent-color); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-        
-        select, input { width: 100%; padding: 14px; background: #000; border: 1px solid #444; border-radius: 8px; color: white; font-size: 1em; outline: none; transition: 0.3s; }
+        label { display: block; margin-bottom: 6px; font-size: 0.8em; color: var(--accent-color); font-weight: 700; text-transform: uppercase; }
+        select, input { width: 100%; padding: 12px; background: #000; border: 1px solid #444; border-radius: 8px; color: white; font-size: 1em; outline: none; }
         select:focus, input:focus { border-color: var(--primary-color); }
 
-        /* PACK HERO CARD (Acquisto Full) */
-        #pack-hero { display: none; background: linear-gradient(to right, rgba(20,20,20,0.9), rgba(40,10,50,0.8)); border: 1px solid var(--primary-color); padding: 30px; border-radius: 15px; margin-bottom: 30px; position: relative; overflow: hidden; }
-        #pack-hero::before { content:''; position: absolute; top:0; left:0; width:5px; height:100%; background: var(--primary-color); }
+        /* HERO CARD */
+        #pack-hero { display: none; background: linear-gradient(to right, #1a1a1a, #2a1a2a); border: 1px solid var(--primary-color); padding: 30px; border-radius: 15px; margin-bottom: 30px; position: relative; }
         .hero-content { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px; }
-        .hero-text { flex: 1; min-width: 300px; text-align: left; }
-        .hero-text h2 { color: var(--accent-color); font-size: 2em; margin-bottom: 10px; }
-        .hero-text p { color: #ccc; line-height: 1.5; font-size: 0.95em; }
-        
+        .hero-text h2 { color: var(--accent-color); font-size: 1.8em; margin-bottom: 10px; }
         .buy-full-btn {
             background: var(--success-color); color: #000;
-            padding: 15px 30px; border-radius: 30px;
+            padding: 12px 25px; border-radius: 30px;
             font-size: 1.1em; font-weight: 800;
             border: none; cursor: pointer; text-transform: uppercase;
-            box-shadow: 0 0 20px rgba(0, 230, 118, 0.4);
+            box-shadow: 0 0 15px rgba(0, 230, 118, 0.3);
             transition: 0.3s; white-space: nowrap;
         }
         .buy-full-btn:hover { transform: scale(1.05); background: #69f0ae; }
-        .buy-full-btn i { margin-right: 10px; }
 
-        /* GRIGLIA SFX */
-        .sfx-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 15px; }
-        
+        /* LISTA SUONI */
+        .sfx-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
         .sfx-item { 
             background: rgba(30, 30, 30, 0.6); border: 1px solid #333; 
-            border-radius: 10px; padding: 15px; display: flex; align-items: center; gap: 15px; 
-            transition: all 0.2s ease; 
+            border-radius: 8px; padding: 12px; display: flex; align-items: center; gap: 12px; 
+            transition: 0.2s; 
         }
         .sfx-item:hover { background: rgba(50, 50, 50, 0.8); border-color: #555; }
         .sfx-item.playing { border-color: var(--primary-color); background: rgba(157, 78, 221, 0.15); }
-
         .play-btn { 
-            width: 45px; height: 45px; border-radius: 50%; 
+            width: 40px; height: 40px; border-radius: 50%; 
             border: 2px solid var(--primary-color); background: transparent; color: var(--primary-color); 
             cursor: pointer; display: flex; align-items: center; justify-content: center; 
-            font-size: 1.1em; transition: 0.2s; flex-shrink: 0; 
+            font-size: 1em; flex-shrink: 0; transition: 0.2s;
         }
         .play-btn:hover { background: var(--primary-color); color: white; }
-        .sfx-item.playing .play-btn { background: var(--primary-color); color: white; animation: pulse 1.5s infinite; }
-
-        .sfx-info { flex-grow: 1; text-align: left; overflow: hidden; }
-        .sfx-title { font-weight: 600; color: #fff; font-size: 0.95em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
-        .sfx-meta { font-size: 0.8em; color: var(--text-gray); display: flex; gap: 10px; margin-top: 4px; }
-        
+        .sfx-info { flex-grow: 1; overflow: hidden; }
+        .sfx-title { font-weight: 600; font-size: 0.9em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+        .sfx-meta { font-size: 0.75em; color: #888; margin-top: 3px; }
         .buy-single-btn { 
-            background: transparent; border: 1px solid #666; color: #aaa; 
-            padding: 6px 12px; border-radius: 15px; cursor: pointer; font-size: 0.8em; transition: 0.2s; 
+            background: transparent; border: 1px solid #555; color: #aaa; 
+            padding: 5px 10px; border-radius: 12px; cursor: pointer; font-size: 0.8em; transition: 0.2s; 
         }
         .buy-single-btn:hover { border-color: var(--accent-color); color: var(--accent-color); }
 
-        /* PLAYER BARRA IN BASSO */
+        /* STICKY BOTTOM BAR (Call to Action Pack) */
+        #sticky-pack-cta {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: rgba(0,0,0,0.95); border-top: 2px solid var(--success-color);
+            padding: 10px 20px; display: none; justify-content: space-between; align-items: center;
+            z-index: 998; /* Sotto al player audio se necessario, o sopra */
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+        }
+        #sticky-pack-cta.visible { display: flex; }
+        .sticky-text { font-weight: bold; color: white; font-size: 1.1em; }
+
+        /* PLAYER BAR (Sempre in basso, sopra la sticky CTA se c'è) */
         #audio-bar { 
             position: fixed; bottom: 0; left: 0; width: 100%; 
             background: #111; border-top: 1px solid var(--primary-color); 
-            padding: 10px 20px; display: flex; align-items: center; justify-content: center; gap: 20px;
+            padding: 10px; display: flex; align-items: center; justify-content: center; gap: 15px;
             transform: translateY(100%); transition: transform 0.3s; z-index: 999; 
         }
         #audio-bar.visible { transform: translateY(0); }
-        #playing-now-text { color: var(--accent-color); font-size: 0.9em; max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        #playing-now-text { color: var(--accent-color); font-size: 0.85em; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        #loader { margin-top: 50px; font-size: 1.2em; color: var(--primary-color); }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(157, 78, 221, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(157, 78, 221, 0); } 100% { box-shadow: 0 0 0 0 rgba(157, 78, 221, 0); } }
-        @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+        /* MODALE CARRELLO */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
+            display: none; justify-content: center; align-items: center;
+            z-index: 2000;
+        }
+        .modal-content {
+            background: #1e1e1e; padding: 30px; border-radius: 15px;
+            width: 90%; max-width: 500px; border: 1px solid #444;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            position: relative; text-align: left;
+        }
+        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 1.5em; cursor: pointer; color: #888; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #333; }
+        .cart-item-info { font-size: 0.9em; }
+        .cart-remove-btn { color: var(--danger-color); background: none; border: none; cursor: pointer; font-size: 1.1em; padding: 5px; }
+        .cart-total-row { display: flex; justify-content: space-between; font-weight: bold; margin-top: 20px; font-size: 1.2em; color: var(--success-color); }
+        .checkout-btn { 
+            width: 100%; background: var(--success-color); color: black; border: none; 
+            padding: 15px; font-weight: bold; font-size: 1.1em; border-radius: 30px; 
+            margin-top: 20px; cursor: pointer; transition: 0.2s; 
+        }
+        .checkout-btn:hover { background: #69f0ae; }
 
-        /* MOBILE */
+        #loader { margin-top: 50px; font-size: 1.2em; color: var(--primary-color); text-align: center; }
+
         @media (max-width: 768px) {
             .nav-links { display: none; }
             .hero-content { flex-direction: column; text-align: center; }
-            .hero-text { text-align: center; }
-            #playing-now-text { display: none; }
-            h1 { font-size: 1.8em; }
+            #sticky-pack-cta { flex-direction: column; gap: 10px; padding-bottom: 20px; }
+            #audio-bar { bottom: 0; }
+            #audio-bar.has-sticky { bottom: 80px; } /* Se c'è la sticky bar, alza il player */
         }
     </style>
 </head>
 <body>
 
-    <!-- VIDEO SFONDO -->
     <video autoplay muted loop playsinline id="background-video">
         <source src="../video_sfondo_compressed.mp4" type="video/mp4">
     </video>
 
-    <!-- NAVIGATION BAR -->
+    <!-- NAVBAR -->
     <nav class="navbar">
-        <a href="../index.html" style="font-weight:bold; color:var(--accent-color); text-decoration:none; font-size:1.2em;">FF SFX</a>
+        <a href="../index.html" style="font-weight:800; color:var(--accent-color); text-decoration:none; font-size:1.4em;">FF SFX</a>
         <div class="nav-links">
-            <a href="../index.html" class="nav-btn" data-tr="nav_home">Home</a>
-            <a href="../jukebox/index.html" class="nav-btn" data-tr="nav_jukebox">Jukebox</a>
-            <a href="../jingle/index.html" class="nav-btn" data-tr="nav_jingle">Jingles</a>
-            <a href="../blog/index.html" class="nav-btn" data-tr="nav_blog">Blog</a>
+            <a href="../index.html" class="nav-btn">Home</a>
+            <a href="../jukebox/index.html" class="nav-btn">Jukebox</a>
+            <a href="../jingle/index.html" class="nav-btn">Jingles</a>
+            <a href="../blog/index.html" class="nav-btn">Blog</a>
         </div>
         <button id="lang-toggle" onclick="toggleLanguage()">🇮🇹 IT</button>
     </nav>
 
-    <!-- CARRELLO FLOTTANTE -->
-    <div id="cart-status" onclick="checkout()">
-        <i class="fas fa-shopping-cart"></i> <span id="cart-count">0</span> | <span id="cart-total">0.00</span>€
+    <!-- CARRELLO BADGE -->
+    <div id="cart-badge" onclick="openCartModal()">
+        <i class="fas fa-shopping-cart"></i> <span id="cart-count">0</span>
+    </div>
+
+    <!-- MODALE CARRELLO -->
+    <div id="cart-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeCartModal()">&times;</span>
+            <h2 style="margin-bottom: 20px; color: var(--primary-color);" data-tr="cart_title">Your Cart</h2>
+            <div id="cart-items-container" style="max-height: 300px; overflow-y: auto;">
+                <!-- Oggetti carrello qui -->
+            </div>
+            <div class="cart-total-row">
+                <span>Total:</span>
+                <span id="modal-cart-total">0.00€</span>
+            </div>
+            <button class="checkout-btn" onclick="proceedToCheckout()">
+                <i class="fas fa-lock"></i> <span data-tr="checkout_btn">Proceed to Checkout</span>
+            </button>
+        </div>
     </div>
 
     <div class="container">
         <header>
             <img src="../logo6.jpg" alt="FF Musica" class="logo">
             <h1 data-tr="title">Pro SFX Library</h1>
-            <p class="subtitle" data-tr="subtitle">High-quality sound effects for Game Developers, Filmmakers, and Content Creators.</p>
+            <p style="color:#aaa;" data-tr="subtitle">Professional Sound Effects.</p>
         </header>
 
         <div class="controls-card">
@@ -231,118 +246,106 @@
                 </div>
                 <div class="input-wrapper">
                     <label for="search-box" data-tr="search_label">Search Sound</label>
-                    <input type="text" id="search-box" placeholder="e.g. Coin, Laser, Impact..." disabled>
+                    <input type="text" id="search-box" placeholder="e.g. Coin, Laser..." disabled>
                 </div>
             </div>
         </div>
 
-        <!-- HERO CARD PER ACQUISTO FULL PACK -->
+        <!-- HERO PACK (Top) -->
         <div id="pack-hero">
             <div class="hero-content">
                 <div class="hero-text">
                     <h2 id="hero-title">Volume Name</h2>
-                    <div id="hero-desc">Pack description goes here.</div>
-                    <p style="margin-top: 10px; font-size: 0.9em; color: #aaa;">
-                        <i class="fas fa-file-audio"></i> <span id="hero-count">0</span> <span data-tr="sounds_count">Sounds</span> 
-                        &bull; <i class="fas fa-check-circle"></i> Royalty Free
-                    </p>
+                    <div id="hero-desc"></div>
                 </div>
                 <button class="buy-full-btn" onclick="addFullPackToCart()">
-                    <i class="fas fa-download"></i> <span data-tr="buy_pack">Buy Full Pack</span> - <span id="hero-price">49.00€</span>
+                    <i class="fas fa-download"></i> <span data-tr="buy_pack">Buy Full Pack</span> - <span id="hero-price">0.00€</span>
                 </button>
             </div>
         </div>
 
-        <div id="loader"><i class="fas fa-spinner fa-spin"></i> <span data-tr="connecting">Connecting to Database...</span></div>
+        <div id="loader"><i class="fas fa-spinner fa-spin"></i> <span data-tr="connecting">Connecting...</span></div>
         <div id="sfx-list" class="sfx-grid"></div>
+        
+        <!-- Bottone Fondo Lista -->
+        <div id="bottom-cta" style="display:none; text-align:center; margin-top:40px;">
+            <button class="buy-full-btn" onclick="addFullPackToCart()">
+                <i class="fas fa-layer-group"></i> <span data-tr="buy_pack_bottom">Get the Complete Pack Now</span>
+            </button>
+        </div>
     </div>
 
-    <!-- AUDIO PLAYER BAR -->
+    <!-- STICKY PACK CTA (Barra fissa in basso per acquisto) -->
+    <div id="sticky-pack-cta">
+        <div class="sticky-text"><span id="sticky-pack-name">Pack</span></div>
+        <button class="buy-full-btn" style="font-size: 0.9em; padding: 8px 15px;" onclick="addFullPackToCart()">
+            <span data-tr="buy_now">Buy Now</span> <span id="sticky-pack-price"></span>
+        </button>
+    </div>
+
+    <!-- AUDIO PLAYER (Barra nera in basso) -->
     <div id="audio-bar">
         <span id="playing-now-text"></span>
-        <audio id="global-player" controls controlsList="nodownload" style="width: 100%; max-width: 500px;"></audio>
+        <audio id="global-player" controls controlsList="nodownload" style="width: 100%; max-width: 400px;"></audio>
     </div>
 
-    <!-- LOGICA JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
     <script>
         // === CONFIGURAZIONE ===
-        // URL AGGIORNATO DELLO SCRIPT SFX
         const GAS_URL = 'https://script.google.com/macros/s/AKfycbzToW5jq4pVJ5so_ISZnL3ocCudihMucgQP_t60ioM4yqIAzcsyEeh_mv3rrNsgwrA/exec'; 
-        
-        // WEBHOOK N8N (Checkout)
         const CHECKOUT_URL = 'https://n8n.labottegadeldelta.it/webhook/crea-checkout-sfx';
-
-        // Prezzo Standard per PACK INTERO
-        const FULL_PACK_PRICE_DEFAULT = 49.00;
 
         // TRADUZIONI
         const translations = {
             en: {
                 nav_home: "Home", nav_jukebox: "Jukebox", nav_jingle: "Jingles", nav_blog: "Blog",
-                title: "Pro SFX Library",
-                subtitle: "High-quality sound effects for Game Developers, Filmmakers, and Content Creators.",
-                select_pack: "Select Volume / Pack",
-                loading: "Loading library...",
-                search_label: "Search Sound",
-                search_placeholder: "e.g. Coin, Laser, Impact...",
-                connecting: "Connecting to Database...",
-                buy_pack: "Buy Full Pack",
-                sounds_count: "Sounds",
-                buy_single: "Add",
-                cart_wait: "Processing...",
-                empty_search: "No sounds found.",
-                play_now: "Playing:"
+                title: "Pro SFX Library", subtitle: "Professional Sound Effects.",
+                select_pack: "Select Volume / Pack", loading: "Loading...",
+                search_label: "Search Sound", search_placeholder: "e.g. Coin, Laser...",
+                connecting: "Connecting...", buy_pack: "Buy Full Pack",
+                buy_pack_bottom: "Get the Complete Pack Now",
+                buy_single: "Add", cart_title: "Your Cart", checkout_btn: "Proceed to Checkout",
+                empty_cart: "Cart is empty.", empty_search: "No sounds found.",
+                play_now: "Playing:", buy_now: "Buy Now"
             },
             it: {
                 nav_home: "Home", nav_jukebox: "Jukebox", nav_jingle: "Jingles", nav_blog: "Blog",
-                title: "Libreria Effetti Sonori",
-                subtitle: "Effetti sonori professionali per Sviluppatori di Giochi, Video Maker e Creativi.",
-                select_pack: "Seleziona Volume / Pacchetto",
-                loading: "Caricamento libreria...",
-                search_label: "Cerca Suono",
-                search_placeholder: "es. Moneta, Laser, Impatto...",
-                connecting: "Connessione al Database...",
-                buy_pack: "Compra Tutto il Pack",
-                sounds_count: "Suoni",
-                buy_single: "Aggiungi",
-                cart_wait: "Attendi...",
-                empty_search: "Nessun suono trovato.",
-                play_now: "In riproduzione:"
+                title: "Libreria Effetti Sonori", subtitle: "Effetti sonori professionali.",
+                select_pack: "Seleziona Volume / Pacchetto", loading: "Caricamento...",
+                search_label: "Cerca Suono", search_placeholder: "es. Moneta, Laser...",
+                connecting: "Connessione...", buy_pack: "Compra Tutto il Pack",
+                buy_pack_bottom: "Ottieni il Pacchetto Completo",
+                buy_single: "Aggiungi", cart_title: "Il tuo Carrello", checkout_btn: "Procedi al Checkout",
+                empty_cart: "Il carrello è vuoto.", empty_search: "Nessun suono trovato.",
+                play_now: "In riproduzione:", buy_now: "Compra Ora"
             }
         };
 
-        // STATO APPLICAZIONE
-        let currentLang = 'en'; // Default
+        // STATO
+        let currentLang = 'en';
         let allData = [];
         let currentPackData = [];
         let shoppingCart = [];
         let activeAudioBtn = null;
-        let currentPackInfo = { name: '', price: FULL_PACK_PRICE_DEFAULT };
+        let currentPackInfo = { name: '', price: 0 };
 
         const player = document.getElementById('global-player');
         
-        // --- INIZIALIZZAZIONE ---
         async function init() {
             updateLanguageUI();
-            
             try {
-                // Fetch Dati
                 const res = await fetch(GAS_URL);
                 const data = await res.json();
-                
                 if(!Array.isArray(data)) throw new Error("Invalid Data");
-                
                 allData = data;
                 document.getElementById('loader').style.display = 'none';
                 setupDropdown();
             } catch (e) {
                 console.error(e);
-                document.getElementById('loader').innerHTML = `<span style="color:#ff5555">Error loading library. Check API URL.</span>`;
+                document.getElementById('loader').innerHTML = `<span style="color:#ff5252">System Error. Reload page.</span>`;
             }
         }
 
-        // --- GESTIONE LINGUA ---
         window.toggleLanguage = function() {
             currentLang = currentLang === 'en' ? 'it' : 'en';
             updateLanguageUI();
@@ -350,25 +353,15 @@
 
         function updateLanguageUI() {
             document.getElementById('lang-toggle').innerText = currentLang === 'en' ? "🇮🇹 IT" : "🇬🇧 EN";
-            
+            const t = translations[currentLang];
             document.querySelectorAll('[data-tr]').forEach(el => {
                 const key = el.getAttribute('data-tr');
-                if(translations[currentLang][key]) {
-                    el.innerText = translations[currentLang][key];
-                }
+                if(t[key]) el.innerText = t[key];
             });
-
-            const t = translations[currentLang];
             document.getElementById('search-box').placeholder = t.search_placeholder;
-            document.getElementById('pack-select').options[0].text = allData.length > 0 ? (currentLang==='en'?"-- Select Pack --":"-- Seleziona Pack --") : t.loading;
-            
-            if(currentPackData.length > 0) renderList(currentPackData);
-            if(document.getElementById('pack-hero').style.display === 'block') {
-                document.querySelector('.buy-full-btn span[data-tr="buy_pack"]').innerText = t.buy_pack;
-            }
+            if(allData.length > 0 && currentPackData.length > 0) renderList(currentPackData);
         }
 
-        // --- LOGICA UI ---
         function setupDropdown() {
             const select = document.getElementById('pack-select');
             const packs = [...new Set(allData.map(d => d.PACK_NAME))].filter(Boolean).sort();
@@ -380,7 +373,6 @@
                 opt.textContent = p;
                 select.appendChild(opt);
             });
-            
             select.addEventListener('change', (e) => loadPack(e.target.value));
             document.getElementById('search-box').addEventListener('input', (e) => filterList(e.target.value));
             document.getElementById('search-box').disabled = false;
@@ -388,11 +380,15 @@
 
         function loadPack(packName) {
             const hero = document.getElementById('pack-hero');
-            const search = document.getElementById('search-box');
+            const bottomCta = document.getElementById('bottom-cta');
+            const sticky = document.getElementById('sticky-pack-cta');
             const container = document.getElementById('sfx-list');
+            const search = document.getElementById('search-box');
 
             if(!packName) {
                 hero.style.display = 'none';
+                bottomCta.style.display = 'none';
+                sticky.classList.remove('visible');
                 container.innerHTML = '';
                 search.value = '';
                 return;
@@ -400,16 +396,31 @@
 
             currentPackData = allData.filter(d => d.PACK_NAME === packName);
             
+            // PREZZO PACK: Prende il prezzo della PRIMA RIGA del pack
+            // Assicurati che nel Google Sheet, il primo suono del pack abbia un prezzo sensato 
+            // che vuoi usare come "prezzo del pack", OPPURE usa una logica diversa se preferisci.
+            // Qui uso: Prezzo del primo elemento * 1 (come riferimento pack).
             const firstItem = currentPackData[0];
-            currentPackInfo.name = packName;
-            
+            let packPrice = parseFloat(firstItem.Prezzo);
+            if(isNaN(packPrice) || packPrice <= 0) packPrice = 49.00; // Fallback se vuoto
+
+            currentPackInfo = { name: packName, price: packPrice };
+
+            // UI Updates
             document.getElementById('hero-title').textContent = packName;
-            document.getElementById('hero-desc').innerHTML = DOMPurify.sanitize(firstItem.STORE_DESCRIPTION || "Professional Sound Pack.");
-            document.getElementById('hero-count').textContent = currentPackData.length;
-            document.getElementById('hero-price').textContent = FULL_PACK_PRICE_DEFAULT.toFixed(2) + "€";
+            document.getElementById('hero-desc').innerHTML = DOMPurify.sanitize(firstItem.STORE_DESCRIPTION || "");
+            document.getElementById('hero-price').textContent = packPrice.toFixed(2) + "€";
+            
+            // Sticky Bar Updates
+            document.getElementById('sticky-pack-name').textContent = packName;
+            document.getElementById('sticky-pack-price').textContent = packPrice.toFixed(2) + "€";
             
             hero.style.display = 'block';
-            document.querySelector('.buy-full-btn span[data-tr="buy_pack"]').innerText = translations[currentLang].buy_pack;
+            bottomCta.style.display = 'block';
+            sticky.classList.add('visible');
+            
+            // Update padding for sticky bar visibility
+            document.getElementById('audio-bar').style.bottom = "50px"; 
 
             renderList(currentPackData);
         }
@@ -426,7 +437,6 @@
         function renderList(items) {
             const container = document.getElementById('sfx-list');
             container.innerHTML = '';
-            
             const t = translations[currentLang];
             const limit = document.getElementById('search-box').value ? items.length : 100;
             const displayItems = items.slice(0, limit);
@@ -437,9 +447,10 @@
             }
 
             displayItems.forEach(item => {
-                let price = parseFloat(item.Prezzo); 
+                let price = parseFloat(item.Prezzo);
                 if(isNaN(price) || price <= 0) price = 0.99;
-
+                
+                // Audio URL check
                 const audioUrl = item.link_lungo; 
 
                 const div = document.createElement('div');
@@ -451,7 +462,7 @@
                     <div class="sfx-info">
                         <span class="sfx-title" title="${item.FILE_TITLE}">${item.FILE_TITLE}</span>
                         <div class="sfx-meta">
-                            <span><i class="far fa-clock"></i> ${item.Durata || 'N/A'}</span>
+                            <span><i class="far fa-clock"></i> ${item.Durata || ''}</span>
                             <span><i class="fas fa-tag"></i> ${item.CATEGORY || 'SFX'}</span>
                         </div>
                     </div>
@@ -461,92 +472,159 @@
                 `;
                 container.appendChild(div);
             });
-            
-            if(items.length > limit) {
-                container.insertAdjacentHTML('beforeend', `<p style="grid-column:1/-1;text-align:center;color:#555;font-size:0.8em;">...use search to find more...</p>`);
-            }
         }
 
-        // --- AUDIO PLAYER ---
+        // --- AUDIO PLAYER (FIXED) ---
         window.playAudio = function(url, title, btn) {
             const bar = document.getElementById('audio-bar');
             
-            if(!url || url === 'undefined') {
-                alert("Audio preview not available for this item.");
+            if(!url || url.length < 5) {
+                alert("Audio link missing for this item.");
                 return;
             }
 
-            if(activeAudioBtn === btn && !player.paused) {
-                player.pause();
-                btn.innerHTML = '<i class="fas fa-play"></i>';
-                btn.parentElement.classList.remove('playing');
+            // Se stiamo cliccando sul pulsante già attivo
+            if(activeAudioBtn === btn) {
+                if(player.paused) {
+                    player.play();
+                    btn.innerHTML = '<i class="fas fa-pause"></i>';
+                    btn.parentElement.classList.add('playing');
+                } else {
+                    player.pause();
+                    btn.innerHTML = '<i class="fas fa-play"></i>';
+                    btn.parentElement.classList.remove('playing');
+                }
                 return;
             }
 
+            // Resetta il pulsante precedente
             if(activeAudioBtn) {
                 activeAudioBtn.innerHTML = '<i class="fas fa-play"></i>';
                 activeAudioBtn.parentElement.classList.remove('playing');
             }
 
+            // Imposta nuovo pulsante
             activeAudioBtn = btn;
-            btn.innerHTML = '<i class="fas fa-stop"></i>';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; // Loading state
             btn.parentElement.classList.add('playing');
 
             document.getElementById('playing-now-text').textContent = `${translations[currentLang].play_now} ${title}`;
             bar.classList.add('visible');
 
             player.src = url;
-            player.play().catch(err => console.error("Play error:", err));
+            player.load();
+            
+            const playPromise = player.play();
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {
+                    btn.innerHTML = '<i class="fas fa-pause"></i>';
+                })
+                .catch(error => {
+                    console.error("Playback error:", error);
+                    btn.innerHTML = '<i class="fas fa-exclamation"></i>';
+                });
+            }
         };
 
         player.onended = () => {
             if(activeAudioBtn) {
                 activeAudioBtn.innerHTML = '<i class="fas fa-play"></i>';
                 activeAudioBtn.parentElement.classList.remove('playing');
+                activeAudioBtn = null;
             }
         };
 
-        // --- CARRELLO ---
+        // --- GESTIONE CARRELLO (MODALE) ---
         window.addToCart = function(id, title, price) {
-            shoppingCart.push({ id, title, price });
-            updateCartUI();
+            shoppingCart.push({ id: id, title: title, price: price });
+            updateCartBadge();
         };
 
         window.addFullPackToCart = function() {
             shoppingCart.push({
                 id: 'PACK-' + currentPackInfo.name.replace(/\s+/g, '-').toUpperCase(),
                 title: 'FULL PACK: ' + currentPackInfo.name,
-                price: FULL_PACK_PRICE_DEFAULT
+                price: currentPackInfo.price
             });
-            updateCartUI();
+            updateCartBadge();
+            openCartModal(); // Apre il carrello automaticamente quando aggiungi un pack
         };
 
-        function updateCartUI() {
-            const cartEl = document.getElementById('cart-status');
+        function updateCartBadge() {
+            const badge = document.getElementById('cart-badge');
+            const count = document.getElementById('cart-count');
+            
             if(shoppingCart.length > 0) {
-                cartEl.style.display = 'block';
-                document.getElementById('cart-count').innerText = shoppingCart.length;
-                const total = shoppingCart.reduce((sum, item) => sum + item.price, 0);
-                document.getElementById('cart-total').innerText = total.toFixed(2);
-                cartEl.style.animation = 'none';
-                cartEl.offsetHeight; 
-                cartEl.style.animation = 'popIn 0.3s';
+                badge.style.display = 'flex';
+                count.innerText = shoppingCart.length;
+                badge.style.animation = 'none';
+                badge.offsetHeight; 
+                badge.style.animation = 'popIn 0.3s';
             } else {
-                cartEl.style.display = 'none';
+                badge.style.display = 'none';
             }
         }
 
-        window.checkout = function() {
+        window.openCartModal = function() {
+            const container = document.getElementById('cart-items-container');
+            const totalEl = document.getElementById('modal-cart-total');
+            const t = translations[currentLang];
+            
+            container.innerHTML = '';
+            
+            if(shoppingCart.length === 0) {
+                container.innerHTML = `<p style="color:#777; text-align:center;">${t.empty_cart}</p>`;
+                totalEl.innerText = "0.00€";
+            } else {
+                let total = 0;
+                shoppingCart.forEach((item, index) => {
+                    total += item.price;
+                    const div = document.createElement('div');
+                    div.className = 'cart-item';
+                    div.innerHTML = `
+                        <div class="cart-item-info">
+                            <strong>${item.title}</strong><br>
+                            <span style="color:#888;">${item.price.toFixed(2)}€</span>
+                        </div>
+                        <button class="cart-remove-btn" onclick="removeFromCart(${index})">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    container.appendChild(div);
+                });
+                totalEl.innerText = total.toFixed(2) + "€";
+            }
+            
+            document.getElementById('cart-modal').style.display = 'flex';
+        };
+
+        window.closeCartModal = function() {
+            document.getElementById('cart-modal').style.display = 'none';
+        };
+
+        window.removeFromCart = function(index) {
+            shoppingCart.splice(index, 1);
+            updateCartBadge();
+            openCartModal(); // Ricarica la modale
+        };
+
+        window.proceedToCheckout = function() {
             if(shoppingCart.length === 0) return;
-            const btn = document.getElementById('cart-status');
-            const originalContent = btn.innerHTML;
-            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${translations[currentLang].cart_wait}`;
+            
+            const btn = document.querySelector('.checkout-btn');
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Wait...`;
             
             const cartParam = encodeURIComponent(JSON.stringify(shoppingCart));
             window.location.href = `${CHECKOUT_URL}?cart=${cartParam}`;
-            
-            setTimeout(() => btn.innerHTML = originalContent, 5000);
         };
+
+        // Chiudi modale se clicchi fuori
+        window.onclick = function(event) {
+            const modal = document.getElementById('cart-modal');
+            if (event.target == modal) {
+                closeCartModal();
+            }
+        }
 
         init();
     </script>
