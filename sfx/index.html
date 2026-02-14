@@ -1,12 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KD9H9P2RKT"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-KD9H9P2RKT');
+    </script>
+
+    <!-- Dati Strutturati per Google (JSON-LD) - ADATTATI PER SFX -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "MusicGroup",
+      "name": "Fausto Fusetti",
+      "url": "https://rickym2025.github.io/fausto-fusetti-links/sfx/index.html",
+      "image": "https://rickym2025.github.io/fausto-fusetti-links/logo6.jpg",
+      "description": "Libreria di effetti sonori (SFX) professionali per sviluppatori di videogiochi e creatori di contenuti.",
+      "offers": {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "SFX Sound Library & Packs"
+        }
+      }
+    }
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="origin-when-cross-origin" />
     <title>SFX Sound Library - Fausto Fusetti</title>
     
-    <!-- Percorsi relativi alla cartella superiore -->
+    <!-- FAVICONS (Percorsi relativi ../) -->
     <link rel="icon" href="../favicon.ico?v=2" sizes="any" type="image/x-icon">
+    <link rel="icon" href="../icon-192.png?v=2" sizes="192x192" type="image/png">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png?v=2">
+
+    <!-- FONTS & ICONS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
@@ -22,8 +57,13 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Montserrat', sans-serif; background-color: var(--bg-dark); color: #f0f0f0; overflow-x: hidden; min-height: 100vh; padding-top: 80px; }
         
-        /* VIDEO BACKGROUND */
-        #background-video { position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; z-index: -100; object-fit: cover; filter: brightness(0.25); }
+        /* VIDEO BACKGROUND - OTTIMIZZATO PER SFX (Più scuro e sfocato) */
+        #background-video { 
+            position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; 
+            z-index: -100; object-fit: cover; 
+            filter: brightness(0.25) blur(3px); /* Sfocatura per renderlo più astratto */
+            transform: scale(1.05); /* Evita bordi sfocati */
+        }
 
         /* NAVIGATION BAR */
         .navbar {
@@ -142,10 +182,11 @@
 
         /* MOBILE */
         @media (max-width: 768px) {
-            .nav-links { display: none; } /* Semplifichiamo mobile per ora */
+            .nav-links { display: none; }
             .hero-content { flex-direction: column; text-align: center; }
             .hero-text { text-align: center; }
             #playing-now-text { display: none; }
+            h1 { font-size: 1.8em; }
         }
     </style>
 </head>
@@ -200,7 +241,7 @@
             <div class="hero-content">
                 <div class="hero-text">
                     <h2 id="hero-title">Volume Name</h2>
-                    <p id="hero-desc">Pack description goes here.</p>
+                    <div id="hero-desc">Pack description goes here.</div>
                     <p style="margin-top: 10px; font-size: 0.9em; color: #aaa;">
                         <i class="fas fa-file-audio"></i> <span id="hero-count">0</span> <span data-tr="sounds_count">Sounds</span> 
                         &bull; <i class="fas fa-check-circle"></i> Royalty Free
@@ -226,13 +267,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
     <script>
         // === CONFIGURAZIONE ===
-        // INSERISCI QUI L'URL DEL TUO GOOGLE SCRIPT (API SFX)
-        const GAS_URL = 'https://script.google.com/macros/s/AKfycbykrDboqDvee6j4DjxGwD7sHNYdSdkzaWgngNmptRokEDYmz8B3BmZ0FuL8mCF3bRoY/exec'; 
+        // URL AGGIORNATO DELLO SCRIPT SFX
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbzToW5jq4pVJ5so_ISZnL3ocCudihMucgQP_t60ioM4yqIAzcsyEeh_mv3rrNsgwrA/exec'; 
         
         // WEBHOOK N8N (Checkout)
         const CHECKOUT_URL = 'https://n8n.labottegadeldelta.it/webhook/crea-checkout-sfx';
 
-        // Prezzo Standard per PACK INTERO (se non specificato altrove)
+        // Prezzo Standard per PACK INTERO
         const FULL_PACK_PRICE_DEFAULT = 49.00;
 
         // TRADUZIONI
@@ -308,10 +349,8 @@
         };
 
         function updateLanguageUI() {
-            // Aggiorna tasto
             document.getElementById('lang-toggle').innerText = currentLang === 'en' ? "🇮🇹 IT" : "🇬🇧 EN";
             
-            // Aggiorna testi data-tr
             document.querySelectorAll('[data-tr]').forEach(el => {
                 const key = el.getAttribute('data-tr');
                 if(translations[currentLang][key]) {
@@ -319,12 +358,10 @@
                 }
             });
 
-            // Aggiorna placeholder
             const t = translations[currentLang];
             document.getElementById('search-box').placeholder = t.search_placeholder;
             document.getElementById('pack-select').options[0].text = allData.length > 0 ? (currentLang==='en'?"-- Select Pack --":"-- Seleziona Pack --") : t.loading;
             
-            // Aggiorna testi bottoni generati dinamicamente
             if(currentPackData.length > 0) renderList(currentPackData);
             if(document.getElementById('pack-hero').style.display === 'block') {
                 document.querySelector('.buy-full-btn span[data-tr="buy_pack"]').innerText = t.buy_pack;
@@ -361,22 +398,17 @@
                 return;
             }
 
-            // Filtra Dati
             currentPackData = allData.filter(d => d.PACK_NAME === packName);
             
-            // Configura Hero Card
             const firstItem = currentPackData[0];
             currentPackInfo.name = packName;
             
             document.getElementById('hero-title').textContent = packName;
-            // Usa descrizione HTML dallo sheet se presente
             document.getElementById('hero-desc').innerHTML = DOMPurify.sanitize(firstItem.STORE_DESCRIPTION || "Professional Sound Pack.");
             document.getElementById('hero-count').textContent = currentPackData.length;
             document.getElementById('hero-price').textContent = FULL_PACK_PRICE_DEFAULT.toFixed(2) + "€";
             
             hero.style.display = 'block';
-            
-            // Aggiorna traduzione bottone hero
             document.querySelector('.buy-full-btn span[data-tr="buy_pack"]').innerText = translations[currentLang].buy_pack;
 
             renderList(currentPackData);
@@ -396,8 +428,6 @@
             container.innerHTML = '';
             
             const t = translations[currentLang];
-
-            // Ottimizzazione render (limitiamo a 100 se non si cerca)
             const limit = document.getElementById('search-box').value ? items.length : 100;
             const displayItems = items.slice(0, limit);
 
@@ -407,11 +437,9 @@
             }
 
             displayItems.forEach(item => {
-                // Recupera prezzo dalla colonna "Prezzo" (default 0.99)
                 let price = parseFloat(item.Prezzo); 
                 if(isNaN(price) || price <= 0) price = 0.99;
 
-                // Recupera URL Audio (colonna link_lungo)
                 const audioUrl = item.link_lungo; 
 
                 const div = document.createElement('div');
@@ -439,17 +467,15 @@
             }
         }
 
-        // --- AUDIO PLAYER (FIXED) ---
+        // --- AUDIO PLAYER ---
         window.playAudio = function(url, title, btn) {
             const bar = document.getElementById('audio-bar');
             
-            // Se URL manca
             if(!url || url === 'undefined') {
                 alert("Audio preview not available for this item.");
                 return;
             }
 
-            // Toggle Pausa
             if(activeAudioBtn === btn && !player.paused) {
                 player.pause();
                 btn.innerHTML = '<i class="fas fa-play"></i>';
@@ -457,13 +483,11 @@
                 return;
             }
 
-            // Reset altro tasto
             if(activeAudioBtn) {
                 activeAudioBtn.innerHTML = '<i class="fas fa-play"></i>';
                 activeAudioBtn.parentElement.classList.remove('playing');
             }
 
-            // Play nuovo
             activeAudioBtn = btn;
             btn.innerHTML = '<i class="fas fa-stop"></i>';
             btn.parentElement.classList.add('playing');
@@ -472,10 +496,7 @@
             bar.classList.add('visible');
 
             player.src = url;
-            player.play().catch(err => {
-                console.error("Play error:", err);
-                // Fallback se il browser blocca autoplay
-            });
+            player.play().catch(err => console.error("Play error:", err));
         };
 
         player.onended = () => {
@@ -492,7 +513,6 @@
         };
 
         window.addFullPackToCart = function() {
-            // Aggiungi un item speciale per il pack
             shoppingCart.push({
                 id: 'PACK-' + currentPackInfo.name.replace(/\s+/g, '-').toUpperCase(),
                 title: 'FULL PACK: ' + currentPackInfo.name,
@@ -506,13 +526,10 @@
             if(shoppingCart.length > 0) {
                 cartEl.style.display = 'block';
                 document.getElementById('cart-count').innerText = shoppingCart.length;
-                
                 const total = shoppingCart.reduce((sum, item) => sum + item.price, 0);
                 document.getElementById('cart-total').innerText = total.toFixed(2);
-                
-                // Animazione pop
                 cartEl.style.animation = 'none';
-                cartEl.offsetHeight; /* trigger reflow */
+                cartEl.offsetHeight; 
                 cartEl.style.animation = 'popIn 0.3s';
             } else {
                 cartEl.style.display = 'none';
@@ -521,20 +538,16 @@
 
         window.checkout = function() {
             if(shoppingCart.length === 0) return;
-            
             const btn = document.getElementById('cart-status');
             const originalContent = btn.innerHTML;
             btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${translations[currentLang].cart_wait}`;
             
-            // Redirect
             const cartParam = encodeURIComponent(JSON.stringify(shoppingCart));
             window.location.href = `${CHECKOUT_URL}?cart=${cartParam}`;
             
-            // Ripristina (in caso l'utente torni indietro)
             setTimeout(() => btn.innerHTML = originalContent, 5000);
         };
 
-        // Start
         init();
     </script>
 </body>
