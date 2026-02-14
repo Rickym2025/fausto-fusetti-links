@@ -94,31 +94,40 @@
         }
         .buy-full-btn:hover { transform: scale(1.05); background: #69f0ae; }
 
-        /* LISTA SUONI */
-        .sfx-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
+        /* LISTA SUONI - LAYOUT A 2 COLONNE WIDE */
+        .sfx-grid { 
+            display: grid; 
+            /* Minimo 500px per colonna = su Desktop sono 2 colonne larghe, su Mobile 1 colonna */
+            grid-template-columns: repeat(auto-fit, minmax(480px, 1fr)); 
+            gap: 15px; 
+        }
+        
         .sfx-item { 
             background: rgba(30, 30, 30, 0.6); border: 1px solid #333; 
-            border-radius: 8px; padding: 12px; display: flex; align-items: center; gap: 12px; 
+            border-radius: 8px; padding: 15px; display: flex; align-items: center; gap: 15px; 
             transition: 0.2s; 
         }
         .sfx-item:hover { background: rgba(50, 50, 50, 0.8); border-color: #555; }
         .sfx-item.playing { border-color: var(--primary-color); background: rgba(157, 78, 221, 0.15); }
         
         .play-btn { 
-            width: 40px; height: 40px; border-radius: 50%; 
+            width: 50px; height: 50px; border-radius: 50%; 
             border: 2px solid var(--primary-color); background: transparent; color: var(--primary-color); 
             cursor: pointer; display: flex; align-items: center; justify-content: center; 
-            font-size: 1em; flex-shrink: 0; transition: 0.2s;
+            font-size: 1.2em; flex-shrink: 0; transition: 0.2s;
         }
         .play-btn:hover { background: var(--primary-color); color: white; }
         .play-btn.playing { background: var(--primary-color); color: white; animation: pulse 1.5s infinite; }
 
-        .sfx-info { flex-grow: 1; overflow: hidden; }
-        .sfx-title { font-weight: 600; font-size: 0.9em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
-        .sfx-meta { font-size: 0.75em; color: #888; margin-top: 3px; }
+        .sfx-info { flex-grow: 1; overflow: hidden; min-width: 0; }
+        /* Titolo: non va più a capo, ma usa ellipsis se lunghissimo */
+        .sfx-title { font-weight: 600; font-size: 1em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; color: white; }
+        .sfx-meta { font-size: 0.8em; color: #888; margin-top: 5px; }
+        
         .buy-single-btn { 
             background: transparent; border: 1px solid #555; color: #aaa; 
-            padding: 5px 10px; border-radius: 12px; cursor: pointer; font-size: 0.8em; transition: 0.2s; 
+            padding: 8px 15px; border-radius: 12px; cursor: pointer; font-size: 0.9em; transition: 0.2s; 
+            white-space: nowrap;
         }
         .buy-single-btn:hover { border-color: var(--accent-color); color: var(--accent-color); }
 
@@ -132,7 +141,7 @@
         #sticky-pack-cta.visible { display: flex; }
         .sticky-text { font-weight: bold; color: white; font-size: 1.1em; }
 
-        /* PLAYER BAR (Stile Jingle) */
+        /* PLAYER BAR */
         #audio-bar { 
             position: fixed; bottom: 0; left: 0; width: 100%; 
             background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(10px);
@@ -179,6 +188,7 @@
             #sticky-pack-cta { flex-direction: column; gap: 10px; padding-bottom: 20px; }
             #audio-bar { bottom: 0; flex-direction: column; align-items: stretch; gap: 10px; }
             #audio-bar.has-sticky { bottom: 80px; } 
+            .sfx-grid { grid-template-columns: 1fr; } /* Mobile: 1 colonna */
         }
     </style>
 </head>
@@ -343,6 +353,11 @@
         window.toggleLanguage = function() {
             currentLang = currentLang === 'en' ? 'it' : 'en';
             updateLanguageUI();
+            
+            // Se c'è un pack attivo, ricarichiamo i testi (es. descrizione)
+            if (currentPackInfo.name) {
+                loadPack(currentPackInfo.name);
+            }
         };
 
         function updateLanguageUI() {
@@ -353,7 +368,6 @@
                 if(t[key]) el.innerText = t[key];
             });
             document.getElementById('search-box').placeholder = t.search_placeholder;
-            if(allData.length > 0 && currentPackData.length > 0) renderList(currentPackData);
         }
 
         function setupDropdown() {
@@ -390,17 +404,29 @@
 
             currentPackData = allData.filter(d => d.PACK_NAME === packName);
             
-            // PREZZO PACK: PRIMA RIGA
+            // --- LOGICA PREZZI ---
             const firstItem = currentPackData[0];
             let packPrice = parseFloat(firstItem.Prezzo);
+            // Se il prezzo è mancante, 0 o NaN, usa 49.00 come fallback di sicurezza
             if(isNaN(packPrice) || packPrice <= 0) packPrice = 49.00; 
 
             currentPackInfo = { name: packName, price: packPrice };
 
+            // UI Updates
             document.getElementById('hero-title').textContent = packName;
-            document.getElementById('hero-desc').innerHTML = DOMPurify.sanitize(firstItem.STORE_DESCRIPTION || "");
-            document.getElementById('hero-price').textContent = packPrice.toFixed(2) + "€";
             
+            // --- LOGICA TRADUZIONE DESCRIZIONE ---
+            // Cerca la colonna STORE_DESCRIPTION_IT se siamo in Italiano, altrimenti usa STORE_DESCRIPTION
+            let descHtml = "";
+            if (currentLang === 'it' && firstItem.STORE_DESCRIPTION_IT) {
+                descHtml = firstItem.STORE_DESCRIPTION_IT;
+            } else {
+                descHtml = firstItem.STORE_DESCRIPTION;
+            }
+            
+            document.getElementById('hero-desc').innerHTML = DOMPurify.sanitize(descHtml || "");
+            
+            document.getElementById('hero-price').textContent = packPrice.toFixed(2) + "€";
             document.getElementById('sticky-pack-name').textContent = packName;
             document.getElementById('sticky-pack-price').textContent = packPrice.toFixed(2) + "€";
             
@@ -422,6 +448,24 @@
             renderList(filtered);
         }
 
+        // --- FUNZIONE FIX URL SUNO ---
+        // Converte link pagina web Suno in link CDN MP3
+        function fixSunoUrl(url) {
+            if (!url) return "";
+            if (url.includes("suno.com/song/")) {
+                // Estrai ID: https://suno.com/song/UUID -> UUID
+                try {
+                    const parts = url.split("song/");
+                    const uuid = parts[1].split("/")[0].split("?")[0]; 
+                    return `https://cdn1.suno.ai/${uuid}.mp3`;
+                } catch(e) {
+                    console.error("Errore parsing Suno URL", e);
+                    return url; // Ritorna originale se fallisce
+                }
+            }
+            return url;
+        }
+
         function renderList(items) {
             const container = document.getElementById('sfx-list');
             container.innerHTML = '';
@@ -436,9 +480,12 @@
 
             displayItems.forEach(item => {
                 let price = parseFloat(item.Prezzo);
+                // Fallback prezzo singolo a 0.99 se vuoto nello sheet
                 if(isNaN(price) || price <= 0) price = 0.99;
                 
-                const audioUrl = item.link_lungo; 
+                // FIX URL AUDIO
+                const rawUrl = item.link_lungo; 
+                const audioUrl = fixSunoUrl(rawUrl);
 
                 const div = document.createElement('div');
                 div.className = 'sfx-item';
@@ -461,7 +508,7 @@
             });
         }
 
-        // --- AUDIO PLAYER (LOGICA JINGLE STYLE) ---
+        // --- AUDIO PLAYER ---
         function playSong(url, title, btn) {
             const bar = document.getElementById('audio-bar');
             
@@ -488,7 +535,8 @@
             player.src = url;
             player.play().catch(e => {
                 console.error("Play error", e);
-                alert("Error playing audio. Format might be unsupported.");
+                // Se è un errore di formato Suno, proviamo un ultimo tentativo con link diretto se fallisce
+                alert("Playback error. Check format.");
             });
             
             document.getElementById('playing-now-text').textContent = title;
