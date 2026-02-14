@@ -297,7 +297,11 @@
    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
 <script>
     // === CONFIGURAZIONE ===
+    // URL dello Script Google che legge i dati dello Sheet SFX
     const GAS_URL = 'https://script.google.com/macros/s/AKfycbzToW5jq4pVJ5so_ISZnL3ocCudihMucgQP_t60ioM4yqIAzcsyEeh_mv3rrNsgwrA/exec'; 
+    
+    // URL del Webhook n8n (Flow Checkout)
+    // Nota: Assicurati che questo webhook in n8n accetti il parametro ?cart=... in ingresso
     const CHECKOUT_URL = 'https://n8n.labottegadeldelta.it/webhook/crea-checkout-sfx';
 
     // TRADUZIONI
@@ -328,17 +332,18 @@
         }
     };
 
-    // STATO
+    // STATO APPLICAZIONE
     let currentLang = 'en';
     let allData = [];
     let currentPackData = [];
     let shoppingCart = [];
     let activeAudioBtn = null;
     let currentPackInfo = { name: '', price: 0 };
-    let displayLimit = 100; 
+    let displayLimit = 100; // Limite iniziale visualizzazione
 
     const player = document.getElementById('global-player');
     
+    // INIZIALIZZAZIONE
     async function init() {
         updateLanguageUI();
         try {
@@ -354,9 +359,11 @@
         }
     }
 
+    // GESTIONE LINGUA
     window.toggleLanguage = function() {
         currentLang = currentLang === 'en' ? 'it' : 'en';
         updateLanguageUI();
+        // Ricarica info pack se attivo (per aggiornare descrizione)
         if (currentPackInfo.name) {
             loadPack(currentPackInfo.name);
         }
@@ -372,8 +379,10 @@
         document.getElementById('search-box').placeholder = t.search_placeholder;
     }
 
+    // MENU A TENDINA (DROPDOWN)
     function setupDropdown() {
         const select = document.getElementById('pack-select');
+        // Estrae nomi pack unici
         const packs = [...new Set(allData.map(d => d.PACK_NAME))].filter(Boolean).sort();
         
         select.innerHTML = `<option value="">${currentLang==='en'?"-- Select Volume --":"-- Seleziona Volume --"}</option>`;
@@ -388,6 +397,7 @@
         document.getElementById('search-box').disabled = false;
     }
 
+    // CARICAMENTO PACK SELEZIONATO
     function loadPack(packName) {
         const hero = document.getElementById('pack-hero');
         const bottomCta = document.getElementById('bottom-cta');
@@ -405,16 +415,18 @@
         }
 
         currentPackData = allData.filter(d => d.PACK_NAME === packName);
-        displayLimit = 100; 
+        displayLimit = 100; // Reset limite visualizzazione
 
+        // Dati Pack (presi dal primo elemento)
         const firstItem = currentPackData[0];
         let packPrice = parseFloat(firstItem.Prezzo);
-        if(isNaN(packPrice) || packPrice <= 0) packPrice = 49.00; 
+        if(isNaN(packPrice) || packPrice <= 0) packPrice = 49.00; // Fallback se vuoto
 
         currentPackInfo = { name: packName, price: packPrice };
 
         document.getElementById('hero-title').textContent = packName;
         
+        // Scelta lingua descrizione
         let descHtml = "";
         if (currentLang === 'it' && firstItem.STORE_DESCRIPTION_IT) {
             descHtml = firstItem.STORE_DESCRIPTION_IT;
@@ -435,9 +447,10 @@
         renderList(currentPackData);
     }
 
+    // FILTRO RICERCA
     function filterList(term) {
         term = term.toLowerCase();
-        displayLimit = term ? 500 : 100; 
+        displayLimit = term ? 500 : 100; // Mostra più risultati se si cerca
         
         const filtered = currentPackData.filter(item => 
             (item.FILE_TITLE && item.FILE_TITLE.toLowerCase().includes(term)) ||
@@ -446,6 +459,7 @@
         renderList(filtered);
     }
 
+    // FIX URL SUNO (da web page a mp3)
     function fixSunoUrl(url) {
         if (!url) return "";
         if (url.includes("suno.com/song/")) {
@@ -461,7 +475,7 @@
         return url;
     }
 
-    // === RENDER LIST CON METADATI AGGIUNTIVI ===
+    // RENDER GRIGLIA SUONI
     function renderList(items) {
         const container = document.getElementById('sfx-list');
         container.innerHTML = '';
@@ -476,12 +490,12 @@
 
         visibleItems.forEach(item => {
             let price = parseFloat(item.Prezzo);
-            if(isNaN(price) || price <= 0) price = 0.99;
+            if(isNaN(price) || price <= 0) price = 0.99; // Fallback prezzo singolo
             
             const rawUrl = item.link_lungo; 
             const audioUrl = fixSunoUrl(rawUrl);
 
-            // QUI SOTTO HO AGGIUNTO SUB_CATEGORY E MODE
+            // AGGIUNTE COLONNE SUB_CATEGORY E MODE QUI SOTTO
             const div = document.createElement('div');
             div.className = 'sfx-item';
             div.innerHTML = `
@@ -504,6 +518,7 @@
             container.appendChild(div);
         });
 
+        // TASTO LOAD MORE
         if (items.length > displayLimit) {
             const loadMoreDiv = document.createElement('div');
             loadMoreDiv.style.gridColumn = "1/-1";
@@ -533,7 +548,7 @@
         }
     };
 
-    // --- AUDIO PLAYER ---
+    // AUDIO PLAYER
     function playSong(url, title, btn) {
         const bar = document.getElementById('audio-bar');
         
@@ -573,7 +588,7 @@
         };
     }
 
-    // --- CARRELLO ---
+    // LOGICA CARRELLO
     window.addToCart = function(id, title, price) {
         shoppingCart.push({ id: id, title: title, price: price });
         updateCartBadge();
@@ -603,6 +618,7 @@
         }
     }
 
+    // MODALE CARRELLO
     window.openCartModal = function() {
         const container = document.getElementById('cart-items-container');
         const totalEl = document.getElementById('modal-cart-total');
@@ -643,10 +659,13 @@
         openCartModal(); 
     };
 
+    // CHECKOUT CON WEBHOOK N8N
     window.proceedToCheckout = function() {
         if(shoppingCart.length === 0) return;
         const btn = document.querySelector('.checkout-btn');
         btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Wait...`;
+        
+        // Passa il carrello come JSON nella query string ?cart=...
         const cartParam = encodeURIComponent(JSON.stringify(shoppingCart));
         window.location.href = `${CHECKOUT_URL}?cart=${cartParam}`;
     };
@@ -656,10 +675,12 @@
         if (event.target == modal) closeCartModal();
     }
 
+    // AVVIO
     init();
 </script>
 </body>
 </html>
+
 
 
 
