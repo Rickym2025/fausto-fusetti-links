@@ -10,18 +10,6 @@
       gtag('config', 'G-KD9H9P2RKT');
     </script>
 
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "MusicGroup",
-      "name": "Fausto Fusetti SFX",
-      "url": "https://rickym2025.github.io/fausto-fusetti-links/sfx/index.html",
-      "image": "https://rickym2025.github.io/fausto-fusetti-links/logo6.jpg",
-      "description": "Professional SFX Library for Game Devs & Creators.",
-      "offers": { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "SFX Sound Packs" } }
-    }
-    </script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SFX Sound Library - Fausto Fusetti</title>
@@ -72,7 +60,7 @@
         .logo { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--primary-color); margin-bottom: 10px; box-shadow: 0 0 20px rgba(157, 78, 221, 0.4); object-fit: cover; }
         h1 { font-size: 2.2em; color: white; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* CARRELLO FLOTTANTE (Badge) */
+        /* CARRELLO BADGE */
         #cart-badge { 
             position: fixed; top: 85px; right: 20px; 
             background: var(--primary-color); color: white; 
@@ -115,6 +103,7 @@
         }
         .sfx-item:hover { background: rgba(50, 50, 50, 0.8); border-color: #555; }
         .sfx-item.playing { border-color: var(--primary-color); background: rgba(157, 78, 221, 0.15); }
+        
         .play-btn { 
             width: 40px; height: 40px; border-radius: 50%; 
             border: 2px solid var(--primary-color); background: transparent; color: var(--primary-color); 
@@ -122,6 +111,8 @@
             font-size: 1em; flex-shrink: 0; transition: 0.2s;
         }
         .play-btn:hover { background: var(--primary-color); color: white; }
+        .play-btn.playing { background: var(--primary-color); color: white; animation: pulse 1.5s infinite; }
+
         .sfx-info { flex-grow: 1; overflow: hidden; }
         .sfx-title { font-weight: 600; font-size: 0.9em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
         .sfx-meta { font-size: 0.75em; color: #888; margin-top: 3px; }
@@ -131,27 +122,27 @@
         }
         .buy-single-btn:hover { border-color: var(--accent-color); color: var(--accent-color); }
 
-        /* STICKY BOTTOM BAR (Call to Action Pack) */
+        /* STICKY BOTTOM BAR */
         #sticky-pack-cta {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: rgba(0,0,0,0.95); border-top: 2px solid var(--success-color);
             padding: 10px 20px; display: none; justify-content: space-between; align-items: center;
-            z-index: 998; /* Sotto al player audio se necessario, o sopra */
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+            z-index: 998; box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
         }
         #sticky-pack-cta.visible { display: flex; }
         .sticky-text { font-weight: bold; color: white; font-size: 1.1em; }
 
-        /* PLAYER BAR (Sempre in basso, sopra la sticky CTA se c'è) */
+        /* PLAYER BAR (Stile Jingle) */
         #audio-bar { 
             position: fixed; bottom: 0; left: 0; width: 100%; 
-            background: #111; border-top: 1px solid var(--primary-color); 
-            padding: 10px; display: flex; align-items: center; justify-content: center; gap: 15px;
+            background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(10px);
+            border-top: 1px solid var(--primary-color); 
+            padding: 15px 20px; display: flex; align-items: center; gap: 20px;
             transform: translateY(100%); transition: transform 0.3s; z-index: 999; 
         }
         #audio-bar.visible { transform: translateY(0); }
-        #playing-now-text { color: var(--accent-color); font-size: 0.85em; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
+        #playing-now-text { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: 600; color: var(--primary-color); }
+        
         /* MODALE CARRELLO */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -179,12 +170,15 @@
 
         #loader { margin-top: 50px; font-size: 1.2em; color: var(--primary-color); text-align: center; }
 
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(157, 78, 221, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(157, 78, 221, 0); } 100% { box-shadow: 0 0 0 0 rgba(157, 78, 221, 0); } }
+        @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+
         @media (max-width: 768px) {
             .nav-links { display: none; }
             .hero-content { flex-direction: column; text-align: center; }
             #sticky-pack-cta { flex-direction: column; gap: 10px; padding-bottom: 20px; }
-            #audio-bar { bottom: 0; }
-            #audio-bar.has-sticky { bottom: 80px; } /* Se c'è la sticky bar, alza il player */
+            #audio-bar { bottom: 0; flex-direction: column; align-items: stretch; gap: 10px; }
+            #audio-bar.has-sticky { bottom: 80px; } 
         }
     </style>
 </head>
@@ -275,7 +269,7 @@
         </div>
     </div>
 
-    <!-- STICKY PACK CTA (Barra fissa in basso per acquisto) -->
+    <!-- STICKY PACK CTA -->
     <div id="sticky-pack-cta">
         <div class="sticky-text"><span id="sticky-pack-name">Pack</span></div>
         <button class="buy-full-btn" style="font-size: 0.9em; padding: 8px 15px;" onclick="addFullPackToCart()">
@@ -283,7 +277,7 @@
         </button>
     </div>
 
-    <!-- AUDIO PLAYER (Barra nera in basso) -->
+    <!-- AUDIO PLAYER BAR -->
     <div id="audio-bar">
         <span id="playing-now-text"></span>
         <audio id="global-player" controls controlsList="nodownload" style="width: 100%; max-width: 400px;"></audio>
@@ -396,22 +390,17 @@
 
             currentPackData = allData.filter(d => d.PACK_NAME === packName);
             
-            // PREZZO PACK: Prende il prezzo della PRIMA RIGA del pack
-            // Assicurati che nel Google Sheet, il primo suono del pack abbia un prezzo sensato 
-            // che vuoi usare come "prezzo del pack", OPPURE usa una logica diversa se preferisci.
-            // Qui uso: Prezzo del primo elemento * 1 (come riferimento pack).
+            // PREZZO PACK: PRIMA RIGA
             const firstItem = currentPackData[0];
             let packPrice = parseFloat(firstItem.Prezzo);
-            if(isNaN(packPrice) || packPrice <= 0) packPrice = 49.00; // Fallback se vuoto
+            if(isNaN(packPrice) || packPrice <= 0) packPrice = 49.00; 
 
             currentPackInfo = { name: packName, price: packPrice };
 
-            // UI Updates
             document.getElementById('hero-title').textContent = packName;
             document.getElementById('hero-desc').innerHTML = DOMPurify.sanitize(firstItem.STORE_DESCRIPTION || "");
             document.getElementById('hero-price').textContent = packPrice.toFixed(2) + "€";
             
-            // Sticky Bar Updates
             document.getElementById('sticky-pack-name').textContent = packName;
             document.getElementById('sticky-pack-price').textContent = packPrice.toFixed(2) + "€";
             
@@ -419,7 +408,6 @@
             bottomCta.style.display = 'block';
             sticky.classList.add('visible');
             
-            // Update padding for sticky bar visibility
             document.getElementById('audio-bar').style.bottom = "50px"; 
 
             renderList(currentPackData);
@@ -450,13 +438,12 @@
                 let price = parseFloat(item.Prezzo);
                 if(isNaN(price) || price <= 0) price = 0.99;
                 
-                // Audio URL check
                 const audioUrl = item.link_lungo; 
 
                 const div = document.createElement('div');
                 div.className = 'sfx-item';
                 div.innerHTML = `
-                    <button class="play-btn" onclick="playAudio('${audioUrl}', '${item.FILE_TITLE.replace(/'/g, "\\'")}', this)">
+                    <button class="play-btn" onclick="playSong('${audioUrl}', '${item.FILE_TITLE.replace(/'/g, "\\'")}', this)">
                         <i class="fas fa-play"></i>
                     </button>
                     <div class="sfx-info">
@@ -474,65 +461,49 @@
             });
         }
 
-        // --- AUDIO PLAYER (FIXED) ---
-        window.playAudio = function(url, title, btn) {
+        // --- AUDIO PLAYER (LOGICA JINGLE STYLE) ---
+        function playSong(url, title, btn) {
             const bar = document.getElementById('audio-bar');
             
-            if(!url || url.length < 5) {
-                alert("Audio link missing for this item.");
+            // Validazione URL
+            if (!url || url === 'undefined' || url.length < 5) {
+                alert("Audio preview not available.");
                 return;
             }
 
-            // Se stiamo cliccando sul pulsante già attivo
-            if(activeAudioBtn === btn) {
-                if(player.paused) {
-                    player.play();
-                    btn.innerHTML = '<i class="fas fa-pause"></i>';
-                    btn.parentElement.classList.add('playing');
-                } else {
-                    player.pause();
-                    btn.innerHTML = '<i class="fas fa-play"></i>';
-                    btn.parentElement.classList.remove('playing');
-                }
-                return;
-            }
+            // Reset UI precedente
+            document.querySelectorAll('.play-btn').forEach(b => {
+                b.classList.remove('playing');
+                b.innerHTML = '<i class="fas fa-play"></i>';
+            });
 
-            // Resetta il pulsante precedente
-            if(activeAudioBtn) {
-                activeAudioBtn.innerHTML = '<i class="fas fa-play"></i>';
-                activeAudioBtn.parentElement.classList.remove('playing');
-            }
-
-            // Imposta nuovo pulsante
-            activeAudioBtn = btn;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; // Loading state
-            btn.parentElement.classList.add('playing');
-
-            document.getElementById('playing-now-text').textContent = `${translations[currentLang].play_now} ${title}`;
-            bar.classList.add('visible');
-
-            player.src = url;
-            player.load();
-            
-            const playPromise = player.play();
-            if (playPromise !== undefined) {
-                playPromise.then(_ => {
-                    btn.innerHTML = '<i class="fas fa-pause"></i>';
-                })
-                .catch(error => {
-                    console.error("Playback error:", error);
-                    btn.innerHTML = '<i class="fas fa-exclamation"></i>';
-                });
-            }
-        };
-
-        player.onended = () => {
-            if(activeAudioBtn) {
-                activeAudioBtn.innerHTML = '<i class="fas fa-play"></i>';
-                activeAudioBtn.parentElement.classList.remove('playing');
+            // Toggle Pausa se stesso brano
+            if (activeAudioBtn === btn && !player.paused) {
+                player.pause();
                 activeAudioBtn = null;
+                return;
             }
-        };
+
+            // Avvio nuovo brano
+            player.src = url;
+            player.play().catch(e => {
+                console.error("Play error", e);
+                alert("Error playing audio. Format might be unsupported.");
+            });
+            
+            document.getElementById('playing-now-text').textContent = title;
+            bar.classList.add('visible');
+            
+            btn.classList.add('playing');
+            btn.innerHTML = '<i class="fas fa-pause"></i>';
+            activeAudioBtn = btn;
+
+            player.onended = () => {
+                btn.classList.remove('playing');
+                btn.innerHTML = '<i class="fas fa-play"></i>';
+                activeAudioBtn = null;
+            };
+        }
 
         // --- GESTIONE CARRELLO (MODALE) ---
         window.addToCart = function(id, title, price) {
@@ -547,7 +518,7 @@
                 price: currentPackInfo.price
             });
             updateCartBadge();
-            openCartModal(); // Apre il carrello automaticamente quando aggiungi un pack
+            openCartModal(); 
         };
 
         function updateCartBadge() {
@@ -605,7 +576,7 @@
         window.removeFromCart = function(index) {
             shoppingCart.splice(index, 1);
             updateCartBadge();
-            openCartModal(); // Ricarica la modale
+            openCartModal(); 
         };
 
         window.proceedToCheckout = function() {
@@ -618,12 +589,9 @@
             window.location.href = `${CHECKOUT_URL}?cart=${cartParam}`;
         };
 
-        // Chiudi modale se clicchi fuori
         window.onclick = function(event) {
             const modal = document.getElementById('cart-modal');
-            if (event.target == modal) {
-                closeCartModal();
-            }
+            if (event.target == modal) closeCartModal();
         }
 
         init();
