@@ -490,7 +490,7 @@
 
         visibleItems.forEach(item => {
             let price = parseFloat(item.Prezzo);
-            if(isNaN(price) || price <= 0) price = 0.99; // Fallback prezzo singolo
+            if(isNaN(price) || price <= 0) price = 0; // Fallback prezzo singolo
             
             const rawUrl = item.link_lungo; 
             const audioUrl = fixSunoUrl(rawUrl);
@@ -680,6 +680,7 @@
 </script>
 </body>
 </html>
+
 
 
 
