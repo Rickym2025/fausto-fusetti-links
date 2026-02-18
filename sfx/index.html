@@ -489,13 +489,9 @@
         }
 
         visibleItems.forEach(item => {
-            let price = parseFloat(item.Prezzo);
-            if(isNaN(price) || price <= 0) price = 1.49; // Fallback prezzo singolo
-            
             const rawUrl = item.link_lungo; 
             const audioUrl = fixSunoUrl(rawUrl);
 
-            // AGGIUNTE COLONNE SUB_CATEGORY E MODE QUI SOTTO
             const div = document.createElement('div');
             div.className = 'sfx-item';
             div.innerHTML = `
@@ -508,15 +504,14 @@
                         <span><i class="far fa-clock"></i> ${item.Durata || '--'}</span>
                         <span><i class="fas fa-tag"></i> ${item.CATEGORY || 'SFX'}</span>
                         ${item.SUB_CATEGORY ? `<span><i class="fas fa-folder-open"></i> ${item.SUB_CATEGORY}</span>` : ''}
-                        ${item.MODE ? `<span><i class="fas fa-wave-square"></i> ${item.MODE}</span>` : ''}
                     </div>
                 </div>
-                
+                <!-- Tasto singolo rimosso per vendita solo bundle -->
             `;
             container.appendChild(div);
         });
 
-        // TASTO LOAD MORE
+       // TASTO LOAD MORE
         if (items.length > displayLimit) {
             const loadMoreDiv = document.createElement('div');
             loadMoreDiv.style.gridColumn = "1/-1";
@@ -678,4 +673,5 @@
 </script>
 </body>
 </html>
+
 
