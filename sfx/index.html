@@ -511,9 +511,7 @@
                         ${item.MODE ? `<span><i class="fas fa-wave-square"></i> ${item.MODE}</span>` : ''}
                     </div>
                 </div>
-                <button class="buy-single-btn" onclick="addToCart('${item.ID}', '${item.FILE_TITLE.replace(/'/g, "\\'")}', ${price})">
-                    ${t.buy_single} ${price.toFixed(2)}€
-                </button>
+                
             `;
             container.appendChild(div);
         });
@@ -680,3 +678,4 @@
 </script>
 </body>
 </html>
+
