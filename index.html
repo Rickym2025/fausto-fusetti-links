@@ -4,7 +4,7 @@
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-KD9H9P2RKT"></script>
   <script>
-    window.dataLayer = window.dataLayer || [];
+    window.dataLayer = window.dataLayer ||[];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'G-KD9H9P2RKT');
@@ -19,13 +19,13 @@
     "alternateName": "Fausto Miriani",
     "url": "https://rickym2025.github.io/fausto-fusetti-links/index.html",
     "image": "https://rickym2025.github.io/fausto-fusetti-links/logo6.jpg",
-    "sameAs": [
+    "sameAs":[
       "https://www.instagram.com/faustofusetti/",
       "https://www.facebook.com/fausto.fusetti.9",
       "https://www.youtube.com/@faustofusetti5859"
     ],
     "description": "Servizio di creazione canzoni personalizzate, jingle pubblicitari e produzioni musicali originali.",
-    "knowsAbout": ["Canzoni su misura", "Composizione", "Jingle Radiofonici", "Songwriting"],
+    "knowsAbout":["Canzoni su misura", "Composizione", "Jingle Radiofonici", "Songwriting"],
     "offers": {
       "@type": "Offer",
       "itemOffered": {
@@ -84,23 +84,65 @@ body { font-family: 'Montserrat', sans-serif; color: #f0f0f0; text-align: center
 
 h1 { font-size: 1.8em; margin-bottom: 15px; font-weight: 500; }
 p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1; }
+
+/* VECCHIO STILE PULSANTI (Mantenuto per le finestre Modali) */
 .button { display: block; margin: 18px auto; padding: 16px 30px; border: 2px solid var(--primary-color); border-radius: 30px; text-decoration: none; color: #f0f0f0; font-size: 1.2em; font-weight: 500; transition: all 0.3s ease; background-color: transparent; cursor: pointer; }
 .button:hover { background: var(--primary-color); color: white; transform: translateY(-3px); box-shadow: 0 4px 15px rgba(6, 147, 227, 0.4); }
 .button.collabora { border-color: var(--secondary-color); } .button.collabora:hover { background: var(--secondary-color); box-shadow: 0 4px 15px rgba(227, 160, 6, 0.4); }
-.button.jukebox { border-color: var(--secondary-color); } .button.jukebox:hover { background: var(--secondary-color); box-shadow: 0 4px 15px rgba(227, 160, 6, 0.4); }
-.button.jingle { border-color: var(--jingle-color); color: var(--jingle-color); } 
-.button.jingle:hover { background: var(--jingle-color); color: #000; box-shadow: 0 4px 20px rgba(0, 225, 255, 0.6); border-color: var(--jingle-color); }
-.button.sfx-button {
-    border-color: #9d4edd; /* Viola Elettrico */
-    color: #e0aaff;
-}
-.button.sfx-button:hover {
-    background: #9d4edd;
-    color: #fff;
-    box-shadow: 0 4px 20px rgba(157, 78, 221, 0.6);
-    border-color: #9d4edd;
-}  
 .button i { margin-right: 10px; }
+
+
+/* =========================================
+   NUOVO STILE PULSANTI NEON GLOW CLESSIDRA
+   ========================================= */
+.menu-clessidra {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px auto;
+    padding: 16px 20px;
+    border: 2px solid var(--btn-color);
+    border-radius: 40px; 
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.1em;
+    font-weight: 600;
+    background: rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 10px rgba(0,0,0,0.5), inset 0 0 8px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    min-width: 270px; 
+    max-width: 100%;
+}
+
+.menu-btn i {
+    margin-right: 12px;
+    color: var(--btn-color);
+    font-size: 1.3em;
+    transition: all 0.3s ease;
+}
+
+.menu-btn:hover {
+    background: var(--btn-color);
+    color: #000;
+    box-shadow: 0 0 25px var(--btn-color), 0 0 10px var(--btn-color);
+    transform: scale(1.05);
+    border-color: #fff;
+}
+
+.menu-btn:hover i {
+    color: #000;
+}
+
+
+/* MODALI E ALTRO */
 .social-icons { display: flex; justify-content: center; gap: 30px; margin: 40px 0 20px; }
 .social-icons a { color: #c7c7c7; font-size: 2.2em; transition: all 0.3s ease; }
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
@@ -160,8 +202,7 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
 .contact-form { display: flex; flex-direction: column; gap: 15px; text-align: left; }
 .contact-form input, .contact-form textarea, .contact-form select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #555; background-color: #2c2c2c; color: #f0f0f0; font-size: 1em; }
 #form-result { margin-top: 15px; font-weight: bold; }
-.service-highlight { background: linear-gradient(135deg, rgba(6, 147, 227, 0.1), rgba(227, 160, 6, 0.1)); border: 2px solid transparent; background-clip: padding-box; position: relative; }
-.service-highlight::before { content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); border-radius: inherit; z-index: -1; }
+
 #aphorism-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; pointer-events: none; }
 @keyframes fadeInOut { 0% { opacity: 0; transform: var(--transform-start); } 15% { opacity: 1; transform: var(--transform-end); } 85% { opacity: 1; transform: var(--transform-end); } 100% { opacity: 0; transform: var(--transform-start); } }
 .aphorism-postit { position: absolute; background-color: #fefabc; color: #333; padding: 15px; border-radius: 5px; box-shadow: 5px 5px 15px rgba(0,0,0,0.3); max-width: 250px; font-family: 'Georgia', serif; animation: fadeInOut 10s ease-in-out forwards; }
@@ -203,17 +244,51 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
         <h1>Fausto Fusetti</h1>
         <p class="bio">Piacere, sono Fausto Fusetti, in arte <strong>Fausto Miriani</strong>. Dal 1988 la musica è la mia vita: sono polistrumentista, cantante, compositore, paroliere e anche autore di libri.<br><br>La mia carriera è stata un viaggio entusiasmante sui palchi più prestigiosi, collaborando con icone come <strong>Fred Bongusto, Peppino di Capri e Califano</strong>.<br><br>Oggi metto questa esperienza al tuo servizio per creare <strong>canzoni e libri personalizzati</strong>, e continuo a investire sul futuro.</p>
 
-        <!-- MENU PULSANTI -->
-        <a href="jukebox/index.html" target="_blank" class="button jukebox"><i class="fas fa-compact-disc"></i> Area Riservata Jukebox</a>
-        <a href="jingle/index.html" target="_blank" class="button jingle"><i class="fas fa-icons"></i> Jingle Shop</a>
-        <button id="open-music-modal" class="button"><i class="fas fa-music"></i> Catalogo Musicale</button>
-        <button id="open-video-modal" class="button"><i class="fas fa-video"></i> Guarda i Video</button>
-        <button id="open-services-modal" class="button service-highlight"><i class="fas fa-heart"></i> Canzoni Personalizzate</button>
-        <button id="open-contact-modal" class="button collabora"><i class="fas fa-pencil-alt"></i> Contattami per un Progetto</button>
-        <button id="open-shop-modal" class="button"><i class="fas fa-shopping-cart"></i> Shop</button>
-        <a href="blog/index.html" class="button" style="border-color: #fff; color: #fff;"><i class="fas fa-newspaper"></i> Blog & News</a>  
-        <a href="sfx/index.html" class="button sfx-button">    <i class="fas fa-wave-square"></i> Libreria SFX </a>
-        <a href="eventi/index.html" class="button service-highlight" style="margin-top: 25px;">  <i class="fas fa-glass-cheers"></i> Canzoni per Eventi (Matrimoni, Lauree)   </a>
+        <!-- MENU PULSANTI (EFFETTO CLESSIDRA E GLOW) -->
+        <div class="menu-clessidra" style="margin-top: 30px;">
+            
+            <a href="eventi/index.html" class="menu-btn" style="--btn-color: #00e1ff; width: 100%;">
+                <i class="fas fa-glass-cheers"></i> Canzoni per Eventi Speciali
+            </a>
+            
+            <button id="open-services-modal" class="menu-btn" style="--btn-color: #ff00ff; width: 92%;">
+                <i class="fas fa-heart"></i> Canzoni Personalizzate
+            </button>
+            
+            <button id="open-music-modal" class="menu-btn" style="--btn-color: #9d4edd; width: 84%;">
+                <i class="fas fa-music"></i> Catalogo Musicale
+            </button>
+            
+            <a href="jukebox/index.html" target="_blank" class="menu-btn" style="--btn-color: #ff3366; width: 76%;">
+                <i class="fas fa-compact-disc"></i> Area Riservata Jukebox
+            </a>
+            
+            <a href="jingle/index.html" target="_blank" class="menu-btn" style="--btn-color: #ff8c00; width: 68%;">
+                <i class="fas fa-icons"></i> Jingle Shop
+            </a>
+            
+            <a href="sfx/index.html" class="menu-btn" style="--btn-color: #ffff00; width: 68%;">
+                <i class="fas fa-wave-square"></i> Libreria SFX
+            </a>
+            
+            <button id="open-video-modal" class="menu-btn" style="--btn-color: #39ff14; width: 76%;">
+                <i class="fas fa-video"></i> Guarda i Video
+            </button>
+            
+            <a href="blog/index.html" class="menu-btn" style="--btn-color: #00ffaa; width: 84%;">
+                <i class="fas fa-newspaper"></i> Blog & News
+            </a>
+            
+            <button id="open-shop-modal" class="menu-btn" style="--btn-color: #00aaff; width: 92%;">
+                <i class="fas fa-shopping-cart"></i> Shop & Merchandising
+            </button>
+            
+            <button id="open-contact-modal" class="menu-btn" style="--btn-color: #ffffff; width: 100%; margin-top: 25px;">
+                <i class="fas fa-pencil-alt"></i> Contattami per un Progetto
+            </button>
+
+        </div>
+
         <div class="social-icons">
             <a href="https://www.instagram.com/faustofusetti/" target="_blank"><i class="fa-brands fa-instagram"></i></a>
             <a href="https://www.facebook.com/fausto.fusetti.9" target="_blank"><i class="fa-brands fa-facebook"></i></a>
