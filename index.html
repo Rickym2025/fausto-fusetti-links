@@ -793,7 +793,7 @@ window.playSong = function(url, title, btn) {
             document.getElementById(loadingId).remove();
             addMsg(data.response, 'bot');
             
-        } catch(e) {
+} catch(e) {
             console.error(e);
             document.getElementById(loadingId).remove();
             addMsg("Mi dispiace, la mia connessione musicale ha avuto un intoppo. Riprova! 🎵", 'bot');
@@ -802,6 +802,13 @@ window.playSong = function(url, title, btn) {
 
     init();
 });
+</script> <!-- Chiudi qui il tuo script del chatbot/carrello -->
+
+<!-- Inizio Vercel Analytics -->
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>
+<script defer src="/_vercel/insights/script.js"></script>
+
 </body>
 </html>
