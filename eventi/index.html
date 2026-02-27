@@ -41,7 +41,7 @@
         .btn-glow { background: var(--primary); color: #000; padding: 18px 35px; border-radius: 40px; text-decoration: none; font-weight: 800; transition: 0.3s; border: none; cursor: pointer; display: inline-block; box-shadow: 0 0 20px rgba(0, 225, 255, 0.4); font-size: 1.1rem; margin-bottom: 20px; }
         .btn-glow:hover { transform: translateY(-3px); box-shadow: 0 0 30px rgba(0, 225, 255, 0.7); }
         
-        /* GRID MIGLIORATA: Le card si dispongono automaticamente su più righe in base allo schermo */
+        /* GRID ESPANSA */
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; padding: 20px; max-width: 1300px; margin: 0 auto; }
         .card { background: var(--card); padding: 35px 25px; border-radius: 20px; border: 1px solid var(--border); text-align: center; transition: 0.3s; display: flex; flex-direction: column; justify-content: flex-start; }
         .card:hover { border-color: var(--primary); transform: translateY(-5px); background: rgba(0, 225, 255, 0.05); }
@@ -105,7 +105,6 @@
         <button onclick="openModal('Inizio Progetto')" class="btn-glow">Inizia il tuo progetto</button>
     </section>
 
-    <!-- GRID ESPANSA A 10 SERVIZI -->
     <div class="grid">
         <div class="card"><i class="fas fa-ring"></i><h3>Matrimoni</h3><p>Dall'ingresso in chiesa al primo ballo. Una dedica romantica che resterà colonna sonora del vostro amore per sempre.</p></div>
         <div class="card"><i class="fas fa-glass-cheers"></i><h3>Anniversari</h3><p>Celebra il cammino percorso insieme con una melodia personalizzata che racconta la vostra storia e i vostri traguardi.</p></div>
@@ -145,57 +144,69 @@
     </div>
 
 <script>
-    // RALLENTA IL VIDEO DI SFONDO (0.7 = 70% della velocità normale)
+    // RALLENTA IL VIDEO AL 70%
     document.addEventListener("DOMContentLoaded", function() {
         const bgVideo = document.getElementById('video-bg');
-        if(bgVideo) {
-            bgVideo.playbackRate = 0.7; 
-        }
+        if(bgVideo) bgVideo.playbackRate = 0.7; 
     });
 
     const API_URL = "https://script.google.com/macros/s/AKfycbykrDboqDvee6j4DjxGwD7sHNYdSdkzaWgngNmptRokEDYmz8B3BmZ0FuL8mCF3bRoY/exec"; 
 
-    // Helper a prova di bomba per leggere i dati dal foglio
+    // FUNZIONE CORRETTA: Rimuove gli spazi dalle intestazioni in Excel in modo invisibile!
     function getV(obj, key) {
-        const found = Object.keys(obj).find(k => k.toLowerCase() === key.toLowerCase());
+        const found = Object.keys(obj).find(k => k.trim().toLowerCase() === key.toLowerCase());
         return (found && obj[found] !== null && obj[found] !== undefined) ? String(obj[found]).trim() : "";
     }
 
     async function loadSongs() {
         try {
             const res = await fetch(`${API_URL}?source=catalogo&t=${Date.now()}`);
-            let songs = await res.json();
+            let data = await res.json();
             
-            if (!Array.isArray(songs) && Array.isArray(songs.data)) {
-                songs = songs.data;
-            }
+            // Garantisce che troviamo sempre l'array dei brani
+            let songs =[];
+            if (Array.isArray(data)) songs = data;
+            else if (data && Array.isArray(data.data)) songs = data.data;
 
             const container = document.getElementById('song-list');
             
-            // FILTRO AVANZATO: Cattura Matrimoni, ma anche Eventi, Aziende, Inni, ecc.
+            // FILTRO ULTRA-PERMISSIVO
             const filtered = songs.filter(s => {
                 const stato = getV(s, 'Stato').toLowerCase();
+                const categoria = getV(s, 'Categoria').toLowerCase();
                 const catalogo = getV(s, 'Catalogo').toLowerCase();
                 
-                // Controlla se è impostato "True", "Vero", "1" (previene problemi con le traduzioni di Google Sheets)
-                const inCatalogo = (catalogo === 'true' || catalogo === 'vero' || catalogo === '1');
+                // Uniamo Stato e Categoria in un unico blocco di testo, così la parola viene trovata
+                // ovunque tu l'abbia scritta per sbaglio!
+                const testoCombinato = stato + " " + categoria;
                 
-                // Controlla se la colonna stato contiene una di queste parole chiave
-                const isEvent = stato.includes('matrimonio') || 
-                                stato.includes('evento') || 
-                                stato.includes('eventi') || 
-                                stato.includes('cerimonia') || 
-                                stato.includes('inno') || 
-                                stato.includes('aziendal') || 
-                                stato.includes('hotel');
+                // Ricerca delle "radici" (es. 'matrimon' trova 'matrimonio' e 'matrimoni')
+                const isEvent = testoCombinato.includes('matrimon') || 
+                                testoCombinato.includes('event') || 
+                                testoCombinato.includes('cerimoni') || 
+                                testoCombinato.includes('inno') || 
+                                testoCombinato.includes('aziend') || 
+                                testoCombinato.includes('hotel') ||
+                                testoCombinato.includes('laurea') ||
+                                testoCombinato.includes('anniversari');
+                                
+                // Legge in modo sicuro qualsiasi tipo di "Vero" o spunta messa nel foglio                
+                const inCatalogo = (catalogo === 'true' || catalogo === 'vero' || catalogo === '1' || catalogo === 'sì' || catalogo === 'si' || catalogo === 'yes');
                 
                 return isEvent && inCatalogo;
             });
 
             container.innerHTML = '';
             
+            // MESSAGGIO DIAGNOSTICO: Se ancora non trovasse nulla, scriverà nel grigino in piccolo
+            // le colonne che ha rilevato. Utile per capire se c'è un errore nell'intestazione Excel.
             if(filtered.length === 0) {
-                container.innerHTML = '<p style="text-align:center; color:#888;">Nessun brano per eventi presente nel catalogo pubblico in questo momento.<br><br><button onclick="openModal(\'Generale\')" class="request-btn" style="border-color:var(--primary); color:var(--primary);">Contattami per ascoltare le demo private</button></p>';
+                let debugMsg = "";
+                if(songs.length > 0) {
+                    debugMsg = `<br><br><span style="font-size:0.75rem; color:#444;">[Diagnostica: Trovati ${songs.length} brani. Colonne lette: ${Object.keys(songs[0]).join(', ')}]</span>`;
+                }
+                
+                container.innerHTML = `<p style="text-align:center; color:#888;">Nessun brano per eventi presente nel catalogo in questo momento.<br><br><button onclick="openModal('Generale')" class="request-btn" style="border-color:var(--primary); color:var(--primary);">Contattami per ascoltare le demo private</button>${debugMsg}</p>`;
                 return;
             }
 
@@ -215,9 +226,6 @@
                 `;
                 container.appendChild(row);
             });
-            
-            // Log in console per aiutarti a capire quanti brani ha trovato
-            console.log(`Trovati ${filtered.length} brani per la pagina eventi.`);
             
         } catch (e) {
             console.error("Errore caricamento brani:", e);
@@ -250,7 +258,6 @@
         }
     }
 
-    // Quando la canzone finisce da sola, resetto il pulsante play
     document.getElementById('audio-player').addEventListener('ended', function() {
         if(currentBtn) {
             currentBtn.classList.remove('playing');
