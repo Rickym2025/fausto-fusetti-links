@@ -23,9 +23,12 @@
     <style>
         :root { --primary: #00e1ff; --bg: #0a0a0a; --card: rgba(20, 20, 20, 0.95); --border: rgba(255, 255, 255, 0.1); }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; }
-        html, body { overflow-x: hidden; scroll-behavior: smooth; background-color: var(--bg); color: #fff; }
+        
+        /* FIX VIDEO: Ho rimosso il background-color dal body, altrimenti copriva il video */
+        html, body { overflow-x: hidden; scroll-behavior: smooth; color: #fff; background-color: transparent; }
         body { padding-bottom: 120px; }
-        #video-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; object-fit: cover; filter: brightness(0.3); }
+        
+        #video-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; object-fit: cover; filter: brightness(0.3); background-color: #000; }
         header { background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(15px); position: sticky; top: 0; z-index: 100; padding: 15px 25px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
         .header-left { display: flex; align-items: center; gap: 15px; }
         .nav-btn { text-decoration: none; color: #ccc; font-size: 0.85rem; border: 1px solid var(--border); padding: 8px 15px; border-radius: 20px; transition: 0.3s; background: none; cursor: pointer; }
@@ -66,7 +69,6 @@
 </head>
 <body>
 
-    <!-- VIDEO BACKGROUND: Fallback alla root se non presente in cartella -->
     <video id="video-bg" autoplay muted loop playsinline poster="../immagine_sfondo.png">
         <source src="video_eventi.mp4" type="video/mp4">
         <source src="../video_sfondo_compressed.mp4" type="video/mp4">
@@ -98,7 +100,7 @@
 
     <div class="song-container">
         <h2 style="text-align:center; margin-bottom:30px;">ASCOLTA ALCUNE DEMO</h2>
-        <div id="song-list"><p style="text-align:center;">Sintonizzazione con lo studio...</p></div>
+        <div id="song-list"><p style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Sintonizzazione con lo studio...</p></div>
     </div>
 
     <div id="contact-modal" class="modal-overlay">
@@ -124,32 +126,43 @@
 <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbykrDboqDvee6j4DjxGwD7sHNYdSdkzaWgngNmptRokEDYmz8B3BmZ0FuL8mCF3bRoY/exec"; 
 
-    // Funzione helper per estrarre valori a prescindere dal nome colonna (maiuscolo/minuscolo)
+    // FIX 1: Assicuriamoci che la cella diventi SEMPRE una stringa, anche se vuota,
+    // per impedire che .toLowerCase() mandi in crash la pagina.
     function getV(obj, key) {
         const found = Object.keys(obj).find(k => k.toLowerCase() === key.toLowerCase());
-        return found ? obj[found] : "";
+        return (found && obj[found] !== null && obj[found] !== undefined) ? String(obj[found]) : "";
     }
 
     async function loadSongs() {
         try {
-            const res = await fetch(`${API_URL}?source=catalogo`);
-            const songs = await res.json();
+            // FIX 2: Aggiunto t=${Date.now()} per ignorare la cache di Google
+            const res = await fetch(`${API_URL}?source=catalogo&t=${Date.now()}`);
+            let songs = await res.json();
+            
+            // Per sicurezza, se l'API restituisce un oggetto invece di un array
+            if (!Array.isArray(songs) && Array.isArray(songs.data)) {
+                songs = songs.data;
+            }
+
             const container = document.getElementById('song-list');
             
-            // Filtro: Stato deve contenere "Matrimonio"
+            // FIX 3: Doppio filtro: Stato "Matrimonio" E Catalogo "True"
             const filtered = songs.filter(s => {
                 const stato = getV(s, 'Stato').toLowerCase();
-                return stato.includes('matrimonio');
+                const catalogo = getV(s, 'Catalogo').toLowerCase();
+                
+                return stato.includes('matrimonio') && catalogo === 'true';
             });
 
             container.innerHTML = '';
+            
             if(filtered.length === 0) {
-                container.innerHTML = '<p style="text-align:center; color:#888;">Contattami per ascoltare i brani in anteprima privata.</p>';
+                container.innerHTML = '<p style="text-align:center; color:#888;">Nessun brano per eventi presente nel catalogo pubblico.</p>';
                 return;
             }
 
             filtered.forEach(song => {
-                const title = getV(song, 'Titolo');
+                const title = getV(song, 'Titolo') || 'Senza Titolo';
                 const url = getV(song, 'url');
                 const cat = getV(song, 'Categoria');
                 const row = document.createElement('div');
@@ -165,7 +178,8 @@
                 container.appendChild(row);
             });
         } catch (e) {
-            document.getElementById('song-list').innerHTML = 'Studio momentaneamente non raggiungibile.';
+            console.error(e);
+            document.getElementById('song-list').innerHTML = '<p style="text-align:center; color:#ff5555;">Studio momentaneamente non raggiungibile. Riprova più tardi.</p>';
         }
     }
 
@@ -184,7 +198,7 @@
             document.getElementById('player-title').innerText = title;
             bar.classList.add('visible');
             currentBtn = btn;
-            fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'increment', title: title }) });
+            fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'increment', title: title }) }).catch(console.error);
         }
     }
 
@@ -195,14 +209,15 @@
         else if(type !== 'Generale') msg.value = `Ciao Fausto, vorrei info sulla canzone "${type}"...`;
         modal.style.display = 'flex';
     }
+    
     function closeModal() { document.getElementById('contact-modal').style.display = 'none'; }
 
     document.getElementById('contact-form').addEventListener('submit', function(e) {
         e.preventDefault();
         const result = document.getElementById('form-result');
-        result.innerHTML = "Invio...";
+        result.innerHTML = "Invio in corso...";
         fetch('https://api.web3forms.com/submit', { method: 'POST', body: new FormData(this) })
-        .then(r => { if(r.status==200) { result.innerHTML = '<span style="color:var(--primary)">Inviato!</span>'; this.reset(); setTimeout(closeModal, 2000); } });
+        .then(r => { if(r.status==200) { result.innerHTML = '<span style="color:var(--primary)">Inviato con successo!</span>'; this.reset(); setTimeout(closeModal, 2000); } });
     });
 
     loadSongs();
