@@ -41,7 +41,7 @@
         .btn-glow { background: var(--primary); color: #000; padding: 18px 35px; border-radius: 40px; text-decoration: none; font-weight: 800; transition: 0.3s; border: none; cursor: pointer; display: inline-block; box-shadow: 0 0 20px rgba(0, 225, 255, 0.4); font-size: 1.1rem; margin-bottom: 20px; }
         .btn-glow:hover { transform: translateY(-3px); box-shadow: 0 0 30px rgba(0, 225, 255, 0.7); }
         
-        /* GRID ESPANSA */
+        /* GRID */
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; padding: 20px; max-width: 1300px; margin: 0 auto; }
         .card { background: var(--card); padding: 35px 25px; border-radius: 20px; border: 1px solid var(--border); text-align: center; transition: 0.3s; display: flex; flex-direction: column; justify-content: flex-start; }
         .card:hover { border-color: var(--primary); transform: translateY(-5px); background: rgba(0, 225, 255, 0.05); }
@@ -105,6 +105,7 @@
         <button onclick="openModal('Inizio Progetto')" class="btn-glow">Inizia il tuo progetto</button>
     </section>
 
+    <!-- 12 SCHEDE AGGIORNATE -->
     <div class="grid">
         <div class="card"><i class="fas fa-ring"></i><h3>Matrimoni</h3><p>Dall'ingresso in chiesa al primo ballo. Una dedica romantica che resterà colonna sonora del vostro amore per sempre.</p></div>
         <div class="card"><i class="fas fa-glass-cheers"></i><h3>Anniversari</h3><p>Celebra il cammino percorso insieme con una melodia personalizzata che racconta la vostra storia e i vostri traguardi.</p></div>
@@ -116,11 +117,14 @@
         <div class="card"><i class="fas fa-futbol"></i><h3>Inni Sportivi</h3><p>Carica la tua squadra e unisci i tifosi con un inno travolgente e fiero, perfetto per club calcistici e società sportive.</p></div>
         <div class="card"><i class="fas fa-hotel"></i><h3>Sound Design per Hotel</h3><p>Accogli i tuoi ospiti con un'atmosfera unica: musiche ambientali esclusive per hall, aree lounge e camere d'albergo.</p></div>
         <div class="card"><i class="fas fa-school"></i><h3>Eventi Scolastici</h3><p>Rendi indimenticabili saggi di fine anno, recite e presentazioni accademiche con brani composti su misura per l'istituto.</p></div>
+        <!-- Nuove Schede Negozi/Centri Commerciali -->
+        <div class="card"><i class="fas fa-store"></i><h3>Musica per Negozi</h3><p>Brani e sound design studiati scientificamente per stimolare l'acquisto e fidelizzare il cliente all'interno del tuo punto vendita.</p></div>
+        <div class="card"><i class="fas fa-shopping-bag"></i><h3>Centri Commerciali</h3><p>Filodiffusione su misura e jingle promozionali per creare la giusta atmosfera, accompagnando i clienti tra vetrine e aree relax.</p></div>
     </div>
 
     <div class="song-container">
         <h2 style="text-align:center; margin-bottom:30px;">ASCOLTA ALCUNE DEMO</h2>
-        <div id="song-list"><p style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Ricerca nel catalogo in corso...</p></div>
+        <div id="song-list"><p style="text-align:center; color:#aaa;"><i class="fas fa-spinner fa-spin"></i> Caricamento...</p></div>
     </div>
 
     <div id="contact-modal" class="modal-overlay">
@@ -144,99 +148,104 @@
     </div>
 
 <script>
-    // RALLENTA IL VIDEO AL 70%
+    // Rallenta il video di sfondo al 70%
     document.addEventListener("DOMContentLoaded", function() {
         const bgVideo = document.getElementById('video-bg');
         if(bgVideo) bgVideo.playbackRate = 0.7; 
     });
 
-    const API_URL = "https://script.google.com/macros/s/AKfycbykrDboqDvee6j4DjxGwD7sHNYdSdkzaWgngNmptRokEDYmz8B3BmZ0FuL8mCF3bRoY/exec"; 
+    // === LOGICA DI CARICAMENTO ESATTA DELLA TUA HOMEPAGE ===
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbykrDboqDvee6j4DjxGwD7sHNYdSdkzaWgngNmptRokEDYmz8B3BmZ0FuL8mCF3bRoY/exec'; 
 
-    // FUNZIONE CORRETTA: Rimuove gli spazi dalle intestazioni in Excel in modo invisibile!
-    function getV(obj, key) {
-        const found = Object.keys(obj).find(k => k.trim().toLowerCase() === key.toLowerCase());
-        return (found && obj[found] !== null && obj[found] !== undefined) ? String(obj[found]).trim() : "";
-    }
-
-    async function loadSongs() {
+    async function loadMusicFromApi() {
+        const songListContainer = document.getElementById('song-list');
+        
         try {
-            const res = await fetch(`${API_URL}?source=catalogo&t=${Date.now()}`);
-            let data = await res.json();
+            // Usa esattamente il fetch del tuo index.html
+            const res = await fetch(`${GOOGLE_SCRIPT_URL}?source=catalogo&t=${Date.now()}`);
+            const data = await res.json();
             
-            // Garantisce che troviamo sempre l'array dei brani
-            let songs =[];
-            if (Array.isArray(data)) songs = data;
-            else if (data && Array.isArray(data.data)) songs = data.data;
-
-            const container = document.getElementById('song-list');
+            if(data.status === 'error') throw new Error(data.message);
             
-            // FILTRO ULTRA-PERMISSIVO
-            const filtered = songs.filter(s => {
-                const stato = getV(s, 'Stato').toLowerCase();
-                const categoria = getV(s, 'Categoria').toLowerCase();
-                const catalogo = getV(s, 'Catalogo').toLowerCase();
-                
-                // Uniamo Stato e Categoria in un unico blocco di testo, così la parola viene trovata
-                // ovunque tu l'abbia scritta per sbaglio!
-                const testoCombinato = stato + " " + categoria;
-                
-                // Ricerca delle "radici" (es. 'matrimon' trova 'matrimonio' e 'matrimoni')
-                const isEvent = testoCombinato.includes('matrimon') || 
-                                testoCombinato.includes('event') || 
-                                testoCombinato.includes('cerimoni') || 
-                                testoCombinato.includes('inno') || 
-                                testoCombinato.includes('aziend') || 
-                                testoCombinato.includes('hotel') ||
-                                testoCombinato.includes('laurea') ||
-                                testoCombinato.includes('anniversari');
-                                
-                // Legge in modo sicuro qualsiasi tipo di "Vero" o spunta messa nel foglio                
-                const inCatalogo = (catalogo === 'true' || catalogo === 'vero' || catalogo === '1' || catalogo === 'sì' || catalogo === 'si' || catalogo === 'yes');
-                
-                return isEvent && inCatalogo;
-            });
-
-            container.innerHTML = '';
-            
-            // MESSAGGIO DIAGNOSTICO: Se ancora non trovasse nulla, scriverà nel grigino in piccolo
-            // le colonne che ha rilevato. Utile per capire se c'è un errore nell'intestazione Excel.
-            if(filtered.length === 0) {
-                let debugMsg = "";
-                if(songs.length > 0) {
-                    debugMsg = `<br><br><span style="font-size:0.75rem; color:#444;">[Diagnostica: Trovati ${songs.length} brani. Colonne lette: ${Object.keys(songs[0]).join(', ')}]</span>`;
-                }
-                
-                container.innerHTML = `<p style="text-align:center; color:#888;">Nessun brano per eventi presente nel catalogo in questo momento.<br><br><button onclick="openModal('Generale')" class="request-btn" style="border-color:var(--primary); color:var(--primary);">Contattami per ascoltare le demo private</button>${debugMsg}</p>`;
-                return;
+            // Applica il controllo e la chiamata del rendering testuali della tua home
+            if(Array.isArray(data)) {
+                renderCatalog(data);
+            } else {
+                throw new Error("Formato dati non valido");
             }
-
-            filtered.forEach(song => {
-                const title = getV(song, 'Titolo') || 'Senza Titolo';
-                const url = getV(song, 'url');
-                const cat = getV(song, 'Categoria');
-                const row = document.createElement('div');
-                row.className = 'song-row';
-                row.innerHTML = `
-                    <button class="play-btn" onclick="playSong('${url}', '${title.replace(/'/g, "\\'")}', this)"><i class="fas fa-play"></i></button>
-                    <div class="song-info">
-                        <h4>${title}</h4>
-                        <span>${cat || 'Produzione Eventi & Business'}</span>
-                    </div>
-                    <button onclick="openModal('${title.replace(/'/g, "\\'")}')" class="request-btn">Richiedi Info</button>
-                `;
-                container.appendChild(row);
-            });
-            
-        } catch (e) {
-            console.error("Errore caricamento brani:", e);
-            document.getElementById('song-list').innerHTML = '<p style="text-align:center; color:#ff5555;">Studio momentaneamente non raggiungibile. Riprova più tardi.</p>';
+        } catch(e) {
+            console.error(e);
+            songListContainer.innerHTML = `<p style='color:#ff5555; text-align:center;'>Errore caricamento dati.<br>Verifica la connessione.</p>`;
         }
     }
 
+    function renderCatalog(allSongs) {
+        const songListContainer = document.getElementById('song-list');
+        songListContainer.innerHTML = '';
+        
+        const filtered = allSongs.filter(song => {
+            // Identica funzione get(k) usata nella tua index
+            const get = (k) => { 
+                const key = Object.keys(song).find(x => x.toLowerCase() === k.toLowerCase());
+                return key ? song[key] : ""; 
+            };
+            
+            // Assicuriamoci che siano stringhe per non bloccare il toLowerCase() se la cella è vuota
+            const stato = String(get('Stato') || '').toLowerCase();
+            const catalogo = String(get('Catalogo') || '').toLowerCase();
+            
+            const isEvent = stato.includes('matrimonio') || 
+                            stato.includes('evento') || 
+                            stato.includes('cerimonia') || 
+                            stato.includes('inno') || 
+                            stato.includes('aziendal') || 
+                            stato.includes('hotel') ||
+                            stato.includes('laurea') ||
+                            stato.includes('anniversari') ||
+                            stato.includes('negoz') ||
+                            stato.includes('commercial');
+                            
+            const isCatalogo = (catalogo === 'true' || catalogo === 'vero' || catalogo === '1');
+            
+            return isEvent && isCatalogo;
+        });
+
+        if(filtered.length === 0) {
+            songListContainer.innerHTML = '<p style="text-align:center; color:#888;">Nessun brano trovato.</p>';
+            return;
+        }
+
+        filtered.forEach(song => {
+            // Identica estrazione usata nella tua index
+            const get = (k) => { 
+                const key = Object.keys(song).find(x => x.toLowerCase() === k.toLowerCase());
+                return key ? song[key] : ""; 
+            };
+            
+            const title = get('Titolo') || 'Senza Titolo';
+            const url = get('url');
+            const cat = get('Categoria');
+            
+            const row = document.createElement('div');
+            row.className = 'song-row';
+            row.innerHTML = `
+                <button class="play-btn" onclick="playSong('${url}', '${title.replace(/'/g, "\\'")}', this)"><i class="fas fa-play"></i></button>
+                <div class="song-info">
+                    <h4>${title}</h4>
+                    <span>${cat || 'Produzione Eventi'}</span>
+                </div>
+                <button onclick="openModal('${title.replace(/'/g, "\\'")}')" class="request-btn">Richiedi Info</button>
+            `;
+            songListContainer.appendChild(row);
+        });
+    }
+
+    // === GESTIONE DEL PLAYER AUDIO ===
     let currentBtn = null;
     function playSong(url, title, btn) {
         const player = document.getElementById('audio-player');
         const bar = document.getElementById('player-bar');
+        
         if(currentBtn && currentBtn !== btn) { 
             currentBtn.classList.remove('playing'); 
             currentBtn.innerHTML = '<i class="fas fa-play"></i>'; 
@@ -254,7 +263,13 @@
             document.getElementById('player-title').innerText = title;
             bar.classList.add('visible');
             currentBtn = btn;
-            fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'increment', title: title }) }).catch(e=>console.log(e));
+            
+            // Tracking Google Sheet (dalla tua index)
+            fetch(GOOGLE_SCRIPT_URL, { 
+                method: 'POST', 
+                mode: 'no-cors', 
+                body: JSON.stringify({ action: 'increment', title: title }) 
+            }).catch(e => console.log("Tracking Sheet error", e));
         }
     }
 
@@ -265,6 +280,7 @@
         }
     });
 
+    // === MODALI E CONTACT FORM ===
     function openModal(type) {
         const modal = document.getElementById('contact-modal');
         const msg = document.getElementById('contact-message');
@@ -283,7 +299,8 @@
         .then(r => { if(r.status==200) { result.innerHTML = '<span style="color:var(--primary)">Inviato con successo!</span>'; this.reset(); setTimeout(closeModal, 2000); } });
     });
 
-    loadSongs();
+    // Avvia caricamento script
+    loadMusicFromApi();
 </script>
 </body>
 </html>
