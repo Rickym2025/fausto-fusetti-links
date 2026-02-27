@@ -1,322 +1,187 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <!-- Google Analytics (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KD9H9P2RKT"></script>
-    <script>
-      window.dataLayer = window.dataLayer ||[];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-KD9H9P2RKT');
-    </script>
-
-    <!-- Vercel Web Analytics -->
-    <script>
-      window.va = window.va || function () { (window.vaq = window.vaq ||[]).push(arguments); };
-    </script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KD9H9P2RKT');</script>
+    <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};</script>
     <script defer src="/_vercel/insights/script.js"></script>
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Canzoni per Eventi e Matrimoni | Fausto Fusetti</title>
-    <meta name="description" content="Rendi indimenticabile il tuo Matrimonio, Battesimo o Anniversario con una canzone personalizzata scritta su misura per la tua storia.">
-  
-    <!-- FAVICONS (Cartella root) -->
-    <link rel="icon" href="../favicon.ico?v=2" sizes="any" type="image/x-icon">
-    <link rel="icon" href="../icon-192.png?v=2" sizes="192x192" type="image/png">
-    <link rel="apple-touch-icon" href="../apple-touch-icon.png?v=2">
-
-    <!-- FONTS & ICONS -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Canzoni Su Misura per Eventi Indimenticabili | Fausto Fusetti</title>
+    
+    <link rel="icon" href="../favicon.ico?v=2">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
   
     <style>
-        /* SCHEMA COLORI COORDINATO */
-        :root { 
-            --primary: #00e1ff;       
-            --bg: #0a0a0a;            
-            --card: #141414;          
-            --text: #ffffff; 
-            --text-sec: #b0b0b0; 
-            --border: #333;
-        }
-
+        :root { --primary: #00e1ff; --bg: #0a0a0a; --card: rgba(20, 20, 20, 0.9); --border: rgba(255, 255, 255, 0.1); }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; }
-        body { background-color: var(--bg); color: var(--text); padding-bottom: 100px; }
-        
-        /* HEADER (Con parte destra ripristinata) */
-        header { 
-            background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(15px); 
-            position: sticky; top: 0; z-index: 100; padding: 15px 20px; 
-            border-bottom: 1px solid var(--border); display: flex; 
-            justify-content: space-between; align-items: center; 
-            box-shadow: 0 4px 20px rgba(0, 225, 255, 0.1); 
-        }
+        body { background-color: var(--bg); color: #fff; padding-bottom: 100px; overflow-x: hidden; }
 
-        .header-left, .header-right { display: flex; align-items: center; gap: 20px; }
+        /* VIDEO BACKGROUND */
+        #video-bg { position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; z-index: -1; object-fit: cover; filter: brightness(0.3) grayscale(0.2); }
 
-        .nav-btn {
-            text-decoration: none; color: var(--text-sec); font-size: 0.9rem;
-            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
-            border: 1px solid #333; padding: 8px 15px; border-radius: 20px;
-        }
-        .nav-btn:hover { color: var(--primary); border-color: var(--primary); }
-        
-        .contact-header-btn {
-            background: transparent; border: 2px solid var(--primary); color: var(--primary); 
-            padding: 8px 18px; border-radius: 30px; text-decoration: none; font-weight: 600;
-            transition: all 0.3s ease; box-shadow: 0 0 5px rgba(0, 225, 255, 0.2);
-            display: flex; align-items: center; gap: 8px;
-        }
-        .contact-header-btn:hover { background: var(--primary); color: #000; box-shadow: 0 0 15px rgba(0, 225, 255, 0.6); }
+        /* HEADER */
+        header { background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .nav-btn { text-decoration: none; color: #ccc; font-size: 0.85rem; border: 1px solid var(--border); padding: 8px 15px; border-radius: 20px; transition: 0.3s; }
+        .nav-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .contact-btn { background: var(--primary); color: #000; padding: 10px 20px; border-radius: 30px; text-decoration: none; font-weight: 700; transition: 0.3s; }
+        .logo-img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary); }
 
-        .logo-container { display: flex; align-items: center; gap: 12px; text-decoration: none; }
-        .logo-img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 10px rgba(0, 225, 255, 0.4); border: 2px solid var(--primary); }
-        .logo-text { font-weight: 800; font-size: 1.2rem; color: var(--text); text-transform: uppercase; letter-spacing: -0.5px; display: none; }
-        @media(min-width: 800px) { .logo-text { display: block; } }
-        .logo-text span { color: var(--primary); font-weight: 400; }
+        /* HERO */
+        .hero { padding: 100px 20px; text-align: center; max-width: 900px; margin: 0 auto; }
+        .hero h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; margin-bottom: 20px; line-height: 1.1; }
+        .hero h1 span { color: var(--primary); text-shadow: 0 0 20px rgba(0, 225, 255, 0.5); }
+        .hero p { font-size: 1.2rem; color: #ddd; margin-bottom: 40px; }
 
-        /* HERO SECTION EMOZIONALE */
-        .hero { 
-            position: relative; text-align: center; padding: 80px 20px; 
-            background: linear-gradient(to bottom, rgba(10,10,10,0.7), var(--bg)), 
-                        url('https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2000&auto=format&fit=crop');
-            background-size: cover; background-position: center;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .hero-content { position: relative; z-index: 2; max-width: 800px; margin: 0 auto; }
-        .hero h1 { font-size: 3rem; margin-bottom: 20px; color: #fff; line-height: 1.2; text-shadow: 0 4px 10px rgba(0,0,0,0.8); }
-        .hero h1 span { color: var(--primary); text-shadow: 0 0 20px rgba(0, 225, 255, 0.6); }
-        .hero p { font-size: 1.2rem; color: #e0e0e0; line-height: 1.6; margin-bottom: 40px; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
-
-        /* STEPS (Come funziona) */
-        .steps { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-bottom: 40px; }
-        .step { background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); padding: 15px 25px; border-radius: 12px; border: 1px solid rgba(0, 225, 255, 0.2); font-size: 0.95rem; font-weight: 600; color: #fff; display: flex; flex-direction: column; align-items: center; gap: 10px; width: 220px; }
-        .step i { font-size: 2rem; color: var(--primary); }
-
-        .cta-big {
-            display: inline-block; background: var(--primary); color: #000; padding: 18px 40px;
-            border-radius: 40px; font-size: 1.2rem; font-weight: 700; text-decoration: none;
-            box-shadow: 0 0 20px rgba(0, 225, 255, 0.4); transition: all 0.3s;
-        }
-        .cta-big:hover { transform: translateY(-3px); box-shadow: 0 0 30px rgba(0, 225, 255, 0.7); }
+        /* SEZIONE EMOZIONI (PERSUASIVA) */
+        .events-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; padding: 40px 20px; max-width: 1100px; margin: 0 auto; }
+        .event-card { background: var(--card); padding: 30px; border-radius: 15px; border: 1px solid var(--border); transition: 0.3s; }
+        .event-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .event-card i { font-size: 2.5rem; color: var(--primary); margin-bottom: 20px; }
+        .event-card h3 { margin-bottom: 10px; font-size: 1.4rem; }
+        .event-card p { color: #bbb; font-size: 0.95rem; line-height: 1.5; }
 
         /* LISTA BRANI */
-        .section-title { text-align: center; margin: 60px 0 30px; font-size: 2rem; color: #fff; }
-        .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
-        .song-list { display: grid; gap: 15px; }
-        
-        .song-row { 
-            background: var(--card); padding: 20px; border-radius: 12px; 
-            display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 20px; 
-            border: 1px solid #222; transition: all 0.3s; 
-        }
-        .song-row:hover { border-color: var(--primary); background: #1a1a1a; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
-        
-        .play-btn { 
-            width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--primary); 
-            background: rgba(0, 225, 255, 0.1); color: var(--primary); cursor: pointer; 
-            display: flex; align-items: center; justify-content: center; 
-            font-size: 1.4rem; transition: all 0.3s; padding-left: 4px; 
-        }
-        .play-btn.playing { padding-left: 0; background: var(--primary); color: #000; box-shadow: 0 0 15px rgba(0, 225, 255, 0.5); }
-        .play-btn:hover { background: var(--primary); color: #000; box-shadow: 0 0 15px rgba(0, 225, 255, 0.5); }
-        
-        .info h3 { font-size: 1.3rem; margin-bottom: 8px; font-weight: 700; color: #fff; }
-        .meta { font-size: 0.9rem; color: var(--text-sec); display: flex; gap: 10px; flex-wrap: wrap; }
-        .tag { background: #252525; padding: 5px 12px; border-radius: 6px; border: 1px solid #333; color: #ddd; font-weight: 500;}
-
-        .add-btn { 
-            background: transparent; border: 1px solid #555; color: #ccc; 
-            padding: 10px 20px; border-radius: 30px; cursor: pointer; transition: all 0.2s; 
-            font-weight: 600; display: flex; align-items: center; gap: 8px; text-decoration: none;
-        }
-        .add-btn:hover { background: #fff; color: #000; border-color: #fff; }
+        .song-container { max-width: 900px; margin: 50px auto; padding: 0 20px; }
+        .song-row { background: var(--card); padding: 15px 20px; border-radius: 12px; display: flex; align-items: center; gap: 20px; margin-bottom: 10px; border: 1px solid var(--border); }
+        .play-btn { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); background: none; color: var(--primary); cursor: pointer; transition: 0.3s; }
+        .play-btn.playing { background: var(--primary); color: #000; }
+        .song-info { flex: 1; }
+        .song-info h4 { font-size: 1.1rem; }
+        .song-info span { font-size: 0.8rem; color: #888; }
+        .request-btn { text-decoration: none; font-size: 0.85rem; color: #fff; border: 1px solid #555; padding: 8px 15px; border-radius: 20px; transition: 0.3s; }
+        .request-btn:hover { background: #fff; color: #000; }
 
         /* PLAYER FOOTER */
-        .player-bar { 
-            position: fixed; bottom: 0; left: 0; right: 0; 
-            background: rgba(10, 10, 10, 0.98); backdrop-filter: blur(10px);
-            border-top: 1px solid var(--primary); padding: 15px 20px; 
-            display: flex; align-items: center; gap: 20px; 
-            transform: translateY(100%); transition: transform 0.3s; 
-            z-index: 200; box-shadow: 0 -5px 30px rgba(0,0,0,0.8);
-        }
+        .player-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #000; border-top: 1px solid var(--primary); padding: 15px; display: flex; align-items: center; gap: 20px; transform: translateY(100%); transition: 0.3s; z-index: 1000; }
         .player-bar.visible { transform: translateY(0); }
-        .player-info { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: 600; color: var(--primary); font-size: 1.1rem;}
-        audio { width: 100%; max-width: 500px; height: 40px; border-radius: 20px; outline: none; }
+        audio { flex: 1; height: 30px; }
 
-        @media (max-width: 768px) {
-            header { flex-wrap: wrap; }
-            .header-right { width: 100%; justify-content: space-between; margin-top: 10px; }
+        @media (max-width: 600px) {
             .hero h1 { font-size: 2.2rem; }
-            .song-row { grid-template-columns: auto 1fr; gap: 15px; }
-            .add-btn { grid-column: span 2; justify-content: center; margin-top: 5px; }
-            .player-bar { flex-direction: column; gap: 10px; padding: 10px; }
-            audio { max-width: 100%; }
-            .player-info { text-align: center; width: 100%; }
+            .song-row { flex-wrap: wrap; }
+            .request-btn { width: 100%; text-align: center; }
         }
-        
-        .loader { text-align: center; padding: 50px; color: var(--primary); font-size: 1.2rem; }
     </style>
 </head>
 <body>
 
-<header>
-    <div class="header-left">
-        <a href="../index.html" class="nav-btn">
-            <i class="fas fa-arrow-left"></i> Home
-        </a>
-        <a href="#" class="logo-container">
-            <img src="../logo6.jpg" alt="FF Logo" class="logo-img" onerror="this.src='../fausto_immagine.jpg'">
-            <div class="logo-text">FF <span>Eventi</span></div>
-        </a>
-    </div>
-    <div class="header-right">
-        <a href="../blog/index.html" class="nav-btn">
-            <i class="fas fa-newspaper"></i> Blog
-        </a>
-        <a href="mailto:ff.edizioni@gmail.com" class="contact-header-btn">
-            <i class="fas fa-envelope"></i> Contattami
-        </a>
-    </div>
-</header>
+    <video id="video-bg" autoplay muted loop playsinline>
+        <source src="video_eventi.mp4" type="video/mp4">
+    </video>
 
-<div class="hero">
-    <div class="hero-content">
-        <h1>Regala un'Emozione <span>Infinita</span></h1>
-        <p>Una canzone originale, scritta su misura per la tua storia d'amore, per un traguardo importante o per chi ami. Più di un semplice regalo: un ricordo che suonerà per sempre.</p>
-        
-        <div class="steps">
-            <div class="step"><i class="fas fa-comments"></i> 1. Raccontami la tua storia</div>
-            <div class="step"><i class="fas fa-music"></i> 2. Compongo testo e musica</div>
-            <div class="step"><i class="fas fa-gift"></i> 3. Emozioni chi ami</div>
+    <header>
+        <div style="display:flex; gap:15px; align-items:center;">
+            <a href="../index.html" class="nav-btn"><i class="fas fa-arrow-left"></i> Home</a>
+            <img src="../logo6.jpg" class="logo-img" alt="Logo">
         </div>
+        <div style="display:flex; gap:15px; align-items:center;">
+            <a href="../blog/index.html" class="nav-btn">Blog</a>
+            <a href="mailto:ff.edizioni@gmail.com" class="contact-btn">Scrivimi</a>
+        </div>
+    </header>
 
-        <a href="mailto:ff.edizioni@gmail.com?subject=Richiesta Preventivo Canzone Personalizzata" class="cta-big">
-            Richiedi un Preventivo Gratuito
-        </a>
+    <section class="hero">
+        <h1>Una Canzone è un Ricordo che <span>Non Svanisce Mai</span></h1>
+        <p>Non regalare un oggetto, regala un'emozione scritta su misura. Trasformo le tue parole e i tuoi sentimenti in musica professionale per i momenti che contano.</p>
+        <a href="mailto:ff.edizioni@gmail.com?subject=Richiesta Canzone Personalizzata" class="contact-btn" style="padding: 20px 40px; font-size: 1.2rem;">Inizia a creare la tua canzone</a>
+    </section>
+
+    <div class="events-grid">
+        <div class="event-card">
+            <i class="fas fa-ring"></i>
+            <h3>Matrimoni</h3>
+            <p>Dall'ingresso in chiesa al primo ballo. Una canzone che racconta la vostra storia d'amore, creata solo per voi.</p>
+        </div>
+        <div class="event-card">
+            <i class="fas fa-birthday-cake"></i>
+            <h3>Anniversari</h3>
+            <p>25, 50 anni o il primo anno insieme. Un tributo musicale per celebrare ogni istante trascorso fianco a fianco.</p>
+        </div>
+        <div class="event-card">
+            <i class="fas fa-graduation-cap"></i>
+            <h3>Lauree e Traguardi</h3>
+            <p>Festeggia la fine di un percorso importante con un brano che celebra il successo e l'impegno.</p>
+        </div>
+        <div class="event-card">
+            <i class="fas fa-dove"></i>
+            <h3>Cerimonie e Ricordi</h3>
+            <p>Momenti di spiritualità o celebrazione della vita (Battesimi o addii). La musica è l'unico linguaggio per le emozioni profonde.</p>
+        </div>
     </div>
-</div>
 
-<h2 class="section-title">Ascolta alcune Demo</h2>
-
-<div class="container">
-    <div id="song-list" class="song-list">
-        <div class="loader"><i class="fas fa-circle-notch fa-spin"></i> Connessione allo Studio Musicale...</div>
+    <div class="song-container">
+        <h2 style="text-align:center; margin-bottom:30px;">Ascolta alcune Demo</h2>
+        <div id="song-list"><p style="text-align:center;">Caricamento brani...</p></div>
     </div>
-</div>
 
-<div class="player-bar" id="player-bar">
-    <div class="player-info" id="player-title">Titolo Brano</div>
-    <audio id="audio-player" controls controlsList="nodownload"></audio>
-</div>
+    <div class="player-bar" id="player-bar">
+        <div id="player-title" style="font-size:0.8rem; min-width:100px;"></div>
+        <audio id="audio-player" controls></audio>
+    </div>
 
 <script>
-    // --- IL TUO INDIRIZZO API GOOGLE SHEET ---
-    // ATTENZIONE: Modificato ?source=canzoni come da tua richiesta
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykrDboqDvee6j4DjxGwD7sHNYdSdkzaWgngNmptRokEDYmz8B3BmZ0FuL8mCF3bRoY/exec?source=canzoni"; 
+    const API_URL = "https://script.google.com/macros/s/IL_TUO_ID_SCRIPT_AGGIORNATO/exec?source=canzoni"; 
 
-    let currentAudioUrl = null;
-
-    async function init() {
+    async function loadSongs() {
         try {
-            const res = await fetch(APPS_SCRIPT_URL);
-            const data = await res.json();
-            
-            let songsArray = Array.isArray(data) ? data : (data.songs ||[]);
-            
-            // Filtra i brani per Eventi Speciali e presenti a Catalogo
-            const eventKeywords =['matrimonio', 'battesimo', 'cresima', 'anniversario', 'laurea', 'evento', 'sposi'];
-            
-            const filteredSongs = songsArray.filter(song => {
-                const inCatalogo = String(song.catalogo).toUpperCase() === 'TRUE' || song.catalogo === true;
-                const stato = String(song.stato || '').toLowerCase();
-                const isSpecialEvent = eventKeywords.some(keyword => stato.includes(keyword));
+            const res = await fetch(API_URL);
+            const songs = await res.json();
+            const container = document.getElementById('song-list');
+            container.innerHTML = '';
+
+            const filtered = songs.filter(s => 
+                (s.catalogo === true || String(s.catalogo).toUpperCase() === 'TRUE') &&
+                String(s.stato).toLowerCase().includes('matrimonio')
+            );
+
+            if(filtered.length === 0) {
+                container.innerHTML = '<p style="text-align:center;">Contattami per ascoltare i brani in anteprima privata.</p>';
+                return;
+            }
+
+            filtered.forEach(song => {
+                const row = document.createElement('div');
+                row.className = 'song-row';
+                const url = song.linkascolto || song.url || "";
                 
-                return inCatalogo && isSpecialEvent;
-            });
-
-            renderPage(filteredSongs);
-
-        } catch (e) {
-            console.error("Errore API:", e);
-            document.getElementById('song-list').innerHTML = '<div class="loader" style="color:#e53935">Errore di connessione. Riprova più tardi.</div>';
-        }
-    }
-
-    function renderPage(songs) {
-        const container = document.getElementById('song-list');
-        container.innerHTML = '';
-
-        if (songs.length === 0) {
-            container.innerHTML = '<div class="loader">Nessun brano demo disponibile al momento. Contattaci per ascoltare brani privati!</div>';
-            return;
-        }
-
-        songs.forEach(song => {
-            const div = document.createElement('div');
-            div.className = 'song-row';
-            
-            let safeTitle = song.titolo ? song.titolo.replace(/'/g, "\\'") : 'Senza Titolo';
-            let audioUrl = song.linkAscolto || song.url || song.preview || ''; 
-            
-            let emailSubject = encodeURIComponent(`Richiesta info brano demo: ${safeTitle}`);
-            let emailBody = encodeURIComponent(`Ciao Fausto,\n\nHo ascoltato la demo "${safeTitle}" sul sito e vorrei maggiori informazioni per realizzare qualcosa di simile per il mio evento.\n\nAttendo un tuo riscontro, a presto!`);
-
-            div.innerHTML = `
-                <button class="play-btn" onclick="playSong('${audioUrl}', '${safeTitle}', this)">
-                    <i class="fas fa-play"></i>
-                </button>
-                <div class="info">
-                    <h3>${song.titolo}</h3>
-                    <div class="meta">
-                        <span class="tag">${song.categoria || 'Evento Speciale'}</span>
-                        ${song.durata ? `<span><i class="far fa-clock"></i> ${song.durata}</span>` : ''}
+                row.innerHTML = `
+                    <button class="play-btn" onclick="playSong('${url}', '${song.titolo}', this)"><i class="fas fa-play"></i></button>
+                    <div class="song-info">
+                        <h4>${song.titolo}</h4>
+                        <span>${song.categoria || 'Canzone d\'autore'}</span>
                     </div>
-                </div>
-                <a href="mailto:ff.edizioni@gmail.com?subject=${emailSubject}&body=${emailBody}" class="add-btn">
-                    <i class="fas fa-envelope"></i> Chiedi info
-                </a>
-            `;
-            container.appendChild(div);
-        });
+                    <a href="mailto:ff.edizioni@gmail.com?subject=Info canzone: ${song.titolo}" class="request-btn">Richiedi info</a>
+                `;
+                container.appendChild(row);
+            });
+        } catch (e) {
+            document.getElementById('song-list').innerHTML = 'Caricamento non disponibile.';
+        }
     }
 
+    let currentBtn = null;
     function playSong(url, title, btn) {
         const player = document.getElementById('audio-player');
         const bar = document.getElementById('player-bar');
+        if(currentBtn) { currentBtn.classList.remove('playing'); currentBtn.innerHTML = '<i class="fas fa-play"></i>'; }
         
-        if (!url || url === 'undefined') return alert("Audio di anteprima non disponibile per questo brano.");
-
-        document.querySelectorAll('.play-btn').forEach(b => {
-            b.classList.remove('playing');
-            b.innerHTML = '<i class="fas fa-play"></i>';
-        });
-
-        if (currentAudioUrl === url && !player.paused) {
+        if(player.src.includes(url) && !player.paused) {
             player.pause();
-            return;
+        } else {
+            player.src = url;
+            player.play();
+            btn.classList.add('playing');
+            btn.innerHTML = '<i class="fas fa-pause"></i>';
+            document.getElementById('player-title').innerText = title;
+            bar.classList.add('visible');
+            currentBtn = btn;
         }
-
-        player.src = url;
-        player.play().catch(err => console.error("Errore autoplay", err));
-        currentAudioUrl = url;
-        
-        document.getElementById('player-title').innerText = title;
-        bar.classList.add('visible');
-        btn.classList.add('playing');
-        btn.innerHTML = '<i class="fas fa-pause"></i>';
-
-        player.onended = () => {
-            btn.classList.remove('playing');
-            btn.innerHTML = '<i class="fas fa-play"></i>';
-        };
     }
 
-    init();
+    loadSongs();
 </script>
-
 </body>
 </html>
