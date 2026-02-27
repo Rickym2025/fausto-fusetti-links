@@ -117,15 +117,13 @@
         <div class="card"><i class="fas fa-futbol"></i><h3>Inni Sportivi</h3><p>Carica la tua squadra e unisci i tifosi con un inno travolgente e fiero, perfetto per club calcistici e società sportive.</p></div>
         <div class="card"><i class="fas fa-hotel"></i><h3>Sound Design per Hotel</h3><p>Accogli i tuoi ospiti con un'atmosfera unica: musiche ambientali esclusive per hall, aree lounge e camere d'albergo.</p></div>
         <div class="card"><i class="fas fa-school"></i><h3>Eventi Scolastici</h3><p>Rendi indimenticabili saggi di fine anno, recite e presentazioni accademiche con brani composti su misura per l'istituto.</p></div>
-        
-        <!-- Nuove Schede Negozi/Centri Commerciali -->
         <div class="card"><i class="fas fa-store"></i><h3>Musica per Negozi</h3><p>Brani e sound design studiati scientificamente per stimolare l'acquisto e fidelizzare il cliente all'interno del tuo punto vendita.</p></div>
         <div class="card"><i class="fas fa-shopping-bag"></i><h3>Centri Commerciali</h3><p>Filodiffusione su misura e jingle promozionali per creare la giusta atmosfera, accompagnando i clienti tra vetrine e aree relax.</p></div>
     </div>
 
     <div class="song-container">
         <h2 style="text-align:center; margin-bottom:30px;">ASCOLTA ALCUNE DEMO</h2>
-        <div id="song-list"><p style="text-align:center; color:#aaa;"><i class="fas fa-spinner fa-spin"></i> Caricamento in corso...</p></div>
+        <div id="song-list"><p style="text-align:center; color:#aaa;"><i class="fas fa-spinner fa-spin"></i> Sintonizzazione con lo studio in corso...</p></div>
     </div>
 
     <div id="contact-modal" class="modal-overlay">
@@ -149,7 +147,6 @@
     </div>
 
 <script>
-    // Rallenta il video di sfondo
     document.addEventListener("DOMContentLoaded", function() {
         const bgVideo = document.getElementById('video-bg');
         if(bgVideo) bgVideo.playbackRate = 0.7; 
@@ -157,13 +154,13 @@
 
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbykrDboqDvee6j4DjxGwD7sHNYdSdkzaWgngNmptRokEDYmz8B3BmZ0FuL8mCF3bRoY/exec'; 
 
-    // === IMPLEMENTAZIONE IDENTICA ALLA TUA INDEX.HTML (AppState + Cache + Logic) ===
     const appState = {
         allSongs:[]
     };
 
     async function loadMusicFromApi() {
-        const CACHE_KEY = 'ff_catalog_v17_playfix'; 
+        // Ho cambiato il nome della cache locale così il tuo browser scaricherà i dati freschi IMMEDIATAMENTE
+        const CACHE_KEY = 'ff_catalog_v18_eventi'; 
         const cached = localStorage.getItem(CACHE_KEY);
         
         if(cached) {
@@ -178,7 +175,6 @@
         }
 
         const songListContainer = document.getElementById('song-list');
-        songListContainer.innerHTML = '<p style="text-align:center; color:#aaa"><i class="fas fa-spinner fa-spin"></i> Caricamento...</p>';
         
         try {
             const res = await fetch(`${GOOGLE_SCRIPT_URL}?source=catalogo&t=${Date.now()}`);
@@ -204,16 +200,16 @@
         songListContainer.innerHTML = '';
 
         const filtered = appState.allSongs.filter(song => {
-            // Stessa esatta funzione 'get' della home
             const get = (k) => { 
                 const key = Object.keys(song).find(x => x.toLowerCase() === k.toLowerCase());
                 return key ? song[key] : "";
             };
 
             const stato = get('Stato');
-            const catalogo = get('Catalogo');
 
-            // Stessa logica inclusiva
+            // IL SEGRETO È QUI: 
+            // Il tuo Apps Script ci manda SOLO i brani che hanno GIÀ la spunta in Catalogo!
+            // Quindi NON cerchiamo più il campo 'Catalogo' che non c'è, controlliamo solo lo Stato.
             const matchStato = stato && (
                 String(stato).toLowerCase().includes('matrimonio') ||
                 String(stato).toLowerCase().includes('evento') ||
@@ -227,14 +223,11 @@
                 String(stato).toLowerCase().includes('commercial')
             );
 
-            // Per intercettare checkbox Google Sheets come Boolean o String 
-            const matchCatalogo = catalogo === true || (catalogo && (String(catalogo).toLowerCase() === 'true' || String(catalogo).toLowerCase() === 'vero'));
-
-            return matchStato && matchCatalogo;
+            return matchStato;
         });
 
         if(filtered.length === 0) {
-            songListContainer.innerHTML = '<p style="text-align:center; color:#888;">Nessun brano trovato.</p>';
+            songListContainer.innerHTML = '<p style="text-align:center; color:#888;">Nessun brano per eventi presente nel catalogo pubblico.</p>';
             return;
         }
 
@@ -262,7 +255,7 @@
         });
     }
 
-    // === PLAYER AUDIO E TRACKING DELLA TUA HOME ===
+    // === GESTIONE PLAYER AUDIO (Identica a index.html) ===
     let currentBtn = null;
     function playSong(url, title, btn) {
         const player = document.getElementById('audio-player');
@@ -299,7 +292,6 @@
         }
     });
 
-    // === MODALI E FORM ===
     function openModal(type) {
         const modal = document.getElementById('contact-modal');
         const msg = document.getElementById('contact-message');
@@ -318,7 +310,6 @@
         .then(r => { if(r.status==200) { result.innerHTML = '<span style="color:var(--primary)">Inviato con successo!</span>'; this.reset(); setTimeout(closeModal, 2000); } });
     });
 
-    // Avvia il caricamento come nella tua homepage
     loadMusicFromApi();
 </script>
 </body>
