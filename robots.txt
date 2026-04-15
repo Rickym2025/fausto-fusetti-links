@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+Allow: /llm.txt
+Allow: /sitemap.xml
+Disallow: /jukebox/ # Area riservata, meglio non indicizzare i brani privati
+
+# Link alla Sitemap
+Sitemap: https://ff-edizioni.vercel.app/sitemap.xml
+
+# Istruzioni per Crawler AI
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
