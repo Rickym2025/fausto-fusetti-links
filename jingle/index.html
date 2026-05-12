@@ -319,11 +319,13 @@
                 populateCategories();
                 filterSongs();
             } else {
-                document.getElementById('song-list').innerHTML = '<div class="loader" style="color:red">Errore caricamento dati dal Server.</div>';
+                // MODIFICA QUI: Mostriamo il vero messaggio di errore del server
+                console.error("Errore dal server:", data.message);
+                document.getElementById('song-list').innerHTML = `<div class="loader" style="color:red">Errore dal Server: <br><b>${data.message}</b></div>`;
             }
         } catch (e) {
             console.error(e);
-            document.getElementById('song-list').innerHTML = '<div class="loader" style="color:red">Errore connessione API.</div>';
+            document.getElementById('song-list').innerHTML = '<div class="loader" style="color:red">Errore connessione API. Controlla la console.</div>';
         }
     }
 
