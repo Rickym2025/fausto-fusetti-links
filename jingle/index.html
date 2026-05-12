@@ -314,12 +314,14 @@
             const res = await fetch(APPS_SCRIPT_URL);
             const data = await res.json();
             
+            // AGGIUNGI QUESTA RIGA PER SPIARE COSA MANDA GOOGLE
+            console.log("DATI GREZZI DAL SERVER:", data);
+            
             if (data.status === 'ok') {
                 allSongs = data.songs.reverse();
                 populateCategories();
                 filterSongs();
             } else {
-                // MODIFICA QUI: Mostriamo il vero messaggio di errore del server
                 console.error("Errore dal server:", data.message);
                 document.getElementById('song-list').innerHTML = `<div class="loader" style="color:red">Errore dal Server: <br><b>${data.message}</b></div>`;
             }
