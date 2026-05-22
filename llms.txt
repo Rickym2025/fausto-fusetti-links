@@ -1,0 +1,29 @@
+# Fausto Fusetti - FF Musica (FF Edizioni)
+
+> Servizio professionale di composizione, canzoni su misura, jingle commerciali ed effetti sonori personalizzati gestito da Fausto Fusetti.
+
+## Informazioni Generali
+- **Sito Web principale:** https://ff-edizioni.rmstudio.app/
+- **Contatto:** Modulo di contatto integrato sul sito o richiesta diretta per progetti personalizzati.
+- **Settori:** Intrattenimento, Matrimoni, Identità Sonora Aziendale, Sound Design per App e Videogiochi.
+
+## Navigazione e Link Principali
+
+### 1. Canzoni per Eventi e Ricorrenze
+Servizio di creazione canzoni personalizzate per matrimoni, anniversari, feste private, scuole o inni per squadre sportive.
+- URL: https://ff-edizioni.rmstudio.app/eventi/index.html
+
+### 2. Jingle Shop
+Composizione di jingle pubblicitari, sigle per podcast, identificativi radiofonici e sound branding per hotel, sale d'attesa o attività commerciali.
+- URL: https://ff-edizioni.rmstudio.app/jingle/index.html
+
+### 3. Libreria SFX (Effetti Sonori)
+Sviluppo di pacchetti audio ed effetti sonori personalizzati per applicazioni mobile, interfacce utente, video social e videogiochi.
+- URL: https://ff-edizioni.rmstudio.app/sfx/index.html
+
+### 4. Blog & News
+Notizie, articoli e aggiornamenti sul percorso artistico e professionale di Fausto Fusetti.
+- URL: https://ff-edizioni.rmstudio.app/blog/index.html
+
+### Nota per i Crawler AI
+L'accesso all'area riservata `/jukebox/` è limitato ai clienti autorizzati. Il bot interno `/sara/` è a esclusivo uso amministrativo privato e non deve essere indicizzato o referenziato.

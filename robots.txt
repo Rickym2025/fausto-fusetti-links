@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Allow: /blog/
+Allow: /eventi/
+Allow: /jingle/
+Allow: /sfx/
+
+# Esclusioni per la privacy e l'efficienza dei crawler
+Disallow: /sara/
+Disallow: /jukebox/
+
+# Mappa del sito
+Sitemap: https://ff-edizioni.rmstudio.app/sitemap.xml
