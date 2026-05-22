@@ -11,3 +11,5 @@ Disallow: /jukebox/
 
 # Mappa del sito
 Sitemap: https://ff-edizioni.rmstudio.app/sitemap.xml
+
+Full Markdown Mirror: https://ff-edizioni.rmstudio.app/mirrors.md
