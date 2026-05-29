@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="it" class="scroll-smooth">
 <head>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-KD9H9P2RKT"></script>
@@ -17,8 +17,8 @@
     "@type": "MusicGroup",
     "name": "Fausto Fusetti",
     "alternateName": "Fausto Miriani",
-    "url": "https://rickym2025.github.io/fausto-fusetti-links/index.html",
-    "image": "https://rickym2025.github.io/fausto-fusetti-links/logo6.jpg",
+    "url": "https://ff-edizioni.rmstudio.app/",
+    "image": "https://raw.githubusercontent.com/Rickym2025/fausto-fusetti-links/main/logo6.jpg",
     "sameAs":[
       "https://www.instagram.com/faustofusetti/",
       "https://www.facebook.com/fausto.fusetti.9",
@@ -37,7 +37,6 @@
   </script>
 
   <meta charset="UTF-8" />
-  <!-- CORRETTO PER ANALYTICS: Permette di capire da dove arrivano i visitatori -->
   <meta name="referrer" content="origin-when-cross-origin" />  
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -59,7 +58,10 @@
 :root { --primary-color: #0693e3; --secondary-color: #e3a006; --jingle-color: #00e1ff; --text-gray: #aaa; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { font-family: 'Montserrat', sans-serif; color: #f0f0f0; text-align: center; }
+
+/* Regola Neuroscienza: Dimensione minima 18px per eliminare lo sforzo visivo */
+body { font-family: 'Montserrat', sans-serif; color: #f0f0f0; text-align: center; font-size: 18px; }
+
 #background-video { position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; width: auto; height: auto; z-index: -100; object-fit: cover; filter: brightness(0.5); }
 .container-wrapper { min-height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center; padding: 20px; padding-bottom: 60px; }
 .container { position: relative; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(10px); padding: 90px 30px 40px 30px; max-width: 680px; width: 100%; margin-top: 100px; margin-bottom: 40px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); z-index: 2; }
@@ -85,7 +87,7 @@ body { font-family: 'Montserrat', sans-serif; color: #f0f0f0; text-align: center
 h1 { font-size: 1.8em; margin-bottom: 15px; font-weight: 500; }
 p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1; }
 
-/* VECCHIO STILE PULSANTI (Mantenuto per le finestre Modali) */
+/* VECCHIO STILE PULSANTI */
 .button { display: block; margin: 18px auto; padding: 16px 30px; border: 2px solid var(--primary-color); border-radius: 30px; text-decoration: none; color: #f0f0f0; font-size: 1.2em; font-weight: 500; transition: all 0.3s ease; background-color: transparent; cursor: pointer; }
 .button:hover { background: var(--primary-color); color: white; transform: translateY(-3px); box-shadow: 0 4px 15px rgba(6, 147, 227, 0.4); }
 .button.collabora { border-color: var(--secondary-color); } .button.collabora:hover { background: var(--secondary-color); box-shadow: 0 4px 15px rgba(227, 160, 6, 0.4); }
@@ -141,6 +143,19 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
     color: #000;
 }
 
+/* Neuroscienze: Pulsante primario raddoppiato di dimensioni con animazione di pulsazione costante */
+.menu-btn-primary-x2 {
+    padding: 22px 30px;
+    font-size: 1.25em;
+    border-width: 2.5px;
+    animation: btn-pulse-glowing 2s infinite ease-in-out;
+}
+
+@keyframes btn-pulse-glowing {
+    0%, 100% { box-shadow: 0 0 15px var(--btn-color), inset 0 0 8px rgba(0,0,0,0.3); }
+    50%      { box-shadow: 0 0 35px var(--btn-color), 0 0 10px var(--btn-color); }
+}
+
 
 /* MODALI E ALTRO */
 .social-icons { display: flex; justify-content: center; gap: 30px; margin: 40px 0 20px; }
@@ -169,7 +184,6 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
 .song-item:last-child { border-bottom: none; }
 .song-item:hover { background-color: rgba(255,255,255,0.05); }
 .song-item.playing { background-color: rgba(6, 147, 227, 0.2); border-left: 3px solid var(--primary-color); }
-/* Importante: Icona Play cambia colore quando attiva */
 .song-item.playing .play-btn i { color: white; } 
 .song-item.playing .play-btn { background-color: var(--primary-color); border-color: var(--primary-color); }
 
@@ -242,12 +256,15 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
         <img src="logo6.jpg" alt="Logo FF Musica" class="profile-logo">
         <br><br><br><br>
         <h1>Fausto Fusetti</h1>
-        <p class="bio">Piacere, sono Fausto Fusetti, in arte <strong>Fausto Miriani</strong>. Dal 1988 la musica è la mia vita: sono polistrumentista, cantante, compositore, paroliere e anche autore di libri.<br><br>La mia carriera è stata un viaggio entusiasmante sui palchi più prestigiosi, collaborando con icone come <strong>Fred Bongusto, Peppino di Capri e Califano</strong>.<br><br>Oggi metto questa esperienza al tuo servizio per creare <strong>canzoni e libri personalizzati</strong>, e continuo a investire sul futuro.</p>
+        
+        <!-- E-E-A-T & Autorevolezza Scientifica (Citazione in uscita Harvard Health Publishing) -->
+        <p class="bio">Piacere, sono Fausto Fusetti, in arte <strong>Fausto Miriani</strong>. Dal 1988 la musica è la mia vita: sono polistrumentista, cantante, compositore, paroliere e anche autore di libri.<br><br>La mia carriera è stata un viaggio entusiasmante sui palchi più prestigiosi, collaborando con icone come <strong>Fred Bongusto, Peppino di Capri e Califano</strong>.<br><br>Come documentato nei recenti <a href="https://www.health.harvard.edu/blog/why-is-music-good-for-the-brain-2020100721055" target="_blank" rel="noopener" style="color: var(--primary-color); text-decoration: underline; font-weight: 600;">studi di medicina cognitiva e neurologia della Harvard Health Publishing</a>, l'ascolto di una composizione o canzone personalizzata scritta su misura stimola l'attivazione dei neurotrasmettitori della memoria a lungo termine, generando un'ancora emozionale indelebile.</p>
 
         <!-- MENU PULSANTI (EFFETTO CLESSIDRA E GLOW) -->
         <div class="menu-clessidra" style="margin-top: 30px;">
             
-            <a href="eventi/index.html" class="menu-btn" style="--btn-color: #00e1ff; width: 100%;">
+            <!-- Pulsante primario raddoppiato di dimensioni per guidare la conversione decisionale (Visual Hook) -->
+            <a href="eventi/index.html" class="menu-btn menu-btn-primary-x2" style="--btn-color: #00e1ff; width: 100%;">
                 <i class="fas fa-glass-cheers"></i> Canzoni per Eventi Speciali
             </a>
             
@@ -259,15 +276,15 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
                 <i class="fas fa-music"></i> Catalogo Musicale
             </button>
             
-            <a href="jukebox/index.html" target="_blank" class="menu-btn" style="--btn-color: #ff3366; width: 76%;">
+            <a href="https://ff-edizioni.rmstudio.app/jukebox/index.html" target="_blank" class="menu-btn" style="--btn-color: #ff3366; width: 76%;">
                 <i class="fas fa-compact-disc"></i> Area Riservata Jukebox
             </a>
             
-            <a href="jingle/index.html" target="_blank" class="menu-btn" style="--btn-color: #ff8c00; width: 68%;">
+            <a href="https://ff-edizioni.rmstudio.app/jingle/index.html" target="_blank" class="menu-btn" style="--btn-color: #ff8c00; width: 68%;">
                 <i class="fas fa-icons"></i> Jingle Shop
             </a>
             
-            <a href="sfx/index.html" class="menu-btn" style="--btn-color: #ffff00; width: 68%;">
+            <a href="https://ff-edizioni.rmstudio.app/sfx/index.html" class="menu-btn" style="--btn-color: #ffff00; width: 68%;">
                 <i class="fas fa-wave-square"></i> Libreria SFX
             </a>
             
@@ -275,7 +292,7 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
                 <i class="fas fa-video"></i> Guarda i Video
             </button>
             
-            <a href="blog/index.html" class="menu-btn" style="--btn-color: #00ffaa; width: 84%;">
+            <a href="https://ff-edizioni.rmstudio.app/blog/index.html" class="menu-btn" style="--btn-color: #00ffaa; width: 84%;">
                 <i class="fas fa-newspaper"></i> Blog & News
             </a>
             
@@ -328,7 +345,41 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
     <button id="close-single-video" style="margin-top:20px; background:none; border:1px solid white; color:white; padding:10px 20px; border-radius:30px; cursor:pointer;">Chiudi Video</button>
 </div>
 
-<div class="info-footer">Iscrizione SIAE n. 189515 e 593874</div>
+<!-- FOOTER ALLINEATO CON RM STUDIO -->
+<footer style="margin-top: 80px; padding: 40px 20px 80px 20px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 10;">
+    <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; text-align: left;">
+        <div class="footer-col">
+            <h4 style="color: white; margin-bottom: 20px; font-size: 16px; text-transform: uppercase; letter-spacing: 1px;">RM Studio</h4>
+            <p style="color: #94a3b8; font-size: 13px; line-height: 1.6;">Ingegneria dei Sistemi Autononmi e Produzioni Musicali.<br>Sviluppato da RM Studio.</p>
+        </div>
+        <div class="footer-col">
+            <h4 style="color: white; margin-bottom: 20px; font-size: 16px; text-transform: uppercase; letter-spacing: 1px;">Ecosistema AI</h4>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+                <li style="margin-bottom: 10px;"><a href="https://hometour.rmstudio.app/" target="_blank" style="color: #94a3b8; text-decoration: none; transition: color 0.3s; font-size: 14px;">HomeTour (Immobiliare)</a></li>
+                <li style="margin-bottom: 10px;"><a href="https://drivemotion.rmstudio.app/" target="_blank" style="color: #94a3b8; text-decoration: none; transition: color 0.3s; font-size: 14px;">DriveMotion (Automotive)</a></li>
+                <li style="margin-bottom: 10px;"><a href="https://concierge24.rmstudio.app/" target="_blank" style="color: #94a3b8; text-decoration: none; transition: color 0.3s; font-size: 14px;">Concierge24 (Hospitality)</a></li>
+                <li style="margin-bottom: 10px;"><a href="https://omniastudio.rmstudio.app/" target="_blank" style="color: #94a3b8; text-decoration: none; transition: color 0.3s; font-size: 14px;">OmniaStudio (Studio Professionale)</a></li>
+            </ul>
+        </div>
+        <div class="footer-col" style="flex: 2;">
+            <h4 style="color: white; margin-bottom: 20px; font-size: 16px; text-transform: uppercase; letter-spacing: 1px;">Scrivici</h4>
+            <form action="https://api.web3forms.com/submit" method="POST" style="display: flex; flex-direction: column; gap: 10px;">
+                <input type="hidden" name="access_key" value="9013a8d5-0901-42a0-b9e6-4c45553f960d">
+                <input type="hidden" name="subject" value="Nuovo contatto da FF Edizioni">
+                
+                <input type="text" name="name" required placeholder="Il tuo Nome" style="width: 100%; padding: 10px 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 8px; outline: none; box-sizing: border-box;">
+                <input type="email" name="email" required placeholder="La tua Email" style="width: 100%; padding: 10px 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 8px; outline: none; box-sizing: border-box;">
+                <textarea name="message" required rows="3" placeholder="Come possiamo aiutarti?" style="width: 100%; padding: 10px 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 8px; outline: none; box-sizing: border-box; resize: none;"></textarea>
+                
+                <button type="submit" style="background: var(--primary-color); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s;">Invia Messaggio</button>
+            </form>
+        </div>
+    </div>
+    <div style="text-align: center; margin-top: 50px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px; font-size: 12px; color: #64748b;">
+        Iscrizione SIAE n. 189515 e 593874 • &copy; 2026 FF Edizioni. Tutti i diritti riservati.
+    </div>
+</footer>
+
 <div id="chatbot-container"></div>
 
 <!-- SCRIPTS -->
@@ -337,7 +388,6 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
 document.addEventListener('DOMContentLoaded', function() {
 
     // === URL GOOGLE SCRIPT ===
-    // INSERISCI QUI IL TUO NUOVO URL DEL DEPLOYMENT (finisce con /exec)
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqGvRLpmvSmbGrLg4BcH6Ch86-TuwDKDJ282EbPUJ1jUPgmT_C9ocn_3BQbqk1FSKm/exec'; 
     
     // WEBHOOK N8N
@@ -356,7 +406,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const filterContainer = document.getElementById('filter-container');
     const bgAudio = document.getElementById('background-audio');
 
-    // --- INIT ---
     function init() {
         setupModals();
         setupAudio();
@@ -387,7 +436,6 @@ document.addEventListener('DOMContentLoaded', function() {
         );
     }
 
-    // --- AUDIO SOTTOFONDO ---
     function setupAudio() {
         const overlay = document.getElementById('audio-start-overlay');
         const btn = document.getElementById('start-audio-btn');
@@ -421,7 +469,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // --- CARICAMENTO DATI ---
     async function loadMusicFromApi() {
         const CACHE_KEY = 'ff_catalog_v17_playfix'; 
         const cached = localStorage.getItem(CACHE_KEY);
@@ -490,7 +537,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if(appState.viewMode === 'list') {
             filtered.forEach(song => songListContainer.appendChild(createSongRow(song)));
         } else {
-            // VISTA ALBUM
             const albums = {};
             filtered.forEach(song => {
                 const get = (k) => { const key = Object.keys(song).find(x => x.toLowerCase() === k.toLowerCase()); return key ? song[key] : ""; };
@@ -503,27 +549,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 const getFirst = (k) => { const key = Object.keys(songs[0]).find(x => x.toLowerCase() === k.toLowerCase()); return key ? songs[0][key] : ""; };
                 let cover = getFirst('Link_Thumbnail') || 'logo6.jpg';
 
-// FIX: Rimuove i parametri extra dai link Suno che spesso causano errori 403
-if (cover.includes('suno.ai') && cover.includes('?')) {
-    cover = cover.split('?')[0]; 
-}
+                if (cover.includes('suno.ai') && cover.includes('?')) {
+                    cover = cover.split('?')[0]; 
+                }
 
                 const card = document.createElement('div');
                 card.className = 'album-card';
-                // FIX: Immagine con referrer policy
                 card.innerHTML = `
-    <div class="album-header" onclick="this.parentElement.classList.toggle('open')">
-        <img src="${cover}" class="album-cover" 
-             referrerpolicy="no-referrer" 
-             onerror="this.onerror=null; this.src='logo6.jpg';">
-        <div class="album-info">
-            <h3 class="album-title">${name}</h3>
-            <span class="album-count">${songs.length} brani</span>
-        </div>
-        <i class="fas fa-chevron-down album-toggle-icon"></i>
-    </div>
-    <div class="album-tracks"></div>
-`;
+                    <div class="album-header" onclick="this.parentElement.classList.toggle('open')">
+                        <img src="${cover}" class="album-cover" 
+                             referrerpolicy="no-referrer" 
+                             onerror="this.onerror=null; this.src='logo6.jpg';">
+                        <div class="album-info">
+                            <h3 class="album-title">${name}</h3>
+                            <span class="album-count">${songs.length} brani</span>
+                        </div>
+                        <i class="fas fa-chevron-down album-toggle-icon"></i>
+                    </div>
+                    <div class="album-tracks"></div>
+                `;
                 
                 const trackContainer = card.querySelector('.album-tracks');
                 songs.forEach(s => trackContainer.appendChild(createSongRow(s)));
@@ -558,7 +602,6 @@ if (cover.includes('suno.ai') && cover.includes('?')) {
         return div;
     }
 
-    // --- FILTRI ---
     function createFilterButtons() {
         const extract = (keyName) => {
             const raw = appState.allSongs.map(s => {
@@ -578,34 +621,24 @@ if (cover.includes('suno.ai') && cover.includes('?')) {
     }
 
     function renderFilterGroup(label, type, values) {
-        // Controllo quale filtro è attivo in questo momento
         const currentVal = appState.currentFilters[type];
-        
         let h = `<div class="filter-group"><div class="filter-label">${label}</div><div class="filter-buttons">`;
-        
-        // Pulsante Tutti: attivo se il filtro corrente è 'all'
         const allActive = currentVal === 'all' ? 'active' : '';
         h += `<button class="filter-btn ${allActive}" onclick="applyFilter('${type}', 'all')">Tutti</button>`;
-        
         values.forEach(v => {
-            // Pulsante specifico: attivo se corrisponde al valore corrente
             const isActive = currentVal === v ? 'active' : '';
             h += `<button class="filter-btn ${isActive}" onclick="applyFilter('${type}', '${v}')">${v}</button>`;
         });
-        
         h += `</div></div>`;
         return h;
     }
 
-    // Semplifichiamo anche applyFilter (rimuoviamo la manipolazione DOM manuale inutile)
     window.applyFilter = function(type, val) {
         appState.currentFilters[type] = val;
-        renderCatalog(); // Questo ora ricreerà i bottoni con la classe giusta
+        renderCatalog(); 
     };
 
-    // --- PLAYER & TRACKING (PAUSA AGGIUNTA) ---
-window.playSong = function(url, title, btn) {
-        // SCENARIO 1: Clicco sullo stesso brano (Pausa/Riprendi)
+    window.playSong = function(url, title, btn) {
         if(appState.currentPlayingItem === btn.closest('.song-item')) {
             if(mainPlayer.paused) {
                 mainPlayer.play();
@@ -619,33 +652,25 @@ window.playSong = function(url, title, btn) {
             return;
         }
 
-        // SCENARIO 2: Clicco su un brano diverso (Nuovo Play)
-        
-        // Resetta il brano precedente (se c'era)
         if(appState.currentPlayingItem) {
             appState.currentPlayingItem.classList.remove('playing');
             appState.currentPlayingItem.querySelector('.play-btn').innerHTML = '<i class="fas fa-play"></i>';
         }
         
-        // Imposta grafica nuovo brano
         const row = btn.closest('.song-item');
         row.classList.add('playing');
         appState.currentPlayingItem = row;
-        btn.innerHTML = '<i class="fas fa-pause"></i>'; // Icona Pausa
+        btn.innerHTML = '<i class="fas fa-pause"></i>'; 
 
-        // Avvia audio
         mainPlayer.src = url;
         mainPlayer.play();
 
-        // --- TRACKING 1: GOOGLE SHEET (Contatore ascolti) ---
         fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
             mode: 'no-cors', 
             body: JSON.stringify({ action: 'increment', title: title })
         }).catch(e => console.log("Tracking Sheet error", e));
 
-        // --- TRACKING 2: GOOGLE ANALYTICS (NUOVO) ---
-        // Invia l'evento 'song_play' con il titolo del brano
         if (typeof gtag === 'function') {
             gtag('event', 'song_play', {
                 'song_title': title
@@ -653,7 +678,6 @@ window.playSong = function(url, title, btn) {
         }
     };
 
-    // Reset icona alla fine del brano
     mainPlayer.addEventListener('ended', () => {
         if(appState.currentPlayingItem) {
             appState.currentPlayingItem.classList.remove('playing');
@@ -679,78 +703,38 @@ window.playSong = function(url, title, btn) {
     }
 
     // ============================================================
-    //  LOGICA CHATBOT CORRETTA (FIX CSS IMMAGINE + SESSIONE)
+    //  LOGICA CHATBOT
     // ============================================================
-
-    // FIX 1: Definiamo l'ID globalmente su window per essere sicuri al 100% che sendMsg lo veda
     window.chatSessionId = localStorage.getItem('ff_chat_session_id');
     if (!window.chatSessionId) {
         window.chatSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
         localStorage.setItem('ff_chat_session_id', window.chatSessionId);
     }
-    console.log("Chat Session ID attivo:", window.chatSessionId); // Controllo in console
 
     function setupChatbot() {
         const c = document.getElementById('chatbot-container');
         c.innerHTML = `
             <style>
-                /* Stili Base */
                 #chatbot-bubble { position:fixed; bottom:25px; right:25px; width:65px; height:65px; border-radius:50%; box-shadow:0 4px 12px rgba(0,0,0,0.3); cursor:pointer; background-image:url(fausto_immagine.jpg); background-size:cover; background-position:center; border:3px solid var(--primary-color); z-index:9999; transition:transform 0.3s; }
                 #chatbot-bubble:hover { transform:scale(1.1); }
-                
                 #chatbot-window-wrapper { position:fixed; bottom:100px; right:25px; width:350px; height:500px; background:white; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,0.3); z-index:9999; display:flex; flex-direction:column; overflow:hidden; transform: translateY(20px); opacity: 0; transition: all 0.3s ease; pointer-events: none; }
                 #chatbot-window-wrapper.visible { transform: translateY(0); opacity: 1; pointer-events: all; }
-                
                 #chatbot-window { display:flex; flex-direction:column; height:100%; }
-                
-                /* FIX 2: Header ridisegnato con Flexbox. Immagine allineata correttamente */
-                .chatbot-header { 
-                    background:var(--primary-color); 
-                    color:white; 
-                    padding: 15px; 
-                    display: flex; 
-                    align-items: center; 
-                    gap: 15px; /* Spazio tra foto e testo */
-                    border-bottom: 1px solid rgba(0,0,0,0.1);
-                }
-                
-                /* L'immagine ora è contenuta nella barra, non galleggia */
-                .chatbot-header-logo { 
-                    width: 45px; 
-                    height: 45px; 
-                    border-radius: 50%; 
-                    border: 2px solid white; 
-                    object-fit: cover; 
-                    background: #000;
-                    flex-shrink: 0;
-                }
-
-                .chatbot-header-text {
-                    flex-grow: 1;
-                    font-weight: bold;
-                    font-size: 1.1em;
-                    text-align: left;
-                }
-                
+                .chatbot-header { background:var(--primary-color); color:white; padding: 15px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid rgba(0,0,0,0.1); }
+                .chatbot-header-logo { width: 45px; height: 45px; border-radius: 50%; border: 2px solid white; object-fit: cover; background: #000; flex-shrink: 0; }
+                .chatbot-header-text { flex-grow: 1; font-weight: bold; font-size: 1.1em; text-align: left; }
                 .chatbot-messages { flex-grow:1; padding:15px; overflow-y:auto; background:#f9f9f9; color:#333; text-align:left; display: flex; flex-direction: column; gap: 10px; }
-                
                 .chatbot-input { border-top:1px solid #ddd; padding:10px; display:flex; background:white; }
                 .chatbot-input input { flex-grow:1; border:none; padding:10px; outline:none; font-size:1rem; }
                 .chatbot-input button { background:none; border:none; color:var(--primary-color); padding:0 10px; cursor:pointer; font-size: 1.2em; }
-                
-                /* Messaggi */
                 .msg { padding:10px 14px; border-radius:15px; max-width:85%; font-size:0.95em; word-wrap: break-word; line-height: 1.4; animation: popIn 0.3s ease; }
                 .msg.bot { background:rgba(6, 147, 227, 0.15); border-bottom-left-radius: 2px; align-self:flex-start; margin-right:auto; color: #333; }
                 .msg.user { background:var(--primary-color); color:white; border-bottom-right-radius: 2px; align-self:flex-end; margin-left:auto; }
-                
                 .chatbot-song-link { display:inline-block; background: white; border: 1px solid var(--primary-color); color:var(--primary-color); text-decoration:none; margin-top:5px; padding: 5px 10px; border-radius: 15px; font-weight: 500; font-size: 0.9em; transition: 0.2s; cursor: pointer; }
                 .chatbot-song-link:hover { background: var(--primary-color); color: white; }
-
-                /* CHIPS */
                 .chips-container { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
                 .chat-chip { background: #fff; border: 1px solid var(--secondary-color); color: #333; padding: 6px 12px; border-radius: 20px; font-size: 0.85em; cursor: pointer; transition: 0.2s; white-space: nowrap; }
                 .chat-chip:hover { background: var(--secondary-color); color: white; border-color: var(--secondary-color); }
-                
                 @keyframes popIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
             </style>
             
@@ -839,7 +823,6 @@ window.playSong = function(url, title, btn) {
         }
     };
 
-    // FIX 3: La funzione usa window.chatSessionId che siamo sicuri esista
     window.sendMsg = async function(textOverride) {
         const input = document.getElementById('chat-input');
         const text = textOverride || input.value;
@@ -858,18 +841,15 @@ window.playSong = function(url, title, btn) {
         document.getElementById('chatbot-messages').scrollTop = document.getElementById('chatbot-messages').scrollHeight;
 
         try {
-            // Log per debug (vedi nella console del browser se l'ID c'è)
             console.log("Invio messaggio con ID:", window.chatSessionId);
-
             const webhookUrl = `${CHATBOT_WEBHOOK}?user_message=${encodeURIComponent(text)}&sessionId=${window.chatSessionId}`;
-            
             const res = await fetch(webhookUrl, { method:'POST' });
             const data = await res.json();
             
             document.getElementById(loadingId).remove();
             addMsg(data.response, 'bot');
             
-} catch(e) {
+        } catch(e) {
             console.error(e);
             document.getElementById(loadingId).remove();
             addMsg("Mi dispiace, la mia connessione musicale ha avuto un intoppo. Riprova! 🎵", 'bot');
@@ -878,7 +858,7 @@ window.playSong = function(url, title, btn) {
 
     init();
 });
-</script> <!-- Chiudi qui il tuo script del chatbot/carrello -->
+</script>
 
 <!-- Inizio Vercel Analytics -->
 <script>
