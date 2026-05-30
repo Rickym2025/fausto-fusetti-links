@@ -346,11 +346,12 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
 </div>
 
 <!-- FOOTER ALLINEATO CON RM STUDIO -->
-<footer style="margin-top: 80px; padding: 40px 20px 80px 20px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 10;">
-    <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; text-align: left;">
+<!-- FOOTER ALLINEATO CON RM STUDIO -->
+<footer style="margin-top: 80px; padding: 40px 20px 80px 20px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 10; width: 100%; display: block; clear: both;">
+    <div style="max-w: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; text-align: left; width: 100%;">
         <div class="footer-col">
             <h4 style="color: white; margin-bottom: 20px; font-size: 16px; text-transform: uppercase; letter-spacing: 1px;">RM Studio</h4>
-            <p style="color: #94a3b8; font-size: 13px; line-height: 1.6;">Ingegneria dei Sistemi Autononmi e Produzioni Musicali.<br>Sviluppato da RM Studio.</p>
+            <p style="color: #94a3b8; font-size: 13px; line-height: 1.6;">Ingegneria dei Sistemi Autonomi e Produzioni Musicali.<br>Sviluppato da RM Studio.</p>
         </div>
         <div class="footer-col">
             <h4 style="color: white; margin-bottom: 20px; font-size: 16px; text-transform: uppercase; letter-spacing: 1px;">Ecosistema AI</h4>
@@ -361,7 +362,7 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
                 <li style="margin-bottom: 10px;"><a href="https://omniastudio.rmstudio.app/" target="_blank" style="color: #94a3b8; text-decoration: none; transition: color 0.3s; font-size: 14px;">OmniaStudio (Studio Professionale)</a></li>
             </ul>
         </div>
-        <div class="footer-col" style="flex: 2;">
+        <div class="footer-col">
             <h4 style="color: white; margin-bottom: 20px; font-size: 16px; text-transform: uppercase; letter-spacing: 1px;">Scrivici</h4>
             <form action="https://api.web3forms.com/submit" method="POST" style="display: flex; flex-direction: column; gap: 10px;">
                 <input type="hidden" name="access_key" value="9013a8d5-0901-42a0-b9e6-4c45553f960d">
@@ -374,7 +375,10 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
                 <button type="submit" style="background: var(--primary-color); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s;">Invia Messaggio</button>
             </form>
         </div>
-    <div style="text-align: center; margin-top: 50px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px; font-size: 12px; color: #64748b;">
+    </div>
+    
+    <!-- Blocco Copyright blindato con display block, clear e 100% di larghezza -->
+    <div style="max-w: 1200px; margin: 50px auto 0 auto; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px; text-align: center; font-size: 12px; color: #64748b; width: 100%; clear: both; display: block;">
         Iscrizione SIAE n. 189515 e 593874 • &copy; 2026 FF Edizioni. Tutti i diritti riservati.
         <span style="margin: 0 8px;">|</span>
         <a href="/privacy" target="_blank" style="color: #64748b; text-decoration: underline;" onmouseover="this.style.color='#0693e3'" onmouseout="this.style.color='#64748b'">Privacy Policy</a>
