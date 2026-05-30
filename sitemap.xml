@@ -1,41 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Home Page principale -->
+  <!-- Home Page principale (Dominio Corretto) -->
   <url>
-    <loc>https://ff-edizioni.rmstudio.app/</loc>
-    <lastmod>2026-05-22</lastmod>
+    <loc>https://ff.rmstudio.app/</loc>
+    <lastmod>2026-05-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
+  </url>
+
+  <!-- Pagina della Privacy Policy -->
+  <url>
+    <loc>https://ff.rmstudio.app/privacy.html</loc>
+    <lastmod>2026-05-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
   </url>
   
   <!-- Canzoni per Eventi -->
   <url>
-    <loc>https://ff-edizioni.rmstudio.app/eventi/index.html</loc>
-    <lastmod>2026-05-22</lastmod>
+    <loc>https://ff.rmstudio.app/eventi/index.html</loc>
+    <lastmod>2026-05-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <!-- Jingle Shop -->
   <url>
-    <loc>https://ff-edizioni.rmstudio.app/jingle/index.html</loc>
-    <lastmod>2026-05-22</lastmod>
+    <loc>https://ff.rmstudio.app/jingle/index.html</loc>
+    <lastmod>2026-05-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <!-- Libreria SFX -->
   <url>
-    <loc>https://ff-edizioni.rmstudio.app/sfx/index.html</loc>
-    <lastmod>2026-05-22</lastmod>
+    <loc>https://ff.rmstudio.app/sfx/index.html</loc>
+    <lastmod>2026-05-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <!-- Blog & News -->
   <url>
-    <loc>https://ff-edizioni.rmstudio.app/blog/index.html</loc>
-    <lastmod>2026-05-22</lastmod>
+    <loc>https://ff.rmstudio.app/blog/index.html</loc>
+    <lastmod>2026-05-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
