@@ -35,7 +35,8 @@ body {
   font-family: 'Nunito', sans-serif;
   font-size: 15px;
   min-height: 100vh;
-  overflow-x: hidden;
+  /* Utilizziamo clip per non rompere il comportamento sticky nei browser mobile */
+  overflow-x: clip; 
 }
 
 body::before {
@@ -46,9 +47,17 @@ body::before {
     radial-gradient(ellipse 35% 35% at 65% 25%,  rgba(199,125,255,.07) 0%, transparent 65%);
 }
 
+/* WRAPPER STICKY PER HEADER E PLAYER */
+.sticky-wrapper {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+}
+
 /* HEADER */
 header {
-  position: sticky; top: 0; z-index: 200;
   background: rgba(14,14,24,.94);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
@@ -109,7 +118,7 @@ header {
 
 /* PLAYER BAR */
 #playerBar {
-  display:none; position:sticky; top:0; z-index:190;
+  display:none; 
   background:rgba(18,18,32,.97); backdrop-filter:blur(16px);
   border-bottom:2px solid var(--a1); padding:8px 16px; flex-wrap:wrap; gap:8px; align-items:center;
 }
@@ -201,24 +210,26 @@ main { position:relative; z-index:1; padding:14px 14px 40px; max-width:900px; ma
 </head>
 <body>
 
-<header>
-  <div class="header-top">
-    <!-- Link per tornare alla home -->
-    <a href="../index.html" style="color:var(--muted); text-decoration:none; margin-right:15px; font-weight:bold;">← Home</a>
-    <div class="logo">🎵 Sara</div>
-  </div>
-</header>
+<div class="sticky-wrapper">
+  <header>
+    <div class="header-top">
+      <!-- Link per tornare alla home -->
+      <a href="../index.html" style="color:var(--muted); text-decoration:none; margin-right:15px; font-weight:bold;">← Home</a>
+      <div class="logo">🎵 Sara</div>
+    </div>
+  </header>
 
-<div id="playerBar">
-  <div id="playerTitle">—</div>
-  <div style="display:flex;gap:7px;align-items:center">
-    <button class="ctrl-btn" id="btnPlayPause" onclick="togglePlayPause()">▶</button>
-    <button class="ctrl-btn" onclick="stopPlayer()">■</button>
-  </div>
-  <input type="range" id="audioProgress" value="0" min="0" max="100" step="0.1" oninput="seekAudio(this.value)">
-  <span id="playerTime">0:00 / 0:00</span>
-  <div id="videoContainer">
-    <iframe id="videoIframe" allowfullscreen allow="autoplay"></iframe>
+  <div id="playerBar">
+    <div id="playerTitle">—</div>
+    <div style="display:flex;gap:7px;align-items:center">
+      <button class="ctrl-btn" id="btnPlayPause" onclick="togglePlayPause()">▶</button>
+      <button class="ctrl-btn" onclick="stopPlayer()">■</button>
+    </div>
+    <input type="range" id="audioProgress" value="0" min="0" max="100" step="0.1" oninput="seekAudio(this.value)">
+    <span id="playerTime">0:00 / 0:00</span>
+    <div id="videoContainer">
+      <iframe id="videoIframe" allowfullscreen allow="autoplay"></iframe>
+    </div>
   </div>
 </div>
 
@@ -361,6 +372,17 @@ function buildCard(s) {
     ? '<div class="saved-label">Commenti salvati</div><div class="saved-feedback">'+esc(s.feedback)+'</div>'
     : '';
 
+  // Gestione errori "NaN" per la visualizzazione delle play count
+  var playVal = s.play;
+  var playNum = 0;
+  if (playVal !== null && playVal !== undefined) {
+    var strPlay = String(playVal).trim().toLowerCase();
+    if (strPlay !== 'nan' && strPlay !== '') {
+      playNum = Number(playVal);
+      if (isNaN(playNum)) playNum = 0;
+    }
+  }
+
   card.innerHTML=
     '<div class="card-head" onclick="toggleCard('+idx+')">'
     +'<div class="thumb-wrap">'+thumbHtml+'</div>'
@@ -368,7 +390,7 @@ function buildCard(s) {
     +'  <div class="song-title">'+esc(s.titolo||'Senza titolo')+'</div>'
     +'  <div class="badges">'+badges+'</div>'
     +'</div>'
-    +'<div class="play-count-badge">🎧 <span id="pc-'+idx+'">'+Number(s.play||0)+'</span></div>'
+    +'<div class="play-count-badge">🎧 <span id="pc-'+idx+'">'+playNum+'</span></div>'
     +'<div class="head-links">'+headLinks+'</div>'
     +'<button class="play-mini-btn" onclick="playAudio('+idx+',event)" title="Ascolta">▶</button>'
     +'<span class="expand-icon">▼</span>'
@@ -477,9 +499,8 @@ async function playAudio(idx, e) {
   var rawUrl = s.linkAscolto || s.linkSuno || '';
   if (!rawUrl) { alert('Nessun link audio.'); return; }
 
-  var url = fixSunoUrl(rawUrl);
-
-  if (audioEl.src === url || audioEl.src.endsWith(url.split('//')[1])) {
+  // FIX TASTO PAUSA: Se stiamo cliccando esattamente sul brano attualmente nel player
+  if (currentPlayingIdx === idx) {
     if (audioEl.paused) {
       audioEl.play();
       document.getElementById('btnPlayPause').textContent = '⏸';
@@ -489,9 +510,11 @@ async function playAudio(idx, e) {
       document.getElementById('btnPlayPause').textContent = '▶';
       updateMiniBtn(idx, '▶');
     }
-    return;
+    return; // Usciamo senza ricaricare l'URL da zero!
   }
 
+  // Se è un brano nuovo, resetta i vecchi bottoni e caricalo
+  var url = fixSunoUrl(rawUrl);
   resetAllMiniBtns();
 
   try {
@@ -509,6 +532,7 @@ async function playAudio(idx, e) {
   document.getElementById('playerTitle').textContent = s.titolo || 'Brano';
   playerBar.classList.add('active');
   document.getElementById('btnPlayPause').textContent = '⏸';
+  
   updateMiniBtn(idx, '⏸');
 }
 
@@ -519,7 +543,7 @@ function updateMiniBtn(idx, icon) {
     var btn = card.querySelector('.play-mini-btn');
     if (btn) btn.textContent = icon;
   }
-  currentPlayingIdx = idx;
+  currentPlayingIdx = idx; // Assicuriamoci di tracciare l'indice qui
 }
 
 function resetAllMiniBtns() {
@@ -544,6 +568,8 @@ function stopPlayer(){
   audioEl.currentTime=0;
   document.getElementById('btnPlayPause').textContent='▶';
   resetAllMiniBtns();
+  // Resettiamo currentPlayingIdx, in modo che un nuovo clic forzi la ricarica completa del brano
+  currentPlayingIdx = -1; 
 }
 
 function seekAudio(v){if(audioEl.duration)audioEl.currentTime=audioEl.duration*v/100;}
