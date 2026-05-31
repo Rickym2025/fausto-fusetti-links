@@ -67,16 +67,16 @@ body { font-family: 'Montserrat', sans-serif; color: #f0f0f0; text-align: center
 .container { position: relative; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(10px); padding: 90px 30px 40px 30px; max-width: 680px; width: 100%; margin-top: 100px; margin-bottom: 40px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); z-index: 2; }
 @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-/* PULSANTE AUDIO */
+/* PULSANTE AUDIO SEMPRE VISIBILE (MODIFICA 1) */
 #audio-cta { 
-    position: absolute; top: -25px; right: -20px; 
+    position: fixed; top: 20px; right: 20px; 
     display: flex; align-items: center; 
-    background-color: rgba(6, 147, 227, 0.2); 
+    background-color: rgba(6, 147, 227, 0.85); 
     border: 1px solid var(--primary-color); 
     padding: 8px 15px; border-radius: 30px; 
     backdrop-filter: blur(5px); 
     animation: pulse 2.5s infinite ease-in-out; 
-    z-index: 100; cursor: pointer; visibility: visible; 
+    z-index: 999; cursor: pointer; visibility: visible; 
 }
 #audio-cta .cta-text { margin-right: 10px; font-weight: 500; color: #f0f0f0; font-size: 0.9em; }
 #mute-btn-icon { background: white; color: var(--primary-color); border-radius: 50%; width: 30px; height: 30px; font-size: 0.9em; display: flex; align-items: center; justify-content: center; }
@@ -194,10 +194,12 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
 .song-meta span { display: flex; align-items: center; gap: 4px; }
 .song-meta i { font-size: 0.75rem; color: var(--primary-color); }
 
-/* PULSANTI PLAY/VIDEO */
+/* PULSANTI PLAY/VIDEO/STOP (MODIFICA 2) */
 .play-btn { background: none; border: 2px solid var(--primary-color); color: var(--primary-color); border-radius: 50%; width: 35px; height: 35px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; cursor: pointer; }
 .video-btn { background: none; border: 2px solid var(--secondary-color); color: var(--secondary-color); border-radius: 50%; width: 35px; height: 35px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; margin-right: 8px; cursor: pointer; font-size: 0.8em; }
 .video-btn:hover { background-color: var(--secondary-color); color: white; }
+.stop-btn { background: none; border: 2px solid #ff3366; color: #ff3366; border-radius: 50%; width: 35px; height: 35px; flex-shrink: 0; display: none; align-items: center; justify-content: center; transition: all 0.3s ease; cursor: pointer; font-size: 0.8em; }
+.stop-btn:hover { background-color: #ff3366; color: white; box-shadow: 0 0 10px rgba(255, 51, 102, 0.5); }
 
 /* STILE ALBUM (ACCORDION) */
 .album-card { background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 10px; margin-bottom: 15px; overflow: hidden; }
@@ -346,7 +348,6 @@ p.bio { font-size: 1.1em; margin-bottom: 25px; line-height: 1.7; color: #d1d1d1;
 </div>
 
 <!-- FOOTER ALLINEATO CON RM STUDIO -->
-<!-- FOOTER ALLINEATO CON RM STUDIO -->
 <footer style="margin-top: 80px; padding: 40px 20px 80px 20px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 10; width: 100%; display: block; clear: both;">
     <div style="max-w: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; text-align: left; width: 100%;">
         <div class="footer-col">
@@ -404,6 +405,7 @@ document.addEventListener('DOMContentLoaded', function() {
         currentFilters: { category: 'all', argomento: 'all' },
         viewMode: 'album',
         currentPlayingItem: null,
+        currentPlayingUrl: null, // Robust tracking (Modifica 2)
         isBgMusicMuted: true
     };
 
@@ -585,8 +587,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function createSongRow(song) {
         const get = (k) => { const key = Object.keys(song).find(x => x.toLowerCase() === k.toLowerCase()); return key ? song[key] : ""; };
         
+        const songUrl = get('url');
+        const songTitle = get('Titolo') || 'Senza Titolo';
+        const isCurrent = appState.currentPlayingUrl === songUrl;
+        const isPaused = mainPlayer.paused;
+        
         const div = document.createElement('div');
-        div.className = 'song-item';
+        div.className = 'song-item' + (isCurrent && !isPaused ? ' playing' : '');
         
         let vidBtn = '';
         const vidLink = get('Video_Link');
@@ -594,17 +601,34 @@ document.addEventListener('DOMContentLoaded', function() {
             vidBtn = `<div class="video-btn" onclick="openVideo('${vidLink}', event)"><i class="fas fa-video"></i></div>`;
         }
 
+        // Sanitizzazione robusta per valori NaN o non definiti (Modifica 3)
+        let durataVal = get('Durata');
+        if (durataVal === null || durataVal === undefined || String(durataVal).trim().toLowerCase() === 'nan' || String(durataVal).trim() === '') {
+            durataVal = '0';
+        }
+
+        const playIcon = isCurrent && !isPaused ? 'fa-pause' : 'fa-play';
+        const stopDisplay = isCurrent ? 'flex' : 'none';
+
         div.innerHTML = `
             <div class="song-info">
-                <span class="song-title">${get('Titolo') || 'Senza Titolo'}</span>
+                <span class="song-title">${songTitle}</span>
                 <div class="song-meta">
                     ${get('Categoria') ? `<span><i class="fas fa-music"></i> ${get('Categoria')}</span>` : ''}
-                    ${get('Durata') ? `<span><i class="far fa-clock"></i> ${get('Durata')}</span>` : ''}
+                    <span><i class="far fa-clock"></i> ${durataVal}</span>
                 </div>
             </div>
-            ${vidBtn}
-            <div class="play-btn" onclick="playSong('${get('url')}', '${get('Titolo')}', this)"><i class="fas fa-play"></i></div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                ${vidBtn}
+                <div class="stop-btn" style="display: ${stopDisplay};" onclick="stopSong(this, event)"><i class="fas fa-stop"></i></div>
+                <div class="play-btn" onclick="playSong('${songUrl}', '${songTitle}', this)"><i class="fas ${playIcon}"></i></div>
+            </div>
         `;
+
+        if (isCurrent) {
+            appState.currentPlayingItem = div;
+        }
+
         return div;
     }
 
@@ -644,30 +668,43 @@ document.addEventListener('DOMContentLoaded', function() {
         renderCatalog(); 
     };
 
+    // Gestione Play / Pause con logica robusta basata su URL (Modifica 2)
     window.playSong = function(url, title, btn) {
-        if(appState.currentPlayingItem === btn.closest('.song-item')) {
+        if(appState.currentPlayingUrl === url) {
+            const row = btn.closest('.song-item');
             if(mainPlayer.paused) {
                 mainPlayer.play();
                 btn.innerHTML = '<i class="fas fa-pause"></i>';
-                btn.closest('.song-item').classList.add('playing');
+                if(row) row.classList.add('playing');
             } else {
                 mainPlayer.pause();
                 btn.innerHTML = '<i class="fas fa-play"></i>';
-                btn.closest('.song-item').classList.remove('playing');
+                if(row) row.classList.remove('playing');
             }
             return;
         }
 
+        // Reset della canzone precedentemente in riproduzione
         if(appState.currentPlayingItem) {
             appState.currentPlayingItem.classList.remove('playing');
-            appState.currentPlayingItem.querySelector('.play-btn').innerHTML = '<i class="fas fa-play"></i>';
+            const prevPlayBtn = appState.currentPlayingItem.querySelector('.play-btn');
+            if(prevPlayBtn) prevPlayBtn.innerHTML = '<i class="fas fa-play"></i>';
+            const prevStopBtn = appState.currentPlayingItem.querySelector('.stop-btn');
+            if(prevStopBtn) prevStopBtn.style.display = 'none';
         }
         
         const row = btn.closest('.song-item');
-        row.classList.add('playing');
-        appState.currentPlayingItem = row;
-        btn.innerHTML = '<i class="fas fa-pause"></i>'; 
+        if(row) {
+            row.classList.add('playing');
+            appState.currentPlayingItem = row;
+            btn.innerHTML = '<i class="fas fa-pause"></i>'; 
+            const stopBtn = row.querySelector('.stop-btn');
+            if(stopBtn) stopBtn.style.display = 'flex';
+        } else {
+            appState.currentPlayingItem = null;
+        }
 
+        appState.currentPlayingUrl = url;
         mainPlayer.src = url;
         mainPlayer.play();
 
@@ -684,12 +721,35 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
+    // Funzione di arresto brano (Modifica 2)
+    window.stopSong = function(btn, e) {
+        if(e) e.stopPropagation();
+        
+        mainPlayer.pause();
+        mainPlayer.currentTime = 0;
+        
+        if(appState.currentPlayingItem) {
+            appState.currentPlayingItem.classList.remove('playing');
+            const playBtn = appState.currentPlayingItem.querySelector('.play-btn');
+            if(playBtn) playBtn.innerHTML = '<i class="fas fa-play"></i>';
+            const stopBtn = appState.currentPlayingItem.querySelector('.stop-btn');
+            if(stopBtn) stopBtn.style.display = 'none';
+        }
+        
+        appState.currentPlayingItem = null;
+        appState.currentPlayingUrl = null;
+    };
+
     mainPlayer.addEventListener('ended', () => {
         if(appState.currentPlayingItem) {
             appState.currentPlayingItem.classList.remove('playing');
-            appState.currentPlayingItem.querySelector('.play-btn').innerHTML = '<i class="fas fa-play"></i>';
-            appState.currentPlayingItem = null;
+            const playBtn = appState.currentPlayingItem.querySelector('.play-btn');
+            if(playBtn) playBtn.innerHTML = '<i class="fas fa-play"></i>';
+            const stopBtn = appState.currentPlayingItem.querySelector('.stop-btn');
+            if(stopBtn) stopBtn.style.display = 'none';
         }
+        appState.currentPlayingItem = null;
+        appState.currentPlayingUrl = null;
     });
 
     window.openVideo = function(url, e) {
