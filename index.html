@@ -645,31 +645,40 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     window.playSong = function(url, title, btn) {
-        if(appState.currentPlayingItem === btn.closest('.song-item')) {
+        // Controlla in modo sicuro se il pulsante esiste ed è dentro una riga del catalogo
+        const row = (btn && typeof btn.closest === 'function') ? btn.closest('.song-item') : null;
+
+        if(row && appState.currentPlayingItem === row) {
             if(mainPlayer.paused) {
                 mainPlayer.play();
                 btn.innerHTML = '<i class="fas fa-pause"></i>';
-                btn.closest('.song-item').classList.add('playing');
+                row.classList.add('playing');
             } else {
                 mainPlayer.pause();
                 btn.innerHTML = '<i class="fas fa-play"></i>';
-                btn.closest('.song-item').classList.remove('playing');
+                row.classList.remove('playing');
             }
             return;
         }
 
         if(appState.currentPlayingItem) {
             appState.currentPlayingItem.classList.remove('playing');
-            appState.currentPlayingItem.querySelector('.play-btn').innerHTML = '<i class="fas fa-play"></i>';
+            const oldBtn = appState.currentPlayingItem.querySelector('.play-btn');
+            if(oldBtn) oldBtn.innerHTML = '<i class="fas fa-play"></i>';
         }
         
-        const row = btn.closest('.song-item');
-        row.classList.add('playing');
-        appState.currentPlayingItem = row;
-        btn.innerHTML = '<i class="fas fa-pause"></i>'; 
+        // Se la canzone viene avviata dal catalogo visivo, illumina la riga
+        if (row && btn) {
+            row.classList.add('playing');
+            appState.currentPlayingItem = row;
+            btn.innerHTML = '<i class="fas fa-pause"></i>'; 
+        } else {
+            // Se avviata dal chatbot, non illumina nulla nel catalogo visivo
+            appState.currentPlayingItem = null;
+        }
 
         mainPlayer.src = url;
-        mainPlayer.play();
+        mainPlayer.play().catch(e => console.log("Errore riproduzione canzone chatbot:", e));
 
         fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
@@ -811,9 +820,14 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     window.addMsg = function(text, sender) {
+        // Pulisce e converte gli a capo testuali dell'AI in veri tag HTML
+        let cleanText = text
+            .replace(/\\n/g, '<br>') // Converte il testo letterale "\n" in <br>
+            .replace(/\n/g, '<br>');  // Converte gli a capo fisici in <br>
+
         const div = document.createElement('div');
         div.className = `msg ${sender}`;
-        div.innerHTML = text; 
+        div.innerHTML = cleanText; 
         
         const c = document.getElementById('chatbot-messages');
         c.appendChild(div);
@@ -823,7 +837,8 @@ document.addEventListener('DOMContentLoaded', function() {
             div.querySelectorAll('.chatbot-song-link').forEach(link => {
                 link.onclick = (e) => {
                     e.preventDefault();
-                    playSong(link.dataset.src, link.innerText, document.body); 
+                    // Passa 'link' invece di document.body per un funzionamento corretto
+                    playSong(link.dataset.src, link.innerText, link); 
                 };
             });
         }
