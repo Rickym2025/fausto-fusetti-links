@@ -35,75 +35,143 @@
     }
   }
 
-  // Funzione per mostrare e gestire il mini-player fluttuante
-    function showFloatingPlayer(title) {
+  // Funzione per mostrare il player nativo fluttuante in basso a sinistra (lontano dalla chat)
+    function showFloatingPlayer(url, title) {
         let bar = document.getElementById('chatbot-floating-player');
         if (!bar) {
             bar = document.createElement('div');
             bar.id = 'chatbot-floating-player';
             bar.style.cssText = `
                 position: fixed;
-                bottom: 105px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: rgba(18, 18, 18, 0.9);
-                backdrop-filter: blur(12px);
-                border: 1px solid var(--primary-color);
-                border-radius: 30px;
-                padding: 10px 20px;
+                bottom: 25px;
+                left: 25px;
+                background: rgba(18, 18, 18, 0.95);
+                backdrop-filter: blur(10px);
+                border: 2px solid var(--primary-color);
+                border-radius: 12px;
+                padding: 12px 15px;
                 display: flex;
-                align-items: center;
-                gap: 15px;
+                flex-direction: column;
+                gap: 8px;
                 z-index: 100000;
-                box-shadow: 0 4px 20px rgba(6, 147, 227, 0.4);
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
                 color: white;
-                font-size: 0.85em;
+                font-family: 'Montserrat', sans-serif;
+                width: 280px;
+                text-align: left;
                 animation: fadeInUp 0.3s ease-out;
             `;
             bar.innerHTML = `
                 <style>
                     @keyframes fadeInUp {
-                        from { opacity: 0; transform: translate(-50%, 20px); }
-                        to { opacity: 1; transform: translate(-50%, 0); }
+                        from { opacity: 0; transform: translateY(20px); }
+                        to { opacity: 1; transform: translateY(0); }
                     }
                 </style>
-                <i class="fas fa-music" style="color: var(--primary-color);"></i>
-                <span id="floating-player-title" style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600;"></span>
-                <button id="floating-player-play-btn" style="background: var(--primary-color); color: white; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;"><i class="fas fa-pause"></i></button>
-                <button id="floating-player-close-btn" style="background: none; border: none; color: #aaa; cursor: pointer; font-size: 1.2em; display: flex; align-items: center; justify-content: center;"><i class="fas fa-times"></i></button>
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                    <span style="font-weight: 600; font-size: 0.85em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 210px; color: var(--primary-color);" id="floating-title"></span>
+                    <button onclick="stopFloatingPlayer()" style="background: none; border: none; color: #aaa; cursor: pointer; font-size: 1.3em; line-height: 1; display: flex; align-items: center; justify-content: center;">&times;</button>
+                </div>
+                <audio id="floating-audio-element" controls style="width: 100%; height: 30px;"></audio>
             `;
             document.body.appendChild(bar);
-
-            // Controllo Play / Pausa
-            document.getElementById('floating-player-play-btn').onclick = () => {
-                const btnIcon = document.querySelector('#floating-player-play-btn i');
-                if (mainPlayer.paused) {
-                    mainPlayer.play();
-                    btnIcon.className = 'fas fa-pause';
-                } else {
-                    mainPlayer.pause();
-                    btnIcon.className = 'fas fa-play';
-                }
-            };
-
-            // Tasto per fermare e chiudere il brano
-            document.getElementById('floating-player-close-btn').onclick = () => {
-                mainPlayer.pause();
-                mainPlayer.src = '';
-                bar.style.display = 'none';
-                if (appState.currentPlayingItem) {
-                    appState.currentPlayingItem.classList.remove('playing');
-                    const playBtn = appState.currentPlayingItem.querySelector('.play-btn');
-                    if (playBtn) playBtn.innerHTML = '<i class="fas fa-play"></i>';
-                    appState.currentPlayingItem = null;
-                }
-            };
         }
 
-        document.getElementById('floating-player-title').textContent = title;
-        document.querySelector('#floating-player-play-btn i').className = 'fas fa-pause';
+        document.getElementById('floating-title').textContent = title;
+        
+        // Mette in pausa il player principale del catalogo se era in riproduzione
+        if (mainPlayer) mainPlayer.pause();
+        
+        // Carica ed esegue l'audio nel player fluttuante dedicato
+        const audioEl = document.getElementById('floating-audio-element');
+        audioEl.src = url;
+        audioEl.play().catch(e => console.log("Autoplay bloccato dal browser:", e));
+        
         bar.style.display = 'flex';
-    }  
+    }
+
+    // Funzione globale per chiudere e stoppare il brano fluttuante
+    window.stopFloatingPlayer = function() {
+        const audioEl = document.getElementById('floating-audio-element');
+        if (audioEl) {
+            audioEl.pause();
+            audioEl.src = '';
+        }
+        const bar = document.getElementById('chatbot-floating-player');
+        if (bar) bar.style.display = 'none';
+    };
+
+    // Aggiornamento della funzione playSong principale per separare i comportamenti
+    window.playSong = function(url, title, btn) {
+        // Verifica se la chiamata arriva dal chatbot (il pulsante cliccato non appartiene al catalogo visivo)
+        const isFromChatbot = !btn || !btn.closest || !btn.closest('.song-item');
+
+        if (isFromChatbot) {
+            // Riproduzione dedicata tramite player fluttuante nativo
+            showFloatingPlayer(url, title);
+            
+            // Tracciamento dell'ascolto su Google Sheets
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors', 
+                body: JSON.stringify({ action: 'increment', title: title })
+            }).catch(e => console.log("Tracking Sheet error", e));
+            return;
+        }
+
+        // --- ALTRIMENTI: RIPRODUZIONE STANDARD NEL CATALOGO VISIVO ---
+        // Ferma il player fluttuante se era attivo
+        stopFloatingPlayer();
+
+        const row = btn.closest('.song-item');
+        if(row && appState.currentPlayingItem === row) {
+            if(mainPlayer.paused) {
+                mainPlayer.play();
+                btn.innerHTML = '<i class="fas fa-pause"></i>';
+                row.classList.add('playing');
+            } else {
+                mainPlayer.pause();
+                btn.innerHTML = '<i class="fas fa-play"></i>';
+                row.classList.remove('playing');
+            }
+            return;
+        }
+
+        if(appState.currentPlayingItem) {
+            appState.currentPlayingItem.classList.remove('playing');
+            const oldBtn = appState.currentPlayingItem.querySelector('.play-btn');
+            if(oldBtn) oldBtn.innerHTML = '<i class="fas fa-play"></i>';
+        }
+        
+        row.classList.add('playing');
+        appState.currentPlayingItem = row;
+        btn.innerHTML = '<i class="fas fa-pause"></i>'; 
+
+        mainPlayer.src = url;
+        mainPlayer.play().catch(e => console.log("Errore riproduzione:", e));
+
+        fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors', 
+            body: JSON.stringify({ action: 'increment', title: title })
+        }).catch(e => console.log("Tracking Sheet error", e));
+
+        if (typeof gtag === 'function') {
+            gtag('event', 'song_play', {
+                'song_title': title
+            });
+        }
+    };
+
+    mainPlayer.addEventListener('ended', () => {
+        if(appState.currentPlayingItem) {
+            appState.currentPlayingItem.classList.remove('playing');
+            appState.currentPlayingItem.querySelector('.play-btn').innerHTML = '<i class="fas fa-play"></i>';
+            appState.currentPlayingItem = null;
+        }
+    });
+
+    
   </script>
 
   <meta charset="UTF-8" />
