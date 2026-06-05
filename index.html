@@ -535,7 +535,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqGvRLpmvSmbGrLg4BcH6Ch86-TuwDKDJ282EbPUJ1jUPgmT_C9ocn_3BQbqk1FSKm/exec'; 
     
     // WEBHOOK N8N
-    const CHATBOT_WEBHOOK = 'https://n8n.rmstudio.app/webhook/ffausto-ai-chat';
+    const CHATBOT_WEBHOOK = 'https://n8n.labottegadeldelta.it/webhook/ffausto-ai-chat';
 
     const appState = {
         allSongs: [],
@@ -782,9 +782,87 @@ document.addEventListener('DOMContentLoaded', function() {
         renderCatalog(); 
     };
 
-    window.playSong = function(url, title, btn) {
-        const row = (btn && typeof btn.closest === 'function') ? btn.closest('.song-item') : null;
+    // FUNZIONE ULTRA-ROBUSTA: Registrata a livello globale (window) per il player fluttuante nativo
+    window.showFloatingPlayer = function(url, title) {
+        let bar = document.getElementById('chatbot-floating-player');
+        if (!bar) {
+            bar = document.createElement('div');
+            bar.id = 'chatbot-floating-player';
+            bar.style.cssText = `
+                position: fixed;
+                bottom: 25px;
+                left: 25px;
+                background: rgba(18, 18, 18, 0.95);
+                backdrop-filter: blur(10px);
+                border: 2px solid var(--primary-color);
+                border-radius: 12px;
+                padding: 12px 15px;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                z-index: 100000;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+                color: white;
+                font-family: 'Montserrat', sans-serif;
+                width: 280px;
+                text-align: left;
+                animation: fadeInUp 0.3s ease-out;
+            `;
+            bar.innerHTML = `
+                <style>
+                    @keyframes fadeInUp {
+                        from { opacity: 0; transform: translateY(20px); }
+                        to { opacity: 1; transform: translateY(0); }
+                    }
+                </style>
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                    <span style="font-weight: 600; font-size: 0.85em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 210px; color: var(--primary-color);" id="floating-title"></span>
+                    <button onclick="window.stopFloatingPlayer()" style="background: none; border: none; color: #aaa; cursor: pointer; font-size: 1.3em; line-height: 1; display: flex; align-items: center; justify-content: center;">&times;</button>
+                </div>
+                <audio id="floating-audio-element" controls style="width: 100%; height: 30px;"></audio>
+            `;
+            document.body.appendChild(bar);
+        }
 
+        document.getElementById('floating-title').textContent = title;
+        
+        if (mainPlayer) mainPlayer.pause();
+        
+        const audioEl = document.getElementById('floating-audio-element');
+        if (audioEl) {
+            audioEl.src = url;
+            audioEl.play().catch(e => console.log("Autoplay bloccato dal browser:", e));
+        }
+        
+        bar.style.display = 'flex';
+    };
+
+    window.stopFloatingPlayer = function() {
+        const audioEl = document.getElementById('floating-audio-element');
+        if (audioEl) {
+            audioEl.pause();
+            audioEl.src = '';
+        }
+        const bar = document.getElementById('chatbot-floating-player');
+        if (bar) bar.style.display = 'none';
+    };
+
+    window.playSong = function(url, title, btn) {
+        const isFromChatbot = !btn || !btn.closest || !btn.closest('.song-item');
+
+        if (isFromChatbot) {
+            window.showFloatingPlayer(url, title);
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors', 
+                body: JSON.stringify({ action: 'increment', title: title })
+            }).catch(e => console.log("Tracking Sheet error", e));
+            return;
+        }
+
+        window.stopFloatingPlayer();
+
+        const row = btn.closest('.song-item');
         if(row && appState.currentPlayingItem === row) {
             if(mainPlayer.paused) {
                 mainPlayer.play();
@@ -804,19 +882,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if(oldBtn) oldBtn.innerHTML = '<i class="fas fa-play"></i>';
         }
         
-        if (row && btn) {
-            row.classList.add('playing');
-            appState.currentPlayingItem = row;
-            btn.innerHTML = '<i class="fas fa-pause"></i>'; 
-        } else {
-            appState.currentPlayingItem = null;
-        }
+        row.classList.add('playing');
+        appState.currentPlayingItem = row;
+        btn.innerHTML = '<i class="fas fa-pause"></i>'; 
 
         mainPlayer.src = url;
-        mainPlayer.play().catch(e => console.log("Errore riproduzione canzone chatbot:", e));
-
-        // MOSTRA IL MINI-PLAYER IN BASSO
-        showFloatingPlayer(title);
+        mainPlayer.play().catch(e => console.log("Errore riproduzione:", e));
 
         fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
@@ -837,9 +908,6 @@ document.addEventListener('DOMContentLoaded', function() {
             appState.currentPlayingItem.querySelector('.play-btn').innerHTML = '<i class="fas fa-play"></i>';
             appState.currentPlayingItem = null;
         }
-        // Nasconde il player fluttuante al termine del brano
-        const bar = document.getElementById('chatbot-floating-player');
-        if (bar) bar.style.display = 'none';
     });
 
     window.openVideo = function(url, e) {
@@ -961,10 +1029,9 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     window.addMsg = function(text, sender) {
-        // Pulisce e converte gli a capo testuali dell'AI in veri tag HTML
         let cleanText = text
-            .replace(/\\n/g, '<br>') // Converte il testo letterale "\n" in <br>
-            .replace(/\n/g, '<br>');  // Converte gli a capo fisici in <br>
+            .replace(/\\n/g, '<br>')
+            .replace(/\n/g, '<br>');
 
         const div = document.createElement('div');
         div.className = `msg ${sender}`;
@@ -978,7 +1045,6 @@ document.addEventListener('DOMContentLoaded', function() {
             div.querySelectorAll('.chatbot-song-link').forEach(link => {
                 link.onclick = (e) => {
                     e.preventDefault();
-                    // Passa 'link' invece di document.body per un funzionamento corretto
                     playSong(link.dataset.src, link.innerText, link); 
                 };
             });
@@ -1005,7 +1071,6 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             console.log("Invio messaggio con ID:", window.chatSessionId);
             
-            // Invio pulito del JSON nel corpo (body) della richiesta POST
             const res = await fetch(CHATBOT_WEBHOOK, { 
                 method: 'POST',
                 headers: {
