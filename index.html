@@ -849,7 +849,7 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             console.log("Invio messaggio con ID:", window.chatSessionId);
             
-            // Inviamo i dati in formato JSON nel corpo (body) della richiesta POST
+            // Invio pulito del JSON nel corpo (body) della richiesta POST
             const res = await fetch(CHATBOT_WEBHOOK, { 
                 method: 'POST',
                 headers: {
@@ -871,8 +871,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById(loadingId).remove();
             addMsg("Mi dispiace, la mia connessione musicale ha avuto un intoppo. Riprova! 🎵", 'bot');
         }
-    init();
-});
+    };
 </script>
 
 <!-- Inizio Vercel Analytics -->
