@@ -819,7 +819,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <span style="font-weight: 600; font-size: 0.85em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 210px; color: var(--primary-color);" id="floating-title"></span>
                     <button onclick="window.stopFloatingPlayer()" style="background: none; border: none; color: #aaa; cursor: pointer; font-size: 1.3em; line-height: 1; display: flex; align-items: center; justify-content: center;">&times;</button>
                 </div>
-                <audio id="floating-audio-element" controls style="width: 100%; height: 30px;"></audio>
+                <audio id="floating-audio-element" controls controlsList="nodownload" style="width: 100%; height: 30px;"></audio>
             `;
             document.body.appendChild(bar);
         }
