@@ -769,6 +769,9 @@ document.addEventListener('DOMContentLoaded', function() {
             appState.currentPlayingItem.querySelector('.play-btn').innerHTML = '<i class="fas fa-play"></i>';
             appState.currentPlayingItem = null;
         }
+        // Nasconde il player fluttuante al termine del brano
+        const bar = document.getElementById('chatbot-floating-player');
+        if (bar) bar.style.display = 'none';
     });
 
     window.openVideo = function(url, e) {
