@@ -848,8 +848,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
         try {
             console.log("Invio messaggio con ID:", window.chatSessionId);
-            const webhookUrl = `${CHATBOT_WEBHOOK}?user_message=${encodeURIComponent(text)}&sessionId=${window.chatSessionId}`;
-            const res = await fetch(webhookUrl, { method:'POST' });
+            
+            // Inviamo i dati in formato JSON nel corpo (body) della richiesta POST
+            const res = await fetch(CHATBOT_WEBHOOK, { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_message: text,
+                    sessionId: window.chatSessionId
+                })
+            });
+            
             const data = await res.json();
             
             document.getElementById(loadingId).remove();
@@ -860,8 +871,6 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById(loadingId).remove();
             addMsg("Mi dispiace, la mia connessione musicale ha avuto un intoppo. Riprova! 🎵", 'bot');
         }
-    };
-
     init();
 });
 </script>
