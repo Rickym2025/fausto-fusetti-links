@@ -10,30 +10,50 @@
     gtag('config', 'G-KD9H9P2RKT');
   </script>
 
-  <!-- Dati Strutturati per Google (JSON-LD) - AIUTA I MOTORI DI RICERCA -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "MusicGroup",
-    "name": "Fausto Fusetti",
-    "alternateName": "Fausto Miriani",
-    "url": "https://ff-edizioni.rmstudio.app/",
-    "image": "https://raw.githubusercontent.com/Rickym2025/fausto-fusetti-links/main/logo6.jpg",
-    "sameAs":[
-      "https://www.instagram.com/faustofusetti/",
-      "https://www.facebook.com/fausto.fusetti.9",
-      "https://www.youtube.com/@faustofusetti5859"
-    ],
-    "description": "Servizio di creazione canzoni personalizzate, jingle pubblicitari e produzioni musicali originali.",
-    "knowsAbout":["Canzoni su misura", "Composizione", "Jingle Radiofonici", "Songwriting"],
-    "offers": {
-      "@type": "Offer",
-      "itemOffered": {
-        "@type": "Service",
-        "name": "Creazione Canzone Personalizzata"
-      }
+  <!-- Schema Strutturato Ottimizzato per AI, Google Universal Cart & AP2 -->
+    <script type="application/ld-json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "MusicGroup",
+          "@id": "https://ff-edizioni.rmstudio.app/#artist",
+          "name": "Fausto Fusetti",
+          "alternateName": "Fausto Miriani",
+          "url": "https://ff-edizioni.rmstudio.app/",
+          "image": "https://ff-edizioni.rmstudio.app/logo6.jpg",
+          "sameAs": [
+            "https://www.instagram.com/faustofusetti/",
+            "https://www.facebook.com/fausto.fusetti.9",
+            "https://www.youtube.com/@faustofusetti5859"
+          ],
+          "description": "Compositore, paroliere e polistrumentista attivo professionalmente dal 1988. Storiche collaborazioni con Fred Bongusto, Peppino di Capri, Franco Califano. Posizioni SIAE n. 189515 e 593874."
+        },
+        {
+          "@type": "Service",
+          "name": "Creazione Canzone Personalizzata",
+          "provider": {
+            "@id": "https://ff-edizioni.rmstudio.app/#artist"
+          },
+          "description": "Servizio di scrittura testi, arrangiamento, composizione e produzione di canzoni personalizzate inedite su misura per matrimoni, regali, anniversari ed eventi speciali.",
+          "offers": {
+            "@type": "Offer",
+            "price": "0.00",
+            "priceCurrency": "EUR",
+            "description": "Prezzo su preventivo basato sulle esigenze di arrangiamento, minutaggio e complessità della traccia."
+          }
+        },
+        {
+          "@type": "Service",
+          "name": "Jingle Shop & Sound Branding",
+          "provider": {
+            "@id": "https://ff-edizioni.rmstudio.app/#artist"
+          },
+          "description": "Ideazione, sviluppo e produzione di jingle commerciali, sigle podcast, sound design per app e identità acustica aziendale."
+        }
+      ]
     }
-  }
+    </script>
 
   // Funzione per mostrare il player nativo fluttuante in basso a sinistra (lontano dalla chat)
     function showFloatingPlayer(url, title) {
