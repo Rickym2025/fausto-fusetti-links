@@ -216,23 +216,62 @@ body {
 .player-controls { display: flex; align-items: center; gap: 15px; }
 .player-controls button { background: none; border: none; color: #fff; font-size: 1.2em; cursor: pointer; }
 
-/* CHATBOT AI CORRETTO E AMPIO QUANDO CHIUSO */
+/* CHATBOT SPOSTATO IN ALTO PER NON COPRIRE IL PLAYER */
 #chatbot-window-wrapper { 
-  position: fixed; bottom: 20px; right: 20px; 
-  width: 350px; height: 500px; 
-  background: #121218; border: 2px solid var(--primary-color); 
-  border-radius: 20px; z-index: 99999; 
-  display: flex; flex-direction: column; overflow: hidden; 
+  position: fixed; 
+  bottom: 85px; /* Spostato in alto: lascia spazio libero al player sotto */
+  right: 20px; 
+  width: 350px; 
+  height: 480px; 
+  background: #121218; 
+  border: 2px solid var(--primary-color); 
+  border-radius: 20px; 
+  z-index: 99999; 
+  display: flex; 
+  flex-direction: column; 
+  overflow: hidden; 
   box-shadow: 0 0 30px rgba(0, 225, 255, 0.4);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* CHATBOT CHIUSO (PILLOLA ELEGANTE) */
 #chatbot-window-wrapper.collapsed { 
   height: 52px; 
   width: 280px; 
   border-radius: 26px;
   border-color: var(--secondary-color);
   box-shadow: 0 0 20px rgba(157, 78, 221, 0.5);
+}
+
+/* PLAYER AUDIO COMPATTO IN BASSO */
+.album-player-bar {
+  position: fixed; 
+  bottom: 0; left: 0; 
+  width: 100%; 
+  height: 60px; /* Compatto e sottile */
+  background: rgba(14, 14, 20, 0.96);
+  backdrop-filter: blur(10px);
+  border-top: 2px solid var(--primary-color); 
+  padding: 8px 20px;
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+  z-index: 99990;
+  box-shadow: 0 -5px 20px rgba(0, 225, 255, 0.3);
+}
+
+.player-controls button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.1em;
+  cursor: pointer;
+  padding: 5px 8px;
+  transition: color 0.2s;
+}
+
+.player-controls button:hover {
+  color: var(--primary-color);
 }
 
 .chatbot-header { 
