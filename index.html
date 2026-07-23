@@ -10,7 +10,7 @@
     gtag('config', 'G-KD9H9P2RKT');
   </script>
 
-  <!-- Schema Strutturato Ottimizzato -->
+  <!-- Schema Strutturato -->
   <script type="application/ld-json">
   {
     "@context": "https://schema.org",
@@ -27,13 +27,13 @@
           "https://www.facebook.com/fausto.fusetti.9",
           "https://www.youtube.com/@faustofusetti5859"
         ],
-        "description": "Compositore, paroliere e polistrumentista attivo professionalmente dal 1988. Collaborazioni con Fred Bongusto, Peppino di Capri, Franco Califano."
+        "description": "Compositore, paroliere, polistrumentista e autore attivo dal 1988. Collaborazioni storiche con Fred Bongusto, Peppino di Capri, Franco Califano. Posizioni SIAE n. 189515 e 593874."
       },
       {
         "@type": "Service",
         "name": "Creazione Canzone Personalizzata",
         "provider": { "@id": "https://ff-edizioni.rmstudio.app/#artist" },
-        "description": "Servizio di scrittura testi, arrangiamento, composizione e produzione di canzoni personalizzate."
+        "description": "Composizione, scrittura testi e produzione su misura per eventi, matrimoni e regali unici."
       }
     ]
   }
@@ -42,7 +42,7 @@
   <meta charset="UTF-8" />
   <meta name="referrer" content="origin-when-cross-origin" />  
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Fausto Fusetti - FF Musica</title>
+  <title>Fausto Fusetti | FF Musica - Produzioni & Canzoni Su Misura</title>
   
   <link rel="icon" href="favicon.ico?v=2" sizes="any" type="image/x-icon">
   <link rel="icon" href="icon-192.png?v=2" sizes="192x192" type="image/png">
@@ -50,705 +50,848 @@
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
   
   <style>
     :root { 
-      --primary-color: #0693e3; 
-      --secondary-color: #e3a006; 
-      --accent-color: #9d4edd;
-      --text-gray: #aaa; 
+      --primary-color: #00e1ff; 
+      --secondary-color: #9d4edd; 
+      --accent-color: #ff3366;
+      --bg-dark: #0a0a0c;
+      --card-bg: rgba(18, 18, 24, 0.75);
+      --text-gray: #a1a1aa; 
     }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
-    body { font-family: 'Montserrat', sans-serif; color: #f0f0f0; text-align: center; font-size: 18px; background: #000; }
-
-    #background-video { position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; width: auto; height: auto; z-index: -100; object-fit: cover; filter: brightness(0.4); }
-    .container-wrapper { min-height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center; padding: 20px; padding-bottom: 60px; }
-    .container { position: relative; background: rgba(0, 0, 0, 0.55); backdrop-filter: blur(12px); padding: 90px 30px 40px 30px; max-width: 680px; width: 100%; margin-top: 80px; margin-bottom: 40px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.15); z-index: 2; }
-    
-    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-
-    #audio-cta { 
-      position: absolute; top: -25px; right: -10px; 
-      display: flex; align-items: center; 
-      background-color: rgba(6, 147, 227, 0.3); 
-      border: 1px solid var(--primary-color); 
-      padding: 8px 15px; border-radius: 30px; 
-      backdrop-filter: blur(5px); 
-      animation: pulse 2.5s infinite ease-in-out; 
-      z-index: 100; cursor: pointer; 
+    body { 
+      font-family: 'Montserrat', sans-serif; 
+      color: #f4f4f5; 
+      background-color: var(--bg-dark); 
+      font-size: 17px; 
+      line-height: 1.6;
+      overflow-x: hidden;
     }
-    #audio-cta .cta-text { margin-right: 10px; font-weight: 500; color: #f0f0f0; font-size: 0.85em; }
-    #mute-btn-icon { background: white; color: var(--primary-color); border-radius: 50%; width: 28px; height: 28px; font-size: 0.85em; display: flex; align-items: center; justify-content: center; }
 
-    .profile-logo { width: 140px; height: 140px; border-radius: 50%; border: 4px solid rgba(255, 255, 255, 0.9); box-shadow: 0 0 20px var(--primary-color); object-fit: cover; position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); animation: spin 20s linear infinite; }
-    @keyframes spin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+    /* ACCELERAZIONE HARDWARE VIDEO PER CHROME (ZERO SCATTI) */
+    #background-video { 
+      position: fixed; 
+      right: 0; 
+      bottom: 0; 
+      min-width: 100%; 
+      min-height: 100%; 
+      width: auto; 
+      height: auto; 
+      z-index: -100; 
+      object-fit: cover; 
+      filter: brightness(0.35) contrast(1.1);
+      pointer-events: none;
+      transform: translate3d(0,0,0);
+      backface-visibility: hidden;
+      will-change: transform;
+    }
 
-    h1 { font-size: 1.8em; margin-bottom: 10px; font-weight: 700; }
-    p.bio { font-size: 1.05em; margin-bottom: 20px; line-height: 1.6; color: #d1d1d1; }
+    .main-wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 20px 100px 20px;
+      position: relative;
+      z-index: 2;
+    }
 
-    /* WIDGET DISCO IN EVIDENZA (ACCESSO RAPIDO AUDIO) */
-    .featured-disco-box {
-      background: linear-gradient(135deg, rgba(157, 78, 221, 0.25), rgba(6, 147, 227, 0.25));
-      border: 2px solid var(--accent-color);
-      border-radius: 16px;
-      padding: 18px;
-      margin: 25px 0;
+    /* HERO SECTION RICONCETTUALE CON TASTE SKILL */
+    .hero-section {
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 28px;
+      padding: 50px 40px;
+      margin-top: 40px;
+      margin-bottom: 50px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
       text-align: left;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+      position: relative;
     }
-    .featured-disco-header {
+
+    .hero-header {
       display: flex;
       align-items: center;
+      gap: 30px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .profile-logo { 
+      width: 130px; 
+      height: 130px; 
+      border-radius: 50%; 
+      border: 3px solid var(--primary-color); 
+      box-shadow: 0 0 25px rgba(0, 225, 255, 0.4); 
+      object-fit: cover; 
+      flex-shrink: 0;
+    }
+
+    .hero-title-group h1 {
+      font-size: 2.6em;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+
+    .hero-subtitle {
+      color: var(--primary-color);
+      font-size: 1.1em;
+      font-weight: 600;
+      margin-top: 6px;
+    }
+
+    /* BIOGRAFIA COMPLETA E DETTAGLIATA DI FAUSTO */
+    .bio-text {
+      font-size: 1.05em;
+      color: #e4e4e7;
+      margin-bottom: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .bio-text p span.highlight {
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
       gap: 15px;
+      margin-top: 25px;
     }
-    .featured-disco-img {
-      width: 75px;
-      height: 75px;
-      border-radius: 10px;
-      object-fit: cover;
-      border: 1px solid rgba(255,255,255,0.3);
-    }
-    .featured-disco-info {
-      flex-grow: 1;
-    }
-    .featured-badge {
-      background: var(--accent-color);
-      color: white;
-      font-size: 0.75em;
-      padding: 3px 8px;
-      border-radius: 10px;
-      font-weight: bold;
-      text-transform: uppercase;
-    }
-    .featured-title {
-      font-size: 1.15em;
-      font-weight: 700;
-      margin-top: 4px;
-      color: #fff;
-    }
-    .featured-subtitle {
-      font-size: 0.85em;
-      color: #bbb;
-    }
-    .featured-btn-play {
-      background: #39ff14;
-      color: #000;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 25px;
-      font-weight: bold;
-      cursor: pointer;
+
+    /* PULSANTI CONVERSIONE PRINCIPALI */
+    .btn-action {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      margin-top: 12px;
-      transition: all 0.2s ease;
-      width: 100%;
       justify-content: center;
+      gap: 10px;
+      padding: 16px 28px;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 1em;
+      text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary-color), #0088ff);
+      color: #000;
+      box-shadow: 0 0 20px rgba(0, 225, 255, 0.4);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 0 30px rgba(0, 225, 255, 0.7);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.18);
+      transform: translateY(-2px);
+    }
+
+    /* SEZIONE DISCOGRAFIA & ALBUM IN HOMEPAGE */
+    .section-title {
+      font-size: 1.8em;
+      font-weight: 800;
+      color: #fff;
+      text-align: left;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-title i {
+      color: var(--secondary-color);
+    }
+
+    .discography-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 50px;
+    }
+
+    .album-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 20px;
+      text-align: left;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      backdrop-filter: blur(10px);
+    }
+
+    .album-card:hover {
+      border-color: var(--secondary-color);
+      transform: translateY(-4px);
+      box-shadow: 0 10px 30px rgba(157, 78, 221, 0.25);
+    }
+
+    .album-cover-img {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      background: #18181b;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .album-card-title {
+      font-size: 1.2em;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .album-card-count {
+      font-size: 0.85em;
+      color: var(--primary-color);
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+
+    .album-play-btn {
+      width: 100%;
+      padding: 12px;
+      background: rgba(157, 78, 221, 0.2);
+      border: 1px solid var(--secondary-color);
+      color: #fff;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .album-play-btn:hover {
+      background: var(--secondary-color);
+      color: #fff;
+    }
+
+    /* BENTO GRID PER L'ECOSISTEMA SERVIZI */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+      margin-bottom: 50px;
+    }
+
+    .bento-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 24px;
+      text-align: left;
+      text-decoration: none;
+      color: #fff;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .bento-card:hover {
+      border-color: var(--btn-color, var(--primary-color));
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    .bento-icon {
+      font-size: 1.8em;
+      color: var(--btn-color, var(--primary-color));
+      margin-bottom: 15px;
+    }
+
+    .bento-title {
+      font-size: 1.1em;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .bento-desc {
+      font-size: 0.85em;
+      color: var(--text-gray);
+    }
+
+    /* CHATBOT AI VIVO E ANIMATO */
+    #chatbot-window-wrapper {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      width: 360px;
+      height: 520px;
+      background: #121218;
+      border: 2px solid var(--primary-color);
+      border-radius: 20px;
+      box-shadow: 0 15px 40px rgba(0, 225, 255, 0.3);
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    #chatbot-window-wrapper.collapsed {
+      height: 60px;
+      width: 220px;
+      overflow: hidden;
+      border-color: var(--secondary-color);
+      box-shadow: 0 5px 20px rgba(157, 78, 221, 0.4);
+    }
+
+    .chatbot-header {
+      background: linear-gradient(135deg, #181824, #004466);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .chatbot-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid var(--primary-color);
+      object-fit: cover;
+      animation: pulse-avatar 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse-avatar {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(0, 225, 255, 0.7); }
+      50% { box-shadow: 0 0 0 8px rgba(0, 225, 255, 0); }
+    }
+
+    .chatbot-header-info {
+      flex-grow: 1;
+      text-align: left;
+    }
+
+    .chatbot-header-name {
+      font-weight: 700;
       font-size: 0.95em;
-    }
-    .featured-btn-play:hover {
-      transform: scale(1.02);
-      box-shadow: 0 0 15px #39ff14;
+      color: #fff;
     }
 
-    /* MENU CLESSIDRA */
-    .menu-clessidra { display: flex; flex-direction: column; align-items: center; width: 100%; }
-    .menu-btn {
-      display: flex; align-items: center; justify-content: center;
-      margin: 8px auto; padding: 14px 20px;
-      border: 2px solid var(--btn-color); border-radius: 40px; 
-      color: #fff; text-decoration: none; font-size: 1em; font-weight: 600;
-      background: rgba(0, 0, 0, 0.4);
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
-      transition: all 0.3s ease; cursor: pointer;
-      min-width: 270px; max-width: 100%;
-    }
-    .menu-btn i { margin-right: 12px; color: var(--btn-color); font-size: 1.2em; transition: all 0.3s ease; }
-    .menu-btn:hover { background: var(--btn-color); color: #000; box-shadow: 0 0 25px var(--btn-color); transform: scale(1.03); border-color: #fff; }
-    .menu-btn:hover i { color: #000; }
-
-    .menu-btn-primary-x2 {
-      padding: 18px 25px; font-size: 1.15em; border-width: 2.5px;
-      animation: btn-pulse-glowing 2s infinite ease-in-out;
-    }
-    @keyframes btn-pulse-glowing {
-      0%, 100% { box-shadow: 0 0 15px var(--btn-color); }
-      50% { box-shadow: 0 0 30px var(--btn-color); }
+    .chatbot-status {
+      font-size: 0.75em;
+      color: #39ff14;
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
 
-    /* MODALI */
-    .social-icons { display: flex; justify-content: center; gap: 25px; margin: 30px 0 10px; }
-    .social-icons a { color: #c7c7c7; font-size: 2em; transition: all 0.3s ease; }
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
-    .modal-content { background: #1a1a1a; padding: 25px; border-radius: 15px; width: 100%; max-width: 650px; position: relative; max-height: 85vh; overflow-y: auto; text-align: left; }
-    .modal-close { position: absolute; top: 15px; right: 20px; font-size: 2em; color: white; cursor: pointer; line-height: 1; }
-    .music-catalog .info-box { background: rgba(6, 147, 227, 0.15); border: 1px solid var(--primary-color); padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 0.95em; }
+    .chatbot-messages {
+      flex-grow: 1;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: #0d0d12;
+      text-align: left;
+    }
 
-    /* FILTRI E LISTE */
-    .filter-group { margin-bottom: 12px; }
-    .filter-group .filter-label { margin-bottom: 6px; font-weight: 600; color: var(--primary-color); font-size: 0.9em; }
-    .filter-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
-    .filter-btn { padding: 6px 12px; border: 1px solid #555; border-radius: 15px; background: none; color: #f0f0f0; cursor: pointer; font-size: 0.85em; }
-    .filter-btn.active { background: var(--primary-color); border-color: var(--primary-color); color: white; }
+    .msg {
+      padding: 10px 14px;
+      border-radius: 14px;
+      max-width: 88%;
+      font-size: 0.9em;
+      line-height: 1.4;
+      word-wrap: break-word;
+    }
 
-    .view-switcher { display: flex; justify-content: center; margin-bottom: 15px; gap: 10px; border-bottom: 1px solid #333; padding-bottom: 12px; }
-    .view-btn { background: transparent; border: 1px solid #555; color: #ccc; padding: 6px 14px; border-radius: 5px; cursor: pointer; }
-    .view-btn.active { background: var(--primary-color); border-color: var(--primary-color); color: white; }
+    .msg.bot {
+      background: rgba(0, 225, 255, 0.12);
+      border: 1px solid rgba(0, 225, 255, 0.3);
+      color: #f4f4f5;
+      align-self: flex-start;
+      border-bottom-left-radius: 2px;
+    }
 
-    .song-list-container { max-height: 45vh; overflow-y: auto; margin-top: 15px; }
-    .song-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #333; border-radius: 5px; margin-bottom: 4px; }
-    .song-item.playing { background-color: rgba(6, 147, 227, 0.25); border-left: 3px solid var(--primary-color); }
+    .msg.user {
+      background: var(--secondary-color);
+      color: #fff;
+      align-self: flex-end;
+      border-bottom-right-radius: 2px;
+    }
 
-    .song-info { flex-grow: 1; display: flex; flex-direction: column; margin: 0 10px; }
-    .song-title { font-weight: 600; font-size: 0.95rem; color: #fff; }
-    .song-meta { font-size: 0.75rem; color: var(--text-gray); display: flex; gap: 10px; margin-top: 3px; }
+    .chat-chip {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--primary-color);
+      color: var(--primary-color);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.8em;
+      margin-top: 6px;
+      margin-right: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
 
-    .play-btn { background: none; border: 2px solid var(--primary-color); color: var(--primary-color); border-radius: 50%; width: 36px; height: 36px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-    .video-btn { background: none; border: 2px solid var(--secondary-color); color: var(--secondary-color); border-radius: 50%; width: 36px; height: 36px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-right: 8px; cursor: pointer; font-size: 0.8em; }
+    .chat-chip:hover {
+      background: var(--primary-color);
+      color: #000;
+    }
 
-    .album-card { background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
-    .album-header { padding: 12px; background: rgba(0,0,0,0.3); display: flex; align-items: center; gap: 12px; cursor: pointer; }
-    .album-cover { width: 50px; height: 50px; border-radius: 5px; object-fit: cover; background: #222; }
-    .album-title { font-size: 1.05em; color: var(--primary-color); font-weight: bold; }
-    .album-count { font-size: 0.8em; color: #888; }
-    .album-tracks { display: none; padding: 5px; border-top: 1px solid #444; }
-    .album-card.open .album-tracks { display: block; }
+    .chatbot-input-bar {
+      padding: 10px;
+      background: #181820;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      gap: 8px;
+    }
 
-    .contact-form { display: flex; flex-direction: column; gap: 12px; }
-    .contact-form input, .contact-form textarea { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #555; background-color: #2a2a2a; color: #fff; }
+    .chatbot-input-bar input {
+      flex-grow: 1;
+      background: #0a0a0f;
+      border: 1px solid #333;
+      border-radius: 20px;
+      padding: 8px 14px;
+      color: #fff;
+      font-size: 0.9em;
+      outline: none;
+    }
 
-    #audio-start-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.92); display: flex; align-items: center; justify-content: center; z-index: 100000; backdrop-filter: blur(10px); }
-    #audio-start-content { background: rgba(6, 147, 227, 0.1); border: 2px solid var(--primary-color); padding: 30px; border-radius: 20px; text-align: center; max-width: 450px; margin: 20px; }
-    #start-audio-btn { background: var(--primary-color); color: white; border: none; padding: 12px 25px; border-radius: 30px; font-size: 1.1em; cursor: pointer; font-weight: bold; }
+    .chatbot-input-bar button {
+      background: var(--primary-color);
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      color: #000;
+      cursor: pointer;
+      font-weight: bold;
+    }
 
-    footer { margin-top: 60px; padding: 30px 20px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.9); z-index: 10; text-align: left; }
+    /* MODALE CATALOGO E PLAYER DETTAGLIO */
+    .modal-overlay { 
+      position: fixed; 
+      top: 0; left: 0; 
+      width: 100%; height: 100%; 
+      background: rgba(0,0,0,0.88); 
+      backdrop-filter: blur(10px); 
+      display: none; 
+      align-items: center; 
+      justify-content: center; 
+      z-index: 100000; 
+      padding: 20px; 
+    }
+
+    .modal-content { 
+      background: #14141a; 
+      padding: 30px; 
+      border-radius: 24px; 
+      width: 100%; 
+      max-width: 680px; 
+      position: relative; 
+      max-height: 85vh; 
+      overflow-y: auto; 
+      text-align: left; 
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .modal-close { 
+      position: absolute; 
+      top: 18px; 
+      right: 22px; 
+      font-size: 1.8em; 
+      color: #aaa; 
+      cursor: pointer; 
+    }
+
+    .song-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+    }
+
+    .song-item:hover {
+      background: rgba(255,255,255,0.04);
+    }
+
+    .song-item.playing {
+      background: rgba(0, 225, 255, 0.15);
+      border-left: 3px solid var(--primary-color);
+    }
+
+    .play-btn-circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid var(--primary-color);
+      color: var(--primary-color);
+      background: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    footer {
+      margin-top: 60px;
+      padding: 40px 20px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      background: rgba(5,5,8,0.9);
+      text-align: left;
+      font-size: 0.85em;
+      color: #71717a;
+    }
+
+    @media (max-width: 768px) {
+      .hero-section { padding: 30px 20px; }
+      .hero-title-group h1 { font-size: 2em; }
+      #chatbot-window-wrapper { width: 90%; right: 5%; bottom: 15px; }
+    }
   </style>
 </head>
 <body>
 
-<!-- OVERLAY BENEVENUTO AUDIO -->
-<div id="audio-start-overlay">
-    <div id="audio-start-content">
-        <h2 style="color: var(--primary-color); margin-bottom: 12px;"><i class="fas fa-music"></i> Benvenuto!</h2>
-        <p style="margin-bottom: 20px; font-size: 1em; line-height: 1.5;">Attiva l'audio per un'esperienza completa nel mondo musicale di Fausto Fusetti.</p>
-        <button id="start-audio-btn">Entra e Ascolta</button>
-    </div>
-</div>
-
-<video autoplay muted loop playsinline preload="auto" id="background-video" poster="immagine_sfondo.png">
+<video autoplay muted loop playsinline id="background-video" poster="immagine_sfondo.png">
   <source src="video_sfondo_compressed.mp4" type="video/mp4" />
 </video>
-<audio loop preload="auto" id="background-audio">
-  <source src="7a-Controtempo-compresso.mp3" type="audio/mpeg" />
-</audio>
 
-<!-- CONTENITORE PRINCIPALE -->
-<div class="container-wrapper">
-    <div class="container">
-        <div id="audio-cta"><span class="cta-text">Musica</span><div id="mute-btn-icon"><i class="fas fa-volume-mute"></i></div></div>
-        
-        <img src="logo6.jpg" alt="Logo FF Musica" class="profile-logo">
-        <br><br><br>
-        <h1>Fausto Fusetti</h1>
-        
-        <p class="bio">
-          In arte <strong>Fausto Miriani</strong>. Polistrumentista, compositore e paroliere dal 1988.<br>
-          Storiche collaborazioni con <strong>Fred Bongusto, Peppino di Capri e Franco Califano</strong>.<br>
-          <a href="https://www.health.harvard.edu/blog/why-is-music-good-for-the-brain-2020100721055" target="_blank" rel="noopener" style="color: var(--primary-color); text-decoration: underline;">Studi Harvard Health</a> dimostrano come una canzone personalizzata attivi i neurotrasmettitori della memoria emotiva.
-        </p>
+<div class="main-wrapper">
 
-        <!-- WIDGET DISCO IN EVIDENZA (ASCOLTO AUDIO IMMEDIATO) -->
-        <div class="featured-disco-box">
-            <div class="featured-disco-header">
-                <img src="logo6.jpg" id="featured-cover" class="featured-disco-img" alt="Disco Album">
-                <div class="featured-disco-info">
-                    <span class="featured-badge">Ultimo Album / Disco</span>
-                    <div class="featured-title" id="featured-title-text">Caricamento Disco...</div>
-                    <div class="featured-subtitle" id="featured-sub-text">Ascolta subito i brani in anteprima</div>
-                </div>
+    <!-- HERO SECTION PRINCIPALE -->
+    <header class="hero-section">
+        <div class="hero-header">
+            <img src="logo6.jpg" alt="Fausto Fusetti Logo" class="profile-logo">
+            <div class="hero-title-group">
+                <h1>Fausto Fusetti</h1>
+                <div class="hero-subtitle">In arte Fausto Miriani • Dal 1988 la musica è la mia vita</div>
             </div>
-            <button class="featured-btn-play" onclick="openCatalogDirectly()">
-                <i class="fas fa-compact-disc"></i> APRI DISCO & ASCOLTA CATALOGO COMPLETO
-            </button>
         </div>
 
-        <!-- MENU CLESSIDRA RIPROGETTATO -->
-        <div class="menu-clessidra">
-            
-            <button id="open-music-modal" class="menu-btn menu-btn-primary-x2" style="--btn-color: #9d4edd; width: 100%;">
-                <i class="fas fa-compact-disc"></i> Ascolta i Dischi & Catalogo
-            </button>
-            
-            <a href="eventi/index.html" class="menu-btn" style="--btn-color: #00e1ff; width: 92%;">
+        <!-- BIOGRAFIA NARRATIVA COMPLETA -->
+        <div class="bio-text">
+            <p>
+              Benvenuto! Sono <span class="highlight">Fausto Fusetti</span>, polistrumentista, cantante, compositore, paroliere e autore di libri. Dal 1988 creo, arrangio e produco musica con una passione incrollabile.
+            </p>
+            <p>
+              La mia carriera mi ha portato sui palchi più prestigiosi d'Italia, collaborando con autentiche icone della musica italiana come <span class="highlight">Fred Bongusto, Peppino di Capri e Franco Califano</span>.
+            </p>
+            <p>
+              Ogni brano che scrivo nasce per trasmettere un'emozione autentica. Gli studi di neurologia e medicina cognitiva confermano che ascoltare una composizione creata su misura attiva i neurotrasmettitori della memoria a lungo termine, trasformando un momento speciale in un ricordo indelebile.
+            </p>
+            <p style="font-size: 0.85em; color: var(--text-gray);">
+              Iscritto SIAE con posizioni n. 189515 e 593874.
+            </p>
+        </div>
+
+        <!-- AZIONI DI CONVERSIONE CHIARE (SENZA DOPPIONI) -->
+        <div class="hero-actions">
+            <a href="eventi/index.html" class="btn-action btn-primary">
                 <i class="fas fa-glass-cheers"></i> Canzoni per Eventi Speciali
             </a>
-            
-            <button id="open-services-modal" class="menu-btn" style="--btn-color: #ff00ff; width: 84%;">
-                <i class="fas fa-heart"></i> Canzoni Personalizzate su Misura
+            <button onclick="scrollToSection('contact-section')" class="btn-action btn-secondary">
+                <i class="fas fa-pen-nib"></i> Richiedi Canzone Personalizzata
             </button>
-            
-            <a href="https://ff-edizioni.rmstudio.app/jukebox/index.html" target="_blank" class="menu-btn" style="--btn-color: #ff3366; width: 76%;">
-                <i class="fas fa-play-circle"></i> Area Riservata Jukebox
-            </a>
-            
-            <a href="https://ff-edizioni.rmstudio.app/jingle/index.html" target="_blank" class="menu-btn" style="--btn-color: #ff8c00; width: 68%;">
-                <i class="fas fa-icons"></i> Jingle Shop
-            </a>
-            
-            <a href="https://ff-edizioni.rmstudio.app/sfx/index.html" class="menu-btn" style="--btn-color: #ffff00; width: 68%;">
-                <i class="fas fa-wave-square"></i> Libreria SFX
-            </a>
-            
-            <button id="open-video-modal" class="menu-btn" style="--btn-color: #39ff14; width: 76%;">
-                <i class="fas fa-video"></i> Guarda i Video
-            </button>
-            
-            <a href="https://ff-edizioni.rmstudio.app/blog/index.html" class="menu-btn" style="--btn-color: #00ffaa; width: 84%;">
-                <i class="fas fa-newspaper"></i> Blog & News
-            </a>
-            
-            <button id="open-shop-modal" class="menu-btn" style="--btn-color: #00aaff; width: 92%;">
-                <i class="fas fa-shopping-cart"></i> Shop & Merchandising
-            </button>
-            
-            <button id="open-contact-modal" class="menu-btn" style="--btn-color: #ffffff; width: 100%; margin-top: 15px;">
-                <i class="fas fa-pencil-alt"></i> Contattami per un Progetto
-            </button>
+        </div>
+    </header>
 
+    <!-- SEZIONE DISCOGRAFIA & ALBUM IN HOMEPAGE -->
+    <section>
+        <div class="section-title">
+            <i class="fas fa-compact-disc"></i>
+            <span>Discografia & Album</span>
+        </div>
+        <p style="text-align: left; color: var(--text-gray); margin-bottom: 20px;">
+          Esplora gli album creati da Fausto. Clicca su un disco per ascoltare i brani in anteprima.
+        </p>
+
+        <div id="discography-grid" class="discography-grid">
+            <p style="color:#aaa;"><i class="fas fa-spinner fa-spin"></i> Caricamento album dal catalogo...</p>
+        </div>
+    </section>
+
+    <!-- ECOSISTEMA E SERVIZI (BENTO GRID) -->
+    <section>
+        <div class="section-title">
+            <i class="fas fa-th-large"></i>
+            <span>Ecosistema Musicale</span>
         </div>
 
-        <div class="social-icons">
-            <a href="https://www.instagram.com/faustofusetti/" target="_blank"><i class="fa-brands fa-instagram"></i></a>
-            <a href="https://www.facebook.com/fausto.fusetti.9" target="_blank"><i class="fa-brands fa-facebook"></i></a>
-            <a href="https://www.youtube.com/@faustofusetti5859" target="_blank"><i class="fa-brands fa-youtube"></i></a>
-        </div>
-    </div>
-</div>
+        <div class="bento-grid">
+            <a href="https://ff-edizioni.rmstudio.app/jukebox/index.html" target="_blank" class="bento-card" style="--btn-color: #ff3366;">
+                <div>
+                    <div class="bento-icon"><i class="fas fa-play-circle"></i></div>
+                    <div class="bento-title">Area Riservata Jukebox</div>
+                    <div class="bento-desc">Ascolto dedicato per clienti, strutture ed eventi.</div>
+                </div>
+            </a>
 
-<!-- MODALE CATALOGO MUSICALE -->
-<div id="music-modal" class="modal-overlay">
-    <div class="modal-content music-catalog">
-        <span class="modal-close">&times;</span>
-        <h2 style="margin-bottom: 10px;">Discografia & Catalogo</h2>
-        <div class="info-box"><i class="fas fa-headphones"></i> Seleziona un album o premi Play per ascoltare i brani.</div>
+            <a href="https://ff-edizioni.rmstudio.app/jingle/index.html" target="_blank" class="bento-card" style="--btn-color: #ff8c00;">
+                <div>
+                    <div class="bento-icon"><i class="fas fa-icons"></i></div>
+                    <div class="bento-title">Jingle Shop</div>
+                    <div class="bento-desc">Sigle e sound branding per aziende e podcast.</div>
+                </div>
+            </a>
+
+            <a href="https://ff-edizioni.rmstudio.app/sfx/index.html" class="bento-card" style="--btn-color: #ffff00;">
+                <div>
+                    <div class="bento-icon"><i class="fas fa-wave-square"></i></div>
+                    <div class="bento-title">Libreria SFX</div>
+                    <div class="bento-desc">Effetti sonori e campioni audio professionali.</div>
+                </div>
+            </a>
+
+            <a href="https://ff-edizioni.rmstudio.app/blog/index.html" class="bento-card" style="--btn-color: #00ffaa;">
+                <div>
+                    <div class="bento-icon"><i class="fas fa-newspaper"></i></div>
+                    <div class="bento-title">Blog & News</div>
+                    <div class="bento-desc">Articoli, retroscena e approfondimenti musicali.</div>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- SEZIONE CONTATTO DIRETTI (UNICA E CHIARA) -->
+    <section id="contact-section" style="background: var(--card-bg); padding: 40px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); text-align: left; margin-bottom: 50px;">
+        <h2 style="font-size: 1.8em; margin-bottom: 10px; color: #fff;">Parliamo del tuo Progetto</h2>
+        <p style="color: var(--text-gray); margin-bottom: 25px;">
+          Vuoi regalare una canzone inedita per un anniversario o un matrimonio? Hai bisogno di un arrangiamento speciale? Scrivimi direttamente.
+        </p>
         
-        <div class="view-switcher">
-            <button class="view-btn active" id="btn-album-view" onclick="switchView('album')"><i class="fas fa-compact-disc"></i> Per Album / Disco</button>
-            <button class="view-btn" id="btn-list-view" onclick="switchView('list')"><i class="fas fa-list"></i> Tutti i Brani</button>
-        </div>
+        <form action="https://api.web3forms.com/submit" method="POST" style="display: flex; flex-direction: column; gap: 15px; max-width: 600px;">
+            <input type="hidden" name="access_key" value="9013a8d5-0901-42a0-b9e6-4c45553f960d">
+            <input type="hidden" name="subject" value="Nuova richiesta da FF Edizioni">
+            
+            <input type="text" name="name" required placeholder="Il tuo Nome" style="padding: 14px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: #fff; outline: none;">
+            <input type="email" name="email" required placeholder="La tua Email" style="padding: 14px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: #fff; outline: none;">
+            <textarea name="message" required rows="4" placeholder="Descrivi la tua idea o evento..." style="padding: 14px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: #fff; outline: none; resize: none;"></textarea>
+            
+            <button type="submit" class="btn-action btn-primary" style="align-self: flex-start;">
+                <i class="fas fa-paper-plane"></i> Invia Messaggio
+            </button>
+        </form>
+    </section>
 
-        <div id="filter-container"></div>
-        <div id="song-list-container"></div>
-        <audio id="catalog-audio-player"></audio>
+</div>
+
+<!-- MODALE DETTAGLIO BRANI ALBUM -->
+<div id="album-modal" class="modal-overlay">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeAlbumModal()">&times;</span>
+        <h2 id="modal-album-title" style="color: var(--primary-color); margin-bottom: 5px;">Titolo Album</h2>
+        <p style="color: var(--text-gray); font-size: 0.9em; margin-bottom: 20px;">Tracce disponibili per l'ascolto:</p>
+        <div id="modal-track-list"></div>
     </div>
 </div>
 
-<!-- MODALI DI SUPPORTO -->
-<div id="shop-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close">&times;</span><h2>Shop / Supportami</h2><p style="margin: 15px 0;">Acquista la mia attrezzatura o il merchandising ufficiale.</p><a href="https://www.amazon.it/hz/wishlist/ls/282CA0XU81D3C" target="_blank" class="menu-btn" style="--btn-color:#00aaff;">La mia Attrezzatura</a><a href="https://ff-music-store.printify.me/" target="_blank" class="menu-btn" style="--btn-color:#ff00ff;">Merchandising Ufficiale</a></div></div>
+<audio id="global-audio-player"></audio>
 
-<div id="video-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close">&times;</span><h2>Video Selezionati</h2><p style="margin-bottom: 15px;">Guarda le produzioni ufficiali:</p><a href="https://www.youtube.com/watch?v=7s3-7DV38IA" target="_blank" class="menu-btn" style="--btn-color:#39ff14;">Produzioni Varie</a><a href="https://www.youtube.com/watch?v=Y8YqyCT7h5E" target="_blank" class="menu-btn" style="--btn-color:#00e1ff;">Ascolta "Noi"</a></div></div>
+<!-- CHATBOT AI ANIMATO E VIVO (APERTO DI DEFAULT) -->
+<div id="chatbot-window-wrapper">
+    <div class="chatbot-header" onclick="toggleChat()">
+        <img src="fausto_immagine.jpg" class="chatbot-avatar" onerror="this.src='logo6.jpg'">
+        <div class="chatbot-header-info">
+            <div class="chatbot-header-name">Fausto AI</div>
+            <div class="chatbot-status"><i class="fas fa-circle" style="font-size: 8px;"></i> Assistente Virtuale Attivo</div>
+        </div>
+        <span id="chat-toggle-icon" style="color: #aaa; font-size: 1.2em;">&minus;</span>
+    </div>
+    
+    <div id="chatbot-messages" class="chatbot-messages">
+        <div class="msg bot">
+          Ciao! 🎸 Sono l'assistente virtuale di Fausto.<br>Posso farti ascoltare le sue canzoni o guidarti nella creazione di un brano su misura.
+          <div>
+            <span class="chat-chip" onclick="sendQuickMsg('Ascolta una canzone d\'amore')">Canzone d'Amore ❤️</span>
+            <span class="chat-chip" onclick="sendQuickMsg('Brano per Matrimonio')">Matrimoni 💍</span>
+            <span class="chat-chip" onclick="sendQuickMsg('Chi è Fausto Fusetti?')">Chi è Fausto? 📖</span>
+          </div>
+        </div>
+    </div>
 
-<div id="services-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close">&times;</span><h2>Canzoni Personalizzate</h2><p style="margin: 15px 0;">Regala un'emozione unica con una canzone scritta su misura per un evento speciale.</p><button id="contact-for-custom-song" class="menu-btn" style="--btn-color:#ff00ff;">Richiedi Preventivo</button></div></div>
-
-<div id="contact-modal" class="modal-overlay"><div class="modal-content"><span class="modal-close">&times;</span><h2 style="margin-bottom: 15px;">Contattami</h2><form id="contact-form" class="contact-form" action="https://api.web3forms.com/submit" method="POST"><input type="hidden" name="access_key" value="9013a8d5-0901-42a0-b9e6-4c45553f960d"><input type="text" name="name" placeholder="Il tuo Nome" required><input type="email" name="email" placeholder="La tua Email" required><textarea name="message" rows="4" placeholder="Come posso aiutarti?" required></textarea><button type="submit" class="menu-btn" style="--btn-color:#0693e3;">Invia Messaggio</button></form></div></div>
-
-<!-- VIDEO OVERLAY -->
-<div id="single-video-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:20000; align-items:center; justify-content:center; flex-direction:column;">
-    <div id="single-video-container" style="width:90%; max-width:900px; aspect-ratio:16/9; position:relative; background:black;"></div>
-    <button id="close-single-video" style="margin-top:20px; background:none; border:1px solid white; color:white; padding:8px 20px; border-radius:30px; cursor:pointer;">Chiudi Video</button>
+    <div class="chatbot-input-bar">
+        <input type="text" id="chat-input" placeholder="Scrivi un messaggio..." onkeypress="if(event.key==='Enter') sendMsg()">
+        <button onclick="sendMsg()"><i class="fas fa-arrow-up"></i></button>
+    </div>
 </div>
 
 <!-- FOOTER -->
 <footer>
-    <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 30px;">
+    <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
         <div>
-            <h4 style="color: white; margin-bottom: 15px; font-size: 15px; text-transform: uppercase;">RM Studio</h4>
-            <p style="color: #94a3b8; font-size: 13px; line-height: 1.5;">Ingegneria dei Sistemi Autonomi e Produzioni Musicali.<br>Sviluppato da RM Studio.</p>
+            <strong style="color: #fff;">FF Edizioni • RM Studio</strong><br>
+            Ingegneria dei Sistemi Autonomi e Produzioni Musicali.
         </div>
         <div>
-            <h4 style="color: white; margin-bottom: 15px; font-size: 15px; text-transform: uppercase;">Info SIAE</h4>
-            <p style="color: #94a3b8; font-size: 13px; line-height: 1.5;">Posizioni SIAE n. 189515 e 593874<br>&copy; 2026 FF Edizioni. Tutti i diritti riservati.</p>
+            Iscrizione SIAE n. 189515 e 593874<br>
+            &copy; 2026 FF Edizioni. Tutti i diritti riservati.
         </div>
     </div>
 </footer>
 
-<div id="chatbot-container"></div>
-
-<!-- LOGICA JAVASCRIPT CORRETTA -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqGvRLpmvSmbGrLg4BcH6Ch86-TuwDKDJ282EbPUJ1jUPgmT_C9ocn_3BQbqk1FSKm/exec'; 
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqGvRLpmvSmbGrLg4BcH6Ch86-TuwDKDJ282EbPUJ1jUPgmT_C9ocn_3BQbqk1FSKm/exec';
     const CHATBOT_WEBHOOK = 'https://n8n.rmstudio.app/webhook/ffausto-ai-chat';
 
-    const appState = {
-        allSongs: [],
-        currentFilters: { category: 'all', argomento: 'all' },
-        viewMode: 'album',
-        currentPlayingItem: null,
-        isBgMusicMuted: true
+    const globalPlayer = document.getElementById('global-audio-player');
+    let allSongsData = [];
+    let albumsMap = {};
+
+    window.scrollToSection = function(id) {
+        document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
     };
 
-    const mainPlayer = document.getElementById('catalog-audio-player');
-    const songListContainer = document.getElementById('song-list-container');
-    const filterContainer = document.getElementById('filter-container');
-    const bgAudio = document.getElementById('background-audio');
-
-    function init() {
-        setupModals();
-        setupAudio();
-        setupVideoOverlay();
-        loadMusicFromApi(); 
-        setupChatbot();
-    }
-
-    function setupModals() {
-        const openModal = (id) => {
-            if(mainPlayer) mainPlayer.pause();
-            document.getElementById(id).style.display = 'flex';
-        };
-        const closeModal = (id) => {
-            document.getElementById(id).style.display = 'none';
-            if(!appState.isBgMusicMuted && bgAudio && bgAudio.paused) bgAudio.play().catch(()=>{});
-        };
-
-        document.getElementById('open-music-modal').onclick = () => openModal('music-modal');
-        document.getElementById('open-video-modal').onclick = () => openModal('video-modal');
-        document.getElementById('open-services-modal').onclick = () => openModal('services-modal');
-        document.getElementById('open-contact-modal').onclick = () => openModal('contact-modal');
-        document.getElementById('open-shop-modal').onclick = () => openModal('shop-modal');
-        document.getElementById('contact-for-custom-song').onclick = () => { closeModal('services-modal'); openModal('contact-modal'); };
-        
-        document.querySelectorAll('.modal-close').forEach(btn => 
-            btn.onclick = (e) => closeModal(e.target.closest('.modal-overlay').id)
-        );
-    }
-
-    window.openCatalogDirectly = function() {
-        document.getElementById('music-modal').style.display = 'flex';
-    };
-
-    function setupAudio() {
-        const overlay = document.getElementById('audio-start-overlay');
-        const btn = document.getElementById('start-audio-btn');
-        const cta = document.getElementById('audio-cta');
-
-        btn.onclick = () => {
-            overlay.style.display = 'none';
-            appState.isBgMusicMuted = false;
-            bgAudio.volume = 0.4;
-            bgAudio.play().catch(e => console.log("Autoplay bloccato", e));
-            updateMuteIcon();
-        };
-
-        cta.onclick = () => {
-            appState.isBgMusicMuted = !appState.isBgMusicMuted;
-            if(appState.isBgMusicMuted) { bgAudio.pause(); if(mainPlayer) mainPlayer.pause(); }
-            else { bgAudio.play(); }
-            updateMuteIcon();
-        };
-    }
-
-    function updateMuteIcon() {
-        const icon = document.querySelector('#mute-btn-icon i');
-        const text = document.querySelector('.cta-text');
-        if(appState.isBgMusicMuted) {
-            icon.className = 'fas fa-volume-mute';
-            text.textContent = 'Musica';
-        } else {
-            icon.className = 'fas fa-volume-up';
-            text.textContent = 'Pausa';
-        }
-    }
-
-    async function loadMusicFromApi() {
-        songListContainer.innerHTML = '<p style="color:#aaa; text-align:center;"><i class="fas fa-spinner fa-spin"></i> Caricamento Dischi in corso...</p>';
+    // CARICAMENTO ED ELABORAZIONE DISCOGRAFIA DA GOOGLE SHEETS
+    async function loadDiscography() {
+        const grid = document.getElementById('discography-grid');
         
         try {
             const res = await fetch(`${GOOGLE_SCRIPT_URL}?source=catalogo&t=${Date.now()}`);
             const data = await res.json();
-            
-            if(Array.isArray(data) && data.length > 0) {
-                appState.allSongs = data;
-                updateFeaturedWidget(data);
-                renderCatalog();
+
+            if (Array.isArray(data) && data.length > 0) {
+                allSongsData = data;
+                groupSongsByAlbum(data);
+                renderDiscographyGrid();
             } else {
-                songListContainer.innerHTML = `<p style='color:#aaa'>Nessun disco o brano trovato.</p>`;
+                grid.innerHTML = '<p style="color:#aaa;">Nessun album trovato nel catalogo.</p>';
             }
-        } catch(e) {
+        } catch (e) {
             console.error(e);
-            songListContainer.innerHTML = `<p style='color:#ff5555'>Errore nel caricamento dei dati musicali.</p>`;
+            grid.innerHTML = '<p style="color:#ff5555;">Errore durante il caricamento della discografia.</p>';
         }
     }
 
-    function updateFeaturedWidget(songs) {
-        const firstSong = songs[0];
-        if(!firstSong) return;
-
-        const albumTitle = firstSong.Titolo_CD || "Disco In Evidenza";
-        const trackTitle = firstSong.Titolo || "Brano del Mese";
-        let cover = firstSong.Link_Thumbnail || "logo6.jpg";
-
-        if (cover.includes('suno.ai') && cover.includes('?')) {
-            cover = cover.split('?')[0]; 
-        }
-
-        document.getElementById('featured-title-text').innerText = albumTitle;
-        document.getElementById('featured-sub-text').innerText = `Brano principale: "${trackTitle}"`;
-        const img = document.getElementById('featured-cover');
-        img.src = cover;
-        img.onerror = () => { img.src = 'logo6.jpg'; };
-    }
-
-    window.switchView = function(mode) {
-        appState.viewMode = mode;
-        document.getElementById('btn-list-view').classList.toggle('active', mode === 'list');
-        document.getElementById('btn-album-view').classList.toggle('active', mode === 'album');
-        renderCatalog(); 
-    };
-
-    function renderCatalog() {
-        createFilterButtons();
-
-        const filtered = appState.allSongs.filter(s => {
-            const get = (k) => { 
-                const key = Object.keys(s).find(x => x.toLowerCase() === k.toLowerCase());
-                return key ? s[key] : "";
-            };
-            const cat = get('Categoria');
-            const arg = get('Argomento');
-            
-            const matchCat = appState.currentFilters.category === 'all' || (cat && cat.includes(appState.currentFilters.category));
-            const matchArg = appState.currentFilters.argomento === 'all' || (arg && arg.includes(appState.currentFilters.argomento));
-            return matchCat && matchArg;
-        });
-
-        songListContainer.innerHTML = '';
-        if(filtered.length === 0) {
-            songListContainer.innerHTML = '<p style="color:#aaa;">Nessun brano corrisponde ai filtri.</p>';
-            return;
-        }
-
-        if(appState.viewMode === 'list') {
-            filtered.forEach(song => songListContainer.appendChild(createSongRow(song)));
-        } else {
-            const albums = {};
-            filtered.forEach(song => {
-                const get = (k) => { const key = Object.keys(song).find(x => x.toLowerCase() === k.toLowerCase()); return key ? song[key] : ""; };
-                let alb = get('Titolo_CD') || "Singoli & Inediti";
-                if(!albums[alb]) albums[alb] = [];
-                albums[alb].push(song);
-            });
-
-            for(const [name, songs] of Object.entries(albums)) {
-                const getFirst = (k) => { const key = Object.keys(songs[0]).find(x => x.toLowerCase() === k.toLowerCase()); return key ? songs[0][key] : ""; };
-                let cover = getFirst('Link_Thumbnail') || 'logo6.jpg';
-
-                if (cover.includes('suno.ai') && cover.includes('?')) cover = cover.split('?')[0];
-
-                const card = document.createElement('div');
-                card.className = 'album-card';
-                card.innerHTML = `
-                    <div class="album-header" onclick="this.parentElement.classList.toggle('open')">
-                        <img src="${cover}" class="album-cover" onerror="this.onerror=null; this.src='logo6.jpg';">
-                        <div style="flex-grow:1;">
-                            <div class="album-title">${name}</div>
-                            <span class="album-count">${songs.length} tracce disponibili</span>
-                        </div>
-                        <i class="fas fa-chevron-down" style="color:#888;"></i>
-                    </div>
-                    <div class="album-tracks"></div>
-                `;
-                
-                const trackContainer = card.querySelector('.album-tracks');
-                songs.forEach(s => trackContainer.appendChild(createSongRow(s)));
-                songListContainer.appendChild(card);
+    function groupSongsByAlbum(songs) {
+        albumsMap = {};
+        songs.forEach(song => {
+            const albumName = song.Titolo_CD || "Inediti & Singoli";
+            if (!albumsMap[albumName]) {
+                albumsMap[albumName] = [];
             }
-        }
+            albumsMap[albumName].push(song);
+        });
     }
 
-    function createSongRow(song) {
-        const get = (k) => { const key = Object.keys(song).find(x => x.toLowerCase() === k.toLowerCase()); return key ? song[key] : ""; };
-        
-        const div = document.createElement('div');
-        div.className = 'song-item';
-        
-        let vidBtn = '';
-        const vidLink = get('Video_Link');
-        if(vidLink) {
-            vidBtn = `<div class="video-btn" onclick="openVideo('${vidLink}', event)"><i class="fas fa-video"></i></div>`;
-        }
+    function renderDiscographyGrid() {
+        const grid = document.getElementById('discography-grid');
+        grid.innerHTML = '';
 
-        div.innerHTML = `
-            <div class="song-info">
-                <span class="song-title">${get('Titolo') || 'Senza Titolo'}</span>
-                <div class="song-meta">
-                    ${get('Categoria') ? `<span><i class="fas fa-music"></i> ${get('Categoria')}</span>` : ''}
-                    ${get('Durata') ? `<span><i class="far fa-clock"></i> ${get('Durata')}</span>` : ''}
+        for (const [albumTitle, songs] of Object.entries(albumsMap)) {
+            let cover = songs[0].Link_Thumbnail || 'logo6.jpg';
+            if (cover.includes('suno.ai') && cover.includes('?')) {
+                cover = cover.split('?')[0];
+            }
+
+            const card = document.createElement('div');
+            card.className = 'album-card';
+            card.innerHTML = `
+                <div>
+                    <img src="${cover}" class="album-cover-img" onerror="this.onerror=null; this.src='logo6.jpg';">
+                    <div class="album-card-title">${albumTitle}</div>
+                    <div class="album-card-count">${songs.length} brani disponibili</div>
                 </div>
-            </div>
-            ${vidBtn}
-            <div class="play-btn" onclick="playSong('${get('url')}', '${get('Titolo')}', this)"><i class="fas fa-play"></i></div>
-        `;
-        return div;
+                <button class="album-play-btn" onclick="openAlbumModal('${albumTitle.replace(/'/g, "\\'")}')">
+                    <i class="fas fa-list"></i> Ascolta Album
+                </button>
+            `;
+            grid.appendChild(card);
+        }
     }
 
-    function createFilterButtons() {
-        const extract = (keyName) => {
-            const raw = appState.allSongs.map(s => {
-                const key = Object.keys(s).find(k => k.toLowerCase() === keyName.toLowerCase());
-                return key ? s[key] : "";
-            }).filter(Boolean);
-            return [...new Set(raw.flatMap(t => t.split(/[;,]+/).map(x => x.trim()).filter(x => x)))].sort();
-        };
+    window.openAlbumModal = function(albumTitle) {
+        const modal = document.getElementById('album-modal');
+        const titleEl = document.getElementById('modal-album-title');
+        const listEl = document.getElementById('modal-track-list');
 
-        const cats = extract('Categoria');
-        const args = extract('Argomento');
+        titleEl.innerText = albumTitle;
+        listEl.innerHTML = '';
 
-        let html = renderFilterGroup('Genere', 'category', cats);
-        html += renderFilterGroup('Atmosfera / Mood', 'argomento', args);
-        filterContainer.innerHTML = html;
-    }
-
-    function renderFilterGroup(label, type, values) {
-        const currentVal = appState.currentFilters[type];
-        let h = `<div class="filter-group"><div class="filter-label">${label}</div><div class="filter-buttons">`;
-        const allActive = currentVal === 'all' ? 'active' : '';
-        h += `<button class="filter-btn ${allActive}" onclick="applyFilter('${type}', 'all')">Tutti</button>`;
-        values.forEach(v => {
-            const isActive = currentVal === v ? 'active' : '';
-            h += `<button class="filter-btn ${isActive}" onclick="applyFilter('${type}', '${v}')">${v}</button>`;
+        const songs = albumsMap[albumTitle] || [];
+        songs.forEach(song => {
+            const item = document.createElement('div');
+            item.className = 'song-item';
+            item.innerHTML = `
+                <div>
+                    <div style="font-weight:600; color:#fff;">${song.Titolo || 'Senza Titolo'}</div>
+                    <div style="font-size:0.75em; color:#aaa;">${song.Durata || ''}</div>
+                </div>
+                <button class="play-btn-circle" onclick="playTrack('${song.url}', '${song.Titolo.replace(/'/g, "\\'")}', this)">
+                    <i class="fas fa-play"></i>
+                </button>
+            `;
+            listEl.appendChild(item);
         });
-        h += `</div></div>`;
-        return h;
-    }
 
-    window.applyFilter = function(type, val) {
-        appState.currentFilters[type] = val;
-        renderCatalog(); 
+        modal.style.display = 'flex';
     };
 
-    window.playSong = function(url, title, btn) {
-        const row = btn ? btn.closest('.song-item') : null;
+    window.closeAlbumModal = function() {
+        document.getElementById('album-modal').style.display = 'none';
+    };
 
-        if(row && appState.currentPlayingItem === row) {
-            if(mainPlayer.paused) {
-                mainPlayer.play();
-                btn.innerHTML = '<i class="fas fa-pause"></i>';
-                row.classList.add('playing');
-            } else {
-                mainPlayer.pause();
-                btn.innerHTML = '<i class="fas fa-play"></i>';
-                row.classList.remove('playing');
-            }
+    window.playTrack = function(url, title, btn) {
+        if (globalPlayer.src === url && !globalPlayer.paused) {
+            globalPlayer.pause();
+            btn.innerHTML = '<i class="fas fa-play"></i>';
             return;
         }
 
-        if(appState.currentPlayingItem) {
-            appState.currentPlayingItem.classList.remove('playing');
-            const oldBtn = appState.currentPlayingItem.querySelector('.play-btn');
-            if(oldBtn) oldBtn.innerHTML = '<i class="fas fa-play"></i>';
-        }
-        
-        if(row) {
-            row.classList.add('playing');
-            appState.currentPlayingItem = row;
-            btn.innerHTML = '<i class="fas fa-pause"></i>'; 
-        }
+        document.querySelectorAll('.play-btn-circle').forEach(b => b.innerHTML = '<i class="fas fa-play"></i>');
+        btn.innerHTML = '<i class="fas fa-pause"></i>';
 
-        mainPlayer.src = url;
-        mainPlayer.play().catch(e => console.log("Errore riproduzione:", e));
-
-        fetch(GOOGLE_SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors', 
-            body: JSON.stringify({ action: 'increment', title: title })
-        }).catch(e => console.log("Tracking error", e));
+        globalPlayer.src = url;
+        globalPlayer.play().catch(e => console.log("Riproduzione bloccata", e));
     };
 
-    mainPlayer.addEventListener('ended', () => {
-        if(appState.currentPlayingItem) {
-            appState.currentPlayingItem.classList.remove('playing');
-            appState.currentPlayingItem.querySelector('.play-btn').innerHTML = '<i class="fas fa-play"></i>';
-            appState.currentPlayingItem = null;
-        }
-    });
-
-    window.openVideo = function(url, e) {
-        e.stopPropagation();
-        if(mainPlayer) mainPlayer.pause();
-        const overlay = document.getElementById('single-video-overlay');
-        const container = document.getElementById('single-video-container');
-        container.innerHTML = `<video controls autoplay style="width:100%; height:100%"><source src="${url}" type="video/mp4"></video>`;
-        overlay.style.display = 'flex';
-    };
-
-    function setupVideoOverlay() {
-        document.getElementById('close-single-video').onclick = () => {
-            document.getElementById('single-video-overlay').style.display = 'none';
-            document.getElementById('single-video-container').innerHTML = '';
-        };
-    }
-
-    /* CHATBOT INTEGRATION */
+    // LOGICA CHATBOT AI
     window.chatSessionId = localStorage.getItem('ff_chat_session_id') || ('sess_' + Date.now());
     localStorage.setItem('ff_chat_session_id', window.chatSessionId);
 
-    function setupChatbot() {
-        const c = document.getElementById('chatbot-container');
-        c.innerHTML = `
-            <style>
-                #chatbot-bubble { position:fixed; bottom:20px; right:20px; width:60px; height:60px; border-radius:50%; box-shadow:0 4px 12px rgba(0,0,0,0.4); cursor:pointer; background-image:url(fausto_immagine.jpg); background-size:cover; border:2px solid var(--primary-color); z-index:9999; }
-                #chatbot-window-wrapper { position:fixed; bottom:90px; right:20px; width:330px; height:460px; background:#fff; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,0.4); z-index:9999; display:none; flex-direction:column; overflow:hidden; }
-                .chatbot-header { background:var(--primary-color); color:white; padding:12px; font-weight:bold; display:flex; justify-between:space-between; align-items:center; }
-                .chatbot-messages { flex-grow:1; padding:12px; overflow-y:auto; background:#f4f4f4; color:#333; font-size:0.9em; display:flex; flex-direction:column; gap:8px; }
-                .chatbot-input { border-top:1px solid #ddd; padding:8px; display:flex; background:#fff; }
-                .chatbot-input input { flex-grow:1; border:none; padding:8px; outline:none; }
-                .chatbot-input button { background:none; border:none; color:var(--primary-color); cursor:pointer; font-size:1.1em; }
-                .msg { padding:8px 12px; border-radius:12px; max-width:85%; word-wrap:break-word; }
-                .msg.bot { background:#e2f0fd; align-self:flex-start; color:#222; }
-                .msg.user { background:var(--primary-color); color:white; align-self:flex-end; }
-            </style>
-            <div id="chatbot-bubble" onclick="toggleChat()"></div>
-            <div id="chatbot-window-wrapper">
-                <div class="chatbot-header">
-                    <span>Fausto AI Assistant</span>
-                    <span onclick="toggleChat()" style="cursor:pointer;">&times;</span>
-                </div>
-                <div id="chatbot-messages" class="chatbot-messages"></div>
-                <div class="chatbot-input">
-                    <input type="text" id="chat-input" placeholder="Scrivi un messaggio..." onkeypress="if(event.key==='Enter') sendMsg()">
-                    <button onclick="sendMsg()"><i class="fas fa-paper-plane"></i></button>
-                </div>
-            </div>
-        `;
-    }
-
     window.toggleChat = function() {
         const w = document.getElementById('chatbot-window-wrapper');
-        w.style.display = (w.style.display === 'flex') ? 'none' : 'flex';
-        if(w.style.display === 'flex' && document.getElementById('chatbot-messages').children.length === 0) {
-            addMsg("Ciao! 🎸 Sono l'assistente virtuale di Fausto Fusetti. Come posso aiutarti oggi?", 'bot');
-        }
+        const icon = document.getElementById('chat-toggle-icon');
+        w.classList.toggle('collapsed');
+        icon.innerHTML = w.classList.contains('collapsed') ? '&#43;' : '&minus;';
     };
 
-    window.addMsg = function(text, sender) {
-        const div = document.createElement('div');
-        div.className = `msg ${sender}`;
-        div.innerHTML = text;
-        const c = document.getElementById('chatbot-messages');
-        c.appendChild(div);
-        c.scrollTop = c.scrollHeight;
+    window.sendQuickMsg = function(text) {
+        document.getElementById('chat-input').value = text;
+        sendMsg();
     };
 
     window.sendMsg = async function() {
         const input = document.getElementById('chat-input');
         const text = input.value.trim();
         if(!text) return;
+
         input.value = '';
         addMsg(text, 'user');
 
@@ -759,13 +902,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify({ user_message: text, sessionId: window.chatSessionId })
             });
             const data = await res.json();
-            addMsg(data.response || "Ho ricevuto il tuo messaggio!", 'bot');
+            addMsg(data.response || "Risposta ricevuta!", 'bot');
         } catch(e) {
-            addMsg("Servizio temporaneamente non disponibile. Riprova più tardi.", 'bot');
+            addMsg("Connessione temporaneamente non disponibile.", 'bot');
         }
     };
 
-    init();
+    function addMsg(text, sender) {
+        const div = document.createElement('div');
+        div.className = `msg ${sender}`;
+        div.innerHTML = text;
+        const c = document.getElementById('chatbot-messages');
+        c.appendChild(div);
+        c.scrollTop = c.scrollHeight;
+    }
+
+    loadDiscography();
 });
 </script>
 </body>
