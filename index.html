@@ -312,7 +312,7 @@
     </div>
 </div>
 
-<!-- BARRA PLAYER CONTINUO ALBUM -->
+<!-- BARRA PLAYER COMPATTA CON AVANTI / INDIETRO -->
 <div id="persistent-album-bar" class="album-player-bar" style="display:none;">
     <div class="player-info">
         <i class="fas fa-compact-disc fa-spin"></i>
@@ -322,10 +322,10 @@
         </div>
     </div>
     <div class="player-controls">
-        <button onclick="prevAlbumTrack()"><i class="fas fa-step-backward"></i></button>
-        <button id="album-play-pause-btn" onclick="toggleAlbumPlay()"><i class="fas fa-pause"></i></button>
-        <button onclick="nextAlbumTrack()"><i class="fas fa-step-forward"></i></button>
-        <button onclick="closeAlbumBar()">&times;</button>
+        <button onclick="prevAlbumTrack()" title="Traccia Precedente"><i class="fas fa-step-backward"></i></button>
+        <button id="album-play-pause-btn" onclick="toggleAlbumPlay()" title="Pausa/Play"><i class="fas fa-pause"></i></button>
+        <button onclick="nextAlbumTrack()" title="Traccia Successiva"><i class="fas fa-step-forward"></i></button>
+        <button onclick="closeAlbumBar()" title="Chiudi Player">&times;</button>
     </div>
 </div>
 
