@@ -9,13 +9,12 @@ document.addEventListener('DOMContentLoaded', function() {
     let allSongsData = [];
     let albumsMap = {};
 
-    // REGISTRO RIPRODUZIONE CONTINUA INTERO ALBUM
     let currentAlbumQueue = [];
     let currentAlbumIndex = 0;
     let currentAlbumName = "";
     let isAlbumPlaying = false;
 
-    // GESTIONE AUDIO DI SOTTOFONDO INIZIALE
+    // AUDIO DI SOTTOFONDO
     const audioOverlay = document.getElementById('audio-start-overlay');
     const startAudioBtn = document.getElementById('start-audio-btn');
     const audioToggleBtn = document.getElementById('audio-toggle-btn');
@@ -43,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
         audioToggleBtn.innerHTML = isBgMuted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
     }
 
-    // CARICAMENTO DISCOGRAFIA DA GOOGLE SHEETS
+    // DISCOGRAFIA GOOGLE SHEETS
     async function loadDiscography() {
         const grid = document.getElementById('discography-grid');
         
@@ -107,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // RIPRODUZIONE CONTINUA DELL'INTERO ALBUM (CD)
+    // RIPRODUZIONE CONTINUA CD
     window.startFullAlbumPlay = function(albumTitle) {
         currentAlbumQueue = albumsMap[albumTitle] || [];
         if (currentAlbumQueue.length === 0) return;
@@ -124,7 +123,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function playQueueSong() {
         if (currentAlbumIndex >= currentAlbumQueue.length) {
-            // Album Finito
             closeAlbumBar();
             return;
         }
@@ -173,7 +171,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('persistent-album-bar').style.display = 'none';
     };
 
-    // QUANDO UNA TRACCIA FINISCE, PASSA AUTOMATICAMENTE ALLA SUCCESSIVA!
     globalPlayer.addEventListener('ended', function() {
         if (isAlbumPlaying) {
             currentAlbumIndex++;
@@ -181,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // MODALE TRACCE SINGOLE
+    // MODALI
     window.openAlbumModal = function(albumTitle) {
         const modal = document.getElementById('album-modal');
         const titleEl = document.getElementById('modal-album-title');
@@ -219,6 +216,18 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('album-modal').style.display = 'none';
     };
 
+    window.openVideoModal = function() {
+        document.getElementById('video-modal').style.display = 'flex';
+    };
+
+    window.openShopModal = function() {
+        document.getElementById('shop-modal').style.display = 'flex';
+    };
+
+    window.closeModal = function(id) {
+        document.getElementById(id).style.display = 'none';
+    };
+
     window.playSingleTrack = function(url, btn) {
         isAlbumPlaying = false;
         document.getElementById('persistent-album-bar').style.display = 'none';
@@ -236,7 +245,7 @@ document.addEventListener('DOMContentLoaded', function() {
         globalPlayer.play().catch(e => console.log("Riproduzione bloccata", e));
     };
 
-    // LOGICA CHATBOT
+    // CHATBOT
     window.chatSessionId = localStorage.getItem('ff_chat_session_id') || ('sess_' + Date.now());
     localStorage.setItem('ff_chat_session_id', window.chatSessionId);
 
