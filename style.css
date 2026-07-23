@@ -92,6 +92,9 @@ body {
   transform: translate3d(0, 0, 0);
   will-change: transform;
   backface-visibility: hidden;
+  /* Isola il layer del video dal resto dello stack di compositing */
+  contain: strict;
+  isolation: isolate;
 }
 
 #video-overlay {
@@ -103,11 +106,14 @@ body {
   pointer-events: none;
 }
 
-/* HEADER E CARD SENZA BLUR PESANTE (PERFETTA FLUIDITÀ) */
+/* HEADER: SOLO SFONDO SOLIDO, NIENTE BACKDROP-FILTER
+   (era duplicato con blur(12px) piu' sotto: quella regola vinceva in cascata
+   e costringeva Chrome a ricompositare il video di sfondo ad ogni frame -> scatti) */
 .site-header {
   position: sticky; top: 0; width: 100%;
-  background: rgba(10, 10, 14, 0.95);
+  background: rgba(10, 10, 14, 0.97);
   border-bottom: 1px solid rgba(255,255,255,0.1); z-index: 9999; padding: 12px 0;
+  isolation: isolate;
 }
 
 .hero-section {
@@ -121,12 +127,6 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* SITE HEADER */
-.site-header {
-  position: sticky; top: 0; width: 100%;
-  background: rgba(10, 10, 14, 0.9); backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255,255,255,0.1); z-index: 9999; padding: 12px 0;
-}
 .header-container {
   max-width: 1100px; margin: 0 auto; padding: 0 20px;
   display: flex; align-items: center; justify-content: space-between; gap: 20px;
