@@ -14,73 +14,46 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentAlbumName = "";
     let isAlbumPlaying = false;
 
-    // FALLBACK PERFORMANCE: se il device droppa troppi frame, congela sul poster
-    // invece di continuare a mostrare un video scattoso (percezione "sito lento")
-    (function watchVideoPerformance() {
-        const video = document.getElementById('background-video');
-        if (!video || !video.getVideoPlaybackQuality) return;
-
-        let lastDropped = 0;
-        let lastTotal = 0;
-        let checks = 0;
-        const MAX_CHECKS = 6;          // ~12s di osservazione (check ogni 2s)
-        const DROP_RATIO_THRESHOLD = 0.15; // 15% di frame droppati sulla finestra -> fallback
-
-        const intervalId = setInterval(() => {
-            const quality = video.getVideoPlaybackQuality();
-            const droppedDelta = quality.droppedVideoFrames - lastDropped;
-            const totalDelta = quality.totalVideoFrames - lastTotal;
-            lastDropped = quality.droppedVideoFrames;
-            lastTotal = quality.totalVideoFrames;
-            checks++;
-
-            if (totalDelta > 0) {
-                const ratio = droppedDelta / totalDelta;
-                if (ratio > DROP_RATIO_THRESHOLD) {
-                    video.pause();
-                    video.style.display = 'none';
-                    const overlay = document.getElementById('video-overlay');
-                    if (overlay) overlay.style.background = 'rgba(10,10,14,0.94)';
-                    clearInterval(intervalId);
-                    return;
-                }
-            }
-
-            if (checks >= MAX_CHECKS) clearInterval(intervalId); // dispositivo ok, smetti di controllare
-        }, 2000);
-    })();
-
     // AUDIO DI SOTTOFONDO
     const audioOverlay = document.getElementById('audio-start-overlay');
     const startAudioBtn = document.getElementById('start-audio-btn');
     const audioToggleBtn = document.getElementById('audio-toggle-btn');
     let isBgMuted = true;
 
-    startAudioBtn.onclick = () => {
-        audioOverlay.style.display = 'none';
-        isBgMuted = false;
-        bgAudio.volume = 0.35;
-        bgAudio.play().catch(e => console.log("Autoplay bloccato", e));
-        updateAudioBtnIcon();
-    };
+    if (startAudioBtn) {
+        startAudioBtn.onclick = () => {
+            audioOverlay.style.display = 'none';
+            isBgMuted = false;
+            if (bgAudio) {
+                bgAudio.volume = 0.35;
+                bgAudio.play().catch(e => console.log("Autoplay bloccato", e));
+            }
+            updateAudioBtnIcon();
+        };
+    }
 
-    audioToggleBtn.onclick = () => {
-        isBgMuted = !isBgMuted;
-        if(isBgMuted) {
-            bgAudio.pause();
-        } else {
-            bgAudio.play().catch(()=>{});
-        }
-        updateAudioBtnIcon();
-    };
+    if (audioToggleBtn) {
+        audioToggleBtn.onclick = () => {
+            isBgMuted = !isBgMuted;
+            if (isBgMuted) {
+                if (bgAudio) bgAudio.pause();
+            } else {
+                if (bgAudio) bgAudio.play().catch(()=>{});
+            }
+            updateAudioBtnIcon();
+        };
+    }
 
     function updateAudioBtnIcon() {
-        audioToggleBtn.innerHTML = isBgMuted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
+        if (audioToggleBtn) {
+            audioToggleBtn.innerHTML = isBgMuted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
+        }
     }
 
     // DISCOGRAFIA GOOGLE SHEETS
     async function loadDiscography() {
         const grid = document.getElementById('discography-grid');
+        if (!grid) return;
         
         try {
             const res = await fetch(`${GOOGLE_SCRIPT_URL}?source=catalogo&t=${Date.now()}`);
@@ -106,6 +79,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!albumName || albumName === "undefined" || albumName === "null") {
                 albumName = "Inediti & Singoli";
             }
+
+            // REGOLE DI ESCLUSIONE: L'ALBUM "EVENTI" NON DEVE MAI APPARIRE IN HOME PAGE!
+            if (albumName.toLowerCase() === "eventi") {
+                return; // Salta questa canzone, non la inserisce nei CD della Home!
+            }
+
             if (!albumsMap[albumName]) {
                 albumsMap[albumName] = [];
             }
@@ -115,6 +94,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function renderDiscographyGrid() {
         const grid = document.getElementById('discography-grid');
+        if (!grid) return;
         grid.innerHTML = '';
 
         for (const [albumTitle, songs] of Object.entries(albumsMap)) {
@@ -207,12 +187,14 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('persistent-album-bar').style.display = 'none';
     };
 
-    globalPlayer.addEventListener('ended', function() {
-        if (isAlbumPlaying) {
-            currentAlbumIndex++;
-            playQueueSong();
-        }
-    });
+    if (globalPlayer) {
+        globalPlayer.addEventListener('ended', function() {
+            if (isAlbumPlaying) {
+                currentAlbumIndex++;
+                playQueueSong();
+            }
+        });
+    }
 
     // MODALI
     window.openAlbumModal = function(albumTitle) {
@@ -288,8 +270,10 @@ document.addEventListener('DOMContentLoaded', function() {
     window.toggleChat = function() {
         const w = document.getElementById('chatbot-window-wrapper');
         const icon = document.getElementById('chat-toggle-icon');
-        w.classList.toggle('collapsed');
-        icon.innerHTML = w.classList.contains('collapsed') ? '&#43;' : '&minus;';
+        if (w) {
+            w.classList.toggle('collapsed');
+            icon.innerHTML = w.classList.contains('collapsed') ? '&#43;' : '&minus;';
+        }
     };
 
     window.sendQuickMsg = function(text) {
@@ -323,8 +307,26 @@ document.addEventListener('DOMContentLoaded', function() {
         div.className = `msg ${sender}`;
         div.innerHTML = text;
         const c = document.getElementById('chatbot-messages');
-        c.appendChild(div);
-        c.scrollTop = c.scrollHeight;
+        if (c) {
+            c.appendChild(div);
+            c.scrollTop = c.scrollHeight;
+        }
+    }
+
+    // DISPOSITIVI DEBOLI - CONTROLLO FLUIDITÀ VIDEO
+    const bgVideo = document.getElementById('background-video');
+    if (bgVideo && typeof bgVideo.getVideoPlaybackQuality === 'function') {
+        let checkInterval = setInterval(() => {
+            const quality = bgVideo.getVideoPlaybackQuality();
+            if (quality.totalVideoFrames > 120) {
+                const dropRate = quality.droppedVideoFrames / quality.totalVideoFrames;
+                if (dropRate > 0.15) {
+                    bgVideo.pause();
+                    bgVideo.style.display = 'none';
+                    clearInterval(checkInterval);
+                }
+            }
+        }, 2000);
     }
 
     loadDiscography();
