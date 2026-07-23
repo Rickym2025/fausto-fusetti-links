@@ -78,14 +78,47 @@ body {
   box-shadow: 0 0 15px var(--primary-color);
 }
 
-/* VIDEO BACKGROUND & OVERLAY FLUIDO */
+/* ACCELERAZIONE GPU HARDWARE PER VIDEO CHROME (ZERO SCATTI) */
 #background-video { 
-  position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; 
-  z-index: -100; object-fit: cover; pointer-events: none; transform: translateZ(0);
+  position: fixed; 
+  right: 0; 
+  bottom: 0; 
+  min-width: 100%; 
+  min-height: 100%; 
+  z-index: -100; 
+  object-fit: cover; 
+  pointer-events: none;
+  /* Forza Chrome ad usare la scheda grafica dedicata senza ricalcoli */
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+  backface-visibility: hidden;
 }
+
 #video-overlay {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(8, 8, 12, 0.8); z-index: -99; pointer-events: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(10, 10, 14, 0.82); /* Sfondo scuro elegante senza filtri pesanti */
+  z-index: -99;
+  pointer-events: none;
+}
+
+/* HEADER E CARD SENZA BLUR PESANTE (PERFETTA FLUIDITÀ) */
+.site-header {
+  position: sticky; top: 0; width: 100%;
+  background: rgba(10, 10, 14, 0.95);
+  border-bottom: 1px solid rgba(255,255,255,0.1); z-index: 9999; padding: 12px 0;
+}
+
+.hero-section {
+  background: rgba(18, 18, 24, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px; padding: 40px; margin-bottom: 40px; text-align: left;
+}
+
+.album-card, .bento-card, .review-card {
+  background: rgba(18, 18, 24, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* SITE HEADER */
