@@ -174,8 +174,18 @@ body {
 
 /* STRISCIA ANIMATA MARQUEE TICKER PER RECENSIONI */
 .marquee-section { margin-bottom: 50px; overflow: hidden; }
-.marquee-container { width: 100%; overflow: hidden; padding: 10px 0; mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); }
-.marquee-track { display: flex; gap: 20px; width: max-content; animation: marquee-scroll 30s linear infinite; }
+.marquee-container { position: relative; width: 100%; overflow: hidden; padding: 10px 0; }
+.marquee-container::before,
+.marquee-container::after {
+  content: ""; position: absolute; top: 0; bottom: 0; width: 80px; z-index: 2; pointer-events: none;
+}
+.marquee-container::before { left: 0; background: linear-gradient(to right, var(--bg-dark), transparent); }
+.marquee-container::after { right: 0; background: linear-gradient(to left, var(--bg-dark), transparent); }
+.marquee-track {
+  display: flex; gap: 20px; width: max-content;
+  animation: marquee-scroll 30s linear infinite;
+  transform: translateZ(0); will-change: transform; contain: layout style;
+}
 .marquee-track:hover { animation-play-state: paused; }
 
 @keyframes marquee-scroll {
