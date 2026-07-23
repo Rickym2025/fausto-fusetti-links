@@ -14,6 +14,42 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentAlbumName = "";
     let isAlbumPlaying = false;
 
+    // FALLBACK PERFORMANCE: se il device droppa troppi frame, congela sul poster
+    // invece di continuare a mostrare un video scattoso (percezione "sito lento")
+    (function watchVideoPerformance() {
+        const video = document.getElementById('background-video');
+        if (!video || !video.getVideoPlaybackQuality) return;
+
+        let lastDropped = 0;
+        let lastTotal = 0;
+        let checks = 0;
+        const MAX_CHECKS = 6;          // ~12s di osservazione (check ogni 2s)
+        const DROP_RATIO_THRESHOLD = 0.15; // 15% di frame droppati sulla finestra -> fallback
+
+        const intervalId = setInterval(() => {
+            const quality = video.getVideoPlaybackQuality();
+            const droppedDelta = quality.droppedVideoFrames - lastDropped;
+            const totalDelta = quality.totalVideoFrames - lastTotal;
+            lastDropped = quality.droppedVideoFrames;
+            lastTotal = quality.totalVideoFrames;
+            checks++;
+
+            if (totalDelta > 0) {
+                const ratio = droppedDelta / totalDelta;
+                if (ratio > DROP_RATIO_THRESHOLD) {
+                    video.pause();
+                    video.style.display = 'none';
+                    const overlay = document.getElementById('video-overlay');
+                    if (overlay) overlay.style.background = 'rgba(10,10,14,0.94)';
+                    clearInterval(intervalId);
+                    return;
+                }
+            }
+
+            if (checks >= MAX_CHECKS) clearInterval(intervalId); // dispositivo ok, smetti di controllare
+        }, 2000);
+    })();
+
     // AUDIO DI SOTTOFONDO
     const audioOverlay = document.getElementById('audio-start-overlay');
     const startAudioBtn = document.getElementById('start-audio-btn');
