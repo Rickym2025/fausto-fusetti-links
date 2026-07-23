@@ -38,7 +38,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
   
-  <!-- FOGLIO DI STILE SEPARATO -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -59,11 +58,11 @@
 <div id="video-overlay"></div>
 <audio loop preload="auto" id="background-audio"><source src="7a-Controtempo-compresso.mp3" type="audio/mpeg" /></audio>
 
-<!-- HEADER CON LOGO + MENU + AREA RISERVATA TOP-RIGHT -->
+<!-- HEADER CON LOGO GLOW + MENU + AREA RISERVATA -->
 <header class="site-header">
     <div class="header-container">
         <a href="#" class="logo-group">
-            <img src="logo6.jpg" alt="Logo FF Musica" class="header-logo">
+            <img src="logo6.jpg" alt="Logo FF Musica" class="header-logo glow-logo">
             <span class="brand-name">FF Musica</span>
         </a>
 
@@ -75,13 +74,11 @@
         </nav>
 
         <div class="header-actions">
-            <!-- BOTTONE AUDIO SOTTOFONDO -->
             <button id="audio-toggle-btn" class="btn-audio-toggle" title="Attiva/Disattiva Musica">
                 <i class="fas fa-volume-mute"></i>
             </button>
 
-            <!-- AREA RISERVATA BEN VISIBILE -->
-            <a href="https://ff-edizioni.rmstudio.app/jukebox/index.html" target="_blank" class="btn-area-riservata">
+            <a href="https://ff-edizioni.rmstudio.app/jukebox/index.html" target="_blank" class="btn-area-riservata glow-btn-pink">
                 <i class="fas fa-key"></i> Area Riservata
             </a>
         </div>
@@ -90,10 +87,10 @@
 
 <div class="main-wrapper">
 
-    <!-- SLIDE INIZIALE / HERO (COSA FAI - A CHI TI RIVOLGI - CTA) -->
+    <!-- HERO SECTION PRINCIPALE -->
     <section class="hero-section">
         <div class="hero-header">
-            <img src="logo6.jpg" alt="Fausto Fusetti" class="profile-logo">
+            <img src="logo6.jpg" alt="Fausto Fusetti" class="profile-logo glow-logo">
             <div>
                 <h1>Fausto Fusetti</h1>
                 <div class="hero-subtitle">In arte Fausto Miriani • Dal 1988 la musica è la mia vita</div>
@@ -108,40 +105,67 @@
               Ho collaborato con icone della musica italiana come <strong>Fred Bongusto, Peppino di Capri e Franco Califano</strong>. Realizzo composizioni e canzoni inedite su misura per <strong>matrimoni, eventi privati, regalistica emozionale ed aziende</strong>.
             </p>
             <p class="harvard-cite">
-              <i class="fas fa-brain"></i> Come confermato dagli studi di neurologia della <em>Harvard Health Publishing</em>, ascoltare una composizione scritta su misura attiva i neurotrasfattori della memoria a lungo termine, trasformando un momento speciale in un ricordo indelebile.
+              <i class="fas fa-brain"></i> Come confermato dagli studi di neurologia della <em>Harvard Health Publishing</em>, ascoltare una composizione scritta su misura attiva i neurotrasmettitori della memoria a lungo termine, trasformando un momento speciale in un ricordo indelebile.
             </p>
         </div>
 
         <div class="hero-actions">
-            <a href="eventi/index.html" class="btn-action btn-primary">
+            <a href="eventi/index.html" class="btn-action btn-primary glow-btn-blue">
                 <i class="fas fa-glass-cheers"></i> Canzoni per Eventi Speciali
             </a>
-            <a href="#contatti" class="btn-action btn-secondary">
+            <a href="#contatti" class="btn-action btn-secondary glow-btn-purple">
                 <i class="fas fa-pen-nib"></i> Richiedi Canzone Personalizzata
             </a>
         </div>
     </section>
 
-    <!-- RECENSIONI / DIMOSTRAZIONE SOCIALE -->
-    <section class="reviews-section">
-        <div class="review-card">
-            <div class="stars">★★★★★</div>
-            <p>"Una canzone emozionante scritta per le nostre nozze. Ha fatto piangere tutti gli invitati. Fausto è un vero poeta!"</p>
-            <span class="author">— Marco & Elena (Sposi)</span>
-        </div>
-        <div class="review-card">
-            <div class="stars">★★★★★</div>
-            <p>"Professionalità d'altri tempi. Ha saputo trasformare i ricordi della nostra azienda in una sigla epica."</p>
-            <span class="author">— Roberto V. (Imprenditore)</span>
-        </div>
-        <div class="review-card">
-            <div class="stars">★★★★★</div>
-            <p>"Ascoltare l'album Controluce è stato un viaggio meraviglioso. Un arrangiamento ed una sensibilità unica."</p>
-            <span class="author">— Silvia M. (Appassionata di Musica)</span>
+    <!-- STRISCIA ANIMATA COMMENTI E RECENSIONI (MARQUEE TICKER) -->
+    <section class="marquee-section">
+        <div class="marquee-container">
+            <div class="marquee-track">
+                <!-- BLOCCO 1 -->
+                <div class="review-card">
+                    <div class="stars">★★★★★</div>
+                    <p>"Una canzone emozionante scritta per le nostre nozze. Ha fatto piangere tutti gli invitati."</p>
+                    <span class="author">Marco & Elena (Sposi)</span>
+                </div>
+                <div class="review-card">
+                    <div class="stars">★★★★★</div>
+                    <p>"Professionalità d'altri tempi. Ha saputo trasformare i ricordi della nostra azienda in una sigla epica."</p>
+                    <span class="author">Roberto V. (Imprenditore)</span>
+                </div>
+                <div class="review-card">
+                    <div class="stars">★★★★★</div>
+                    <p>"Ascoltare l'album Controluce è stato un viaggio meraviglioso. Un arrangiamento ed una sensibilità unica."</p>
+                    <span class="author">Silvia M. (Appassionata)</span>
+                </div>
+                <div class="review-card">
+                    <div class="stars">★★★★★</div>
+                    <p>"Un regalo di compleanno indimenticabile. Testo e musica da pelle d'oca!"</p>
+                    <span class="author">Giuseppe L. (Cliente)</span>
+                </div>
+
+                <!-- DUPLICAZIONE PER LOOP INFINITO -->
+                <div class="review-card">
+                    <div class="stars">★★★★★</div>
+                    <p>"Una canzone emozionante scritta per le nostre nozze. Ha fatto piangere tutti gli invitati."</p>
+                    <span class="author">Marco & Elena (Sposi)</span>
+                </div>
+                <div class="review-card">
+                    <div class="stars">★★★★★</div>
+                    <p>"Professionalità d'altri tempi. Ha saputo trasformare i ricordi della nostra azienda in una sigla epica."</p>
+                    <span class="author">Roberto V. (Imprenditore)</span>
+                </div>
+                <div class="review-card">
+                    <div class="stars">★★★★★</div>
+                    <p>"Ascoltare l'album Controluce è stato un viaggio meraviglioso. Un arrangiamento ed una sensibilità unica."</p>
+                    <span class="author">Silvia M. (Appassionata)</span>
+                </div>
+            </div>
         </div>
     </section>
 
-    <!-- SEZIONE DISCOGRAFIA & ALBUM (CON RIPRODUZIONE INTERO CD) -->
+    <!-- SEZIONE DISCOGRAFIA & ALBUM -->
     <section id="discografia">
         <div class="section-title">
             <i class="fas fa-compact-disc"></i>
@@ -156,39 +180,68 @@
         </div>
     </section>
 
-    <!-- STRUTTURA ZIG-ZAG (IMMAGINE - DESCRIZIONE) GOOGLE RECOMMENDED -->
-    <section id="ecosistema" class="zig-zag-section">
+    <!-- ECOSISTEMA & SERVIZI MUSICALI COMPLETO (TUTTI I 8 SERVIZI ORIGINALI) -->
+    <section id="ecosistema">
         <div class="section-title">
-            <i class="fas fa-layer-group"></i>
-            <span>Ecosistema & Servizi Musicali</span>
+            <i class="fas fa-th-large"></i>
+            <span>Ecosistema & Tutti i Servizi Musicali</span>
         </div>
+        <p class="section-desc">
+          Esplora l'intera gamma di servizi e produzioni musicali curate da Fausto Fusetti.
+        </p>
 
-        <!-- RIGA 1: IMMAGINE SINISTRA - DESCRIZIONE DESTRA -->
-        <div class="zig-zag-row">
-            <div class="zig-zag-img">
-                <img src="fausto_immagine.jpg" alt="Canzoni Personalizzate" onerror="this.src='logo6.jpg'">
-            </div>
-            <div class="zig-zag-text">
-                <h3>Canzoni Personalizzate Inedite</h3>
-                <p>Scriviamo e produciamo brani su misura basati sulla tua storia d'amore, anniversario o evento importante. Un regalo originale unico al mondo registrato in studio con arrangiamenti professionali.</p>
-                <a href="#contatti" class="btn-link">Richiedi la tua canzone <i class="fas fa-arrow-right"></i></a>
-            </div>
-        </div>
+        <div class="bento-grid">
+            <a href="eventi/index.html" class="bento-card glow-card" style="--btn-color: #00e1ff;">
+                <div class="bento-icon"><i class="fas fa-glass-cheers"></i></div>
+                <div class="bento-title">Canzoni per Eventi Speciali</div>
+                <div class="bento-desc">Musica ed arrangiamenti dedicati a feste, ricorrenze e cerimonie.</div>
+            </a>
 
-        <!-- RIGA 2: DESCRIZIONE SINISTRA - IMMAGINE DESTRA -->
-        <div class="zig-zag-row reverse">
-            <div class="zig-zag-text">
-                <h3>Jingle Shop & Sound Branding</h3>
-                <p>Ideazione e sviluppo di sigle radiofoniche, podcast, jingle commerciali ed identità acustica aziendale. Dai forza al tuo brand con un suono inconfondibile.</p>
-                <a href="https://ff-edizioni.rmstudio.app/jingle/index.html" target="_blank" class="btn-link">Esplora il Jingle Shop <i class="fas fa-external-link-alt"></i></a>
-            </div>
-            <div class="zig-zag-img">
-                <div class="bento-placeholder-box"><i class="fas fa-icons"></i><span>Jingle & Sound Branding</span></div>
-            </div>
+            <a href="#contatti" class="bento-card glow-card" style="--btn-color: #ff00ff;">
+                <div class="bento-icon"><i class="fas fa-heart"></i></div>
+                <div class="bento-title">Canzoni Personalizzate</div>
+                <div class="bento-desc">Brani inediti scritti su misura per regali, sposi ed anniversari.</div>
+            </a>
+
+            <a href="https://ff-edizioni.rmstudio.app/jukebox/index.html" target="_blank" class="bento-card glow-card" style="--btn-color: #ff3366;">
+                <div class="bento-icon"><i class="fas fa-compact-disc"></i></div>
+                <div class="bento-title">Area Riservata Jukebox</div>
+                <div class="bento-desc">Ascolto riservato per strutture, orchestre e clienti autorizzati.</div>
+            </a>
+
+            <a href="https://ff-edizioni.rmstudio.app/jingle/index.html" target="_blank" class="bento-card glow-card" style="--btn-color: #ff8c00;">
+                <div class="bento-icon"><i class="fas fa-icons"></i></div>
+                <div class="bento-title">Jingle Shop & Sound Branding</div>
+                <div class="bento-desc">Sigle commerciali, radio, podcast e identità acustica aziendale.</div>
+            </a>
+
+            <a href="https://ff-edizioni.rmstudio.app/sfx/index.html" class="bento-card glow-card" style="--btn-color: #ffff00;">
+                <div class="bento-icon"><i class="fas fa-wave-square"></i></div>
+                <div class="bento-title">Libreria SFX</div>
+                <div class="bento-desc">Effetti sonori e campioni acustici professionali per produzioni.</div>
+            </a>
+
+            <button onclick="openVideoModal()" class="bento-card glow-card" style="--btn-color: #39ff14; background: var(--card-bg); text-align: left; cursor: pointer; border: 1px solid rgba(255,255,255,0.1);">
+                <div class="bento-icon"><i class="fas fa-video"></i></div>
+                <div class="bento-title">Guarda i Video</div>
+                <div class="bento-desc">Videoclip ufficiali e produzioni video dei brani d'autore.</div>
+            </button>
+
+            <a href="https://ff-edizioni.rmstudio.app/blog/index.html" class="bento-card glow-card" style="--btn-color: #00ffaa;">
+                <div class="bento-icon"><i class="fas fa-newspaper"></i></div>
+                <div class="bento-title">Blog & News</div>
+                <div class="bento-desc">Articoli, retroscena compositivi ed approfondimenti sul mondo della musica.</div>
+            </a>
+
+            <button onclick="openShopModal()" class="bento-card glow-card" style="--btn-color: #00aaff; background: var(--card-bg); text-align: left; cursor: pointer; border: 1px solid rgba(255,255,255,0.1);">
+                <div class="bento-icon"><i class="fas fa-shopping-cart"></i></div>
+                <div class="bento-title">Shop & Merchandising</div>
+                <div class="bento-desc">Attrezzatura consigliata da Fausto e merchandising ufficiale.</div>
+            </button>
         </div>
     </section>
 
-    <!-- SEZIONE FAQ RICHESTA DA GOOGLE -->
+    <!-- FAQ SECTION -->
     <section id="faq" class="faq-section">
         <div class="section-title">
             <i class="fas fa-question-circle"></i>
@@ -228,7 +281,7 @@
             <input type="email" name="email" required placeholder="La tua Email">
             <textarea name="message" required rows="4" placeholder="Descrivi la tua idea o la canzone che vorresti realizzare..."></textarea>
             
-            <button type="submit" class="btn-action btn-primary">
+            <button type="submit" class="btn-action btn-primary glow-btn-blue">
                 <i class="fas fa-paper-plane"></i> Invia Messaggio
             </button>
         </form>
@@ -236,7 +289,28 @@
 
 </div>
 
-<!-- BARRA PLAYER CONTINUO ALBUM (QUANDO SI ASCOLTA UN CD INTERO) -->
+<!-- MODALE VIDEO & SHOP -->
+<div id="video-modal" class="modal-overlay">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeModal('video-modal')">&times;</span>
+        <h2>Video Selezionati</h2>
+        <p style="margin-bottom:15px; color:#aaa;">Guarda le produzioni ed i videoclip ufficiali:</p>
+        <a href="https://www.youtube.com/watch?v=7s3-7DV38IA" target="_blank" class="btn-action btn-primary" style="width:100%; margin-bottom:10px;">Produzioni Varie</a>
+        <a href="https://www.youtube.com/watch?v=Y8YqyCT7h5E" target="_blank" class="btn-action btn-secondary" style="width:100%;">Ascolta "Noi"</a>
+    </div>
+</div>
+
+<div id="shop-modal" class="modal-overlay">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeModal('shop-modal')">&times;</span>
+        <h2>Shop / Merchandising</h2>
+        <p style="margin-bottom:15px; color:#aaa;">Acquista l'attrezzatura consigliata o il merchandising ufficiale:</p>
+        <a href="https://www.amazon.it/hz/wishlist/ls/282CA0XU81D3C" target="_blank" class="btn-action btn-primary" style="width:100%; margin-bottom:10px;">La mia Attrezzatura</a>
+        <a href="https://ff-music-store.printify.me/" target="_blank" class="btn-action btn-secondary" style="width:100%;">Merchandising Ufficiale</a>
+    </div>
+</div>
+
+<!-- BARRA PLAYER CONTINUO ALBUM -->
 <div id="persistent-album-bar" class="album-player-bar" style="display:none;">
     <div class="player-info">
         <i class="fas fa-compact-disc fa-spin"></i>
@@ -265,13 +339,13 @@
 
 <audio id="global-audio-player"></audio>
 
-<!-- CHATBOT AI VIVO -->
+<!-- CHATBOT AI VIVO CON INTESTAZIONE PIENA QUANDO CHIUSO -->
 <div id="chatbot-window-wrapper">
     <div class="chatbot-header" onclick="toggleChat()">
         <img src="fausto_immagine.jpg" class="chatbot-avatar" onerror="this.src='logo6.jpg'">
-        <div>
-            <div class="chatbot-header-name">Fausto AI</div>
-            <div class="chatbot-status"><i class="fas fa-circle"></i> Assistente Attivo</div>
+        <div class="chatbot-header-text">
+            <div class="chatbot-header-name">Fausto AI • Assistente</div>
+            <div class="chatbot-status"><i class="fas fa-circle"></i> Online</div>
         </div>
         <span id="chat-toggle-icon">&minus;</span>
     </div>
@@ -302,13 +376,12 @@
         </div>
         <div>
             Iscrizione SIAE n. 189515 e 593874<br>
-            &copy; 2026 FF Edizioni. tutti i diritti riservati.<br>
+            &copy; 2026 FF Edizioni. Tutti i diritti riservati.<br>
             <a href="/privacy.html" style="color:#aaa;">Privacy Policy</a> | <a href="https://rmstudio.app/termini.html" style="color:#aaa;">Termini e Condizioni</a>
         </div>
     </div>
 </footer>
 
-<!-- SCRIPT LOGICA SEPARATO -->
 <script src="script.js"></script>
 </body>
 </html>
